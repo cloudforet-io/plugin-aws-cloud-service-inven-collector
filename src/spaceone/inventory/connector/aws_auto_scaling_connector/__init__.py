@@ -1,0 +1,1 @@
+from spaceone.inventory.connector.aws_auto_scaling_connector.connector import AutoScalingConnector

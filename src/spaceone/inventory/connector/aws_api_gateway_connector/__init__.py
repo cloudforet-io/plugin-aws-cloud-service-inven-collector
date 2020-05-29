@@ -1,0 +1,1 @@
+from spaceone.inventory.connector.aws_api_gateway_connector.connector import APIGatewayConnector, APIGatewayV2Connector

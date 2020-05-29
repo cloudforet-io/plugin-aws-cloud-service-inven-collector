@@ -1,0 +1,1 @@
+from spaceone.inventory.connector.aws_ebs_connector.connector import EBSConnector

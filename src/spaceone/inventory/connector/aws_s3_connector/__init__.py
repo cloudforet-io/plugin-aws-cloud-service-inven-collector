@@ -1,0 +1,1 @@
+from spaceone.inventory.connector.aws_s3_connector.connector import S3Connector

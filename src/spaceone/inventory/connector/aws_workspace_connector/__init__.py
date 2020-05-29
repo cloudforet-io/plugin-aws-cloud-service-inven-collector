@@ -1,0 +1,1 @@
+from spaceone.inventory.connector.aws_cloud_front_connector.connector import CFConnector

@@ -1,0 +1,1 @@
+from spaceone.inventory.connector.aws_eip_connector.connector import EIPConnector

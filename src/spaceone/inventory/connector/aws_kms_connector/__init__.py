@@ -1,0 +1,1 @@
+from spaceone.inventory.connector.aws_kms_connector.connector import KMSConnector

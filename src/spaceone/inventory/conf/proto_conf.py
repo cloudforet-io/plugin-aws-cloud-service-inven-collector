@@ -1,0 +1,5 @@
+PROTO = {
+    'plugin': {
+        'collector': ['Collector']
+    }
+}

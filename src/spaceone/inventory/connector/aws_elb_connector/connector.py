@@ -1,0 +1,193 @@
+import logging
+from typing import List
+
+from spaceone.inventory.connector.aws_elb_connector.schema.data import LoadBalancer, TargetGroup, Tags, \
+    LoadBalancerAttributes, TargetGroupAttributes, Listener
+from spaceone.inventory.connector.aws_elb_connector.schema.resource import LoadBalancerResource, TargetGroupResource, \
+    LoadBalancerResponse, TargetGroupResponse
+from spaceone.inventory.connector.aws_elb_connector.schema.service_type import CLOUD_SERVICE_TYPES
+from spaceone.inventory.libs.connector import SchematicAWSConnector
+from spaceone.inventory.libs.schema.resource import ReferenceModel
+
+_LOGGER = logging.getLogger(__name__)
+
+
+class ELBConnector(SchematicAWSConnector):
+    lb_response_schema = LoadBalancerResponse
+    tg_response_schema = TargetGroupResponse
+
+    service_name = 'elbv2'
+
+    def get_resources(self):
+        print("** ELB START **")
+        # init cloud service type
+        for t in CLOUD_SERVICE_TYPES:
+            yield t
+
+        for region_name in self.region_names:
+            self.reset_region(region_name)
+
+            # Target Groups
+            raw_tgs = self.request_target_group(region_name)
+            tg_arns = [raw_tg.get('TargetGroupArn') for raw_tg in raw_tgs if raw_tg.get('TargetGroupArn')]
+
+            if len(tg_arns) > 0:
+                all_tags = self.request_tags(tg_arns)
+
+            for raw_tg in raw_tgs:
+                match_tags = self.search_tags(all_tags, raw_tg.get('TargetGroupArn'))
+                raw_tg.update({
+                    'region_name': region_name,
+                    'account_id': self.account_id,
+                    'tags': list(map(lambda match_tag: Tags(match_tag, strict=False), match_tags))
+                })
+
+                target_group = TargetGroup(raw_tg, strict=False)
+                yield self.tg_response_schema(
+                    {'resource': TargetGroupResource({'data': target_group,
+                                                      'reference': ReferenceModel(target_group.reference)})})
+
+            # Load Balancers
+            all_tags = []
+            raw_lbs = self.request_loadbalancer(region_name)
+            lb_arns = [raw_lb.get('LoadBalancerArn') for raw_lb in raw_lbs if raw_lb.get('LoadBalancerArn')]
+
+            if len(lb_arns) > 0:
+                all_tags = self.request_tags(lb_arns)
+
+            for raw_lb in raw_lbs:
+                match_tags = self.search_tags(all_tags, raw_lb.get('LoadBalancerArn'))
+                raw_listeners = self.request_listeners(raw_lb.get('LoadBalancerArn'))
+                raw_lb.update({
+                    'region_name': region_name,
+                    'account_id': self.account_id,
+                    'listeners': list(map(lambda _listener: Listener(_listener, strict=False), raw_listeners)),
+                    'tags': list(map(lambda match_tag: Tags(match_tag, strict=False), match_tags))
+                })
+
+                load_balancer = LoadBalancer(raw_lb, strict=False)
+                yield self.lb_response_schema(
+                    {'resource': LoadBalancerResource({'data': load_balancer,
+                                                       'reference': ReferenceModel(load_balancer.reference)})})
+
+    def request_loadbalancer(self, region_name):
+        load_balancers = []
+        paginator = self.client.get_paginator('describe_load_balancers')
+        response_iterator = paginator.paginate(
+            PaginationConfig={
+                'MaxItems': 10000,
+                'PageSize': 50,
+            }
+        )
+        for data in response_iterator:
+            for raw in data.get('LoadBalancers', []):
+                raw['attributes'] = self.request_lb_attributes(raw.get('LoadBalancerArn'))
+                load_balancers.append(raw)
+
+        return load_balancers
+
+    def request_target_group(self, region_name):
+        target_groups = []
+        paginator = self.client.get_paginator('describe_target_groups')
+        response_iterator = paginator.paginate(
+            PaginationConfig={
+                'MaxItems': 10000,
+                'PageSize': 50,
+            }
+        )
+        for data in response_iterator:
+            for raw in data.get('TargetGroups', []):
+                raw['attributes'] = self.request_target_group_attributes(raw.get('TargetGroupArn'))
+                target_groups.append(raw)
+
+        return target_groups
+
+    def request_lb_attributes(self, lb_arn):
+        attribute_info = {}
+
+        response = self.client.describe_load_balancer_attributes(LoadBalancerArn=lb_arn)
+        attrs = response.get('Attributes')
+
+        for attr in attrs:
+            if attr.get('Key') == 'access_logs.s3.enabled':
+                if attr.get('Value') == 'true':
+                    attribute_info['access_logs_s3_enabled'] = 'Enabled'
+                elif attr.get('Value') == 'false':
+                    attribute_info['access_logs_s3_enabled'] = 'Disabled'
+
+            elif attr.get('Key') == 'access_logs.s3.prefix':
+                attribute_info['access_logs_s3_prefix'] = attr.get('Value', '')
+
+            elif attr.get('Key') == 'access_logs.s3.bucket':
+                attribute_info['access_logs_s3_bucket'] = attr.get('Value', '')
+
+            elif attr.get('Key') == 'idle_timeout.timeout_seconds':
+                attribute_info['idle_timeout_seconds'] = attr.get('Value', '')
+
+            elif attr.get('Key') == 'load_balancing.cross_zone.enabled':
+                if attr.get('Value') == 'true':
+                    attribute_info['load_balancing_cross_zone_enabled'] = 'Enabled'
+                elif attr.get('Value') == 'false':
+                    attribute_info['load_balancing_cross_zone_enabled'] = 'Disabled'
+
+            elif attr.get('Key') == 'deletion_protection.enabled':
+                if attr.get('Value') == 'true':
+                    attribute_info['deletion_protection_enabled'] = 'Enabled'
+                elif attr.get('Value') == 'false':
+                    attribute_info['deletion_protection_enabled'] = 'Disabled'
+
+        return LoadBalancerAttributes(attribute_info, strict=False)
+
+    def request_target_group_attributes(self, tg_arn):
+        attribute_info = {}
+
+        response = self.client.describe_target_group_attributes(TargetGroupArn=tg_arn)
+        attrs = response.get('Attributes')
+
+        for attr in attrs:
+            if attr.get('Key') == 'stickiness.enabled':
+                if attr.get('Value') == 'true':
+                    attribute_info['stickiness_enabled'] = 'Enabled'
+                elif attr.get('Value') == 'false':
+                    attribute_info['stickiness_enabled'] = 'Disabled'
+
+            elif attr.get('Key') == 'deregistration_delay.timeout_seconds':
+                attribute_info['deregistration_delay_timeout_seconds'] = attr.get('Value', '')
+
+            elif attr.get('Key') == 'stickiness.type':
+                attribute_info['stickiness_type'] = attr.get('Value', '')
+
+            elif attr.get('Key') == 'stickiness.lb_cookie.duration_seconds':
+                attribute_info['stickiness_lb_cookie.duration_seconds'] = attr.get('Value', '')
+
+            elif attr.get('Key') == 'slow_start.duration_seconds':
+                attribute_info['slow_start_duration_seconds'] = attr.get('Value', '')
+
+            elif attr.get('Key') == 'load_balancing.algorithm.type':
+                attribute_info['load_balancing_algorithm_type'] = attr.get('Value', '')
+
+        return TargetGroupAttributes(attribute_info, strict=False)
+
+    def request_listeners(self, lb_arn):
+        response = self.client.describe_listeners(LoadBalancerArn=lb_arn)
+        return response.get('Listeners', [])
+
+    def request_tags(self, resource_arns):
+        def chunks(l, n):
+            for i in range(0, len(l), n):
+                yield l[i:i+n]
+
+        all_tags = []
+        for _arns in list(chunks(resource_arns, 20)):
+            response = self.client.describe_tags(ResourceArns=_arns)
+            all_tags = all_tags + response.get('TagDescriptions', [])
+
+        return all_tags
+
+    @staticmethod
+    def search_tags(all_tags, resource_arn):
+        for tag in all_tags:
+            if tag.get('ResourceArn') == resource_arn:
+                return tag.get('Tags', [])
+
+        return []
