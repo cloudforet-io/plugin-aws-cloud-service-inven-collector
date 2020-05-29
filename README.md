@@ -1,2 +1,2 @@
-# plugin-inventory-aws-cloudservice
-Plugin for AWS Cloud Service
+# plugin-inventory-aws-cloudservices
+Plugin for AWS Cloud Services

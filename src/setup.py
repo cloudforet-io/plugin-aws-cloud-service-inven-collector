@@ -21,7 +21,7 @@ with open('VERSION', 'r') as f:
     f.close()
 
 setup(
-    name='inventory-plugin-aws-cloud-services',
+    name='plugin-inventory-aws-cloud-services',
     version=VERSION,
     description='AWS cloud service inventory collector',
     long_description='',
