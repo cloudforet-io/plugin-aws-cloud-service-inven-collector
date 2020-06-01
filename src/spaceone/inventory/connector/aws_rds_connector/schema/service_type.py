@@ -7,7 +7,7 @@ cst_rds_database.name = 'Database'
 cst_rds_database.provider = 'aws'
 cst_rds_database.group = 'RDS'
 cst_rds_database.tags = {
-    'spaceone:icon': 'https://assets-console-cloudone-stg.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-RDS.svg',
+    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-RDS.svg',
     'spaceone:is_major': 'true',
 }
 
@@ -40,7 +40,7 @@ cst_rds_snapshot.name = 'Snapshot'
 cst_rds_snapshot.provider = 'aws'
 cst_rds_snapshot.group = 'RDS'
 cst_rds_snapshot.tags = {
-    'spaceone:icon': 'https://assets-console-cloudone-stg.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-RDS.svg',
+    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-RDS.svg',
     'spaceone:is_major': 'false',
 }
 cst_rds_snapshot._metadata = CloudServiceTypeMeta.set_fields(fields=[
@@ -67,7 +67,7 @@ cst_rds_subnetgrp.name = 'SubnetGroup'
 cst_rds_subnetgrp.provider = 'aws'
 cst_rds_subnetgrp.group = 'RDS'
 cst_rds_subnetgrp.tags = {
-    'spaceone:icon': 'https://assets-console-cloudone-stg.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-RDS.svg',
+    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-RDS.svg',
     'spaceone:is_major': 'false',
 }
 cst_rds_subnetgrp._metadata = CloudServiceTypeMeta.set_fields(fields=[
@@ -84,7 +84,7 @@ cst_rds_paramgrp.name = 'ParameterGroup'
 cst_rds_paramgrp.provider = 'aws'
 cst_rds_paramgrp.group = 'RDS'
 cst_rds_paramgrp.tags = {
-    'spaceone:icon': 'https://assets-console-cloudone-stg.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-RDS.svg',
+    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-RDS.svg',
     'spaceone:is_major': 'false',
 }
 cst_rds_paramgrp._metadata = CloudServiceTypeMeta.set_fields(fields=[
@@ -98,7 +98,7 @@ cst_rds_optgrp.name = 'OptionGroup'
 cst_rds_optgrp.provider = 'aws'
 cst_rds_optgrp.group = 'RDS'
 cst_rds_optgrp.tags = {
-    'spaceone:icon': 'https://assets-console-cloudone-stg.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-RDS.svg',
+    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-RDS.svg',
     'spaceone:is_major': 'false',
 }
 cst_rds_optgrp._metadata = CloudServiceTypeMeta.set_fields(fields=[

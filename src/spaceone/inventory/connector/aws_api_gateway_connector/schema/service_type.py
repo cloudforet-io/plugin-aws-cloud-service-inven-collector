@@ -8,7 +8,7 @@ cst_rest_api.name = 'RestAPI'
 cst_rest_api.provider = 'aws'
 cst_rest_api.group = 'APIGateway'
 cst_rest_api.tags = {
-    'spaceone:icon': 'https://assets-console-cloudone-stg.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-API-Gateway.svg',
+    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-API-Gateway.svg',
     'spaceone:is_major': 'true',
 }
 
@@ -25,7 +25,7 @@ cst_web_socket.name = 'HTTPWebsocket'
 cst_web_socket.provider = 'aws'
 cst_web_socket.group = 'APIGateway'
 cst_web_socket.tags = {
-    'spaceone:icon': 'https://assets-console-cloudone-stg.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-API-Gateway.svg',
+    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-API-Gateway.svg',
     'spaceone:is_major': 'true',
 }
 

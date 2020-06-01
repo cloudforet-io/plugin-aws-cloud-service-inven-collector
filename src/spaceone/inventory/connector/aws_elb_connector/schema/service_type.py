@@ -8,7 +8,7 @@ cst_elb.name = 'LoadBalancer'
 cst_elb.provider = 'aws'
 cst_elb.group = 'ELB'
 cst_elb.tags = {
-    'spaceone:icon': 'https://assets-console-cloudone-stg.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Elastic-Load-Balancing.svg',
+    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Elastic-Load-Balancing.svg',
     'spaceone:is_major': 'true',
 }
 
@@ -35,7 +35,7 @@ cst_tg.name = 'TargetGroup'
 cst_tg.provider = 'aws'
 cst_tg.group = 'ELB'
 cst_tg.tags = {
-    'spaceone:icon': 'https://assets-console-cloudone-stg.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Elastic-Load-Balancing.svg',
+    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Elastic-Load-Balancing.svg',
     'spaceone:is_major': 'false',
 }
 

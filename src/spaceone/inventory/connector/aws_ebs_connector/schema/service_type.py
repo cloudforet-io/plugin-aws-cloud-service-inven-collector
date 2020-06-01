@@ -7,7 +7,7 @@ cst_ebs.name = 'Volume'
 cst_ebs.provider = 'aws'
 cst_ebs.group = 'EBS'
 cst_ebs.tags = {
-    'spaceone:icon': 'https://assets-console-cloudone-stg.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-Elastic-Block-Store-EBS.svg',
+    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-Elastic-Block-Store-EBS.svg',
     'spaceone:is_major': 'true',
 }
 cst_ebs._metadata = CloudServiceTypeMeta.set_fields(fields=[
@@ -35,7 +35,7 @@ cst_snapshot.name = 'Snapshot'
 cst_snapshot.provider = 'aws'
 cst_snapshot.group = 'EBS'
 cst_snapshot.tags = {
-    'spaceone:icon': 'https://assets-console-cloudone-stg.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-Elastic-Block-Store-EBS.svg',
+    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-Elastic-Block-Store-EBS.svg',
     'spaceone:is_major': 'false',
 }
 cst_snapshot._metadata = CloudServiceTypeMeta.set_fields(fields=[

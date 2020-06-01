@@ -6,7 +6,7 @@ cst_topic.name = 'Topic'
 cst_topic.provider = 'aws'
 cst_topic.group = 'SNS'
 cst_topic.tags = {
-    'spaceone:icon': 'https://assets-console-cloudone-stg.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-SNS.svg',
+    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-SNS.svg',
     'spaceone:is_major': 'true',
 }
 

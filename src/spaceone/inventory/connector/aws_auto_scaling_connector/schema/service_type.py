@@ -7,7 +7,7 @@ cst_asg.name = 'AutoScalingGroup'
 cst_asg.provider = 'aws'
 cst_asg.group = 'AutoScaling'
 cst_asg.tags = {
-    'spaceone:icon': 'https://assets-console-cloudone-stg.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-EC2-Auto-Scaling.svg',
+    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-EC2-Auto-Scaling.svg',
     'spaceone:is_major': 'true',
 }
 
@@ -25,7 +25,7 @@ launch_configuration.name = 'LaunchConfiguration'
 launch_configuration.provider = 'aws'
 launch_configuration.group = 'AutoScaling'
 launch_configuration.tags = {
-    'spaceone:icon': 'https://assets-console-cloudone-stg.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-EC2-Auto-Scaling.svg',
+    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-EC2-Auto-Scaling.svg',
     'spaceone:is_major': 'false',
 }
 
