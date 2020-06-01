@@ -9,6 +9,8 @@ _LOGGER = logging.getLogger(__name__)
 
 AKI = os.environ.get('AWS_ACCESS_KEY_ID', None)
 SAK = os.environ.get('AWS_SECRET_ACCESS_KEY', None)
+ROLE_ARN = os.environ.get('ROLE_ARN', None)
+
 
 if AKI == None or SAK == None:
     print("""
@@ -33,6 +35,11 @@ class TestCloudServiceAPIs(TestCase):
         'aws_access_key_id': AKI,
         'aws_secret_access_key': SAK,
     }
+
+    if ROLE_ARN is not None:
+        secret_data.update({
+            'role_arn': ROLE_ARN
+        })
 
     def test_verify(self):
         options = {

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 from spaceone.core.service import *
+from spaceone.inventory.libs.connector import *
 import spaceone.inventory.manager.__init__ as managers
 from boto3.session import Session
 
@@ -233,19 +234,13 @@ class CollectorService(BaseService):
 
     @staticmethod
     def get_account_id(secret_data, region=DEFAULT_REGION):
-        if 'region_name' not in secret_data:
-            secret_data['region_name'] = region
-
-        _session = Session(**secret_data)
+        _session = get_session(secret_data, region)
         sts_client = _session.client('sts')
         return sts_client.get_caller_identity()['Account']
 
     @staticmethod
     def get_regions(secret_data, region=DEFAULT_REGION):
-        if 'region_name' not in secret_data:
-            secret_data['region_name'] = region
-
-        _session = Session(**secret_data)
+        _session = get_session(secret_data, region)
         ec2_client = _session.client('ec2')
         return list(map(lambda region_info: region_info.get('RegionName'),
                         ec2_client.describe_regions().get('Regions')))
