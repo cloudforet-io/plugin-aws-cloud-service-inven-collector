@@ -7,7 +7,7 @@ cst_ecr_repo.name = 'Repository'
 cst_ecr_repo.provider = 'aws'
 cst_ecr_repo.group = 'ECR'
 cst_ecr_repo.tags = {
-    'spaceone:icon': 'https://assets-console-cloudone-stg.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-EC2-Container-Registry.svg',
+    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-EC2-Container-Registry.svg',
     'spaceone:is_major': 'true',
 }
 

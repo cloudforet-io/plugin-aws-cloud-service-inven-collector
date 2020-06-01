@@ -7,7 +7,7 @@ cst_filesystem.name = 'FileSystem'
 cst_filesystem.provider = 'aws'
 cst_filesystem.group = 'EFS'
 cst_filesystem.tags = {
-    'spaceone:icon': 'https://assets-console-cloudone-stg.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-Elastic-File-System_EFS.svg',
+    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-Elastic-File-System_EFS.svg',
     'spaceone:is_major': 'true',
 }
 

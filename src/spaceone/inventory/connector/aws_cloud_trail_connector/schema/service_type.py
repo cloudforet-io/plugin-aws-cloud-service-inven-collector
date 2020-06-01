@@ -6,7 +6,7 @@ cst_trail.name = 'Trail'
 cst_trail.provider = 'aws'
 cst_trail.group = 'CloudTrail'
 cst_trail.tags = {
-    'spaceone:icon': 'https://assets-console-cloudone-stg.s3.ap-northeast-2.amazonaws.com/console-assets/icons/aws-cloudtrail.svg',
+    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/aws-cloudtrail.svg',
     'spaceone:is_major': 'true',
 }
 

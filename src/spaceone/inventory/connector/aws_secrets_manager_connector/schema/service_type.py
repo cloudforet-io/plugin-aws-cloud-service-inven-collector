@@ -6,7 +6,7 @@ cst_secret.name = 'Secret'
 cst_secret.provider = 'aws'
 cst_secret.group = 'SecretsManager'
 cst_secret.tags = {
-    'spaceone:icon': 'https://assets-console-cloudone-stg.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/AWS-Secrets-Manager.svg',
+    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/AWS-Secrets-Manager.svg',
     'spaceone:is_major': 'true',
 }
 

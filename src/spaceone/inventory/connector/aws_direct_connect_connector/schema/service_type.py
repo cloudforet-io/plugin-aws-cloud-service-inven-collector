@@ -10,7 +10,7 @@ cst_connection.name = 'Connection'
 cst_connection.provider = 'aws'
 cst_connection.group = 'DirectConnect'
 cst_connection.tags = {
-    'spaceone:icon': 'https://assets-console-cloudone-stg.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/AWS-Direct-Connect.svg',
+    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/AWS-Direct-Connect.svg',
     'spaceone:is_major': 'true',
 }
 
@@ -39,7 +39,7 @@ cst_dc_gw.name = 'DirectConnectGateway'
 cst_dc_gw.provider = 'aws'
 cst_dc_gw.group = 'DirectConnect'
 cst_dc_gw.tags = {
-    'spaceone:icon': 'https://assets-console-cloudone-stg.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/AWS-Direct-Connect.svg',
+    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/AWS-Direct-Connect.svg',
     'spaceone:is_major': 'false',
 }
 cst_dc_gw_meta = CloudServiceTypeMeta.set_fields(fields=[
@@ -62,7 +62,7 @@ cst_vp_gw.name = 'VirtualPrivateGateway'
 cst_vp_gw.provider = 'aws'
 cst_vp_gw.group = 'DirectConnect'
 cst_vp_gw.tags = {
-    'spaceone:icon': 'https://assets-console-cloudone-stg.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/AWS-Direct-Connect.svg',
+    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/AWS-Direct-Connect.svg',
     'spaceone:is_major': 'false',
 }
 cst_vp_gw_meta = CloudServiceTypeMeta.set_fields(fields=[
@@ -85,7 +85,7 @@ cst_lags.name = 'LAG'
 cst_lags.provider = 'aws'
 cst_lags.group = 'DirectConnect'
 cst_lags.tags = {
-    'spaceone:icon': 'https://assets-console-cloudone-stg.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/AWS-Direct-Connect.svg',
+    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/AWS-Direct-Connect.svg',
     'spaceone:is_major': 'false',
 }
 cst_lags_meta = CloudServiceTypeMeta.set_fields(fields=[

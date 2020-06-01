@@ -7,7 +7,7 @@ cst_kms_cluster.name = 'Key'
 cst_kms_cluster.provider = 'aws'
 cst_kms_cluster.group = 'KMS'
 cst_kms_cluster.tags = {
-    'spaceone:icon': 'https://assets-console-cloudone-stg.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/AWS-Key-Management-Service.svg',
+    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/AWS-Key-Management-Service.svg',
     'spaceone:is_major': 'true',
 }
 

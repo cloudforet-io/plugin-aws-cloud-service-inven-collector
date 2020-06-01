@@ -7,7 +7,7 @@ cst_redshift_cluster.name = 'Cluster'
 cst_redshift_cluster.provider = 'aws'
 cst_redshift_cluster.group = 'RedShift'
 cst_redshift_cluster.tags = {
-    'spaceone:icon': 'https://assets-console-cloudone-stg.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-Redshift.svg',
+    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-Redshift.svg',
     'spaceone:is_major': 'true',
 }
 

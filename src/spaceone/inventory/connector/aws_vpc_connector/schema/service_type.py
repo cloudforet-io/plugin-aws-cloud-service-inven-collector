@@ -7,7 +7,7 @@ cst_vpc.name = 'VPC'
 cst_vpc.provider = 'aws'
 cst_vpc.group = 'VPC'
 cst_vpc.tags = {
-    'spaceone:icon': 'https://assets-console-cloudone-stg.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-VPC.svg',
+    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-VPC.svg',
     'spaceone:is_major': 'false',
 }
 
@@ -33,7 +33,7 @@ cst_subnet.name = 'Subnet'
 cst_subnet.provider = 'aws'
 cst_subnet.group = 'VPC'
 cst_subnet.tags = {
-    'spaceone:icon': 'https://assets-console-cloudone-stg.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-VPC.svg',
+    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-VPC.svg',
     'spaceone:is_major': 'false',
 }
 
@@ -58,7 +58,7 @@ cst_rt.name = 'RouteTable'
 cst_rt.provider = 'aws'
 cst_rt.group = 'VPC'
 cst_rt.tags = {
-    'spaceone:icon': 'https://assets-console-cloudone-stg.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-VPC.svg',
+    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-VPC.svg',
     'spaceone:is_major': 'false',
 }
 
@@ -85,7 +85,7 @@ cst_igw.name = 'InternetGateway'
 cst_igw.provider = 'aws'
 cst_igw.group = 'VPC'
 cst_igw.tags = {
-    'spaceone:icon': 'https://assets-console-cloudone-stg.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-VPC_Internet-Gateway_light-bg.svg',
+    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-VPC_Internet-Gateway_light-bg.svg',
     'spaceone:is_major': 'false',
 }
 
@@ -109,7 +109,7 @@ cst_eoigw.name = 'EgressOnlyInternetGateway'
 cst_eoigw.provider = 'aws'
 cst_eoigw.group = 'VPC'
 cst_eoigw.tags = {
-    'spaceone:icon': 'https://assets-console-cloudone-stg.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-VPC_Internet-Gateway_light-bg.svg',
+    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-VPC_Internet-Gateway_light-bg.svg',
     'spaceone:is_major': 'false',
 }
 cst_eoigw._metadata = CloudServiceTypeMeta.set_fields(fields=[
@@ -132,7 +132,7 @@ cst_natgw.name = 'NATGateway'
 cst_natgw.provider = 'aws'
 cst_natgw.group = 'VPC'
 cst_natgw.tags = {
-    'spaceone:icon': 'https://assets-console-cloudone-stg.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-VPC_NAT-Gateway_light-bg.svg',
+    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-VPC_NAT-Gateway_light-bg.svg',
     'spaceone:is_major': 'false',
 }
 cst_natgw._metadata = CloudServiceTypeMeta.set_fields(fields=[
@@ -170,7 +170,7 @@ cst_peerconn.name = 'PeeringConnection'
 cst_peerconn.provider = 'aws'
 cst_peerconn.group = 'VPC'
 cst_peerconn.tags = {
-    'spaceone:icon': 'https://assets-console-cloudone-stg.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-VPC_Peering_light-bg.svg',
+    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-VPC_Peering_light-bg.svg',
     'spaceone:is_major': 'false',
 }
 cst_peerconn._metadata = CloudServiceTypeMeta.set_fields(fields=[
@@ -196,7 +196,7 @@ cst_nacl.name = 'NetworkACL'
 cst_nacl.provider = 'aws'
 cst_nacl.group = 'VPC'
 cst_nacl.tags = {
-    'spaceone:icon': 'https://assets-console-cloudone-stg.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-VPC_NACL_light-bg.svg',
+    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-VPC_NACL_light-bg.svg',
     'spaceone:is_major': 'false',
 }
 cst_nacl._metadata = CloudServiceTypeMeta.set_fields(fields=[
@@ -214,7 +214,7 @@ cst_endpoint.name = 'Endpoint'
 cst_endpoint.provider = 'aws'
 cst_endpoint.group = 'VPC'
 cst_endpoint.tags = {
-    'spaceone:icon': 'https://assets-console-cloudone-stg.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-VPC_Endpoints_light-bg.svg',
+    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-VPC_Endpoints_light-bg.svg',
     'spaceone:is_major': 'false',
 }
 cst_endpoint._metadata = CloudServiceTypeMeta.set_fields(fields=[
