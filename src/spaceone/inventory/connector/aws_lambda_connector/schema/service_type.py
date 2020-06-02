@@ -1,4 +1,4 @@
-from spaceone.inventory.libs.schema.dynamic_field import TextDyField, EnumDyField, BadgeDyField
+from spaceone.inventory.libs.schema.dynamic_field import TextDyField, BadgeDyField, ListDyField
 from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, \
     CloudServiceTypeMeta
 
@@ -29,7 +29,12 @@ cst_layer.tags = {
 }
 
 cst_layer._metadata = CloudServiceTypeMeta.set_fields(fields=[
-    TextDyField.data_source('Name', 'data.name'),
+    TextDyField.data_source('Name', 'data.layer_name'),
+    TextDyField.data_source('Version', 'data.latest_matching_version.version'),
+    TextDyField.data_source('Description', 'data.latest_matching_version.description'),
+    ListDyField.data_source('Compatible Runtimes', 'data.latest_matching_version.compatible_runtimes', default_badge={
+        'type': 'outline',
+    }),
 ])
 
 

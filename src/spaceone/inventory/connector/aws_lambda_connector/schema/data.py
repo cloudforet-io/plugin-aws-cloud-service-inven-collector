@@ -13,7 +13,9 @@ class LatestMatchingVersion(Model):
     version = IntType(deserialize_from="Version")
     description = StringType(deserialize_from="Description")
     created_date = StringType(deserialize_from="CreatedDate")
-    compatible_runtimes = ListType(StringType, choices=('nodejs', 'nodejs4.3', 'nodejs6.10', 'nodejs8.10', 'nodejs10.x',
+    compatible_runtimes = ListType(StringType,
+                                   deserialize_from="CompatibleRuntimes",
+                                   choices=('nodejs', 'nodejs4.3', 'nodejs6.10', 'nodejs8.10', 'nodejs10.x',
                                                         'nodejs12.x', 'java8', 'java11', 'python2.7', 'python3.6',
                                                         'python3.7', 'python3.8', 'dotnetcore1.0', 'dotnetcore2.0',
                                                         'dotnetcore2.1', 'dotnetcore3.1', 'nodejs4.3-edge', 'go1.x',
@@ -25,14 +27,15 @@ class Layer(Model):
     layer_name = StringType(deserialize_from="LayerName")
     layer_arn = StringType(deserialize_from="LayerArn")
     latest_matching_version = ModelType(LatestMatchingVersion, deserialize_from="LatestMatchingVersion")
+    version = IntType(default=1)
     region_name = StringType()
     account_id = StringType()
 
     @serializable
     def reference(self):
         return {
-            "id": self.arn,
-            "link": f"https://console.aws.amazon.com/"
+            "resource_id": self.layer_arn,
+            "external_link": f"https://console.aws.amazon.com/lambda/home?region={self.region_name}#/layers/{self.layer_name}/versions/{self.version}"
         }
 
 
