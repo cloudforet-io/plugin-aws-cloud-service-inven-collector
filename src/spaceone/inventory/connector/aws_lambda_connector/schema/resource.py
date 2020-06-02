@@ -9,7 +9,7 @@ from spaceone.inventory.libs.schema.dynamic_field import TextDyField, ListDyFiel
 from spaceone.inventory.libs.schema.dynamic_layout import ItemDynamicLayout, TableDynamicLayout, \
     SimpleTableDynamicLayout
 
-base = ItemDynamicLayout.set_fields('Functions', fields=[
+function = ItemDynamicLayout.set_fields('Functions', fields=[
     TextDyField.data_source('Name', 'data.name'),
     TextDyField.data_source('ARN', 'data.arn'),
     BadgeDyField.data_source('Runtime', 'data.runtime'),
@@ -50,7 +50,7 @@ base = ItemDynamicLayout.set_fields('Functions', fields=[
     DateTimeDyField.data_source('Last Modified', 'data.last_modified'),
 ])
 
-vpc = ItemDynamicLayout.set_fields('VPC', fields=[
+function_vpc = ItemDynamicLayout.set_fields('VPC', fields=[
     TextDyField.data_source('VPC Id', 'data.vpc_config.vpc.id'),
     TextDyField.data_source('VPC Name', 'data.vpc_config.vpc.name'),
     EnumDyField.data_source('Default VPC', 'data.vpc_config.vpc.is_default', default_badge={
@@ -67,18 +67,34 @@ vpc = ItemDynamicLayout.set_fields('VPC', fields=[
     })
 ])
 
-env = SimpleTableDynamicLayout.set_fields('Environment Variables', 'data.environment.variables', fields=[
+function_env = SimpleTableDynamicLayout.set_fields('Environment Variables', 'data.environment.variables', fields=[
     TextDyField.data_source('Key', 'key'),
     TextDyField.data_source('Value', 'value'),
 ])
 
-layers = TableDynamicLayout.set_fields('Layers', 'data.layers', fields=[
+function_layers = TableDynamicLayout.set_fields('Layers', 'data.layers', fields=[
     TextDyField.data_source('ARN', 'arn'),
     TextDyField.data_source('Name', 'name'),
     TextDyField.data_source('Code Size', 'code_size'),
 ])
 
-function_metadata = CloudServiceMeta.set_layouts(layouts=[base, vpc, env, layers])
+function_metadata = CloudServiceMeta.set_layouts(layouts=[function, function_vpc, function_env, function_layers])
+
+
+layer = ItemDynamicLayout.set_fields('Layers', fields=[
+    TextDyField.data_source('Name', 'data.layer_name'),
+    TextDyField.data_source('ARN', 'data.layer_arn'),
+    ListDyField.data_source('Compatible Runtimes', 'data.latest_matching_version.compatible_runtimes', default_badge={
+        'type': 'outline',
+    }),
+    TextDyField.data_source('Version', 'data.latest_matching_version.version'),
+    TextDyField.data_source('Description', 'data.latest_matching_version.description'),
+    TextDyField.data_source('License Info', 'data.latest_matching_version.license_info'),
+    TextDyField.data_source('Layer Version ARN', 'data.latest_matching_version.layer_version_arn'),
+    DateTimeDyField.data_source('Created Time', 'data.latest_matching_version.created_date'),
+])
+
+layer_metadata = CloudServiceMeta.set_layouts(layouts=[layer])
 
 
 class LambdaResource(CloudServiceResource):
@@ -93,6 +109,8 @@ class LambdaFunctionResource(LambdaResource):
 
 class LambdaLayerResource(LambdaResource):
     cloud_service_type = StringType(default='Layer')
+    data = ModelType(Layer)
+    _metadata = ModelType(CloudServiceMeta, default=layer_metadata, serialized_name='metadata')
 
 
 class LambdaFunctionResponse(CloudServiceResponse):
@@ -101,8 +119,9 @@ class LambdaFunctionResponse(CloudServiceResponse):
     })
     resource = PolyModelType(LambdaFunctionResource)
 
+
 class LambdaLayerResponse(CloudServiceResponse):
     match_rules = DictType(ListType(StringType), default={
         '1': ['data.layer_arn', 'provider', 'cloud_service_type', 'cloud_service_group']
     })
-    resource = PolyModelType(LambdaFunctionResource)
+    resource = PolyModelType(LambdaLayerResource)

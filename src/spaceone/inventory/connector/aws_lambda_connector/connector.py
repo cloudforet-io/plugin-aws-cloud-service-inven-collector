@@ -130,8 +130,15 @@ class LambdaConnector(SchematicAWSConnector):
         )
         for data in response_iterator:
             for raw in data['Layers']:
+                latest_matching_version = raw.get('LatestMatchingVersion', {})
+                if 'Version' in latest_matching_version:
+                    raw.update({
+                        'version': latest_matching_version.get('Version')
+                    })
+
                 raw.update({
                     'region_name': region_name,
                     'account_id': self.account_id
                 })
+
                 yield Layer(raw, strict=False)
