@@ -74,12 +74,12 @@ class S3Connector(SchematicAWSConnector):
             if tags := self.get_tags(bucket_name):
                 raw.update({'tags': tags})
 
-            object_count, object_total_size = self.get_object_info(bucket_name)
-
-            raw.update({
-                'object_count': object_count,
-                'object_total_size': object_total_size
-            })
+            # object_count, object_total_size = self.get_object_info(bucket_name)
+            #
+            # raw.update({
+            #     'object_count': object_count,
+            #     'object_total_size': object_total_size
+            # })
 
             res = Bucket(raw, strict=False)
             yield res
