@@ -1,3 +1,4 @@
+import time
 import logging
 from typing import List
 
@@ -16,6 +17,8 @@ class Route53Connector(SchematicAWSConnector):
 
     def get_resources(self) -> List[HostedZoneResource]:
         print("** Route53 START **")
+        start_time = time.time()
+
         # init cloud service type
         for t in CLOUD_SERVICE_TYPES:
             yield t
@@ -25,6 +28,8 @@ class Route53Connector(SchematicAWSConnector):
             yield self.response_schema(
                 {'resource': HostedZoneResource({'data': data,
                                                  'reference': ReferenceModel(data.reference)})})
+
+        print(f' Route53 Finished {time.time() - start_time} Seconds')
 
     def request_data(self) -> List[HostedZone]:
         paginator = self.client.get_paginator('list_hosted_zones')

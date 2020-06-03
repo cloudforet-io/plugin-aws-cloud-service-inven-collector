@@ -1,3 +1,4 @@
+import time
 import logging
 from typing import List
 
@@ -16,6 +17,8 @@ class EFSConnector(SchematicAWSConnector):
 
     def get_resources(self) -> List[FileSystemResource]:
         print("** EFS START **")
+        start_time = time.time()
+
         # init cloud service type
         for t in CLOUD_SERVICE_TYPES:
             yield t
@@ -29,6 +32,8 @@ class EFSConnector(SchematicAWSConnector):
                 yield self.response_schema(
                     {'resource': FileSystemResource({'data': data,
                                                      'reference': ReferenceModel(data.reference)})})
+
+        print(f' EFS Finished {time.time() - start_time} Seconds')
 
     def request_data(self, region_name) -> List[FileSystem]:
         paginator = self.client.get_paginator('describe_file_systems')

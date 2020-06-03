@@ -1,3 +1,4 @@
+import time
 import logging
 from typing import List
 
@@ -18,6 +19,7 @@ class APIGatewayConnector(SchematicAWSConnector):
 
     def get_resources(self) -> List[RestAPIResource]:
         print("** API Gateway START **")
+        start_time = time.time()
         # init cloud service type
         for t in CLOUD_SERVICE_TYPES:
             yield t
@@ -30,6 +32,8 @@ class APIGatewayConnector(SchematicAWSConnector):
                 yield self.response_schema(
                     {'resource': RestAPIResource({'data': data,
                                                   'reference': ReferenceModel(data.reference)})})
+
+        print(f' API Gateway Finished {time.time() - start_time} Seconds')
 
     def request_data(self, region_name) -> List[RestAPI]:
         paginator = self.client.get_paginator('get_rest_apis')

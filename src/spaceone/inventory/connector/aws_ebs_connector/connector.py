@@ -1,7 +1,6 @@
+import time
 import logging
 from typing import List
-
-import boto3
 
 from spaceone.inventory.connector.aws_ebs_connector.schema.data import Volume, Attribute, Snapshot
 from spaceone.inventory.connector.aws_ebs_connector.schema.resource import VolumeResource, VolumeResponse, \
@@ -20,6 +19,7 @@ class EBSConnector(SchematicAWSConnector):
 
     def get_resources(self):
         print("** EBS START **")
+        start_time = time.time()
         # init cloud service type
         for t in CLOUD_SERVICE_TYPES:
             yield t
@@ -38,6 +38,8 @@ class EBSConnector(SchematicAWSConnector):
                 yield self.response_snapshot_schema(
                     {'resource': SnapshotResource({'data': data,
                                                    'reference': ReferenceModel(data.reference)})})
+
+        print(f' EBS Finished {time.time() - start_time} Seconds')
 
     def request_volume_data(self, region_name) -> List[Volume]:
         paginator = self.client.get_paginator('describe_volumes')

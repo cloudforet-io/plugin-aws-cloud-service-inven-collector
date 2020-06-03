@@ -1,7 +1,6 @@
+import time
 import logging
 from typing import List
-
-from botocore.exceptions import ClientError
 
 from spaceone.inventory.connector.aws_elasticache_connector.schema.data import Redis, Memcached, Cluster, \
     ReplicationGroup
@@ -24,6 +23,8 @@ class ElastiCacheConnector(SchematicAWSConnector):
 
     def get_resources(self) -> List[RedisResource]:
         print("** ElastiCache START **")
+        start_time = time.time()
+
         # init cloud service type
         for t in CLOUD_SERVICE_TYPES:
             yield t
@@ -37,6 +38,8 @@ class ElastiCacheConnector(SchematicAWSConnector):
             yield self.redis_response_schema(
                 {'resource': RedisResource({'data': func,
                                             'reference': ReferenceModel(func.reference)})})
+
+        print(f' ElastiCache Finished {time.time() - start_time} Seconds')
 
     def request_data(self):
         clusters = self.describe_clusters()

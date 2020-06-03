@@ -1,3 +1,4 @@
+import time
 import logging
 from typing import List
 from botocore.exceptions import ClientError
@@ -18,6 +19,8 @@ class S3Connector(SchematicAWSConnector):
 
     def get_resources(self) -> List[BucketResource]:
         print("** S3 START **")
+        start_time = time.time()
+
         # init cloud service type
         for t in CLOUD_SERVICE_TYPES:
             yield t
@@ -27,6 +30,8 @@ class S3Connector(SchematicAWSConnector):
             yield self.response_schema(
                 {'resource': BucketResource({'data': data,
                                              'reference': ReferenceModel(data.reference)})})
+
+        print(f' S3 Finished {time.time() - start_time} Seconds')
 
     def request_data(self) -> List[Bucket]:
         response = self.client.list_buckets()

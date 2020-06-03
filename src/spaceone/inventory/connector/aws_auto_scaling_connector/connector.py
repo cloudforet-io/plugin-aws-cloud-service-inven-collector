@@ -1,3 +1,4 @@
+import time
 import logging
 from typing import List
 
@@ -21,6 +22,8 @@ class AutoScalingConnector(SchematicAWSConnector):
 
     def get_resources(self):
         print("** Auto Scaling Start **")
+        start_time = time.time()
+
         # init cloud service type
         for t in CLOUD_SERVICE_TYPES:
             yield t
@@ -41,6 +44,8 @@ class AutoScalingConnector(SchematicAWSConnector):
                 yield self.auto_scaling_group_response_schema(
                     {'resource': AutoScalingGroupResource({'data': data,
                                                            'reference': ReferenceModel(data.reference)})})
+
+        print(f' Auto Scaling Finished {time.time() - start_time} Seconds')
 
     def request_auto_scaling_group_data(self, region_name) -> List[AutoScalingGroup]:
         paginator = self.client.get_paginator('describe_auto_scaling_groups')

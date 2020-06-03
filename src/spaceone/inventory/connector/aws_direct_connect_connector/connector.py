@@ -1,3 +1,4 @@
+import time
 import logging
 from typing import List
 
@@ -23,6 +24,8 @@ class DirectConnectConnector(SchematicAWSConnector):
 
     def get_resources(self):
         print("** Direct Connect START **")
+        start_time = time.time()
+
         # init cloud service type
         for t in CLOUD_SERVICE_TYPES:
             yield t
@@ -50,6 +53,8 @@ class DirectConnectConnector(SchematicAWSConnector):
             yield self.dcgw_response_schema(
                 {'resource': DirectConnectGatewayResource({'data': data,
                                                            'reference': ReferenceModel(data.reference)})})
+
+        print(f' Direct Connect Finished {time.time() - start_time} Seconds')
 
     def connection_request_data(self, region_name) -> List[Connection]:
         response = self.client.describe_connections()

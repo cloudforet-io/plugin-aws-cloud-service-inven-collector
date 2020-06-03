@@ -177,8 +177,8 @@ class Bucket(Model):
     notification_configurations = ListType(ModelType(NotificationConfiguration))
     region_name = StringType(default="")
     account_id = StringType(default="")
-    object_count = IntType(default=0)
-    object_total_size = IntType(default=0)
+    # object_count = IntType(default=0)
+    # object_total_size = IntType(default=0)
 
     @serializable
     def reference(self):
