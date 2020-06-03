@@ -1,3 +1,4 @@
+import time
 import logging
 from typing import List
 
@@ -28,6 +29,8 @@ class RDSConnector(SchematicAWSConnector):
 
     def get_resources(self):
         print("** RDS START **")
+        start_time = time.time()
+
         # init cloud service type
         for t in CLOUD_SERVICE_TYPES:
             yield t
@@ -65,6 +68,8 @@ class RDSConnector(SchematicAWSConnector):
                 yield self.og_response_schema(
                     {'resource': OptionGroupResource({'data': data,
                                                       'reference': ReferenceModel(data.reference)})})
+
+        print(f' RDS Finished {time.time() - start_time} Seconds')
 
     def db_instance_data(self, region_name) -> List[Database]:
         for instance in self.describe_instances():

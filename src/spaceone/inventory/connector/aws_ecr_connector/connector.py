@@ -1,3 +1,4 @@
+import time
 import logging
 from typing import List
 
@@ -23,6 +24,8 @@ class ECRConnector(SchematicAWSConnector):
 
     def get_resources(self) -> List[ECRRepositoryResource]:
         print("** ECR START **")
+        start_time = time.time()
+
         # init cloud service type
         for t in CLOUD_SERVICE_TYPES:
             yield t
@@ -36,6 +39,8 @@ class ECRConnector(SchematicAWSConnector):
                 yield self.response_schema(
                     {'resource': ECRRepositoryResource({'data': data,
                                                         'reference': ReferenceModel(data.reference)})})
+
+        print(f' ECR Finished {time.time() - start_time} Seconds')
 
     def request_data(self, region_name) -> List[Repository]:
         paginator = self.client.get_paginator('describe_repositories')

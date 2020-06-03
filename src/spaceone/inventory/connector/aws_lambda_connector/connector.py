@@ -1,3 +1,4 @@
+import time
 import logging
 from typing import List
 
@@ -41,6 +42,8 @@ class LambdaConnector(SchematicAWSConnector):
 
     def get_resources(self):
         print("** Lambda START **")
+        start_time = time.time()
+
         # init cloud service type
         for t in CLOUD_SERVICE_TYPES:
             yield t
@@ -58,6 +61,8 @@ class LambdaConnector(SchematicAWSConnector):
                 yield self.layer_response_schema(
                     {'resource': LambdaLayerResource({'data': data,
                                                       'reference': ReferenceModel(data.reference)})})
+
+        print(f' Lambda Finished {time.time() - start_time} Seconds')
 
     @property
     def layers(self):

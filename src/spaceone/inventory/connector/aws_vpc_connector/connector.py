@@ -1,8 +1,6 @@
+import time
 import logging
 from typing import List
-
-import boto3
-import json
 
 from spaceone.inventory.connector.aws_vpc_connector.schema.data import VPC, Subnet, RouteTable, \
     RouteTableAssociations, RouteTableRoutes, InternetGateway, EgressOnlyInternetGateway, DHCPOptions, Endpoint, \
@@ -73,6 +71,8 @@ class VPCConnector(SchematicAWSConnector):
 
     def get_resources(self):
         print("** VPC START **")
+        start_time = time.time()
+
         # init cloud service type
         for t in CLOUD_SERVICE_TYPES:
             yield t
@@ -148,6 +148,8 @@ class VPCConnector(SchematicAWSConnector):
                 yield self.vpc_res_schema(
                     {'resource': VPCResource({'data': data,
                                               'reference': ReferenceModel(data.reference)})})
+
+        print(f' VPC Finished {time.time() - start_time} Seconds')
 
     def request_vpc_data(self, region_name) -> List[VPC]:
         if len(self.dhcp_options) > 0:

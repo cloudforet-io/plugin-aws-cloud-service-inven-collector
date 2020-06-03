@@ -1,3 +1,4 @@
+import time
 import logging
 from typing import List
 
@@ -19,6 +20,8 @@ class SecretsManagerConnector(SchematicAWSConnector):
 
     def get_resources(self) -> List[SecretResource]:
         print("** Secret Manager START **")
+        start_time = time.time()
+
         # init cloud service type
         for t in CLOUD_SERVICE_TYPES:
             yield t
@@ -32,6 +35,8 @@ class SecretsManagerConnector(SchematicAWSConnector):
                 yield self.response_schema(
                     {'resource': SecretResource({'data': data,
                                                  'reference': ReferenceModel(data.reference)})})
+
+        print(f' Secret Manager Finished {time.time() - start_time} Seconds')
 
     def request_data(self, region_name) -> List[Secret]:
         paginator = self.client.get_paginator('list_secrets')

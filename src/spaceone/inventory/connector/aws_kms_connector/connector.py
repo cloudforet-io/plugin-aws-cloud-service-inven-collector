@@ -1,3 +1,4 @@
+import time
 import logging
 from typing import List
 
@@ -16,6 +17,8 @@ class KMSConnector(SchematicAWSConnector):
 
     def get_resources(self) -> List[KeyResource]:
         print("** KMS START **")
+        start_time = time.time()
+
         # init cloud service type
         for t in CLOUD_SERVICE_TYPES:
             yield t
@@ -27,6 +30,8 @@ class KMSConnector(SchematicAWSConnector):
                 yield self.response_schema(
                     {'resource': KeyResource({'data': data,
                                               'reference': ReferenceModel(data.reference)})})
+
+        print(f' KMS Finished {time.time() - start_time} Seconds')
 
     def request_data(self, region_name) -> List[Key]:
         kms_keys = self.list_keys()

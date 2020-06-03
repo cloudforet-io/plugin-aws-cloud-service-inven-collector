@@ -14,8 +14,8 @@ cst_bucket._metadata = CloudServiceTypeMeta.set_fields(fields=[
     TextDyField.data_source('Name', 'data.name'),
     TextDyField.data_source('Region', 'data.region_name'),
     TextDyField.data_source('Access', 'data.access'),
-    TextDyField.data_source('Object Count', 'data.object_count'),
-    TextDyField.data_source('Total Size', 'data.object_total_size'),
+    # TextDyField.data_source('Object Count', 'data.object_count'),
+    # TextDyField.data_source('Total Size', 'data.object_total_size'),
 ])
 
 CLOUD_SERVICE_TYPES = [

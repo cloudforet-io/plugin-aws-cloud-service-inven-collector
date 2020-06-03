@@ -1,3 +1,4 @@
+import time
 import logging
 from typing import List
 
@@ -17,6 +18,7 @@ class DynamoDBConnector(SchematicAWSConnector):
 
     def get_resources(self) -> List[TableResource]:
         print("** DynamoDB START **")
+        start_time = time.time()
         # init cloud service type
         for t in CLOUD_SERVICE_TYPES:
             yield t
@@ -29,6 +31,8 @@ class DynamoDBConnector(SchematicAWSConnector):
                 yield self.response_schema(
                     {'resource': TableResource({'data': data,
                                                 'reference': ReferenceModel(data.reference)})})
+
+        print(f' DynamoDB Finished {time.time() - start_time} Seconds')
 
     def request_data(self, region_name) -> List[Table]:
         _auto_scaling_policies = None

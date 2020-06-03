@@ -1,3 +1,4 @@
+import time
 import logging
 from typing import List
 
@@ -16,6 +17,8 @@ class CFConnector(SchematicAWSConnector):
 
     def get_resources(self) -> List[DistributionResource]:
         print("** Cloud Front START **")
+        start_time = time.time()
+
         # init cloud service type
         for t in CLOUD_SERVICE_TYPES:
             yield t
@@ -26,6 +29,8 @@ class CFConnector(SchematicAWSConnector):
             yield self.response_schema(
                 {'resource': DistributionResource({'data': data,
                                                    'reference': ReferenceModel(data.reference)})})
+
+        print(f' Cloud Front Finished {time.time() - start_time} Seconds')
 
     def request_data(self) -> List[DistributionData]:
         paginator = self.client.get_paginator('list_distributions')

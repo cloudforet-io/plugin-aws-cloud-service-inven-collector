@@ -1,3 +1,4 @@
+import time
 import logging
 from typing import List
 
@@ -18,6 +19,8 @@ class SNSConnector(SchematicAWSConnector):
 
     def get_resources(self) -> List[TopicResource]:
         print("** SNS START **")
+        start_time = time.time()
+
         # init cloud service type
         for t in CLOUD_SERVICE_TYPES:
             yield t
@@ -31,6 +34,8 @@ class SNSConnector(SchematicAWSConnector):
                 yield self.response_schema(
                     {'resource': TopicResource({'data': data,
                                                 'reference': ReferenceModel(data.reference)})})
+
+        print(f' SNS Finished {time.time() - start_time} Seconds')
 
     def request_data(self, region_name) -> List[Topic]:
         paginator = self.client.get_paginator('list_topics')

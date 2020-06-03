@@ -1,3 +1,4 @@
+import time
 import logging
 from typing import List
 
@@ -25,6 +26,8 @@ class DocumentDBConnector(SchematicAWSConnector):
 
     def get_resources(self):
         print("** DocumentDB START **")
+        start_time = time.time()
+
         # init cloud service type
         for t in CLOUD_SERVICE_TYPES:
             yield t
@@ -58,6 +61,8 @@ class DocumentDBConnector(SchematicAWSConnector):
                 yield self.cluster_response_schema(
                     {'resource': ClusterResource({'data': data,
                                                   'reference': ReferenceModel(data.reference)})})
+
+        print(f' DocumentDB Finished {time.time() - start_time} Seconds')
 
     def request_cluster_data(self, raw_instances, raw_snapshots, region_name) -> List[Cluster]:
         paginator = self.client.get_paginator('describe_db_clusters')

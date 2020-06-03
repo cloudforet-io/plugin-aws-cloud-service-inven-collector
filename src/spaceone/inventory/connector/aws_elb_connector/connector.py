@@ -1,3 +1,4 @@
+import time
 import logging
 from typing import List
 
@@ -20,6 +21,8 @@ class ELBConnector(SchematicAWSConnector):
 
     def get_resources(self):
         print("** ELB START **")
+        start_time = time.time()
+
         # init cloud service type
         for t in CLOUD_SERVICE_TYPES:
             yield t
@@ -69,6 +72,8 @@ class ELBConnector(SchematicAWSConnector):
                 yield self.lb_response_schema(
                     {'resource': LoadBalancerResource({'data': load_balancer,
                                                        'reference': ReferenceModel(load_balancer.reference)})})
+
+        print(f' ELB Finished {time.time() - start_time} Seconds')
 
     def request_loadbalancer(self, region_name):
         load_balancers = []

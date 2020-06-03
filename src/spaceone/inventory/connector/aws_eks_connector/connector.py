@@ -1,3 +1,4 @@
+import time
 import logging
 from typing import List
 
@@ -17,6 +18,8 @@ class EKSConnector(SchematicAWSConnector):
 
     def get_resources(self) -> List[ClusterResource]:
         print("** EKS START **")
+        start_time = time.time()
+
         # init cloud service type
         for t in CLOUD_SERVICE_TYPES:
             yield t
@@ -32,6 +35,8 @@ class EKSConnector(SchematicAWSConnector):
                 yield self.response_schema(
                     {'resource': ClusterResource({'data': data,
                                                   'reference': ReferenceModel(data.reference)})})
+
+        print(f' EKS Finished {time.time() - start_time} Seconds')
 
     def request_data(self, region_name) -> List[Cluster]:
         paginator = self.client.get_paginator('list_clusters')
