@@ -18,6 +18,7 @@ cst_eip._metadata = CloudServiceTypeMeta.set_fields(fields=[
     TextDyField.data_source('Address Pool', 'data.public_ipv4_pool'),
     EnumDyField.data_source('Scope', 'data.domain', default_outline_badge=['vpc', 'standard']),
     TextDyField.data_source('Associate Instance ID', 'data.instance_id'),
+    TextDyField.data_source('Region', 'data.region_name')
 ])
 
 
