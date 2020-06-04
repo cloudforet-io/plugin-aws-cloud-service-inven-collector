@@ -11,6 +11,7 @@ base = ItemDynamicLayout.set_fields('Elastic IPs', fields=[
     TextDyField.data_source('Public DNS', 'data.public_dns'),
     TextDyField.data_source('Allocation ID', 'data.allocation_id'),
     TextDyField.data_source('Private IP Address', 'data.private_ip_address'),
+    TextDyField.data_source('Region', 'data.region_name'),
     TextDyField.data_source('NAT Gateway ID', 'data.nat_gateway_id'),
     TextDyField.data_source('Association ID', 'data.association_id'),
     TextDyField.data_source('Network Interface ID', 'data.network_interface_id'),
