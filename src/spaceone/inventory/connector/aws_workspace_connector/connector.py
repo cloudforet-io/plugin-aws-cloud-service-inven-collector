@@ -15,15 +15,18 @@ class CFConnector(SchematicAWSConnector):
     service_name = 'cloudfront'
 
     def get_resources(self) -> List[DistributionResource]:
+        resources = []
         # init cloud service type
-        for t in CLOUD_SERVICE_TYPES:
-            yield t
+        for cst in CLOUD_SERVICE_TYPES:
+            resources.append(cst)
 
         # merge data
         for data in self.request_data():
-            yield self.response_schema(
+            resources.append(self.response_schema(
                 {'resource': DistributionResource({'data': data,
-                                                   'reference': ReferenceModel(data.reference)})})
+                                                   'reference': ReferenceModel(data.reference)})}))
+
+        return resources
 
     def request_data(self) -> List[DistributionData]:
         paginator = self.client.get_paginator('list_distributions')

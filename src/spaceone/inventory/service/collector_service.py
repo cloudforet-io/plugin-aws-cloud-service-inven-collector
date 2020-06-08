@@ -7,7 +7,7 @@ import concurrent.futures
 
 
 _LOGGER = logging.getLogger(__name__)
-MAX_WORKER = 10
+MAX_WORKER = 20
 SUPPORTED_RESOURCE_TYPE = ['inventory.CloudService', 'inventory.CloudServiceType']
 DEFAULT_REGION = 'ap-northeast-2'
 

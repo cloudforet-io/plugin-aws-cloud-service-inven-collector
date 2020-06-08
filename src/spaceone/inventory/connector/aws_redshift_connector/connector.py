@@ -18,21 +18,23 @@ class RedshiftConnector(SchematicAWSConnector):
 
     def get_resources(self) -> List[ClusterResource]:
         print("** Redshift START **")
+        resources = []
         start_time = time.time()
         # init cloud service type
-        for t in CLOUD_SERVICE_TYPES:
-            yield t
+        for cst in CLOUD_SERVICE_TYPES:
+            resources.append(cst)
 
         for region_name in self.region_names:
             self.reset_region(region_name)
 
             # merge data
             for data in self.request_data(region_name):
-                yield self.response_schema(
+                resources.append(self.response_schema(
                     {'resource': ClusterResource({'data': data,
-                                                  'reference': ReferenceModel(data.reference)})})
+                                                  'reference': ReferenceModel(data.reference)})}))
 
         print(f' Redshift Finished {time.time() - start_time} Seconds')
+        return resources
 
     def request_data(self, region_name) -> List[Cluster]:
         paginator = self.client.get_paginator('describe_clusters')

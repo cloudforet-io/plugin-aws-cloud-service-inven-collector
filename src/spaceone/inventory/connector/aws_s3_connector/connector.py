@@ -19,19 +19,21 @@ class S3Connector(SchematicAWSConnector):
 
     def get_resources(self) -> List[BucketResource]:
         print("** S3 START **")
+        resources = []
         start_time = time.time()
 
         # init cloud service type
-        for t in CLOUD_SERVICE_TYPES:
-            yield t
+        for cst in CLOUD_SERVICE_TYPES:
+            resources.append(cst)
 
         # merge data
         for data in self.request_data():
-            yield self.response_schema(
+            resources.append(self.response_schema(
                 {'resource': BucketResource({'data': data,
-                                             'reference': ReferenceModel(data.reference)})})
+                                             'reference': ReferenceModel(data.reference)})}))
 
         print(f' S3 Finished {time.time() - start_time} Seconds')
+        return resources
 
     def request_data(self) -> List[Bucket]:
         response = self.client.list_buckets()

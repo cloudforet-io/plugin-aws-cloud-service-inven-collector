@@ -26,11 +26,12 @@ class DocumentDBConnector(SchematicAWSConnector):
 
     def get_resources(self):
         print("** DocumentDB START **")
+        resources = []
         start_time = time.time()
 
         # init cloud service type
-        for t in CLOUD_SERVICE_TYPES:
-            yield t
+        for cst in CLOUD_SERVICE_TYPES:
+            resources.append(cst)
 
         for region_name in self.region_names:
             if region_name in EXCLUDE_REGION:
@@ -41,28 +42,28 @@ class DocumentDBConnector(SchematicAWSConnector):
             # request parameter group
             for data in self.request_parameter_group_data(region_name):
                 self._parameter_groups.append(data)
-
-                yield self.parameter_group_response_schema(
+                resources.append(self.parameter_group_response_schema(
                     {'resource': ParameterGroupResource({'data': data,
-                                                         'reference': ReferenceModel(data.reference)})})
+                                                         'reference': ReferenceModel(data.reference)})}))
 
             # request subnet group
             for data in self.request_subnet_group_data(region_name):
                 self._subnet_groups.append(data)
-                yield self.subnet_group_response_schema(
+                resources.append(self.subnet_group_response_schema(
                     {'resource': SubnetGroupResource({'data': data,
-                                                      'reference': ReferenceModel(data.reference)})})
+                                                      'reference': ReferenceModel(data.reference)})}))
 
             raw_instances = self._describe_instances()
             raw_snapshots = self._describe_snapshots()
 
             # request cluster
             for data in self.request_cluster_data(raw_instances, raw_snapshots, region_name):
-                yield self.cluster_response_schema(
+                resources.append(self.cluster_response_schema(
                     {'resource': ClusterResource({'data': data,
-                                                  'reference': ReferenceModel(data.reference)})})
+                                                  'reference': ReferenceModel(data.reference)})}))
 
         print(f' DocumentDB Finished {time.time() - start_time} Seconds')
+        return resources
 
     def request_cluster_data(self, raw_instances, raw_snapshots, region_name) -> List[Cluster]:
         paginator = self.client.get_paginator('describe_db_clusters')

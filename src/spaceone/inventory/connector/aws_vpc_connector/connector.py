@@ -71,11 +71,12 @@ class VPCConnector(SchematicAWSConnector):
 
     def get_resources(self):
         print("** VPC START **")
+        resources = []
         start_time = time.time()
 
         # init cloud service type
-        for t in CLOUD_SERVICE_TYPES:
-            yield t
+        for cst in CLOUD_SERVICE_TYPES:
+            resources.append(cst)
 
         # Region
         for region_name in self.region_names:
@@ -97,59 +98,60 @@ class VPCConnector(SchematicAWSConnector):
 
             # Peering Connection
             for data in self.request_peering_connection_data(region_name):
-                yield self.peercon_res_schema(
+                resources.append(self.peercon_res_schema(
                     {'resource': PeeringConnectionResource({'data': data,
-                                                            'reference': ReferenceModel(data.reference)})})
+                                                            'reference': ReferenceModel(data.reference)})}))
 
             # NAT Gateway
             for data in self.request_nat_gateway_data(region_name):
-                yield self.natgw_res_schema(
+                resources.append(self.natgw_res_schema(
                     {'resource': NATGatewayResource({'data': data,
-                                                     'reference': ReferenceModel(data.reference)})})
+                                                     'reference': ReferenceModel(data.reference)})}))
 
             # Network ACL
             for data in self.request_network_acl_data(region_name):
-                yield self.netacl_res_schema(
+                resources.append(self.netacl_res_schema(
                     {'resource': NetworkACLResource({'data': data,
-                                                     'reference': ReferenceModel(data.reference)})})
+                                                     'reference': ReferenceModel(data.reference)})}))
 
             # Endpoint
             for data in self.request_endpoint_data(region_name):
-                yield self.endpoint_res_schema(
+                resources.append(self.endpoint_res_schema(
                     {'resource': EndpointResource({'data': data,
-                                                   'reference': ReferenceModel(data.reference)})})
+                                                   'reference': ReferenceModel(data.reference)})}))
 
             # Egress Only Internet Gateway
             for data in self.request_egress_only_internet_gateway_data(region_name):
-                yield self.eoigw_res_schema(
+                resources.append(self.eoigw_res_schema(
                     {'resource': EgressOnlyInternetGatewayResource({'data': data,
-                                                                    'reference': ReferenceModel(data.reference)})})
+                                                                    'reference': ReferenceModel(data.reference)})}))
 
             # Internet Gateways
             for data in self.request_internet_gateway_data(region_name):
-                yield self.igw_res_schema(
+                resources.append(self.igw_res_schema(
                     {'resource': InternetGatewayResource({'data': data,
-                                                          'reference': ReferenceModel(data.reference)})})
+                                                          'reference': ReferenceModel(data.reference)})}))
 
             # Route table
             for data in self.request_route_table_data(region_name):
-                yield self.rtable_res_schema(
+                resources.append(self.rtable_res_schema(
                     {'resource': RouteTableResource({'data': data,
-                                                     'reference': ReferenceModel(data.reference)})})
+                                                     'reference': ReferenceModel(data.reference)})}))
 
             # Subnet
             for data in self.request_subnet_data(region_name):
-                yield self.subnet_res_schema(
+                resources.append(self.subnet_res_schema(
                     {'resource': SubnetResource({'data': data,
-                                                 'reference': ReferenceModel(data.reference)})})
+                                                 'reference': ReferenceModel(data.reference)})}))
 
             # VPC
             for data in self.request_vpc_data(region_name):
-                yield self.vpc_res_schema(
+                resources.append(self.vpc_res_schema(
                     {'resource': VPCResource({'data': data,
-                                              'reference': ReferenceModel(data.reference)})})
+                                              'reference': ReferenceModel(data.reference)})}))
 
         print(f' VPC Finished {time.time() - start_time} Seconds')
+        return resources
 
     def request_vpc_data(self, region_name) -> List[VPC]:
         if len(self.dhcp_options) > 0:

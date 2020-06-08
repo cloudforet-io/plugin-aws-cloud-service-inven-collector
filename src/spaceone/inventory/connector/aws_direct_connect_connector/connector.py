@@ -24,37 +24,39 @@ class DirectConnectConnector(SchematicAWSConnector):
 
     def get_resources(self):
         print("** Direct Connect START **")
+        resources = []
         start_time = time.time()
 
         # init cloud service type
-        for t in CLOUD_SERVICE_TYPES:
-            yield t
+        for cst in CLOUD_SERVICE_TYPES:
+            resources.append(cst)
 
         # merge data
         for region_name in self.region_names:
             self.reset_region(region_name)
 
             for data in self.connection_request_data(region_name):
-                yield self.connection_response_schema(
+                resources.append(self.connection_response_schema(
                     {'resource': ConnectionResource({'data': data,
-                                                     'reference': ReferenceModel(data.reference)})})
+                                                     'reference': ReferenceModel(data.reference)})}))
 
             for data in self.virtual_private_gateway_request_data(region_name):
-                yield self.vpgw_response_schema(
+                resources.append(self.vpgw_response_schema(
                     {'resource': VirtualPrivateGatewayResource({'data': data,
-                                                                'reference': ReferenceModel(data.reference)})})
+                                                                'reference': ReferenceModel(data.reference)})}))
 
             for data in self.lag_request_data(region_name):
-                yield self.lag_response_schema(
+                resources.append(self.lag_response_schema(
                     {'resource': LAGResource({'data': data,
-                                              'reference': ReferenceModel(data.reference)})})
+                                              'reference': ReferenceModel(data.reference)})}))
 
         for data in self.direct_connect_gateway_request_data():
-            yield self.dcgw_response_schema(
+            resources.append(self.dcgw_response_schema(
                 {'resource': DirectConnectGatewayResource({'data': data,
-                                                           'reference': ReferenceModel(data.reference)})})
+                                                           'reference': ReferenceModel(data.reference)})}))
 
         print(f' Direct Connect Finished {time.time() - start_time} Seconds')
+        return resources
 
     def connection_request_data(self, region_name) -> List[Connection]:
         response = self.client.describe_connections()
