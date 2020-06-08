@@ -17,23 +17,24 @@ class APIGatewayConnector(SchematicAWSConnector):
     response_schema = RestAPIResponse
     service_name = 'apigateway'
 
-    def get_resources(self) -> List[RestAPIResource]:
+    def get_resources(self):
         print("** API Gateway START **")
+        resources = []
         start_time = time.time()
-        # init cloud service type
-        for t in CLOUD_SERVICE_TYPES:
-            yield t
+
+        for cst in CLOUD_SERVICE_TYPES:
+            resources.append(cst)
 
         for region_name in self.region_names:
             # print(f'[ APIGateway {region_name} ]')
             self.reset_region(region_name)
 
             for data in self.request_data(region_name):
-                yield self.response_schema(
-                    {'resource': RestAPIResource({'data': data,
-                                                  'reference': ReferenceModel(data.reference)})})
+                resources.append(self.response_schema(
+                    {'resource': RestAPIResource({'data': data, 'reference': ReferenceModel(data.reference)})}))
 
         print(f' API Gateway Finished {time.time() - start_time} Seconds')
+        return resources
 
     def request_data(self, region_name) -> List[RestAPI]:
         paginator = self.client.get_paginator('get_rest_apis')
@@ -75,20 +76,25 @@ class APIGatewayV2Connector(SchematicAWSConnector):
     response_schema = HTTPWebsocketResponse
     service_name = 'apigatewayv2'
 
-    def get_resources(self) -> List[HTTPWebsocketResource]:
+    def get_resources(self):
+        resources = []
         print("** API Gateway V2 START **")
-        # init cloud service type
-        for t in CLOUD_SERVICE_TYPES:
-            yield t
+        start_time = time.time()
+
+        for cst in CLOUD_SERVICE_TYPES:
+            resources.append(cst)
 
         for region_name in self.region_names:
             # print(f'[ APIGatewayV2 {region_name} ]')
             self.reset_region(region_name)
 
             for data in self.request_data(region_name):
-                yield self.response_schema(
+                resources.append(self.response_schema(
                     {'resource': HTTPWebsocketResource({'data': data,
-                                                        'reference': ReferenceModel(data.reference)})})
+                                                        'reference': ReferenceModel(data.reference)})}))
+
+        print(f' API Gateway V2 Finished {time.time() - start_time} Seconds')
+        return resources
 
     def request_data(self, region_name) -> List[HTTPWebsocket]:
         paginator = self.client.get_paginator('get_apis')

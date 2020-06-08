@@ -20,11 +20,12 @@ class SQSConnector(SchematicAWSConnector):
 
     def get_resources(self) -> List[SQSResponse]:
         print("** SQS START **")
+        resources = []
         start_time = time.time()
 
         # init cloud service type
-        for t in CLOUD_SERVICE_TYPES:
-            yield t
+        for cst in CLOUD_SERVICE_TYPES:
+            resources.append(cst)
 
         # merge data
         for region_name in self.region_names:
@@ -32,11 +33,12 @@ class SQSConnector(SchematicAWSConnector):
 
             # merge data
             for data in self.request_data(region_name):
-                yield self.response_schema(
+                resources.append(self.response_schema(
                     {'resource': QueResource({'data': data,
-                                              'reference': ReferenceModel(data.reference)})})
+                                              'reference': ReferenceModel(data.reference)})}))
 
         print(f' SQS Finished {time.time() - start_time} Seconds')
+        return resources
 
     def request_data(self, region_name) -> List[QueData]:
         resource = self.session.resource('sqs')

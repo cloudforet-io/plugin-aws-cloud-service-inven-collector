@@ -23,23 +23,25 @@ class ElastiCacheConnector(SchematicAWSConnector):
 
     def get_resources(self) -> List[RedisResource]:
         print("** ElastiCache START **")
+        resources = []
         start_time = time.time()
 
         # init cloud service type
-        for t in CLOUD_SERVICE_TYPES:
-            yield t
+        for cst in CLOUD_SERVICE_TYPES:
+            resources.append(cst)
 
         # merge data
         for func in self.request_data():
-            yield self.redis_response_schema(
+            resources.append(self.redis_response_schema(
                 {'resource': RedisResource({'data': func,
-                                            'reference': ReferenceModel(func.reference)})})
+                                            'reference': ReferenceModel(func.reference)})}))
 
-            yield self.redis_response_schema(
+            resources.append(self.redis_response_schema(
                 {'resource': RedisResource({'data': func,
-                                            'reference': ReferenceModel(func.reference)})})
+                                            'reference': ReferenceModel(func.reference)})}))
 
         print(f' ElastiCache Finished {time.time() - start_time} Seconds')
+        return resources
 
     def request_data(self):
         clusters = self.describe_clusters()

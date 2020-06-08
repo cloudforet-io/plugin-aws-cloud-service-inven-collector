@@ -21,11 +21,12 @@ class ELBConnector(SchematicAWSConnector):
 
     def get_resources(self):
         print("** ELB START **")
+        resources = []
         start_time = time.time()
 
         # init cloud service type
-        for t in CLOUD_SERVICE_TYPES:
-            yield t
+        for cst in CLOUD_SERVICE_TYPES:
+            resources.append(cst)
 
         for region_name in self.region_names:
             self.reset_region(region_name)
@@ -46,9 +47,9 @@ class ELBConnector(SchematicAWSConnector):
                 })
 
                 target_group = TargetGroup(raw_tg, strict=False)
-                yield self.tg_response_schema(
+                resources.append(self.tg_response_schema(
                     {'resource': TargetGroupResource({'data': target_group,
-                                                      'reference': ReferenceModel(target_group.reference)})})
+                                                      'reference': ReferenceModel(target_group.reference)})}))
 
             # Load Balancers
             all_tags = []
@@ -69,11 +70,12 @@ class ELBConnector(SchematicAWSConnector):
                 })
 
                 load_balancer = LoadBalancer(raw_lb, strict=False)
-                yield self.lb_response_schema(
+                resources.append(self.lb_response_schema(
                     {'resource': LoadBalancerResource({'data': load_balancer,
-                                                       'reference': ReferenceModel(load_balancer.reference)})})
+                                                       'reference': ReferenceModel(load_balancer.reference)})}))
 
         print(f' ELB Finished {time.time() - start_time} Seconds')
+        return resources
 
     def request_loadbalancer(self, region_name):
         load_balancers = []

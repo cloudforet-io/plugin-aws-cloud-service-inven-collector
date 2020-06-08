@@ -29,47 +29,49 @@ class RDSConnector(SchematicAWSConnector):
 
     def get_resources(self):
         print("** RDS START **")
+        resources = []
         start_time = time.time()
 
         # init cloud service type
-        for t in CLOUD_SERVICE_TYPES:
-            yield t
+        for cst in CLOUD_SERVICE_TYPES:
+            resources.append(cst)
 
         for region_name in self.region_names:
             # print(f'[ {region_name} ]')
             self.reset_region(region_name)
 
             for data in self.db_cluster_data(region_name):
-                yield self.db_response_schema(
+                resources.append(self.db_response_schema(
                     {'resource': DBClusterResource({'data': data,
-                                                    'reference': ReferenceModel(data.reference)})})
+                                                    'reference': ReferenceModel(data.reference)})}))
 
             for data in self.db_instance_data(region_name):
-                yield self.db_response_schema(
+                resources.append(self.db_response_schema(
                     {'resource': DBInstanceResource({'data': data,
-                                                     'reference': ReferenceModel(data.reference)})})
+                                                     'reference': ReferenceModel(data.reference)})}))
 
             for data in self.snapshot_request_data(region_name):
-                yield self.ss_response_schema(
+                resources.append(self.ss_response_schema(
                     {'resource': SnapshotResource({'data': data,
-                                                   'reference': ReferenceModel(data.reference)})})
+                                                   'reference': ReferenceModel(data.reference)})}))
 
             for data in self.subnet_group_request_data(region_name):
-                yield self.sg_response_schema(
+                resources.append(self.sg_response_schema(
                     {'resource': SubnetGroupResource({'data': data,
-                                                      'reference': ReferenceModel(data.reference)})})
+                                                      'reference': ReferenceModel(data.reference)})}))
 
             for data in self.parameter_group_request_data(region_name):
-                yield self.pg_response_schema(
+                resources.append(self.pg_response_schema(
                     {'resource': ParameterGroupResource({'data': data,
-                                                         'reference': ReferenceModel(data.reference)})})
+                                                         'reference': ReferenceModel(data.reference)})}))
 
             for data in self.option_group_request_data(region_name):
-                yield self.og_response_schema(
+                resources.append(self.og_response_schema(
                     {'resource': OptionGroupResource({'data': data,
-                                                      'reference': ReferenceModel(data.reference)})})
+                                                      'reference': ReferenceModel(data.reference)})}))
 
         print(f' RDS Finished {time.time() - start_time} Seconds')
+        return resources
 
     def db_instance_data(self, region_name) -> List[Database]:
         for instance in self.describe_instances():

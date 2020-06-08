@@ -19,27 +19,29 @@ class EBSConnector(SchematicAWSConnector):
 
     def get_resources(self):
         print("** EBS START **")
+        resources = []
         start_time = time.time()
         # init cloud service type
-        for t in CLOUD_SERVICE_TYPES:
-            yield t
+        for cst in CLOUD_SERVICE_TYPES:
+            resources.append(cst)
 
         for region_name in self.region_names:
             self.reset_region(region_name)
 
             # GET Volumes
             for data in self.request_volume_data(region_name):
-                yield self.response_volume_schema(
+                resources.append(self.response_volume_schema(
                     {'resource': VolumeResource({'data': data,
-                                                 'reference': ReferenceModel(data.reference)})})
+                                                 'reference': ReferenceModel(data.reference)})}))
 
             # GET Snapshots
             for data in self.request_snapshot_data(region_name):
-                yield self.response_snapshot_schema(
+                resources.append(self.response_snapshot_schema(
                     {'resource': SnapshotResource({'data': data,
-                                                   'reference': ReferenceModel(data.reference)})})
+                                                   'reference': ReferenceModel(data.reference)})}))
 
         print(f' EBS Finished {time.time() - start_time} Seconds')
+        return resources
 
     def request_volume_data(self, region_name) -> List[Volume]:
         paginator = self.client.get_paginator('describe_volumes')
