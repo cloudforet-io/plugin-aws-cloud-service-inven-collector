@@ -77,9 +77,12 @@ class CollectorService(BaseService):
                 - secret_data
                 - filter
         """
+
+        secret_data = params['secret_data']
+
         params.update({
-            'account_id': self.get_account_id(params['secret_data']),
-            'regions': self.get_regions(params['secret_data'])
+            'account_id': self.get_account_id(secret_data),
+            'regions': self.get_regions(secret_data)
         })
 
         start_time = time.time()
@@ -104,8 +107,11 @@ class CollectorService(BaseService):
         return sts_client.get_caller_identity()['Account']
 
     @staticmethod
-    def get_regions(secret_data, region=DEFAULT_REGION):
-        _session = get_session(secret_data, region)
-        ec2_client = _session.client('ec2')
-        return list(map(lambda region_info: region_info.get('RegionName'),
-                        ec2_client.describe_regions().get('Regions')))
+    def get_regions(secret_data):
+        if 'region_name' in secret_data:
+            return [secret_data.get('region_name')]
+        else:
+            _session = get_session(secret_data, DEFAULT_REGION)
+            ec2_client = _session.client('ec2')
+            return list(map(lambda region_info: region_info.get('RegionName'),
+                            ec2_client.describe_regions().get('Regions')))

@@ -10,6 +10,7 @@ _LOGGER = logging.getLogger(__name__)
 AKI = os.environ.get('AWS_ACCESS_KEY_ID', None)
 SAK = os.environ.get('AWS_SECRET_ACCESS_KEY', None)
 ROLE_ARN = os.environ.get('ROLE_ARN', None)
+REGION_NAME = os.environ.get('REGION_NAME', None)
 
 
 if AKI == None or SAK == None:
@@ -39,6 +40,11 @@ class TestCloudServiceAPIs(TestCase):
     if ROLE_ARN is not None:
         secret_data.update({
             'role_arn': ROLE_ARN
+        })
+
+    if REGION_NAME is not None:
+        secret_data.update({
+            'region_name': REGION_NAME
         })
 
     def test_verify(self):
