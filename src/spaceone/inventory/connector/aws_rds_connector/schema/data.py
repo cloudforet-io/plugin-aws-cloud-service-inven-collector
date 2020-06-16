@@ -468,3 +468,17 @@ class Database(Model):
             "resource_id": self.arn,
             "external_link": f"https://console.aws.amazon.com/rds/home?region={self.region_name}#database:id={self.db_identifier};is-cluster=false"
         }
+
+    @serializable
+    def cloudwatch(self):
+        dimensions = []
+
+        if self.role == 'cluster':
+            dimensions.append({"Name": "DBClusterIdentifier", "Value": self.db_identifier})
+        elif self.role == 'instance':
+            dimensions.append({"Name": "DBInstanceIdentifier", "Value": self.db_identifier})
+
+        return {
+            "namespace": "AWS/RDS",
+            "dimensions": dimensions,
+        }

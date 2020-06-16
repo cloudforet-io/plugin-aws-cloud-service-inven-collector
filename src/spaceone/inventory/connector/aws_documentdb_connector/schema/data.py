@@ -211,6 +211,18 @@ class Instance(Model):
             "external_link": f"https://console.aws.amazon.com/docdb/home?region={self.region_name}#instance-details/{self.db_instance_identifier}"
         }
 
+    @serializable
+    def cloudwatch(self):
+        return {
+            "namespace": "AWS/DocDB",
+            "dimensions": [
+                {
+                    "Name": "DBInstanceIdentifier",
+                    "Value": self.db_instance_identifier
+                }
+            ],
+        }
+
 
 '''
 DB CLUSTER
@@ -276,4 +288,16 @@ class Cluster(Model):
         return {
             "resource_id": self.db_cluster_arn,
             "external_link": f"https://console.aws.amazon.com/docdb/home?region={self.region_name}#cluster-details/{self.db_cluster_identifier}"
+        }
+
+    @serializable
+    def cloudwatch(self):
+        return {
+            "namespace": "AWS/DocDB",
+            "dimensions": [
+                {
+                    "Name": "DBClusterIdentifier",
+                    "Value": self.db_cluster_identifier
+                }
+            ],
         }

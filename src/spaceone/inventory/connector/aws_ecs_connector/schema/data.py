@@ -376,3 +376,15 @@ class Cluster(Model):
             "resource_id": self.cluster_arn,
             "external_link": f"https://console.aws.amazon.com/ecs/home?region={self.region_name}#/clusters/{self.cluster_name}/services"
         }
+
+    @serializable
+    def cloudwatch(self):
+        return {
+            "namespace": "AWS/ECS",
+            "dimensions": [
+                {
+                    "Name": "ClusterName",
+                    "Value": self.cluster_name
+                }
+            ],
+        }

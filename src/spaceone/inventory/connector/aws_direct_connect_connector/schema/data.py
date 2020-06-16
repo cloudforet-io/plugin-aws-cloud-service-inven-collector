@@ -173,6 +173,18 @@ class VirtualInterface(Model):
             "external_link": f"https://console.aws.amazon.com/directconnect/v2/home?region={self.region}#/virtual-interfaces/arn:aws:directconnect:{self.region}:{self.owner_account}:{self.virtual_interface_id}"
         }
 
+    @serializable
+    def cloudwatch(self):
+        return {
+            "namespace": "AWS/DX",
+            "dimensions": [
+                {
+                    "Name": "VirtualInterfaceId",
+                    "Value": self.virtual_interface_id
+                }
+            ],
+        }
+
 
 '''
 CONNECTION
@@ -207,4 +219,16 @@ class Connection(Model):
         return {
             "resource_id": self.arn,
             "external_link": f"https://console.aws.amazon.com/directconnect/v2/home?region={self.region}#/connections/arn:aws:directconnect:{self.region}:{self.owner_account}:{self.connection_id}"
+        }
+
+    @serializable
+    def cloudwatch(self):
+        return {
+            "namespace": "AWS/DX",
+            "dimensions": [
+                {
+                    "Name": "ConnectionId",
+                    "Value": self.connection_id
+                }
+            ],
         }

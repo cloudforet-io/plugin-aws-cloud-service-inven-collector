@@ -29,6 +29,8 @@ class QueData(Model):
     receive_message_wait_time_seconds = IntType(deserialize_from="ReceiveMessageWaitTimeSeconds")
     visibility_timeout = IntType(deserialize_from="VisibilityTimeout")
     redrive_policy = ModelType(RedrivePolicy, deserialize_from="RedrivePolicy")
+    fifo_queue = StringType(deserialize_from="FifoQueue")
+    content_based_duplication = StringType(deserialize_from="ContentBasedDeduplication")
     kms_master_key_id = StringType(deserialize_from="KmsMasterKeyId")
     kms_data_key_reuse_period_seconds = StringType(deserialize_from="KmsDataKeyReusePeriodSeconds")
     account_id = StringType()
@@ -43,4 +45,16 @@ class QueData(Model):
         return {
             "resource_id": self.arn,
             "external_link": f"https://{self.region_name}.console.aws.amazon.com/sqs/home?{self.region_name}#queue-browser:selected={self.url};prefix={self.name}"
+        }
+
+    @serializable
+    def cloudwatch(self):
+        return {
+            "namespace": "AWS/SQS",
+            "dimensions": [
+                {
+                    "Name": "QueueName",
+                    "Value": self.name
+                }
+            ],
         }

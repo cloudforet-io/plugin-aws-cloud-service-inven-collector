@@ -5,3 +5,4 @@ docker
 boto3
 schematics
 moto
+arnparse

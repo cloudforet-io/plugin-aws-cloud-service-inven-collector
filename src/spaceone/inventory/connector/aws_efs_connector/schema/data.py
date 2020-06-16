@@ -78,3 +78,15 @@ class FileSystem(Model):
             "resource_id": self.arn,
             "external_link": f"https://console.aws.amazon.com/efs/home?region={self.region_name}#/filesystems/{self.file_system_id}"
         }
+
+    @serializable
+    def cloudwatch(self):
+        return {
+            "namespace": "AWS/EFS",
+            "dimensions": [
+                {
+                    "Name": "FileSystemId",
+                    "Value": self.file_system_id
+                }
+            ],
+        }

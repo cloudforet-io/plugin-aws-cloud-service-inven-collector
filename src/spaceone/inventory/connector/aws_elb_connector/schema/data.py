@@ -1,5 +1,5 @@
 import logging
-
+from arnparse import arnparse
 from schematics import Model
 from schematics.types import ModelType, StringType, IntType, DateTimeType, serializable, ListType, BooleanType
 
@@ -209,4 +209,20 @@ class LoadBalancer(Model):
         return {
             "resource_id": self.load_balancer_arn,
             "external_link": f"https://console.aws.amazon.com/ec2/v2/home?region={self.region_name}#LoadBalancers:search={self.load_balancer_arn};sort=loadBalancerName"
+        }
+
+    @serializable
+    def cloudwatch(self):
+        namespace = ''
+        _arn = arnparse(self.load_balancer_arn)
+        dimensions = [{'Name': 'LoadBalancer', 'Value': _arn.resource}]
+
+        if self.type == 'application':
+            namespace = 'AWS/ApplicationELB'
+        elif self.type == 'network':
+            namespace = 'AWS/NetworkELB'
+
+        return {
+            "namespace": namespace,
+            "dimensions": dimensions,
         }

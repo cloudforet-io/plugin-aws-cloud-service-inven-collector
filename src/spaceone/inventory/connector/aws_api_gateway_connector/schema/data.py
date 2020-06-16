@@ -44,6 +44,19 @@ class HTTPWebsocket(Model):
             "external_link": f"https://console.aws.amazon.com/apigateway/home?region={self.region_name}#/apis/{self.api_id}/routes"
         }
 
+    @serializable
+    def cloudwatch(self):
+        return {
+            "namespace": "AWS/ApiGateway",
+            "dimensions": [
+                {
+                    "Name": "ApiId",
+                    "Value": self.api_id
+                }
+            ],
+        }
+
+
 '''
 REST API
 '''
@@ -137,4 +150,16 @@ class RestAPI(Model):
         return {
             "resource_id": self.arn,
             "external_link": f"https://console.aws.amazon.com/apigateway/home?region={self.region_name}#/apis/{self.id}/resources/"
+        }
+
+    @serializable
+    def cloudwatch(self):
+        return {
+            "namespace": "AWS/ApiGateway",
+            "dimensions": [
+                {
+                    "Name": "ApiName",
+                    "Value": self.name
+                }
+            ],
         }
