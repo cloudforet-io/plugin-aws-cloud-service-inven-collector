@@ -36,6 +36,7 @@ setup(
         'spaceone-tester',
         'boto3',
         'schematics',
+        'arnparse',
         'moto',
     ],
     zip_safe=False,

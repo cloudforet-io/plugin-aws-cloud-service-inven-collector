@@ -80,3 +80,15 @@ class HostedZone(Model):
             "resource_id": self.arn,
             "external_link": f"https://console.aws.amazon.com/route53/home#resource-record-sets:{self.hosted_zone_id}"
         }
+
+    @serializable
+    def cloudwatch(self):
+        return {
+            "namespace": "AWS/Route53",
+            "dimensions": [
+                {
+                    "Name": "HostedZoneId",
+                    "Value": self.hosted_zone_id
+                }
+            ],
+        }

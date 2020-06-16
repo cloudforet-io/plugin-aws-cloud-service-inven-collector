@@ -279,3 +279,15 @@ class Cluster(Model):
             "resource_id": self.arn,
             "external_link": f"https://console.aws.amazon.com/redshiftv2/home?region={self.region_name}#cluster-details?cluster={self.cluster_identifier}"
         }
+
+    @serializable
+    def cloudwatch(self):
+        return {
+            "namespace": "AWS/Redshift",
+            "dimensions": [
+                {
+                    "Name": "ClusterIdentifier",
+                    "Value": self.cluster_identifier
+                }
+            ],
+        }

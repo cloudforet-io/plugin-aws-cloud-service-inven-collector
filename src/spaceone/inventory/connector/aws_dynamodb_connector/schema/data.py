@@ -206,3 +206,15 @@ class Table(Model):
             "resource_id": self.table_arn,
             "external_link": f"https://console.aws.amazon.com/dynamodb/home?region={self.region_name}#tables:selected={self.table_name};tab=overview"
         }
+
+    @serializable
+    def cloudwatch(self):
+        return {
+            "namespace": "AWS/DynamoDB",
+            "dimensions": [
+                {
+                    "Name": "TableName",
+                    "Value": self.table_name
+                }
+            ],
+        }

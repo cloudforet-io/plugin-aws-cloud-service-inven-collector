@@ -164,6 +164,19 @@ class NATGateway(Model):
             "external_link": f"https://console.aws.amazon.com/vpc/home?region={self.region_name}#NatGateways:natGatewayId={self.nat_gateway_id}"
         }
 
+    @serializable
+    def cloudwatch(self):
+        return {
+            "namespace": "AWS/NATGateway",
+            "dimensions": [
+                {
+                    "Name": "NatGatewayId",
+                    "Value": self.nat_gateway_id
+                }
+            ],
+        }
+
+
 '''
 ENDPOINT
 '''

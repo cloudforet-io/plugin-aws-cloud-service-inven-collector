@@ -186,3 +186,15 @@ class Bucket(Model):
             "resource_id": self.arn,
             "external_link": f"https://console.aws.amazon.com/s3/buckets/{self.name}/?region={self.region_name}"
         }
+
+    @serializable
+    def cloudwatch(self):
+        return {
+            "namespace": "AWS/S3",
+            "dimensions": [
+                {
+                    "Name": "BucketName",
+                    "Value": self.name
+                }
+            ],
+        }

@@ -41,6 +41,18 @@ class Snapshot(Model):
             "external_link": f"https://console.aws.amazon.com/ec2/v2/home?region={self.region_name}#Snapshots:visibility=owned-by-me;snapshotId={self.snapshot_id};sort=snapshotId"
         }
 
+    @serializable
+    def cloudwatch(self):
+        return {
+            "namespace": "AWS/EBS",
+            "dimensions": [
+                {
+                    "Name": "SnapshotId",
+                    "Value": self.snapshot_id
+                }
+            ],
+        }
+
 
 '''
 ATTRIBUTE
@@ -101,4 +113,16 @@ class Volume(Model):
         return {
             "resource_id": self.arn,
             "external_link": f"https://console.aws.amazon.com/ec2/v2/home?region={self.region_name}#Volumes:search={self.volume_id};sort=state"
+        }
+
+    @serializable
+    def cloudwatch(self):
+        return {
+            "namespace": "AWS/EBS",
+            "dimensions": [
+                {
+                    "Name": "VolumeId",
+                    "Value": self.volume_id
+                }
+            ],
         }

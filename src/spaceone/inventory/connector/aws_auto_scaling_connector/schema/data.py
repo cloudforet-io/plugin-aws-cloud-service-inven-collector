@@ -275,9 +275,14 @@ class AutoScalingGroup(Model):
             "external_link": f"https://console.aws.amazon.com/ec2/autoscaling/home?region={self.region_name}#AutoScalingGroups:id={self.auto_scaling_group_name}"
         }
 
-
-
-
-
-
-
+    @serializable
+    def cloudwatch(self):
+        return {
+            "namespace": "AWS/AutoScaling",
+            "dimensions": [
+                {
+                    "Name": "AutoScalingGroupName",
+                    "Value": self.auto_scaling_group_name
+                }
+            ],
+        }

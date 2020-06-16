@@ -51,3 +51,14 @@ class Topic(Model):
             "external_link": f"https://console.aws.amazon.com/sns/v3/home?region={self.region_name}#/topic/{self.topic_arn}"
         }
 
+    @serializable
+    def cloudwatch(self):
+        return {
+            "namespace": "AWS/SNS",
+            "dimensions": [
+                {
+                    "Name": "TopicName",
+                    "Value": self.name
+                }
+            ],
+        }

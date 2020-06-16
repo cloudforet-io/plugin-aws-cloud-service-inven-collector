@@ -286,3 +286,15 @@ class DistributionData(Model):
             "resource_id": self.arn,
             "external_link": f"https://console.aws.amazon.com/cloudfront/home?#distribution-settings:{self.id}"
         }
+
+    @serializable
+    def cloudwatch(self):
+        return {
+            "namespace": "AWS/CloudFront",
+            "dimensions": [
+                {
+                    "Name": "DistributionId",
+                    "Value": self.id
+                }
+            ],
+        }

@@ -66,3 +66,4 @@ class Repository(Model):
             "resource_id": self.repository_arn,
             "external_link": f"https://console.aws.amazon.com/ecr/repositories/{self.repository_name}/?region={self.region_name}"
         }
+

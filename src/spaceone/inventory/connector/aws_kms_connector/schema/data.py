@@ -52,3 +52,15 @@ class Key(Model):
             "resource_id": self.arn,
             "external_link": f"https://console.aws.amazon.com/kms/home?region={self.region_name}#/kms/{self.key_type_path}/{self.key_id}/"
         }
+
+    @serializable
+    def cloudwatch(self):
+        return {
+            "namespace": "AWS/KMS",
+            "dimensions": [
+                {
+                    "Name": "KeyId",
+                    "Value": self.key_id
+                }
+            ],
+        }
