@@ -54,6 +54,7 @@ class HTTPWebsocket(Model):
                     "Value": self.api_id
                 }
             ],
+            "region_name": self.region_name
         }
 
 
@@ -162,4 +163,5 @@ class RestAPI(Model):
                     "Value": self.name
                 }
             ],
+            "region_name": self.region_name
         }

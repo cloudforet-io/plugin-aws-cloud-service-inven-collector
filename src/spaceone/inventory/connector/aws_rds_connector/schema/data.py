@@ -481,4 +481,5 @@ class Database(Model):
         return {
             "namespace": "AWS/RDS",
             "dimensions": dimensions,
+            "region_name": self.region_name
         }

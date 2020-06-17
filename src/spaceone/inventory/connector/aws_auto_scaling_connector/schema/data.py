@@ -285,4 +285,5 @@ class AutoScalingGroup(Model):
                     "Value": self.auto_scaling_group_name
                 }
             ],
+            "region_name": self.region_name
         }

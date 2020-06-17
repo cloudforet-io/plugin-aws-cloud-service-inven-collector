@@ -174,6 +174,7 @@ class NATGateway(Model):
                     "Value": self.nat_gateway_id
                 }
             ],
+            "region_name": self.region_name
         }
 
 

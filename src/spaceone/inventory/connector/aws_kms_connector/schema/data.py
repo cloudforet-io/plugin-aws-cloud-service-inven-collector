@@ -63,4 +63,5 @@ class Key(Model):
                     "Value": self.key_id
                 }
             ],
+            "region_name": self.region_name
         }
