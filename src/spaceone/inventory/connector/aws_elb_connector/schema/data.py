@@ -225,4 +225,5 @@ class LoadBalancer(Model):
         return {
             "namespace": namespace,
             "dimensions": dimensions,
+            "region_name": self.region_name
         }

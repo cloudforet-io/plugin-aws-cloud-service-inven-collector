@@ -89,4 +89,5 @@ class FileSystem(Model):
                     "Value": self.file_system_id
                 }
             ],
+            "region_name": self.region_name
         }

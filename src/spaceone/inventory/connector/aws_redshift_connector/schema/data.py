@@ -290,4 +290,5 @@ class Cluster(Model):
                     "Value": self.cluster_identifier
                 }
             ],
+            "region_name": self.region_name
         }

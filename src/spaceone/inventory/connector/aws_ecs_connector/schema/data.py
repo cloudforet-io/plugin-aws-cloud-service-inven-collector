@@ -387,4 +387,5 @@ class Cluster(Model):
                     "Value": self.cluster_name
                 }
             ],
+            "region_name": self.region_name
         }

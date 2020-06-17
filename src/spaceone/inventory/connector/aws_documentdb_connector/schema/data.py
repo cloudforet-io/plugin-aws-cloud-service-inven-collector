@@ -221,6 +221,7 @@ class Instance(Model):
                     "Value": self.db_instance_identifier
                 }
             ],
+            "region_name": self.region_name
         }
 
 
@@ -300,4 +301,5 @@ class Cluster(Model):
                     "Value": self.db_cluster_identifier
                 }
             ],
+            "region_name": self.region_name
         }

@@ -61,4 +61,5 @@ class Topic(Model):
                     "Value": self.name
                 }
             ],
+            "region_name": self.region_name
         }

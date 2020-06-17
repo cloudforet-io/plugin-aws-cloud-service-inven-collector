@@ -183,6 +183,7 @@ class VirtualInterface(Model):
                     "Value": self.virtual_interface_id
                 }
             ],
+            "region_name": self.region_name
         }
 
 
@@ -231,4 +232,5 @@ class Connection(Model):
                     "Value": self.connection_id
                 }
             ],
+            "region_name": self.region_name
         }

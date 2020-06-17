@@ -51,6 +51,7 @@ class Snapshot(Model):
                     "Value": self.snapshot_id
                 }
             ],
+            "region_name": self.region_name
         }
 
 
@@ -125,4 +126,5 @@ class Volume(Model):
                     "Value": self.volume_id
                 }
             ],
+            "region_name": self.region_name
         }

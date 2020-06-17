@@ -217,4 +217,5 @@ class Table(Model):
                     "Value": self.table_name
                 }
             ],
+            "region_name": self.region_name
         }
