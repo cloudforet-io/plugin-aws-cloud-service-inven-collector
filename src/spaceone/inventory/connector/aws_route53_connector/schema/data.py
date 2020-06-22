@@ -91,4 +91,5 @@ class HostedZone(Model):
                     "Value": self.hosted_zone_id
                 }
             ],
+            "region_name": "us-east-1"
         }
