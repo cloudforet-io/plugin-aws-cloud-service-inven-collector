@@ -297,4 +297,5 @@ class DistributionData(Model):
                     "Value": self.id
                 }
             ],
+            "region_name": "us-east-1"
         }
