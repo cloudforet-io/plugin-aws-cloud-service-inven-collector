@@ -47,11 +47,14 @@ class EIPConnector(SchematicAWSConnector):
             network_interfaces = self._describe_network_interfaces([eip.get('NetworkInterfaceId') for eip in eips if eip.get('NetworkInterfaceId')])
 
         for _ip in eips:
-            if nat_gw_id := self._match_nat_gw(_ip, nat_gateways):
-                _ip['nat_gateway_id'] = nat_gw_id
+            public_ip = _ip.get('PublicIp')
 
-            if public_dns := self._match_network_interface_public_dns(_ip, network_interfaces):
-                _ip['public_dns'] = public_dns
+            if public_ip is not None:
+                if nat_gw_id := self._match_nat_gw(public_ip, nat_gateways):
+                    _ip['nat_gateway_id'] = nat_gw_id
+
+                if public_dns := self._match_network_interface_public_dns(public_ip, network_interfaces):
+                    _ip['public_dns'] = public_dns
 
             _ip.update({
                 'region_name': region_name,
@@ -73,17 +76,18 @@ class EIPConnector(SchematicAWSConnector):
     @staticmethod
     def _match_network_interface_public_dns(ip, network_interfaces):
         for nif in network_interfaces:
-            if ip == nif['Association']['PublicIp']:
-                return nif['Association']['PublicDnsName']
+            if association := nif.get('Association'):
+                if ip == association.get('PublicIp'):
+                    return association.get('PublicDnsName', None)
 
         return None
 
     @staticmethod
     def _match_nat_gw(ip, nat_gateways):
         for nat_gw in nat_gateways:
-            nat_gw_address = nat_gw['NatGatewayAddresses'][0]
-            if ip == nat_gw_address['PublicIp']:
-                return nat_gw['NatGatewayId']
+            nat_gw_address = nat_gw.get('NatGatewayAddresses', [{}])[0]
+            if ip == nat_gw_address.get('PublicIp'):
+                return nat_gw.get('NatGatewayId')
 
         return None
 
