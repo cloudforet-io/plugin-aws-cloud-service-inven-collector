@@ -470,6 +470,7 @@ class VPCConnector(SchematicAWSConnector):
 
             customer_gw = CustomerGateway(customer_gateway, strict=False)
             self.customer_gateways.append(customer_gw)
+
             yield customer_gw
 
     def request_vpn_gateway_data(self, region_name):
@@ -491,6 +492,7 @@ class VPCConnector(SchematicAWSConnector):
 
             vpn_gw = VPNGateway(vpn_gateway, strict=False)
             self.vpn_gateways.append(vpn_gw)
+
             yield vpn_gw
 
     def request_vpn_connection_data(self, region_name):
@@ -549,26 +551,53 @@ class VPCConnector(SchematicAWSConnector):
 
     def _match_network_acl(self, subnet_id):
         for nacl in self.network_acls:
-            for asso in nacl.associations:
-                if asso.subnet_id == subnet_id:
-                    return nacl
+            if associations := getattr(nacl, 'associations', None):
+                for asso in associations:
+                    if asso.subnet_id == subnet_id:
+                        return nacl
+
+        return None
 
     def _match_internet_gateway(self, vpc_id):
         for igw in self.internet_gateways:
-            for attach in igw.attachments:
-                if attach.vpc_id == vpc_id:
-                    return igw
+            if attachments := getattr(igw, 'attachments', None):
+                for attach in attachments:
+                    if attach.vpc_id == vpc_id:
+                        return igw
+
+        return None
 
     def _match_transit_gateway(self, vpc_id):
-        for transit_gw in self.transit_gateways:
-            for _attach in transit_gw.vpc_attachments:
-                if vpc_id == _attach.vpc_id:
-                    return transit_gw
+        if len(self.transit_gateways) > 0:
+            filters = [
+                {
+                    'Name': 'resource-type',
+                    'Values': ['vpc']
+                },
+                {
+                    'Name': 'transit-gateway-id',
+                    'Values': [transit_gw.transit_gateway_id for transit_gw in self.transit_gateways]
+                },
+                {
+                    'Name': 'resource-id',
+                    'Values': [vpc_id]
+                },
+            ]
+
+            response = self.client.describe_transit_gateway_attachments(Filters=filters)
+
+            for _attach in response.get('TransitGatewayAttachments', []):
+                transit_gw_id = _attach.get('TransitGatewayId')
+                for transit_gw in self.transit_gateways:
+                    if transit_gw_id == transit_gw.transit_gateway_id:
+                        return transit_gw
+
+        return None
 
     def _match_vpn_gateway(self, vpc_id):
         for vpn_gw in self.vpn_gateways:
-            if vpn_gw.vpc_attachments is not None:
-                for _attach in vpn_gw.vpc_attachments:
+            if vpc_attachments := getattr(vpn_gw, 'vpc_attachments', None):
+                for _attach in vpc_attachments:
                     if vpc_id == _attach.vpc_id:
                         return vpn_gw
 
@@ -579,9 +608,10 @@ class VPCConnector(SchematicAWSConnector):
 
     def _match_egress_only_internet_gateway(self, vpc_id):
         for eoigw in self.egress_only_internet_gateways:
-            for attach in eoigw.attachments:
-                if attach.vpc_id == vpc_id:
-                    return eoigw
+            if attachments := getattr(eoigw, 'attachments', None):
+                for attach in attachments:
+                    if attach.vpc_id == vpc_id:
+                        return eoigw
 
         return None
 

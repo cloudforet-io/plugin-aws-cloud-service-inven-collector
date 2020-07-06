@@ -1,6 +1,7 @@
 from spaceone.inventory.libs.schema.dynamic_field import TextDyField, ListDyField, BadgeDyField, DateTimeDyField, \
     EnumDyField
-from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, CloudServiceTypeMeta
+from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, \
+    CloudServiceTypeMeta
 
 cst_vpc = CloudServiceTypeResource()
 cst_vpc.name = 'VPC'
@@ -266,7 +267,7 @@ cst_customgw._metadata = CloudServiceTypeMeta.set_fields(fields=[
         'warning': ['pending', 'deleting'],
         'disable': ['deleted']
     }),
-    EnumDyField.data_source('Type', 'data.type', default_badge={'indigo.500': ['ipsec.1']}),
+    TextDyField.data_source('Type', 'data.type'),
     TextDyField.data_source('IP Address', 'data.ip_address'),
     TextDyField.data_source('BGP ASN', 'data.bgp_asn'),
 ])
@@ -291,7 +292,7 @@ cst_vpnconn._metadata = CloudServiceTypeMeta.set_fields(fields=[
     TextDyField.data_source('Transit Gateway', 'data.transit_gateway_id'),
     TextDyField.data_source('Customer Gateway', 'data.customer_gateway_id'),
     TextDyField.data_source('Customer Gateway Address', 'data.customer_gateway_address'),
-    EnumDyField.data_source('Type', 'data.type', default_badge={'indigo.500': ['ipsec.1']}),
+    TextDyField.data_source('Type', 'data.type'),
     EnumDyField.data_source('Category', 'data.category', default_badge={
         'indigo.500': ['VPN'], 'coral.500': ['VPN-Classic']
     }),

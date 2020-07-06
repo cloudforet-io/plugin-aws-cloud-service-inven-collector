@@ -99,9 +99,51 @@ vpc_egress_gw = ItemDynamicLayout.set_fields('Egress Only Internet Gateway', 'da
                                                  }),
                                              ])
 
+vpn_gw = ItemDynamicLayout.set_fields('VPN Gateway', fields=[
+    TextDyField.data_source('Name', 'data.vpn_gateway.name'),
+    TextDyField.data_source('ID', 'data.vpn_gateway.vpn_gateway_id'),
+    TextDyField.data_source('State', 'data.vpn_gateway.state'),
+    TextDyField.data_source('Type', 'data.vpn_gateway.type'),
+    ListDyField.data_source('VPC', 'data.vpn_gateway.vpc_attachments', default_badge={
+        'type': 'outline',
+        'sub_key': 'vpc_id',
+    }),
+    TextDyField.data_source('ASN (Amazon side)', 'data.vpn_gateway.amazon_side_asn'),
+])
+
+vpc_transit_gw = ItemDynamicLayout.set_fields('Transit Gateway', fields=[
+    TextDyField.data_source('Name', 'data.transit_gateway.name'),
+    TextDyField.data_source('Transit Gateway ID', 'data.transit_gateway.transit_gateway_id'),
+    TextDyField.data_source('Owner Account ID', 'data.transit_gateway.owner_id'),
+    EnumDyField.data_source('State', 'data.transit_gateway.state', default_state={
+        'safe': ['available'],
+        'warning': ['pending', 'modifying', 'deleting'],
+        'disable': ['deleted']
+    }),
+    EnumDyField.data_source('DNS Support', 'data.transit_gateway.options.dns_support', default_badge={
+        'indigo.500': ['enable'], 'coral.600': ['disable']
+    }),
+    EnumDyField.data_source('VPN ECMP support', 'data.transit_gateway.options.vpn_ecmp_support', default_badge={
+        'indigo.500': ['enable'], 'coral.600': ['disable']
+    }),
+    EnumDyField.data_source('Auto accept shared', 'data.transit_gateway.options.auto_accept_shared_attachments', default_badge={
+        'indigo.500': ['enable'], 'coral.600': ['disable']
+    }),
+    EnumDyField.data_source('Default association route table',
+                            'data.transit_gateway.options.default_route_table_association',
+                            default_badge={'indigo.500': ['enable'], 'coral.600': ['disable']}),
+    TextDyField.data_source('Association route table ID',
+                            'data.transit_gateway.options.association_default_route_table_id'),
+    EnumDyField.data_source('Default propagation route table',
+                            'data.transit_gateway.options.default_route_table_propagation',
+                            default_badge={'indigo.500': ['enable'], 'coral.600': ['disable']}),
+    TextDyField.data_source('Propagation route table ID',
+                            'data.transit_gateway.options.propagation_default_route_table_id'),
+])
+
 vpc_tags = SimpleTableDynamicLayout.set_tags()
 vpc_metadata = CloudServiceMeta.set_layouts(layouts=[vpc, vpc_subnet, vpc_igw, vpc_natgw, vpc_endpoints,
-                                                     vpc_peercon, vpc_egress_gw, vpc_tags])
+                                                     vpc_peercon, vpc_egress_gw, vpn_gw, vpc_transit_gw, vpc_tags])
 
 
 # SUBNET
@@ -373,21 +415,21 @@ transitgw = ItemDynamicLayout.set_fields('Transit Gateway', fields=[
         'warning': ['pending', 'modifying', 'deleting'],
         'disable': ['deleted']
     }),
-    EnumDyField.data_source('DNS Support', 'options.dns_support', default_badge={
+    EnumDyField.data_source('DNS Support', 'data.options.dns_support', default_badge={
         'indigo.500': ['enable'], 'coral.600': ['disable']
     }),
-    EnumDyField.data_source('VPN ECMP support', 'options.vpn_ecmp_support', default_badge={
+    EnumDyField.data_source('VPN ECMP support', 'data.options.vpn_ecmp_support', default_badge={
         'indigo.500': ['enable'], 'coral.600': ['disable']
     }),
-    EnumDyField.data_source('Auto accept shared', 'options.auto_accept_shared_attachments', default_badge={
+    EnumDyField.data_source('Auto accept shared', 'data.options.auto_accept_shared_attachments', default_badge={
         'indigo.500': ['enable'], 'coral.600': ['disable']
     }),
-    EnumDyField.data_source('Default association route table', 'options.default_route_table_association',
+    EnumDyField.data_source('Default association route table', 'data.options.default_route_table_association',
                             default_badge={'indigo.500': ['enable'], 'coral.600': ['disable']}),
-    TextDyField.data_source('Association route table ID', 'options.association_default_route_table_id'),
-    EnumDyField.data_source('Default propagation route table', 'options.default_route_table_propagation',
+    TextDyField.data_source('Association route table ID', 'data.options.association_default_route_table_id'),
+    EnumDyField.data_source('Default propagation route table', 'data.options.default_route_table_propagation',
                             default_badge={'indigo.500': ['enable'], 'coral.600': ['disable']}),
-    TextDyField.data_source('Propagation route table ID', 'options.propagation_default_route_table_id'),
+    TextDyField.data_source('Propagation route table ID', 'data.options.propagation_default_route_table_id'),
 ])
 
 transitgw_vpn_conn = TableDynamicLayout.set_fields('VPN Connections', 'data.vpn_connections', fields=[
@@ -402,7 +444,7 @@ transitgw_vpn_conn = TableDynamicLayout.set_fields('VPN Connections', 'data.vpn_
     TextDyField.data_source('Transit Gateway', 'transit_gateway_id'),
     TextDyField.data_source('Customer Gateway', 'customer_gateway_id'),
     TextDyField.data_source('Customer Gateway Address', 'customer_gateway_address'),
-    EnumDyField.data_source('Type', 'type', default_badge={'indigo.500': ['ipsec.1']}),
+    TextDyField.data_source('Type', 'type'),
     EnumDyField.data_source('Category', 'category', default_badge={
         'indigo.500': ['VPN'], 'coral.500': ['VPN-Classic']
     }),
@@ -420,30 +462,31 @@ customergw = ItemDynamicLayout.set_fields('Customer Gateway', fields=[
         'warning': ['pending', 'deleting'],
         'disable': ['deleted']
     }),
-    EnumDyField.data_source('Type', 'data.type', default_badge={'indigo.500': ['ipsec.1']}),
+    TextDyField.data_source('Type', 'data.type'),
     TextDyField.data_source('IP Address', 'data.ip_address'),
     TextDyField.data_source('BGP ASN', 'data.bgp_asn'),
     TextDyField.data_source('Device', 'data.device_name'),
     TextDyField.data_source('Certificate ARN', 'data.certificate_arn'),
 ])
 
-customergw_vpn_conn = TableDynamicLayout.set_fields('VPN Connections', 'data.vpn_connections', fields=[
-    TextDyField.data_source('name', 'name'),
-    TextDyField.data_source('VPN ID', 'vpn_connection_id'),
-    EnumDyField.data_source('State', 'state', default_state={
+customergw_vpn_conn = ItemDynamicLayout.set_fields('VPN Connection', fields=[
+    TextDyField.data_source('name', 'data.vpn_connection.name'),
+    TextDyField.data_source('VPN ID', 'data.vpn_connection.vpn_connection_id'),
+    EnumDyField.data_source('State', 'data.vpn_connection.state', default_state={
         'safe': ['available'],
         'warning': ['pending', 'deleting'],
         'disable': ['deleted']
     }),
-    TextDyField.data_source('Virtual Private Gateway', 'vpn_gateway_id'),
-    TextDyField.data_source('Transit Gateway', 'transit_gateway_id'),
-    TextDyField.data_source('Customer Gateway', 'customer_gateway_id'),
-    TextDyField.data_source('Customer Gateway Address', 'customer_gateway_address'),
-    EnumDyField.data_source('Type', 'type', default_badge={'indigo.500': ['ipsec.1']}),
-    EnumDyField.data_source('Category', 'category', default_badge={
+    TextDyField.data_source('Virtual Private Gateway', 'data.vpn_connection.vpn_gateway_id'),
+    TextDyField.data_source('Transit Gateway', 'data.vpn_connection.transit_gateway_id'),
+    TextDyField.data_source('Customer Gateway', 'data.vpn_connection.customer_gateway_id'),
+    TextDyField.data_source('Customer Gateway Address', 'data.vpn_connection.customer_gateway_address'),
+    TextDyField.data_source('Type', 'data.vpn_connection.type'),
+    EnumDyField.data_source('Category', 'data.vpn_connection.category', default_badge={
         'indigo.500': ['VPN'], 'coral.500': ['VPN-Classic']
     }),
 ])
+
 customergw_tag = SimpleTableDynamicLayout.set_tags()
 customergw_metadata = CloudServiceMeta.set_layouts(layouts=[customergw, customergw_vpn_conn, customergw_tag])
 
@@ -461,20 +504,20 @@ vpngw = ItemDynamicLayout.set_fields('Virtual Private Gateway', fields=[
     TextDyField.data_source('ASN (Amazon side)', 'data.amazon_side_asn'),
 ])
 
-vpngw_vpn_conn = TableDynamicLayout.set_fields('VPN Connections', 'data.vpn_connections', fields=[
-    TextDyField.data_source('name', 'name'),
-    TextDyField.data_source('VPN ID', 'vpn_connection_id'),
+vpngw_vpn_conn = ItemDynamicLayout.set_fields('VPN Connection', fields=[
+    TextDyField.data_source('name', 'data.vpn_connection.name'),
+    TextDyField.data_source('VPN ID', 'data.vpn_connection.vpn_connection_id'),
     EnumDyField.data_source('State', 'state', default_state={
         'safe': ['available'],
         'warning': ['pending', 'deleting'],
         'disable': ['deleted']
     }),
-    TextDyField.data_source('Virtual Private Gateway', 'vpn_gateway_id'),
-    TextDyField.data_source('Transit Gateway', 'transit_gateway_id'),
-    TextDyField.data_source('Customer Gateway', 'customer_gateway_id'),
-    TextDyField.data_source('Customer Gateway Address', 'customer_gateway_address'),
-    EnumDyField.data_source('Type', 'type', default_badge={'indigo.500': ['ipsec.1']}),
-    EnumDyField.data_source('Category', 'category', default_badge={
+    TextDyField.data_source('Virtual Private Gateway', 'data.vpn_connection.vpn_gateway_id'),
+    TextDyField.data_source('Transit Gateway', 'data.vpn_connection.transit_gateway_id'),
+    TextDyField.data_source('Customer Gateway', 'data.vpn_connection.customer_gateway_id'),
+    TextDyField.data_source('Customer Gateway Address', 'data.vpn_connection.customer_gateway_address'),
+    TextDyField.data_source('Type', 'data.vpn_connection.type'),
+    EnumDyField.data_source('Category', 'data.vpn_connection.category', default_badge={
         'indigo.500': ['VPN'], 'coral.500': ['VPN-Classic']
     }),
 ])
@@ -504,9 +547,12 @@ vpnconn = ItemDynamicLayout.set_fields('VPN Connection', fields=[
     }),
 ])
 
-vpnconn_tunnel = TableDynamicLayout.set_fields('VPN Connections', 'data.vgw_telemetry', fields=[
+vpnconn_tunnel = TableDynamicLayout.set_fields('VPN Tunnel', 'data.vgw_telemetry', fields=[
     TextDyField.data_source('Outside IP Address', 'outside_ip_address'),
-    TextDyField.data_source('Status', 'status'),
+    EnumDyField.data_source('Status', 'status', default_state={
+        'safe': ['UP'],
+        'alert': ['DOWN']
+    }),
     DateTimeDyField.data_source('Status Last Changed', 'last_status_change'),
     TextDyField.data_source('Certificate ARN', 'certificate_arn'),
 ])

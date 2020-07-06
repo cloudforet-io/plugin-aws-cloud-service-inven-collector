@@ -44,7 +44,8 @@ class CollectorService(BaseService):
             'ELBConnectorManager',
             'EIPConnectorManager',
             'EBSConnectorManager',
-            'VPCConnectorManager'
+            'VPCConnectorManager',
+            'EC2ConnectorManager'
         ]
 
     @transaction
