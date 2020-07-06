@@ -4,12 +4,14 @@ from typing import List
 
 from spaceone.inventory.connector.aws_vpc_connector.schema.data import VPC, Subnet, RouteTable, \
     RouteTableAssociations, RouteTableRoutes, InternetGateway, EgressOnlyInternetGateway, DHCPOptions, Endpoint, \
-    NATGateway, PeeringConnection, NetworkACL, NetworkACLEntries, NetworkACLTotalEntries
+    NATGateway, PeeringConnection, NetworkACL, NetworkACLEntries, NetworkACLTotalEntries, TransitGateway, \
+    CustomerGateway, VPNGateway, VPNConnection
 from spaceone.inventory.connector.aws_vpc_connector.schema.resource import VPCResource, VPCResponse, SubnetResource, \
     SubnetResponse, InternetGatewayResource, InternetGatewayResponse, EgressOnlyInternetGatewayResource, \
     EgressOnlyInternetGatewayResponse, EndpointResource, EndpointResponse, NATGatewayResource, NATGatewayResponse, \
     PeeringConnectionResource, PeeringConnectionResponse, NetworkACLResource, NetworkACLResponse, \
-    RouteTableResource, RouteTableResponse
+    RouteTableResource, RouteTableResponse, TransitGatewayResource, TransitGatewayResponse, CustomerGatewayResource, \
+    CustomerGatewayResponse, VPNGatewayResource, VPNGatewayResponse, VPNConnectionResource, VPNConnectionResponse
 from spaceone.inventory.connector.aws_vpc_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
 from spaceone.inventory.libs.schema.resource import ReferenceModel
@@ -52,9 +54,17 @@ class VPCConnector(SchematicAWSConnector):
     natgw_res_schema = NATGatewayResponse
     peercon_res_schema = PeeringConnectionResponse
     netacl_res_schema = NetworkACLResponse
+    transitgw_res_schema = TransitGatewayResponse
+    customergw_res_schema = CustomerGatewayResponse
+    vpngw_res_schema = VPNGatewayResponse
+    vpnconn_res_schema = VPNConnectionResponse
 
     service_name = 'ec2'
 
+    customer_gateways = None
+    vpn_gateways = None
+    vpn_connections = None
+    transit_gateways = None
     peering_connections = None
     nat_gateways = None
     network_acls = None
@@ -70,7 +80,6 @@ class VPCConnector(SchematicAWSConnector):
     include_default = False
 
     def get_resources(self):
-        print("** VPC START **")
         resources = []
         start_time = time.time()
 
@@ -82,6 +91,10 @@ class VPCConnector(SchematicAWSConnector):
         for region_name in self.region_names:
             self.reset_region(region_name)
 
+            self.customer_gateways = []
+            self.transit_gateways = []
+            self.vpn_gateways = []
+            self.vpn_connections = []
             self.peering_connections = []
             self.nat_gateways = []
             self.network_acls = []
@@ -96,6 +109,26 @@ class VPCConnector(SchematicAWSConnector):
             self.vpcs = self.list_vpcs()
             self.vpc_ids = [vpc.get('VpcId') for vpc in self.vpcs]
 
+            # VPN Connection
+            for data in self.request_vpn_connection_data(region_name):
+                resources.append(self.vpnconn_res_schema(
+                    {'resource': VPNConnectionResource({'data': data, 'reference': ReferenceModel(data.reference)})}))
+
+            # VPN Gateway
+            for data in self.request_vpn_gateway_data(region_name):
+                resources.append(self.vpngw_res_schema(
+                    {'resource': VPNGatewayResource({'data': data, 'reference': ReferenceModel(data.reference)})}))
+
+            # Customer Gateway
+            for data in self.request_customer_gateway_data(region_name):
+                resources.append(self.customergw_res_schema(
+                    {'resource': CustomerGatewayResource({'data': data, 'reference': ReferenceModel(data.reference)})}))
+
+            # Transit Gateway
+            for data in self.request_transit_gateway_data(region_name):
+                resources.append(self.transitgw_res_schema(
+                    {'resource': TransitGatewayResource({'data': data, 'reference': ReferenceModel(data.reference)})}))
+
             # Peering Connection
             for data in self.request_peering_connection_data(region_name):
                 resources.append(self.peercon_res_schema(
@@ -105,20 +138,17 @@ class VPCConnector(SchematicAWSConnector):
             # NAT Gateway
             for data in self.request_nat_gateway_data(region_name):
                 resources.append(self.natgw_res_schema(
-                    {'resource': NATGatewayResource({'data': data,
-                                                     'reference': ReferenceModel(data.reference)})}))
+                    {'resource': NATGatewayResource({'data': data, 'reference': ReferenceModel(data.reference)})}))
 
             # Network ACL
             for data in self.request_network_acl_data(region_name):
                 resources.append(self.netacl_res_schema(
-                    {'resource': NetworkACLResource({'data': data,
-                                                     'reference': ReferenceModel(data.reference)})}))
+                    {'resource': NetworkACLResource({'data': data, 'reference': ReferenceModel(data.reference)})}))
 
             # Endpoint
             for data in self.request_endpoint_data(region_name):
                 resources.append(self.endpoint_res_schema(
-                    {'resource': EndpointResource({'data': data,
-                                                   'reference': ReferenceModel(data.reference)})}))
+                    {'resource': EndpointResource({'data': data, 'reference': ReferenceModel(data.reference)})}))
 
             # Egress Only Internet Gateway
             for data in self.request_egress_only_internet_gateway_data(region_name):
@@ -129,26 +159,22 @@ class VPCConnector(SchematicAWSConnector):
             # Internet Gateways
             for data in self.request_internet_gateway_data(region_name):
                 resources.append(self.igw_res_schema(
-                    {'resource': InternetGatewayResource({'data': data,
-                                                          'reference': ReferenceModel(data.reference)})}))
+                    {'resource': InternetGatewayResource({'data': data, 'reference': ReferenceModel(data.reference)})}))
 
             # Route table
             for data in self.request_route_table_data(region_name):
                 resources.append(self.rtable_res_schema(
-                    {'resource': RouteTableResource({'data': data,
-                                                     'reference': ReferenceModel(data.reference)})}))
+                    {'resource': RouteTableResource({'data': data, 'reference': ReferenceModel(data.reference)})}))
 
             # Subnet
             for data in self.request_subnet_data(region_name):
                 resources.append(self.subnet_res_schema(
-                    {'resource': SubnetResource({'data': data,
-                                                 'reference': ReferenceModel(data.reference)})}))
+                    {'resource': SubnetResource({'data': data, 'reference': ReferenceModel(data.reference)})}))
 
             # VPC
             for data in self.request_vpc_data(region_name):
                 resources.append(self.vpc_res_schema(
-                    {'resource': VPCResource({'data': data,
-                                              'reference': ReferenceModel(data.reference)})}))
+                    {'resource': VPCResource({'data': data, 'reference': ReferenceModel(data.reference)})}))
 
         print(f' VPC Finished {time.time() - start_time} Seconds')
         return resources
@@ -172,6 +198,8 @@ class VPCConnector(SchematicAWSConnector):
                 'endpoints': self._match_vpc_object(self.endpoints, vpc.get('VpcId')),
                 'peering_connections': self._match_vpc_peering_connection(vpc.get('VpcId')),
                 'nat_gateways': self._match_vpc_object(self.nat_gateways, vpc.get('VpcId')),
+                'transit_gateway': self._match_transit_gateway(vpc.get('VpcId')),
+                'vpn_gateway': self._match_vpn_gateway(vpc.get('VpcId')),
                 'region_name': region_name,
                 'account_id': self.account_id,
                 'internet_gateway': self._match_internet_gateway(vpc.get('VpcId')),
@@ -408,6 +436,79 @@ class VPCConnector(SchematicAWSConnector):
             self.subnets.append(subnet)
             yield subnet
 
+    def request_transit_gateway_data(self, region_name):
+        response = self.client.describe_transit_gateways()
+
+        for transit_gateway in response.get('TransitGateways', []):
+            transit_gateway.update({
+                'region_name': region_name,
+                'account_id': self.account_id,
+                'name': self._get_name_from_tags(transit_gateway.get('Tags', [])),
+                'vpn_connections': self._match_vpn_connection('transit_gateway', transit_gateway.get('TransitGatewayId'))
+            })
+
+            tgw = TransitGateway(transit_gateway, strict=False)
+            self.transit_gateways.append(tgw)
+            yield tgw
+
+    def request_customer_gateway_data(self, region_name):
+        response = self.client.describe_customer_gateways()
+
+        for customer_gateway in response.get('CustomerGateways', []):
+            customer_gateway.update({
+                'region_name': region_name,
+                'account_id': self.account_id,
+                'name': self._get_name_from_tags(customer_gateway.get('Tags', [])),
+            })
+
+            _match_vpn_conn = self._match_vpn_connection('customer_gateway', customer_gateway.get('CustomerGatewayId'))
+
+            if len(_match_vpn_conn) > 0:
+                customer_gateway.update({
+                    'vpn_connection': _match_vpn_conn[0]
+                })
+
+            customer_gw = CustomerGateway(customer_gateway, strict=False)
+            self.customer_gateways.append(customer_gw)
+
+            yield customer_gw
+
+    def request_vpn_gateway_data(self, region_name):
+        response = self.client.describe_vpn_gateways()
+
+        for vpn_gateway in response.get('VpnGateways', []):
+            vpn_gateway.update({
+                'region_name': region_name,
+                'account_id': self.account_id,
+                'name': self._get_name_from_tags(vpn_gateway.get('Tags', []))
+            })
+
+            _match_vpn_conn = self._match_vpn_connection('vpn_gateway', vpn_gateway.get('VpnGatewayId'))
+
+            if len(_match_vpn_conn) > 0:
+                vpn_gateway.update({
+                    'vpn_connection': _match_vpn_conn[0]
+                })
+
+            vpn_gw = VPNGateway(vpn_gateway, strict=False)
+            self.vpn_gateways.append(vpn_gw)
+
+            yield vpn_gw
+
+    def request_vpn_connection_data(self, region_name):
+        response = self.client.describe_vpn_connections()
+
+        for vpn_connection in response.get('VpnConnections', []):
+            vpn_connection.update({
+                'region_name': region_name,
+                'account_id': self.account_id,
+                'name': self._get_name_from_tags(vpn_connection.get('Tags', []))
+            })
+
+            vpn_conn = VPNConnection(vpn_connection, strict=False)
+            self.vpn_connections.append(vpn_conn)
+            yield vpn_conn
+
     @staticmethod
     def _get_name_from_tags(tags):
         for tag in tags:
@@ -450,24 +551,67 @@ class VPCConnector(SchematicAWSConnector):
 
     def _match_network_acl(self, subnet_id):
         for nacl in self.network_acls:
-            for asso in nacl.associations:
-                if asso.subnet_id == subnet_id:
-                    return nacl
+            if associations := getattr(nacl, 'associations', None):
+                for asso in associations:
+                    if asso.subnet_id == subnet_id:
+                        return nacl
+
+        return None
 
     def _match_internet_gateway(self, vpc_id):
         for igw in self.internet_gateways:
-            for attach in igw.attachments:
-                if attach.vpc_id == vpc_id:
-                    return igw
+            if attachments := getattr(igw, 'attachments', None):
+                for attach in attachments:
+                    if attach.vpc_id == vpc_id:
+                        return igw
+
+        return None
+
+    def _match_transit_gateway(self, vpc_id):
+        if len(self.transit_gateways) > 0:
+            filters = [
+                {
+                    'Name': 'resource-type',
+                    'Values': ['vpc']
+                },
+                {
+                    'Name': 'transit-gateway-id',
+                    'Values': [transit_gw.transit_gateway_id for transit_gw in self.transit_gateways]
+                },
+                {
+                    'Name': 'resource-id',
+                    'Values': [vpc_id]
+                },
+            ]
+
+            response = self.client.describe_transit_gateway_attachments(Filters=filters)
+
+            for _attach in response.get('TransitGatewayAttachments', []):
+                transit_gw_id = _attach.get('TransitGatewayId')
+                for transit_gw in self.transit_gateways:
+                    if transit_gw_id == transit_gw.transit_gateway_id:
+                        return transit_gw
+
+        return None
+
+    def _match_vpn_gateway(self, vpc_id):
+        for vpn_gw in self.vpn_gateways:
+            if vpc_attachments := getattr(vpn_gw, 'vpc_attachments', None):
+                for _attach in vpc_attachments:
+                    if vpc_id == _attach.vpc_id:
+                        return vpn_gw
+
+        return None
 
     def _match_nat_gateways(self, subnet_id):
         return [ngw for ngw in self.nat_gateways if ngw.subnet_id == subnet_id]
 
     def _match_egress_only_internet_gateway(self, vpc_id):
         for eoigw in self.egress_only_internet_gateways:
-            for attach in eoigw.attachments:
-                if attach.vpc_id == vpc_id:
-                    return eoigw
+            if attachments := getattr(eoigw, 'attachments', None):
+                for attach in attachments:
+                    if attach.vpc_id == vpc_id:
+                        return eoigw
 
         return None
 
@@ -538,6 +682,22 @@ class VPCConnector(SchematicAWSConnector):
                 match_peering_connections.append(peercon)
 
         return match_peering_connections
+
+    def _match_vpn_connection(self, resource_type, resource_id):
+        match_vpn_connections = []
+
+        resource_type_map = {
+            'transit_gateway': 'transit_gateway_id',
+            'customer_gateway': 'customer_gateway_id',
+            'vpn_gateway': 'vpn_gateway_id',
+        }
+
+        for vpnconn in self.vpn_connections:
+            if target_resource_id := getattr(vpnconn, resource_type_map.get(resource_type, ''), None):
+                if target_resource_id == resource_id:
+                    match_vpn_connections.append(vpnconn)
+
+        return match_vpn_connections
 
     @staticmethod
     def _get_main_network_acl(nacls):

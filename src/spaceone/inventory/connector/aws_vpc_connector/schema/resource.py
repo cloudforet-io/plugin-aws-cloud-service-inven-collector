@@ -1,9 +1,12 @@
 from schematics.types import DictType, ListType, ModelType, PolyModelType, StringType
 from spaceone.inventory.connector.aws_vpc_connector.schema.data import VPC, Subnet, RouteTable, InternetGateway, \
-    EgressOnlyInternetGateway, Endpoint, NATGateway, PeeringConnection, NetworkACL
+    EgressOnlyInternetGateway, Endpoint, NATGateway, PeeringConnection, NetworkACL, TransitGateway, CustomerGateway, \
+    VPNConnection, VPNGateway
 from spaceone.inventory.libs.schema.resource import CloudServiceMeta, CloudServiceResource, CloudServiceResponse
-from spaceone.inventory.libs.schema.dynamic_field import TextDyField, ListDyField, EnumDyField, DateTimeDyField, BadgeDyField
-from spaceone.inventory.libs.schema.dynamic_layout import ItemDynamicLayout, TableDynamicLayout, SimpleTableDynamicLayout
+from spaceone.inventory.libs.schema.dynamic_field import TextDyField, ListDyField, EnumDyField, DateTimeDyField, \
+    BadgeDyField
+from spaceone.inventory.libs.schema.dynamic_layout import ItemDynamicLayout, TableDynamicLayout, \
+    SimpleTableDynamicLayout
 
 # VPC
 vpc = ItemDynamicLayout.set_fields('VPC', fields=[
@@ -96,9 +99,51 @@ vpc_egress_gw = ItemDynamicLayout.set_fields('Egress Only Internet Gateway', 'da
                                                  }),
                                              ])
 
+vpn_gw = ItemDynamicLayout.set_fields('VPN Gateway', fields=[
+    TextDyField.data_source('Name', 'data.vpn_gateway.name'),
+    TextDyField.data_source('ID', 'data.vpn_gateway.vpn_gateway_id'),
+    TextDyField.data_source('State', 'data.vpn_gateway.state'),
+    TextDyField.data_source('Type', 'data.vpn_gateway.type'),
+    ListDyField.data_source('VPC', 'data.vpn_gateway.vpc_attachments', default_badge={
+        'type': 'outline',
+        'sub_key': 'vpc_id',
+    }),
+    TextDyField.data_source('ASN (Amazon side)', 'data.vpn_gateway.amazon_side_asn'),
+])
+
+vpc_transit_gw = ItemDynamicLayout.set_fields('Transit Gateway', fields=[
+    TextDyField.data_source('Name', 'data.transit_gateway.name'),
+    TextDyField.data_source('Transit Gateway ID', 'data.transit_gateway.transit_gateway_id'),
+    TextDyField.data_source('Owner Account ID', 'data.transit_gateway.owner_id'),
+    EnumDyField.data_source('State', 'data.transit_gateway.state', default_state={
+        'safe': ['available'],
+        'warning': ['pending', 'modifying', 'deleting'],
+        'disable': ['deleted']
+    }),
+    EnumDyField.data_source('DNS Support', 'data.transit_gateway.options.dns_support', default_badge={
+        'indigo.500': ['enable'], 'coral.600': ['disable']
+    }),
+    EnumDyField.data_source('VPN ECMP support', 'data.transit_gateway.options.vpn_ecmp_support', default_badge={
+        'indigo.500': ['enable'], 'coral.600': ['disable']
+    }),
+    EnumDyField.data_source('Auto accept shared', 'data.transit_gateway.options.auto_accept_shared_attachments', default_badge={
+        'indigo.500': ['enable'], 'coral.600': ['disable']
+    }),
+    EnumDyField.data_source('Default association route table',
+                            'data.transit_gateway.options.default_route_table_association',
+                            default_badge={'indigo.500': ['enable'], 'coral.600': ['disable']}),
+    TextDyField.data_source('Association route table ID',
+                            'data.transit_gateway.options.association_default_route_table_id'),
+    EnumDyField.data_source('Default propagation route table',
+                            'data.transit_gateway.options.default_route_table_propagation',
+                            default_badge={'indigo.500': ['enable'], 'coral.600': ['disable']}),
+    TextDyField.data_source('Propagation route table ID',
+                            'data.transit_gateway.options.propagation_default_route_table_id'),
+])
+
 vpc_tags = SimpleTableDynamicLayout.set_tags()
 vpc_metadata = CloudServiceMeta.set_layouts(layouts=[vpc, vpc_subnet, vpc_igw, vpc_natgw, vpc_endpoints,
-                                                     vpc_peercon, vpc_egress_gw, vpc_tags])
+                                                     vpc_peercon, vpc_egress_gw, vpn_gw, vpc_transit_gw, vpc_tags])
 
 
 # SUBNET
@@ -360,6 +405,162 @@ nacl_tag = SimpleTableDynamicLayout.set_tags()
 nacl_metadata = CloudServiceMeta.set_layouts(layouts=[nacl, nacl_inbound, nacl_outbound, nacl_subnet_assoc, nacl_tag])
 
 
+# TRANSIT GATEWAY
+transitgw = ItemDynamicLayout.set_fields('Transit Gateway', fields=[
+    TextDyField.data_source('Name', 'data.name'),
+    TextDyField.data_source('Transit Gateway ID', 'data.transit_gateway_id'),
+    TextDyField.data_source('Owner Account ID', 'data.owner_id'),
+    EnumDyField.data_source('State', 'data.state', default_state={
+        'safe': ['available'],
+        'warning': ['pending', 'modifying', 'deleting'],
+        'disable': ['deleted']
+    }),
+    EnumDyField.data_source('DNS Support', 'data.options.dns_support', default_badge={
+        'indigo.500': ['enable'], 'coral.600': ['disable']
+    }),
+    EnumDyField.data_source('VPN ECMP support', 'data.options.vpn_ecmp_support', default_badge={
+        'indigo.500': ['enable'], 'coral.600': ['disable']
+    }),
+    EnumDyField.data_source('Auto accept shared', 'data.options.auto_accept_shared_attachments', default_badge={
+        'indigo.500': ['enable'], 'coral.600': ['disable']
+    }),
+    EnumDyField.data_source('Default association route table', 'data.options.default_route_table_association',
+                            default_badge={'indigo.500': ['enable'], 'coral.600': ['disable']}),
+    TextDyField.data_source('Association route table ID', 'data.options.association_default_route_table_id'),
+    EnumDyField.data_source('Default propagation route table', 'data.options.default_route_table_propagation',
+                            default_badge={'indigo.500': ['enable'], 'coral.600': ['disable']}),
+    TextDyField.data_source('Propagation route table ID', 'data.options.propagation_default_route_table_id'),
+])
+
+transitgw_vpn_conn = TableDynamicLayout.set_fields('VPN Connections', 'data.vpn_connections', fields=[
+    TextDyField.data_source('name', 'name'),
+    TextDyField.data_source('VPN ID', 'vpn_connection_id'),
+    EnumDyField.data_source('State', 'state', default_state={
+        'safe': ['available'],
+        'warning': ['pending', 'deleting'],
+        'disable': ['deleted']
+    }),
+    TextDyField.data_source('Virtual Private Gateway', 'vpn_gateway_id'),
+    TextDyField.data_source('Transit Gateway', 'transit_gateway_id'),
+    TextDyField.data_source('Customer Gateway', 'customer_gateway_id'),
+    TextDyField.data_source('Customer Gateway Address', 'customer_gateway_address'),
+    TextDyField.data_source('Type', 'type'),
+    EnumDyField.data_source('Category', 'category', default_badge={
+        'indigo.500': ['VPN'], 'coral.500': ['VPN-Classic']
+    }),
+])
+
+transitgw_tag = SimpleTableDynamicLayout.set_tags()
+transitgw_metadata = CloudServiceMeta.set_layouts(layouts=[transitgw, transitgw_vpn_conn, transitgw_tag])
+
+
+# CUSTOMER GATEWAY
+customergw = ItemDynamicLayout.set_fields('Customer Gateway', fields=[
+    TextDyField.data_source('ID', 'data.customer_gateway_id'),
+    EnumDyField.data_source('State', 'data.state', default_state={
+        'safe': ['available'],
+        'warning': ['pending', 'deleting'],
+        'disable': ['deleted']
+    }),
+    TextDyField.data_source('Type', 'data.type'),
+    TextDyField.data_source('IP Address', 'data.ip_address'),
+    TextDyField.data_source('BGP ASN', 'data.bgp_asn'),
+    TextDyField.data_source('Device', 'data.device_name'),
+    TextDyField.data_source('Certificate ARN', 'data.certificate_arn'),
+])
+
+customergw_vpn_conn = ItemDynamicLayout.set_fields('VPN Connection', fields=[
+    TextDyField.data_source('name', 'data.vpn_connection.name'),
+    TextDyField.data_source('VPN ID', 'data.vpn_connection.vpn_connection_id'),
+    EnumDyField.data_source('State', 'data.vpn_connection.state', default_state={
+        'safe': ['available'],
+        'warning': ['pending', 'deleting'],
+        'disable': ['deleted']
+    }),
+    TextDyField.data_source('Virtual Private Gateway', 'data.vpn_connection.vpn_gateway_id'),
+    TextDyField.data_source('Transit Gateway', 'data.vpn_connection.transit_gateway_id'),
+    TextDyField.data_source('Customer Gateway', 'data.vpn_connection.customer_gateway_id'),
+    TextDyField.data_source('Customer Gateway Address', 'data.vpn_connection.customer_gateway_address'),
+    TextDyField.data_source('Type', 'data.vpn_connection.type'),
+    EnumDyField.data_source('Category', 'data.vpn_connection.category', default_badge={
+        'indigo.500': ['VPN'], 'coral.500': ['VPN-Classic']
+    }),
+])
+
+customergw_tag = SimpleTableDynamicLayout.set_tags()
+customergw_metadata = CloudServiceMeta.set_layouts(layouts=[customergw, customergw_vpn_conn, customergw_tag])
+
+
+# VPN GATEWAY
+vpngw = ItemDynamicLayout.set_fields('Virtual Private Gateway', fields=[
+    TextDyField.data_source('Name', 'data.name'),
+    TextDyField.data_source('ID', 'data.vpn_gateway_id'),
+    TextDyField.data_source('State', 'data.state'),
+    TextDyField.data_source('Type', 'data.type'),
+    ListDyField.data_source('VPC', 'data.vpc_attachments', default_badge={
+        'type': 'outline',
+        'sub_key': 'vpc_id',
+    }),
+    TextDyField.data_source('ASN (Amazon side)', 'data.amazon_side_asn'),
+])
+
+vpngw_vpn_conn = ItemDynamicLayout.set_fields('VPN Connection', fields=[
+    TextDyField.data_source('name', 'data.vpn_connection.name'),
+    TextDyField.data_source('VPN ID', 'data.vpn_connection.vpn_connection_id'),
+    EnumDyField.data_source('State', 'state', default_state={
+        'safe': ['available'],
+        'warning': ['pending', 'deleting'],
+        'disable': ['deleted']
+    }),
+    TextDyField.data_source('Virtual Private Gateway', 'data.vpn_connection.vpn_gateway_id'),
+    TextDyField.data_source('Transit Gateway', 'data.vpn_connection.transit_gateway_id'),
+    TextDyField.data_source('Customer Gateway', 'data.vpn_connection.customer_gateway_id'),
+    TextDyField.data_source('Customer Gateway Address', 'data.vpn_connection.customer_gateway_address'),
+    TextDyField.data_source('Type', 'data.vpn_connection.type'),
+    EnumDyField.data_source('Category', 'data.vpn_connection.category', default_badge={
+        'indigo.500': ['VPN'], 'coral.500': ['VPN-Classic']
+    }),
+])
+vpngw_tag = SimpleTableDynamicLayout.set_tags()
+vpngw_metadata = CloudServiceMeta.set_layouts(layouts=[vpngw, vpngw_vpn_conn, vpngw_tag])
+
+
+# VPN CONNECTION
+vpnconn = ItemDynamicLayout.set_fields('VPN Connection', fields=[
+    TextDyField.data_source('VPN ID', 'data.vpn_connection_id'),
+    EnumDyField.data_source('State', 'state', default_state={
+        'safe': ['available'],
+        'warning': ['pending', 'deleting'],
+        'disable': ['deleted']
+    }),
+    TextDyField.data_source('Virtual Private Gateway', 'data.vpn_gateway_id'),
+    TextDyField.data_source('Customer Gateway', 'data.customer_gateway_id'),
+    TextDyField.data_source('Customer Gateway Address', 'data.customer_gateway_address'),
+    TextDyField.data_source('Transit Gateway', 'data.transit_gateway_id'),
+    TextDyField.data_source('Type', 'data.type'),
+    TextDyField.data_source('Category', 'data.category'),
+    EnumDyField.data_source('Static Routing Only', 'data.options.static_routes_only', default_badge={
+        'indigo.500': ['true'], 'coral.600': ['false']
+    }),
+    EnumDyField.data_source('Enable Acceleration', 'data.options.enable_acceleration', default_badge={
+        'indigo.500': ['true'], 'coral.600': ['false']
+    }),
+])
+
+vpnconn_tunnel = TableDynamicLayout.set_fields('VPN Tunnel', 'data.vgw_telemetry', fields=[
+    TextDyField.data_source('Outside IP Address', 'outside_ip_address'),
+    EnumDyField.data_source('Status', 'status', default_state={
+        'safe': ['UP'],
+        'alert': ['DOWN']
+    }),
+    DateTimeDyField.data_source('Status Last Changed', 'last_status_change'),
+    TextDyField.data_source('Certificate ARN', 'certificate_arn'),
+])
+
+vpnconn_tag = SimpleTableDynamicLayout.set_tags()
+vpnconn_metadata = CloudServiceMeta.set_layouts(layouts=[vpnconn, vpnconn_tunnel, vpnconn_tag])
+
+
 class VPCResource(CloudServiceResource):
     cloud_service_group = StringType(default='VPC')
 
@@ -417,6 +618,31 @@ class NetworkACLResource(VPCResource):
     cloud_service_type = StringType(default='NetworkACL')
     data = ModelType(NetworkACL)
     _metadata = ModelType(CloudServiceMeta, default=nacl_metadata, serialized_name='metadata')
+
+
+class TransitGatewayResource(VPCResource):
+    cloud_service_type = StringType(default='TransitGateway')
+    data = ModelType(TransitGateway)
+    _metadata = ModelType(CloudServiceMeta, default=transitgw_metadata, serialized_name='metadata')
+
+
+class CustomerGatewayResource(VPCResource):
+    cloud_service_type = StringType(default='CustomerGateway')
+    data = ModelType(CustomerGateway)
+    _metadata = ModelType(CloudServiceMeta, default=customergw_metadata, serialized_name='metadata')
+
+
+class VPNGatewayResource(VPCResource):
+    cloud_service_type = StringType(default='VPNGateway')
+    data = ModelType(VPNGateway)
+    _metadata = ModelType(CloudServiceMeta, default=vpngw_metadata, serialized_name='metadata')
+
+
+class VPNConnectionResource(VPCResource):
+    cloud_service_type = StringType(default='VPNConnection')
+    data = ModelType(VPNConnection)
+    _metadata = ModelType(CloudServiceMeta, default=vpnconn_metadata, serialized_name='metadata')
+
 
 
 # Response
@@ -481,3 +707,32 @@ class NetworkACLResponse(CloudServiceResponse):
         '1': ['data.network_acl_id', 'provider', 'cloud_service_type', 'cloud_service_group']
     })
     resource = PolyModelType(NetworkACLResource)
+
+
+class TransitGatewayResponse(CloudServiceResponse):
+    match_rules = DictType(ListType(StringType), default={
+        '1': ['data.transit_gateway_id', 'provider', 'cloud_service_type', 'cloud_service_group']
+    })
+    resource = PolyModelType(TransitGatewayResource)
+
+
+class CustomerGatewayResponse(CloudServiceResponse):
+    match_rules = DictType(ListType(StringType), default={
+        '1': ['data.customer_gateway_id', 'provider', 'cloud_service_type', 'cloud_service_group']
+    })
+    resource = PolyModelType(CustomerGatewayResource)
+
+
+class VPNGatewayResponse(CloudServiceResponse):
+    match_rules = DictType(ListType(StringType), default={
+        '1': ['data.vpn_gateway_id', 'provider', 'cloud_service_type', 'cloud_service_group']
+    })
+    resource = PolyModelType(VPNGatewayResource)
+
+
+class VPNConnectionResponse(CloudServiceResponse):
+    match_rules = DictType(ListType(StringType), default={
+        '1': ['data.vpn_connection_id', 'provider', 'cloud_service_type', 'cloud_service_group']
+    })
+    resource = PolyModelType(VPNConnectionResource)
+

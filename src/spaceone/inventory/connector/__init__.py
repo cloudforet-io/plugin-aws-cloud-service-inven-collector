@@ -23,3 +23,4 @@ from spaceone.inventory.connector.aws_ebs_connector.connector import EBSConnecto
 from spaceone.inventory.connector.aws_s3_connector.connector import S3Connector
 from spaceone.inventory.connector.aws_dynamodb_connector.connector import DynamoDBConnector
 from spaceone.inventory.connector.aws_vpc_connector.connector import VPCConnector
+from spaceone.inventory.connector.aws_ec2_connector.connector import EC2Connector

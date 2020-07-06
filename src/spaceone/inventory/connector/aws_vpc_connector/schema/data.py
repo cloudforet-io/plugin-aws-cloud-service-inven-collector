@@ -11,6 +11,254 @@ class Tags(Model):
     value = StringType(deserialize_from="Value")
 
 '''
+VPN Connection
+'''
+class VPNConnectionVgwTelemetry(Model):
+    accepted_route_count = IntType(deserialize_from="AcceptedRouteCount")
+    last_status_change = DateTimeType(deserialize_from="LastStatusChange")
+    outside_ip_address = StringType(deserialize_from="OutsideIpAddress")
+    status = StringType(deserialize_from="Status",choices=("UP","DOWN"))
+    status_message = StringType(deserialize_from="StatusMessage")
+    certificate_arn = StringType(deserialize_from="CertificateArn")
+
+
+class VPNConnectionTunnelOptionPhase1EncryptionAlgorithms(Model):
+    value = StringType(deserialize_from="Value")
+
+
+class VPNConnectionTunnelOptionPhase2EncryptionAlgorithms(Model):
+    value = StringType(deserialize_from="Value")
+
+
+class VPNConnectionTunnelOptionPhase1IntegrityAlgorithms(Model):
+    value = StringType(deserialize_from="Value")
+
+
+class VPNConnectionTunnelOptionPhase2IntegrityAlgorithms(Model):
+    value = StringType(deserialize_from="Value")
+
+
+class VPNConnectionTunnelOptionPhase1DHGroupNumbers(Model):
+    value = IntType(deserialize_from="Value")
+
+
+class VPNConnectionTunnelOptionPhase2DHGroupNumbers(Model):
+    value = IntType(deserialize_from="Value")
+
+
+class VPNConnectionTunnelOptionIkeVersions(Model):
+    value = StringType(deserialize_from="Value")
+
+
+class VPNConnectionTunnelOption(Model):
+    outside_ip_address = StringType(deserialize_from="OutsideIpAddress")
+    tunnel_inside_cidr = StringType(deserialize_from="TunnelInsideCidr")
+    pre_shared_key = StringType(deserialize_from="PreSharedKey")
+    phase1_lifetime_seconds = IntType(deserialize_from="Phase1LifetimeSeconds")
+    phase2_lifetime_seconds = IntType(deserialize_from="Phase2LifetimeSeconds")
+    rekey_margin_time_seconds = IntType(deserialize_from="RekeyMarginTimeSeconds")
+    rekey_fuzz_percentage = IntType(deserialize_from="RekeyFuzzPercentage")
+    replay_window_size = IntType(deserialize_from="ReplayWindowSize")
+    dpd_timeout_seconds = IntType(deserialize_from="DpdTimeoutSeconds")
+    phase1_encryption_algorithms = ListType(ModelType(VPNConnectionTunnelOptionPhase1EncryptionAlgorithms),
+                                            deserialize_from="Phase1EncryptionAlgorithms")
+    phase2_encryption_algorithms = ListType(ModelType(VPNConnectionTunnelOptionPhase2EncryptionAlgorithms),
+                                            deserialize_from="Phase2EncryptionAlgorithms")
+    phase1_integrity_algorithms = ListType(ModelType(VPNConnectionTunnelOptionPhase1IntegrityAlgorithms),
+                                           deserialize_from="Phase1IntegrityAlgorithms")
+    phase2_integrity_algorithms = ListType(ModelType(VPNConnectionTunnelOptionPhase2IntegrityAlgorithms),
+                                           deserialize_from="Phase2IntegrityAlgorithms")
+    phase1_dh_group_numbers = ListType(ModelType(VPNConnectionTunnelOptionPhase1DHGroupNumbers),
+                                       deserialize_from="Phase1DHGroupNumbers")
+    phase2_dh_group_numbers = ListType(ModelType(VPNConnectionTunnelOptionPhase2DHGroupNumbers),
+                                       deserialize_from="Phase2DHGroupNumbers")
+    ike_versions = ListType(ModelType(VPNConnectionTunnelOptionIkeVersions), deserialize_from="IkeVersions")
+
+
+class Options(Model):
+    enable_acceleration = BooleanType(deserialize_from="EnableAcceleration")
+    static_routes_only = BooleanType(deserialize_from="StaticRoutesOnly")
+    tunnel_options = ListType(ModelType(VPNConnectionTunnelOption), deserialize_from="TunnelOptions")
+
+
+class VPNConnectionRoutes(Model):
+    destination_cidr_block = StringType(deserialize_from="DestinationCidrBlock")
+    source = StringType(deserialize_from="Source")
+    state = StringType(deserialize_from="State", choices=("pending", "available", "deleting", "deleted"))
+
+
+class VPNConnection(Model):
+    name = StringType(default="")
+    customer_gateway_configuration = StringType(deserialize_from="CustomerGatewayConfiguration")
+    customer_gateway_id = StringType(deserialize_from="CustomerGatewayId")
+    customer_gateway_address = StringType()
+    category = StringType(deserialize_from="Category")
+    state = StringType(deserialize_from="State", choices=("pending", "available", "deleting", "deleted"))
+    type = StringType(deserialize_from="Type")
+    vpn_connection_id = StringType(deserialize_from="VpnConnectionId")
+    vpn_gateway_id = StringType(deserialize_from="VpnGatewayId")
+    transit_gateway_id = StringType(deserialize_from="TransitGatewayId")
+    options = ModelType(Options, deserialize_from="Options")
+    routes = ListType(ModelType(VPNConnectionRoutes), deserialize_from="Routes")
+    tags = ListType(ModelType(Tags), deserialize_from="Tags")
+    vgw_telemetry = ListType(ModelType(VPNConnectionVgwTelemetry), deserialize_from="VgwTelemetry")
+    region_name = StringType(default="")
+    account_id = StringType(default="")
+
+    @serializable
+    def reference(self):
+        return {
+            "resource_id": self.vpn_connection_id,
+            "external_link": f"https://console.aws.amazon.com/vpc/home?region={self.region_name}#VpnConnections:VpnConnectionId={self.vpn_connection_id};sort=VpnConnectionId"
+        }
+
+
+'''
+VPN GATEWAY
+'''
+class VPNGatewayVpcAttachments(Model):
+    state = StringType(deserialize_from="State", choices=("attaching", "attached", "detaching", "detached"))
+    vpc_id = StringType(deserialize_from="VpcId")
+
+
+class VPNGateway(Model):
+    name = StringType(default="")
+    availability_zone = StringType(deserialize_from="AvailabilityZone")
+    state = StringType(deserialize_from="State", choices=("pending", "available", "deleting", "deleted"))
+    type = StringType(deserialize_from="Type")
+    vpc_attachments = ListType(ModelType(VPNGatewayVpcAttachments), deserialize_from="VpcAttachments")
+    vpn_gateway_id = StringType(deserialize_from="VpnGatewayId")
+    amazon_side_asn = IntType(deserialize_from="AmazonSideAsn")
+    tags = ListType(ModelType(Tags), deserialize_from="Tags")
+    vpn_connection = ModelType(VPNConnection)
+    region_name = StringType(default="")
+    account_id = StringType(default="")
+
+    @serializable
+    def reference(self):
+        return {
+            "resource_id": self.vpn_gateway_id,
+            "external_link": f"https://console.aws.amazon.com/vpc/home?region={self.region_name}#VpnGateways:VpnGatewayId={self.vpn_gateway_id};sort=VpnGatewayId"
+        }
+
+
+'''
+CUSTOMER GATEWAY
+'''
+class CustomerGateway(Model):
+    name = StringType(default="")
+    bgp_asn = StringType(deserialize_from="BgpAsn")
+    customer_gateway_id = StringType(deserialize_from="CustomerGatewayId")
+    ip_address = StringType(deserialize_from="IpAddress")
+    certificate_arn = StringType(deserialize_from="CertificateArn")
+    state = StringType(deserialize_from="State", choices=("pending", "available", "deleting", "deleted"))
+    type = StringType(deserialize_from="Type")
+    device_name = StringType(deserialize_from="DeviceName")
+    tags = ListType(ModelType(Tags), deserialize_from="Tags")
+    vpn_connection = ModelType(VPNConnection)
+    region_name = StringType(default="")
+    account_id = StringType(default="")
+
+    @serializable
+    def reference(self):
+        return {
+            "resource_id": self.customer_gateway_id,
+            "external_link": f"https://console.aws.amazon.com/vpc/home?region={self.region_name}#CustomerGateways:CustomerGatewayId={self.customer_gateway_id};sort=CustomerGatewayId"
+        }
+
+'''
+TRANSIT GATEWAY ATTACHMENT
+'''
+class Association(Model):
+    transit_gateway_route_table_id = StringType(deserialize_from="TransitGatewayRouteTableId")
+    state = StringType(deserialize_from="State", choices=("associating", "associated",
+                                                          "disassociating", "disassociated"))
+
+
+class TransitGatewayAttachment(Model):
+    transit_gateway_attachment_id = StringType(deserialize_from="TransitGatewayAttachmentId")
+    transit_gateway_id = StringType(deserialize_from="TransitGatewayId")
+    transit_gateway_owner_id = StringType(deserialize_from="TransitGatewayOwnerId")
+    resource_owner_id = StringType(deserialize_from="ResourceOwnerId")
+    resource_type = StringType(deserialize_from="ResourceType", choices=("vpc", "vpn", "direct-connect-gateway",
+                                                                         "tgw-peering"))
+    resource_id = StringType(deserialize_from="ResourceId")
+    state = StringType(deserialize_from="State", choices=("initiating", "pendingAcceptance", "rollingBack", "pending",
+                                                          "available", "modifying", "deleting", "deleted", "failed",
+                                                          "rejected", "rejecting", "failing"))
+    association = ModelType(Association, deserialize_from="Association")
+    creation_time = DateTimeType(deserialize_from="CreationTime")
+    tags = ListType(ModelType(Tags), deserialize_from="Tags")
+
+
+'''
+TRANSIT GATEWAY ROUTE TABLE
+'''
+class TransitGatewayRouteTables(Model):
+    transit_gateway_route_table_id = StringType(deserialize_from="TransitGatewayRouteTableId")
+    transit_gateway_id = StringType(deserialize_from="TransitGatewayId")
+    state = StringType(deserialize_from="State", choices=("pending", "available", "deleting", "deleted"))
+    default_association_route_table = BooleanType(deserialize_from="DefaultAssociationRouteTable")
+    default_propagation_route_table = BooleanType(deserialize_from="DefaultPropagationRouteTable")
+    creation_time = DateTimeType(deserialize_from="CreationTime")
+    tags = ListType(ModelType(Tags), deserialize_from="Tags")
+
+
+'''
+TRANSIT GATEWAY
+'''
+class Options(Model):
+    amazon_side_asn = IntType(deserialize_from="AmazonSideAsn")
+    auto_accept_shared_attachments = StringType(deserialize_from="AutoAcceptSharedAttachments",
+                                                choices=("enable", "disable"))
+    default_route_table_association = StringType(deserialize_from="DefaultRouteTableAssociation",
+                                                 choices=("enable", "disable"))
+    association_default_route_table_id = StringType(deserialize_from="AssociationDefaultRouteTableId")
+    default_route_table_propagation = StringType(deserialize_from="DefaultRouteTablePropagation",
+                                                 choices=("enable", "disable"))
+    propagation_default_route_table_id = StringType(deserialize_from="PropagationDefaultRouteTableId")
+    vpn_ecmp_support = StringType(deserialize_from="VpnEcmpSupport", choices=("enable", "disable"))
+    dns_support = StringType(deserialize_from="DnsSupport", choices=("enable", "disable"))
+    multicast_support = StringType(deserialize_from="MulticastSupport", choices=("enable", "disable"))
+
+
+class TransitGateway(Model):
+    name = StringType(default="")
+    transit_gateway_id = StringType(deserialize_from="TransitGatewayId")
+    transit_gateway_arn = StringType(deserialize_from="TransitGatewayArn")
+    state = StringType(deserialize_from="State", choices=("pending", "available", "modifying", "deleting", "deleted"))
+    owner_id = StringType(deserialize_from="OwnerId")
+    description = StringType(deserialize_from="Description")
+    creation_time = DateTimeType(deserialize_from="CreationTime")
+    options = ModelType(Options, deserialize_from="Options")
+    transit_gateway_route_table = ModelType(TransitGatewayRouteTables)
+    tags = ListType(ModelType(Tags), deserialize_from="Tags")
+    vpn_connections = ListType(ModelType(VPNConnection))
+    region_name = StringType(default="")
+    account_id = StringType(default="")
+
+    @serializable
+    def reference(self):
+        return {
+            "resource_id": self.transit_gateway_arn,
+            "external_link": f"https://console.aws.amazon.com/vpc/home?region={self.region_name}#TransitGateways:transitGatewayId={self.transit_gateway_id};sort=ownerId"
+        }
+
+    @serializable
+    def cloudwatch(self):
+        return {
+            "namespace": "AWS/TransitGateway",
+            "dimensions": [
+                {
+                    "Name": "TransitGateway",
+                    "Value": self.transit_gateway_id
+                }
+            ],
+            "region_name": self.region_name
+        }
+
+
+'''
 NETWORK ACL
 '''
 class IcmpTypeCode(Model):
@@ -462,13 +710,15 @@ class VPC(Model):
     route_tables = ListType(ModelType(RouteTable))
     main_route_table_id = StringType()
     main_network_acl_id = StringType()
-    egress_only_internet_gateway = ModelType(EgressOnlyInternetGateway)
+    egress_only_internet_gateway = ModelType(EgressOnlyInternetGateway, serialize_when_none=False)
     endpoints = ListType(ModelType(Endpoint))
     peering_connections = ListType(ModelType(PeeringConnection))
     region_name = StringType(default="")
     account_id = StringType(default="")
     nat_gateways = ListType(ModelType(NATGateway))
-    internet_gateway = ModelType(InternetGateway)
+    internet_gateway = ModelType(InternetGateway, serialize_when_none=False)
+    transit_gateway = ModelType(TransitGateway, serialize_when_none=False)
+    vpn_gateway = ModelType(VPNGateway, serialize_when_none=False)
     enable_dns_support = StringType(choices=("Enabled", "Disabled"))
     enable_dns_hostnames = StringType(choices=("Enabled", "Disabled"))
 

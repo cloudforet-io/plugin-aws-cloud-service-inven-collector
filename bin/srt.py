@@ -298,19 +298,41 @@ if __name__ == '__main__':
     # print(f"{make_models(models)}\n\n{klass}")
 
     data ='''{
-            'LayerName': 'string',
-            'LayerArn': 'string',
-            'LatestMatchingVersion': {
-                'LayerVersionArn': 'string',
-                'Version': 123,
-                'Description': 'string',
-                'CreatedDate': 'string',
-                'CompatibleRuntimes': 'string',
-                'LicenseInfo': 'string'
-            }
-        },'''
+                    'FromPort': 123,
+                    'IpProtocol': 'string',
+                    'IpRanges': [
+                        {
+                            'CidrIp': 'string',
+                            'Description': 'string'
+                        },
+                    ],
+                    'Ipv6Ranges': [
+                        {
+                            'CidrIpv6': 'string',
+                            'Description': 'string'
+                        },
+                    ],
+                    'PrefixListIds': [
+                        {
+                            'Description': 'string',
+                            'PrefixListId': 'string'
+                        },
+                    ],
+                    'ToPort': 123,
+                    'UserIdGroupPairs': [
+                        {
+                            'Description': 'string',
+                            'GroupId': 'string',
+                            'GroupName': 'string',
+                            'PeeringStatus': 'string',
+                            'UserId': 'string',
+                            'VpcId': 'string',
+                            'VpcPeeringConnectionId': 'string'
+                        },
+                    ]
+                },'''
     print('origin')
     print(data)
-    klass, models = normalize('Layer', data)
+    klass, models = normalize('SecurityGroupInPermission', data)
     print('to class')
     print(f"{first}{make_models(models)}{klass}{last}")

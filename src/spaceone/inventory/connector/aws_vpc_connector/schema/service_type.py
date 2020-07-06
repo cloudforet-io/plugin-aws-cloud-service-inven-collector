@@ -1,6 +1,7 @@
 from spaceone.inventory.libs.schema.dynamic_field import TextDyField, ListDyField, BadgeDyField, DateTimeDyField, \
     EnumDyField
-from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, CloudServiceTypeMeta
+from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, \
+    CloudServiceTypeMeta
 
 cst_vpc = CloudServiceTypeResource()
 cst_vpc.name = 'VPC'
@@ -208,7 +209,6 @@ cst_nacl._metadata = CloudServiceTypeMeta.set_fields(fields=[
     TextDyField.data_source('VPC ID', 'data.vpc_id'),
 ])
 
-
 cst_endpoint = CloudServiceTypeResource()
 cst_endpoint.name = 'Endpoint'
 cst_endpoint.provider = 'aws'
@@ -232,6 +232,93 @@ cst_endpoint._metadata = CloudServiceTypeMeta.set_fields(fields=[
     DateTimeDyField.data_source('Creation Time', 'data.creation_timestamp'),
 ])
 
+cst_transitgw = CloudServiceTypeResource()
+cst_transitgw.name = 'TransitGateway'
+cst_transitgw.provider = 'aws'
+cst_transitgw.group = 'VPC'
+cst_transitgw.tags = {
+    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-VPC_Transit_Gateway.svg',
+    'spaceone:is_major': 'false',
+}
+cst_transitgw._metadata = CloudServiceTypeMeta.set_fields(fields=[
+    TextDyField.data_source('Name', 'data.name'),
+    TextDyField.data_source('Transit Gateway ID', 'data.transit_gateway_id'),
+    TextDyField.data_source('Owner ID', 'data.owner_id'),
+    EnumDyField.data_source('State', 'data.state', default_state={
+        'safe': ['available'],
+        'warning': ['pending', 'modifying', 'deleting'],
+        'disable': ['deleted']
+    })
+])
+
+cst_customgw = CloudServiceTypeResource()
+cst_customgw.name = 'CustomerGateway'
+cst_customgw.provider = 'aws'
+cst_customgw.group = 'VPC'
+cst_customgw.tags = {
+    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-VPC_Customer-Gateway_dark-bg.svg',
+    'spaceone:is_major': 'false',
+}
+cst_customgw._metadata = CloudServiceTypeMeta.set_fields(fields=[
+    TextDyField.data_source('Name', 'data.name'),
+    TextDyField.data_source('ID', 'data.customer_gateway_id'),
+    EnumDyField.data_source('State', 'data.state', default_state={
+        'safe': ['available'],
+        'warning': ['pending', 'deleting'],
+        'disable': ['deleted']
+    }),
+    TextDyField.data_source('Type', 'data.type'),
+    TextDyField.data_source('IP Address', 'data.ip_address'),
+    TextDyField.data_source('BGP ASN', 'data.bgp_asn'),
+])
+
+cst_vpnconn = CloudServiceTypeResource()
+cst_vpnconn.name = 'VPNConnection'
+cst_vpnconn.provider = 'aws'
+cst_vpnconn.group = 'VPC'
+cst_vpnconn.tags = {
+    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-VPC_VPN-Connection_dark-bg.svg',
+    'spaceone:is_major': 'false',
+}
+cst_vpnconn._metadata = CloudServiceTypeMeta.set_fields(fields=[
+    TextDyField.data_source('Name', 'data.name'),
+    TextDyField.data_source('VPN ID', 'data.vpn_connection_id'),
+    EnumDyField.data_source('State', 'data.state', default_state={
+        'safe': ['available'],
+        'warning': ['pending', 'deleting'],
+        'disable': ['deleted']
+    }),
+    TextDyField.data_source('Virtual Private Gateway', 'data.vpn_gateway_id'),
+    TextDyField.data_source('Transit Gateway', 'data.transit_gateway_id'),
+    TextDyField.data_source('Customer Gateway', 'data.customer_gateway_id'),
+    TextDyField.data_source('Customer Gateway Address', 'data.customer_gateway_address'),
+    TextDyField.data_source('Type', 'data.type'),
+    EnumDyField.data_source('Category', 'data.category', default_badge={
+        'indigo.500': ['VPN'], 'coral.500': ['VPN-Classic']
+    }),
+
+])
+
+cst_vpngw = CloudServiceTypeResource()
+cst_vpngw.name = 'VPNGateway'
+cst_vpngw.provider = 'aws'
+cst_vpngw.group = 'VPC'
+cst_vpngw.tags = {
+    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-VPC_VPN-Gateway_dark-bg.svg',
+    'spaceone:is_major': 'false',
+}
+cst_vpngw._metadata = CloudServiceTypeMeta.set_fields(fields=[
+    TextDyField.data_source('Name', 'data.name'),
+    TextDyField.data_source('ID', 'data.vpn_gateway_id'),
+    TextDyField.data_source('State', 'data.state'),
+    TextDyField.data_source('Type', 'data.type'),
+    ListDyField.data_source('VPC', 'data.vpc_attachments', default_badge={
+        'type': 'outline',
+        'sub_key': 'vpc_id',
+    }),
+    TextDyField.data_source('ASN (Amazon side)', 'data.amazon_side_asn'),
+])
+
 CLOUD_SERVICE_TYPES = [
     CloudServiceTypeResponse({'resource': cst_vpc}),
     CloudServiceTypeResponse({'resource': cst_subnet}),
@@ -242,4 +329,8 @@ CLOUD_SERVICE_TYPES = [
     CloudServiceTypeResponse({'resource': cst_peerconn}),
     CloudServiceTypeResponse({'resource': cst_nacl}),
     CloudServiceTypeResponse({'resource': cst_endpoint}),
+    CloudServiceTypeResponse({'resource': cst_transitgw}),
+    CloudServiceTypeResponse({'resource': cst_customgw}),
+    CloudServiceTypeResponse({'resource': cst_vpnconn}),
+    CloudServiceTypeResponse({'resource': cst_vpngw}),
 ]
