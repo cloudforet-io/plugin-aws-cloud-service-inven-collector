@@ -495,7 +495,11 @@ customergw_metadata = CloudServiceMeta.set_layouts(layouts=[customergw, customer
 vpngw = ItemDynamicLayout.set_fields('Virtual Private Gateway', fields=[
     TextDyField.data_source('Name', 'data.name'),
     TextDyField.data_source('ID', 'data.vpn_gateway_id'),
-    TextDyField.data_source('State', 'data.state'),
+    EnumDyField.data_source('State', 'data.state', default_state={
+        'safe': ['available'],
+        'warning': ['pending', 'deleting'],
+        'disable': ['deleted']
+    }),
     TextDyField.data_source('Type', 'data.type'),
     ListDyField.data_source('VPC', 'data.vpc_attachments', default_badge={
         'type': 'outline',
@@ -507,7 +511,7 @@ vpngw = ItemDynamicLayout.set_fields('Virtual Private Gateway', fields=[
 vpngw_vpn_conn = ItemDynamicLayout.set_fields('VPN Connection', fields=[
     TextDyField.data_source('name', 'data.vpn_connection.name'),
     TextDyField.data_source('VPN ID', 'data.vpn_connection.vpn_connection_id'),
-    EnumDyField.data_source('State', 'state', default_state={
+    EnumDyField.data_source('State', 'data.vpn_connection.state', default_state={
         'safe': ['available'],
         'warning': ['pending', 'deleting'],
         'disable': ['deleted']
