@@ -532,7 +532,7 @@ vpngw_metadata = CloudServiceMeta.set_layouts(layouts=[vpngw, vpngw_vpn_conn, vp
 # VPN CONNECTION
 vpnconn = ItemDynamicLayout.set_fields('VPN Connection', fields=[
     TextDyField.data_source('VPN ID', 'data.vpn_connection_id'),
-    EnumDyField.data_source('State', 'state', default_state={
+    EnumDyField.data_source('State', 'data.state', default_state={
         'safe': ['available'],
         'warning': ['pending', 'deleting'],
         'disable': ['deleted']
