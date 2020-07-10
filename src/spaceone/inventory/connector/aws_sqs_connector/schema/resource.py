@@ -15,18 +15,18 @@ sqs = ItemDynamicLayout.set_fields('Queue', fields=[
         'indigo.500': ['true'], 'coral.600': ['false']
     }),
     TextDyField.data_source('Approximate Number Of Messages', 'data.approximate_number_of_messages'),
-    TextDyField.data_source('ApproximateNumberOfMessagesDelayed', 'data.approximate_number_of_messages_delayed'),
-    TextDyField.data_source('ApproximateNumberOfMessagesNotVisible', 'data.approximate_number_of_messages_not_visible'),
-    TextDyField.data_source('DelaySeconds', 'data.delay_seconds'),
-    TextDyField.data_source('MaximumMessageSize', 'data.maximum_message_size'),
-    TextDyField.data_source('MessageRetentionPeriod', 'data.message_retention_period'),
-    TextDyField.data_source('ReceiveMessageWaitTimeSeconds', 'data.receive_message_wait_time_seconds'),
-    TextDyField.data_source('VisibilityTimeout', 'data.visibility_timeout'),
-    DateTimeDyField.data_source('CreatedTimestamp', 'data.created_timestamp', options={
+    TextDyField.data_source('Approximate Number Of Messages Delayed', 'data.approximate_number_of_messages_delayed'),
+    TextDyField.data_source('Approximate Number Of Messages Not Visible', 'data.approximate_number_of_messages_not_visible'),
+    TextDyField.data_source('Delay Seconds', 'data.delay_seconds'),
+    TextDyField.data_source('Maximum Message Size', 'data.maximum_message_size'),
+    TextDyField.data_source('Message Retention Period', 'data.message_retention_period'),
+    TextDyField.data_source('Receive Message Wait Time Seconds', 'data.receive_message_wait_time_seconds'),
+    TextDyField.data_source('Visibility Timeout', 'data.visibility_timeout'),
+    DateTimeDyField.data_source('Created Time', 'data.created_timestamp', options={
         'source_type': 'timestamp',
         'source_format': 'seconds'
     }),
-    DateTimeDyField.data_source('LastModifiedTimestamp', 'data.last_modified_timestamp', options={
+    DateTimeDyField.data_source('Last Modified Time', 'data.last_modified_timestamp', options={
         'source_type': 'timestamp',
         'source_format': 'seconds'
     }),
