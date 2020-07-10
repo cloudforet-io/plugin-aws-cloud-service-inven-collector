@@ -209,8 +209,15 @@ subnets = TableDynamicLayout.set_fields('Subnets', 'data.subnets', fields=[
 subnetgrp_tags = SimpleTableDynamicLayout.set_tags()
 subnetgrp_metadata = CloudServiceMeta.set_layouts(layouts=[subnetgrp, subnets, subnetgrp_tags])
 
+paramgrp = ItemDynamicLayout.set_fields('Parameter Group', fields=[
+    TextDyField.data_source('Name', 'data.db_parameter_group_name'),
+    TextDyField.data_source('ARN', 'data.db_parameter_group_arn'),
+    BadgeDyField.data_source('Family', 'data.db_parameter_group_family'),
+    TextDyField.data_source('Type', 'data.description'),
+    TextDyField.data_source('Description', 'data.db_parameter_group_type'),
+])
 
-paramgrp = TableDynamicLayout.set_fields('Parameters', 'data.parameters', fields=[
+params = TableDynamicLayout.set_fields('Parameters', 'data.parameters', fields=[
     TextDyField.data_source('Name', 'parameter_name'),
     TextDyField.data_source('Value', 'parameter_value'),
     TextDyField.data_source('Allowed Values', 'allowed_values'),
@@ -223,7 +230,7 @@ paramgrp = TableDynamicLayout.set_fields('Parameters', 'data.parameters', fields
     TextDyField.data_source('Description', 'description'),
 ])
 paramgrp_tags = SimpleTableDynamicLayout.set_tags()
-paramgrp_metadata = CloudServiceMeta.set_layouts(layouts=[paramgrp, paramgrp_tags])
+paramgrp_metadata = CloudServiceMeta.set_layouts(layouts=[paramgrp, params, paramgrp_tags])
 
 
 optgrp = ItemDynamicLayout.set_fields('Option Groups', fields=[
