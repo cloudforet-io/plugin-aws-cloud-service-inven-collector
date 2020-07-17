@@ -1,6 +1,8 @@
 import math
 from schematics import Model
 from schematics.types import ModelType, StringType, PolyModelType, DictType, ListType
+from .dynamic_search import BaseDynamicSearch
+
 
 BACKGROUND_COLORS = [
     'black', 'white',
@@ -279,123 +281,48 @@ class EnumDyField(BaseDynamicField):
         return cls(_data_source)
 
 
-# class FieldViewOption(Model):
-#     class Options:
-#         serialize_when_none = False
-#
-#
-# class BaseDynamicField(Model):
-#     name = StringType(serialize_when_none=False)
-#     key = StringType(serialize_when_none=False)
-#
-#     view_type = StringType()
-#     view_option = PolyModelType(FieldViewOption, serialize_when_none=False)
-#
-#     @classmethod
-#     def data_source(cls, name, key, **kwargs):
-#         return cls({'key': key, 'name': name, **kwargs})
+class SearchEnumField(Model):
+    label = StringType(serialize_when_none=False)
+    icon = ModelType(Icon, serialize_when_none=False)
+
+    @classmethod
+    def set_field(cls, label=None, icon=None):
+        return_dic = {}
+
+        if label is not None:
+            return_dic.update({'label': label})
+
+        if icon is not None:
+            return_dic.update({'icon': Icon(icon)})
+
+        return cls(return_dic)
 
 
-# class Icon(Model):
-#     class Options:
-#         serialize_when_none = False
-#
-#     image = StringType()
-#     color = StringType()
-#
-#
-# SimpleGreenIcon = Icon()
-# SimpleGreenIcon.color = '#60b731'
-#
-# SimpleYellowIcon = Icon()
-# SimpleYellowIcon.color = '#ffce02'
-#
-# SimpleRedIcon = Icon()
-# SimpleRedIcon.color = '#ef3817'
-#
-#
-# class BadgeViewOption(FieldViewOption):
-#     text_color = StringType()
-#     icon = ModelType(Icon)
-#
-#
-# class BadgeDyField(BaseDynamicField):
-#     view_type = StringType(default='badge')
-#     view_option = ModelType(BadgeViewOption, serialize_when_none=False)
-#
-#
-# class TextDyField(BaseDynamicField):
-#     view_type = StringType(default='text')
-#
-#
-# class DictField(BaseDynamicField):
-#     view_type = StringType(default='dict')
-#
-#
-# class StateViewOption(FieldViewOption):
-#     text_color = StringType()
-#     icon = ModelType(Icon)
-#
-#
-# class StateDyField(BaseDynamicField):
-#     view_type = StringType(default='state')
-#     view_option = ModelType(StateViewOption, serialize_when_none=False)
-#
-#
-# class ListViewOption(FieldViewOption):
-#     item = ModelType(BaseDynamicField)
-#     sub_key = StringType()
-#     delimiter = StringType()
-#
-#
-# class ListDyField(BaseDynamicField):
-#     view_type = StringType(default='list')
-#     view_option = ModelType(ListViewOption, serialize_when_none=False)
-#
-#
-# class EnumViewOption(FieldViewOption):
-#     item = PolyModelType(BaseDynamicField)
-#     sub_key = StringType()
-#
-#
-# class EnumDyField(BaseDynamicField):
-#     view_type = StringType(default='enum')
-#     view_option = DictType(PolyModelType(BaseDynamicField), serialize_when_none=False)
-#
-#
-# GreenStateOption = StateViewOption()
-# GreenStateOption.icon = SimpleGreenIcon
-# GreenState = StateDyField()
-# GreenState.view_option = GreenStateOption
-#
-# RedStateOption = StateViewOption()
-# RedStateOption.icon = SimpleRedIcon
-# RedState = StateDyField()
-# RedState.view_option = RedStateOption
-#
-# YellowStateOption = StateViewOption()
-# YellowStateOption.icon = SimpleYellowIcon
-# YellowState = StateDyField()
-# YellowState.view_option = YellowStateOption
+class SearchField(BaseDynamicSearch):
+    enums = DictType(ModelType(SearchEnumField), serialize_when_none=False)
+    reference = StringType(serialize_when_none=False)
 
-# Example
-#
-# ServerStateEnumOption = {
-#     "ACTIVATE": GreenState,
-#     "DEACTIVATE": RedState,
-#     "MAINTENANCE": YellowState,
-# }
-# server_state = EnumDyField()
-# server_state.view_option = ServerStateEnumOption
-# print(server_state.to_primitive())
-#
-#
-# print(ServerStateField().to_primitive())
-# {
-#     'view_type': 'enum',
-#     'view_option': {
-#         'ACTIVATE': {'view_type': 'state', 'view_option': {'icon': {'color': '#60b731'}}},
-#         'DEACTIVATE': {'view_type': 'state', 'view_option': {'icon': {'color': '#ef3817'}}},
-#         'MAINTENANCE': {'view_type': 'state', 'view_option': {'icon': {'color': '#ffce02'}}}
-#     }
-# }
+    @classmethod
+    def set(cls, name='', key='', data_type=None, enums=None, reference=None):
+        return_dic = {
+            'name': name,
+            'key': key
+        }
+
+        if data_type is not None:
+            return_dic.update({'data_type': data_type})
+
+        if reference is not None:
+            return_dic.update({'reference': reference})
+
+        if enums is not None:
+            convert_enums = {}
+            for enum_key in enums:
+                enum_v = enums[enum_key]
+                convert_enums[enum_key] = SearchEnumField.set_field(**enum_v)
+
+            return_dic.update({
+                'enums': convert_enums
+            })
+
+        return cls(return_dic)

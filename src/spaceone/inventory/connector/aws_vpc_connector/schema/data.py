@@ -267,7 +267,7 @@ class IcmpTypeCode(Model):
 
 
 class PortRange(Model):
-    port_rom = IntType(deserialize_from="From")
+    port_from = IntType(deserialize_from="From")
     port_to = IntType(deserialize_from="To")
 
 
