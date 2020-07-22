@@ -13,6 +13,15 @@ class PermissionsBoundary(Model):
     permissions_boundary_type = StringType(deserialize_from="PermissionsBoundaryType", choices=("PermissionsBoundaryPolicy"))
     permissions_boundary_arn = StringType(deserialize_from="PermissionsBoundaryArn")
 
+class PermissionSummary(Model):
+    version = StringType(StringType())
+    Statement = ListType(StringType())
+
+class Permission(Model):
+    version = StringType()
+    statement = ModelType(PermissionSummary)
+    resource = StringType()
+
 # Policies
 class Policy(Model):
     policy_name = StringType(deserialize_from="PolicyName")
@@ -40,10 +49,19 @@ class User(Model):
     user_name = StringType(deserialize_from="UserName")
     user_id = StringType(deserialize_from="UserId")
     arn = StringType(deserialize_from="Arn")
+    groups = ListType(StringType())
     create_date = DateTimeType(deserialize_from="CreateDate")
     password_last_used = DateTimeType(deserialize_from="PasswordLastUsed")
     permissions_boundary = ModelType(PermissionsBoundary, deserialize_from="PermissionsBoundary")
     tags = ListType(ModelType(Tags), deserialize_from="Tags")
+
+    @serializable
+    def reference(self):
+        return {
+            "resource_id": self.arn,
+            "external_link": f"https://console.aws.amazon.com/iam/home?region={self.region_name}#/users/{self.user_name}"
+        }
+
 
 class Group(Model):
     path = StringType(deserialize_from="Path")
@@ -84,13 +102,18 @@ class Roles(Model):
             "external_link": f"https://console.aws.amazon.com/iam/home?region={self.region}#/roles/{self.role_name}"
         }
 
-class Summary(Model):
-    sid = StringType(deserialize_from='Sid', serialize_when_none=False)
-    effect = StringType(deserialize_from='Effect')
-    statement = ListType(StringType())
-    resource = StringType(deserialize_from='Resource')
+class IdentityProvider(Model):
+    arn = StringType(deserialize_from="Arn")
+    url = StringType(deserialize_from="Url")
+    provider_type = StringType()
+    client_id_list = ListType(StringType, deserialize_from="ClientIDList")
+    thumbprint_list = ListType(StringType, deserialize_from="ThumbprintList")
+    create_date = DateTimeType(deserialize_from="CreateDate")
 
-class Permission(Model):
-    version = StringType()
-    statement = ModelType(Summary)
-    resource = StringType()
+    @serializable
+    def reference(self):
+        return {
+            "resource_id": self.arn,
+            "external_link": f"https://console.aws.amazon.com/iam/home?region={self.region}#/roles/{self.arn}"
+        }
+
