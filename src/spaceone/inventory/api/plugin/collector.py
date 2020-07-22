@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from spaceone.api.inventory.plugin import collector_pb2_grpc, collector_pb2
 from spaceone.core.pygrpc import BaseAPI
 from spaceone.core.pygrpc.message_type import *
