@@ -13,6 +13,15 @@ class PermissionsBoundary(Model):
     permissions_boundary_type = StringType(deserialize_from="PermissionsBoundaryType", choices=("PermissionsBoundaryPolicy"))
     permissions_boundary_arn = StringType(deserialize_from="PermissionsBoundaryArn")
 
+class PermissionSummary(Model):
+    version = StringType(StringType())
+    Statement = ListType(StringType())
+
+class Permission(Model):
+    version = StringType()
+    statement = ModelType(PermissionSummary)
+    resource = StringType()
+
 # Policies
 class Policy(Model):
     policy_name = StringType(deserialize_from="PolicyName")
@@ -83,14 +92,3 @@ class Roles(Model):
             "resource_id": self.arn,
             "external_link": f"https://console.aws.amazon.com/iam/home?region={self.region}#/roles/{self.role_name}"
         }
-
-class Summary(Model):
-    sid = StringType(deserialize_from='Sid', serialize_when_none=False)
-    effect = StringType(deserialize_from='Effect')
-    statement = ListType(StringType())
-    resource = StringType(deserialize_from='Resource')
-
-class Permission(Model):
-    version = StringType()
-    statement = ModelType(Summary)
-    resource = StringType()
