@@ -23,11 +23,14 @@ class CFConnector(SchematicAWSConnector):
         for cst in CLOUD_SERVICE_TYPES:
             resources.append(cst)
 
-        for data in self.request_data():
-            # print(f"[ CloudFront DATA ]")
-            resources.append(self.response_schema(
-                {'resource': DistributionResource({'data': data,
-                                                   'reference': ReferenceModel(data.reference)})}))
+        try:
+            for data in self.request_data():
+                # print(f"[ CloudFront DATA ]")
+                resources.append(self.response_schema(
+                    {'resource': DistributionResource({'data': data,
+                                                       'reference': ReferenceModel(data.reference)})}))
+        except Exception as e:
+            print(f'[ERROR {self.service_name}] {e}')
 
         print(f' Cloud Front Finished {time.time() - start_time} Seconds')
         return resources

@@ -6,20 +6,25 @@ from spaceone.inventory.connector.aws_eks_connector.schema.data import Cluster, 
 from spaceone.inventory.connector.aws_eks_connector.schema.resource import ClusterResource, ClusterResponse
 from spaceone.inventory.connector.aws_eks_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
-from spaceone.inventory.libs.schema.resource import ReferenceModel
+
 
 _LOGGER = logging.getLogger(__name__)
 EXCLUDE_REGION = ['us-west-1']          # NOT SUPOORTED REGION
 
 
 class EKSConnector(SchematicAWSConnector):
-    response_schema = ClusterResponse
     service_name = 'eks'
 
     def get_resources(self) -> List[ClusterResource]:
         print("** EKS START **")
         resources = []
         start_time = time.time()
+
+        collect_resource = {
+            'request_method': self.request_data,
+            'resource': ClusterResource,
+            'response_schema': ClusterResponse
+        }
 
         # init cloud service type
         for cst in CLOUD_SERVICE_TYPES:
@@ -30,12 +35,7 @@ class EKSConnector(SchematicAWSConnector):
                 continue
 
             self.reset_region(region_name)
-
-            # merge data
-            for data in self.request_data(region_name):
-                resources.append(self.response_schema(
-                    {'resource': ClusterResource({'data': data,
-                                                  'reference': ReferenceModel(data.reference)})}))
+            resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
 
         print(f' EKS Finished {time.time() - start_time} Seconds')
         return resources

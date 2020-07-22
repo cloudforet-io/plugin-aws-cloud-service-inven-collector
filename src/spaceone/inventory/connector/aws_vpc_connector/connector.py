@@ -14,7 +14,7 @@ from spaceone.inventory.connector.aws_vpc_connector.schema.resource import VPCRe
     CustomerGatewayResponse, VPNGatewayResource, VPNGatewayResponse, VPNConnectionResource, VPNConnectionResponse
 from spaceone.inventory.connector.aws_vpc_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
-from spaceone.inventory.libs.schema.resource import ReferenceModel
+
 
 _LOGGER = logging.getLogger(__name__)
 PROTOCOL_NUMBER_INFO = {'0': 'HOPOPT', '1': 'ICMP', '2': 'IGMP', '3': 'GGP', '4': 'IPv4', '5': 'ST', '6': 'TCP',
@@ -45,20 +45,6 @@ PROTOCOL_NUMBER_INFO = {'0': 'HOPOPT', '1': 'ICMP', '2': 'IGMP', '3': 'GGP', '4'
 
 
 class VPCConnector(SchematicAWSConnector):
-    vpc_res_schema = VPCResponse
-    subnet_res_schema = SubnetResponse
-    rtable_res_schema = RouteTableResponse
-    igw_res_schema = InternetGatewayResponse
-    eoigw_res_schema = EgressOnlyInternetGatewayResponse
-    endpoint_res_schema = EndpointResponse
-    natgw_res_schema = NATGatewayResponse
-    peercon_res_schema = PeeringConnectionResponse
-    netacl_res_schema = NetworkACLResponse
-    transitgw_res_schema = TransitGatewayResponse
-    customergw_res_schema = CustomerGatewayResponse
-    vpngw_res_schema = VPNGatewayResponse
-    vpnconn_res_schema = VPNConnectionResponse
-
     service_name = 'ec2'
 
     customer_gateways = None
@@ -82,6 +68,74 @@ class VPCConnector(SchematicAWSConnector):
     def get_resources(self):
         resources = []
         start_time = time.time()
+
+        collect_resources = [
+            {
+                'request_method': self.request_vpn_connection_data,
+                'resource': VPNConnectionResource,
+                'response_schema': VPNConnectionResponse
+            },
+            {
+                'request_method': self.request_vpn_gateway_data,
+                'resource': VPNGatewayResource,
+                'response_schema': VPNGatewayResponse
+            },
+            {
+                'request_method': self.request_customer_gateway_data,
+                'resource': CustomerGatewayResource,
+                'response_schema': CustomerGatewayResponse
+            },
+            {
+                'request_method': self.request_transit_gateway_data,
+                'resource': TransitGatewayResource,
+                'response_schema': TransitGatewayResponse
+            },
+            {
+                'request_method': self.request_peering_connection_data,
+                'resource': PeeringConnectionResource,
+                'response_schema': PeeringConnectionResponse
+            },
+            {
+                'request_method': self.request_nat_gateway_data,
+                'resource': NATGatewayResource,
+                'response_schema': NATGatewayResponse
+            },
+            {
+                'request_method': self.request_network_acl_data,
+                'resource': NetworkACLResource,
+                'response_schema': NetworkACLResponse
+            },
+            {
+                'request_method': self.request_endpoint_data,
+                'resource': EndpointResource,
+                'response_schema': EndpointResponse
+            },
+            {
+                'request_method': self.request_egress_only_internet_gateway_data,
+                'resource': EgressOnlyInternetGatewayResource,
+                'response_schema': EgressOnlyInternetGatewayResponse
+            },
+            {
+                'request_method': self.request_internet_gateway_data,
+                'resource': InternetGatewayResource,
+                'response_schema': InternetGatewayResponse
+            },
+            {
+                'request_method': self.request_route_table_data,
+                'resource': RouteTableResource,
+                'response_schema': RouteTableResponse
+            },
+            {
+                'request_method': self.request_subnet_data,
+                'resource': SubnetResource,
+                'response_schema': SubnetResponse
+            },
+            {
+                'request_method': self.request_vpc_data,
+                'resource': VPCResource,
+                'response_schema': VPCResponse
+            }
+        ]
 
         # init cloud service type
         for cst in CLOUD_SERVICE_TYPES:
@@ -109,72 +163,8 @@ class VPCConnector(SchematicAWSConnector):
             self.vpcs = self.list_vpcs()
             self.vpc_ids = [vpc.get('VpcId') for vpc in self.vpcs]
 
-            # VPN Connection
-            for data in self.request_vpn_connection_data(region_name):
-                resources.append(self.vpnconn_res_schema(
-                    {'resource': VPNConnectionResource({'data': data, 'reference': ReferenceModel(data.reference)})}))
-
-            # VPN Gateway
-            for data in self.request_vpn_gateway_data(region_name):
-                resources.append(self.vpngw_res_schema(
-                    {'resource': VPNGatewayResource({'data': data, 'reference': ReferenceModel(data.reference)})}))
-
-            # Customer Gateway
-            for data in self.request_customer_gateway_data(region_name):
-                resources.append(self.customergw_res_schema(
-                    {'resource': CustomerGatewayResource({'data': data, 'reference': ReferenceModel(data.reference)})}))
-
-            # Transit Gateway
-            for data in self.request_transit_gateway_data(region_name):
-                resources.append(self.transitgw_res_schema(
-                    {'resource': TransitGatewayResource({'data': data, 'reference': ReferenceModel(data.reference)})}))
-
-            # Peering Connection
-            for data in self.request_peering_connection_data(region_name):
-                resources.append(self.peercon_res_schema(
-                    {'resource': PeeringConnectionResource({'data': data,
-                                                            'reference': ReferenceModel(data.reference)})}))
-
-            # NAT Gateway
-            for data in self.request_nat_gateway_data(region_name):
-                resources.append(self.natgw_res_schema(
-                    {'resource': NATGatewayResource({'data': data, 'reference': ReferenceModel(data.reference)})}))
-
-            # Network ACL
-            for data in self.request_network_acl_data(region_name):
-                resources.append(self.netacl_res_schema(
-                    {'resource': NetworkACLResource({'data': data, 'reference': ReferenceModel(data.reference)})}))
-
-            # Endpoint
-            for data in self.request_endpoint_data(region_name):
-                resources.append(self.endpoint_res_schema(
-                    {'resource': EndpointResource({'data': data, 'reference': ReferenceModel(data.reference)})}))
-
-            # Egress Only Internet Gateway
-            for data in self.request_egress_only_internet_gateway_data(region_name):
-                resources.append(self.eoigw_res_schema(
-                    {'resource': EgressOnlyInternetGatewayResource({'data': data,
-                                                                    'reference': ReferenceModel(data.reference)})}))
-
-            # Internet Gateways
-            for data in self.request_internet_gateway_data(region_name):
-                resources.append(self.igw_res_schema(
-                    {'resource': InternetGatewayResource({'data': data, 'reference': ReferenceModel(data.reference)})}))
-
-            # Route table
-            for data in self.request_route_table_data(region_name):
-                resources.append(self.rtable_res_schema(
-                    {'resource': RouteTableResource({'data': data, 'reference': ReferenceModel(data.reference)})}))
-
-            # Subnet
-            for data in self.request_subnet_data(region_name):
-                resources.append(self.subnet_res_schema(
-                    {'resource': SubnetResource({'data': data, 'reference': ReferenceModel(data.reference)})}))
-
-            # VPC
-            for data in self.request_vpc_data(region_name):
-                resources.append(self.vpc_res_schema(
-                    {'resource': VPCResource({'data': data, 'reference': ReferenceModel(data.reference)})}))
+            for collect_resource in collect_resources:
+                resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
 
         print(f' VPC Finished {time.time() - start_time} Seconds')
         return resources

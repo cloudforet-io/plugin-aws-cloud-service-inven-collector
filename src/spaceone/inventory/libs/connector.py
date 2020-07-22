@@ -1,12 +1,10 @@
 from functools import partial
 from typing import List
-
-import boto3
 from boto3.session import Session
-
 from spaceone.core import utils
 from spaceone.core.connector import BaseConnector
-from spaceone.inventory.libs.schema.resource import CloudServiceResponse
+from spaceone.inventory.libs.schema.resource import CloudServiceResponse, ReferenceModel
+
 
 DEFAULT_REGION = 'us-east-1'
 ARN_DEFAULT_PARTITION = 'aws'
@@ -109,3 +107,24 @@ class SchematicAWSConnector(AWSConnector):
         #     print("-------------")
 
         return collect_data
+
+    def collect_data_by_region(self, service_name, region_name, collect_resource_info):
+        '''
+        collect_resource_info = {
+                'request_method': self.request_something_like_data,
+                'resource': ResourceClass,
+                'response_schema': ResponseClass,
+                'kwargs': {}
+        }
+        '''
+        resources = []
+
+        try:
+            for data in collect_resource_info['request_method'](region_name, **collect_resource_info.get('kwargs', {})):
+                resources.append(collect_resource_info['response_schema'](
+                    {'resource': collect_resource_info['resource']({'data': data,
+                                                                    'reference': ReferenceModel(data.reference)})}))
+        except Exception as e:
+            print(f'[ERROR {service_name}] REGION : {region_name} {e}')
+
+        return resources

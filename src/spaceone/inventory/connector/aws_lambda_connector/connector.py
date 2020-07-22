@@ -11,7 +11,6 @@ from spaceone.inventory.connector.aws_lambda_connector.schema.resource import La
 from spaceone.inventory.connector.aws_lambda_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
 from spaceone.inventory.libs.data_loader import DataLoader
-from spaceone.inventory.libs.schema.resource import ReferenceModel
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -36,14 +35,25 @@ class VpcDataLoader(DataLoader):
 
 
 class LambdaConnector(SchematicAWSConnector):
-    function_response_schema = LambdaFunctionResponse
-    layer_response_schema = LambdaLayerResponse
     service_name = 'lambda'
 
     def get_resources(self):
         print("** Lambda START **")
         resources = []
         start_time = time.time()
+
+        collect_resources = [
+            {
+                'request_method': self.request_functions_data,
+                'resource': LambdaFunctionResource,
+                'response_schema': LambdaFunctionResponse
+            },
+            {
+                'request_method': self.request_layer_data,
+                'resource': LambdaLayerResource,
+                'response_schema': LambdaLayerResponse
+            }
+        ]
 
         # init cloud service type
         for cst in CLOUD_SERVICE_TYPES:
@@ -53,15 +63,8 @@ class LambdaConnector(SchematicAWSConnector):
             # print(f'[ Lambda {region_name} ]')
             self.reset_region(region_name)
 
-            for data in self.request_functions_data(region_name):
-                resources.append(self.function_response_schema(
-                    {'resource': LambdaFunctionResource({'data': data,
-                                                         'reference': ReferenceModel(data.reference)})}))
-
-            for data in self.request_layer_data(region_name):
-                resources.append(self.layer_response_schema(
-                    {'resource': LambdaLayerResource({'data': data,
-                                                      'reference': ReferenceModel(data.reference)})}))
+            for collect_resource in collect_resources:
+                resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
 
         print(f' Lambda Finished {time.time() - start_time} Seconds')
         return resources

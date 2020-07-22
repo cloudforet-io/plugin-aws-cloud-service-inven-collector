@@ -6,13 +6,11 @@ from spaceone.inventory.connector.aws_eip_connector.schema.data import ElasticIP
 from spaceone.inventory.connector.aws_eip_connector.schema.resource import EIPResource, EIPResponse
 from spaceone.inventory.connector.aws_eip_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
-from spaceone.inventory.libs.schema.resource import ReferenceModel
 
 _LOGGER = logging.getLogger(__name__)
 
 
 class EIPConnector(SchematicAWSConnector):
-    response_schema = EIPResponse
     service_name = 'ec2'
 
     def get_resources(self) -> List[EIPResource]:
@@ -20,18 +18,19 @@ class EIPConnector(SchematicAWSConnector):
         resources = []
         start_time = time.time()
 
+        collect_resource = {
+            'request_method': self.request_data,
+            'resource': EIPResource,
+            'response_schema': EIPResponse
+        }
+
         # init cloud service type
         for cst in CLOUD_SERVICE_TYPES:
             resources.append(cst)
 
         for region_name in self.region_names:
             self.reset_region(region_name)
-
-            # merge data
-            for data in self.request_data(region_name):
-                resources.append(self.response_schema(
-                    {'resource': EIPResource({'data': data,
-                                              'reference': ReferenceModel(data.reference)})}))
+            resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
 
         print(f' EIP Finished {time.time() - start_time} Seconds')
         return resources

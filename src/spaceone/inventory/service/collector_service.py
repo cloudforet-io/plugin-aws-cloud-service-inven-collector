@@ -10,6 +10,7 @@ _LOGGER = logging.getLogger(__name__)
 MAX_WORKER = 20
 SUPPORTED_RESOURCE_TYPE = ['inventory.CloudService', 'inventory.CloudServiceType']
 DEFAULT_REGION = 'ap-northeast-2'
+FILTER_FORMAT = []
 
 
 @authentication_handler
@@ -46,8 +47,18 @@ class CollectorService(BaseService):
             'EBSConnectorManager',
             'VPCConnectorManager',
             'EC2ConnectorManager',
-            'IAMConnectorManager'
+            # 'IAMConnectorManager'
         ]
+
+    @check_required(['options'])
+    def init(self, params):
+        """ init plugin by options
+        """
+        capability = {
+            'filter_format': FILTER_FORMAT,
+            'supported_resource_type': SUPPORTED_RESOURCE_TYPE
+        }
+        return {'metadata': capability}
 
     @transaction
     @check_required(['options', 'secret_data'])
@@ -64,10 +75,7 @@ class CollectorService(BaseService):
         if secret_data != {}:
             self.get_account_id(secret_data)
 
-        return {'options': {
-            # 'filter_format':FILTER_FORMAT,
-            'supported_resource_type': SUPPORTED_RESOURCE_TYPE
-        }}
+        return {}
 
     @transaction
     @check_required(['options', 'secret_data', 'filter'])

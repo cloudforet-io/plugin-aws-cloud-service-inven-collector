@@ -27,6 +27,24 @@ class DirectConnectConnector(SchematicAWSConnector):
         resources = []
         start_time = time.time()
 
+        collect_resources = [
+            {
+                'request_method': self.connection_request_data,
+                'resource': ConnectionResource,
+                'response_schema': ConnectionResponse
+            },
+            {
+                'request_method': self.virtual_private_gateway_request_data,
+                'resource': VirtualPrivateGatewayResource,
+                'response_schema': VirtualPrivateGatewayResponse
+            },
+            {
+                'request_method': self.lag_request_data,
+                'resource': LAGResource,
+                'response_schema': LAGResponse
+            },
+        ]
+
         # init cloud service type
         for cst in CLOUD_SERVICE_TYPES:
             resources.append(cst)
@@ -35,25 +53,16 @@ class DirectConnectConnector(SchematicAWSConnector):
         for region_name in self.region_names:
             self.reset_region(region_name)
 
-            for data in self.connection_request_data(region_name):
-                resources.append(self.connection_response_schema(
-                    {'resource': ConnectionResource({'data': data,
-                                                     'reference': ReferenceModel(data.reference)})}))
+            for collect_resource in collect_resources:
+                resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
 
-            for data in self.virtual_private_gateway_request_data(region_name):
-                resources.append(self.vpgw_response_schema(
-                    {'resource': VirtualPrivateGatewayResource({'data': data,
-                                                                'reference': ReferenceModel(data.reference)})}))
-
-            for data in self.lag_request_data(region_name):
-                resources.append(self.lag_response_schema(
-                    {'resource': LAGResource({'data': data,
-                                              'reference': ReferenceModel(data.reference)})}))
-
-        for data in self.direct_connect_gateway_request_data():
-            resources.append(self.dcgw_response_schema(
-                {'resource': DirectConnectGatewayResource({'data': data,
-                                                           'reference': ReferenceModel(data.reference)})}))
+        try:
+            for data in self.direct_connect_gateway_request_data():
+                resources.append(self.dcgw_response_schema(
+                    {'resource': DirectConnectGatewayResource({'data': data,
+                                                               'reference': ReferenceModel(data.reference)})}))
+        except Exception as e:
+            print(f'[ERROR {self.service_name}] {e}')
 
         print(f' Direct Connect Finished {time.time() - start_time} Seconds')
         return resources
