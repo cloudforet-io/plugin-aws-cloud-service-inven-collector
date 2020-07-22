@@ -7,13 +7,11 @@ from spaceone.inventory.connector.aws_cloud_trail_connector.schema.data import T
 from spaceone.inventory.connector.aws_cloud_trail_connector.schema.resource import TrailResource, TrailResponse
 from spaceone.inventory.connector.aws_cloud_trail_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
-from spaceone.inventory.libs.schema.resource import ReferenceModel
 
 _LOGGER = logging.getLogger(__name__)
 
 
 class CloudTrailConnector(SchematicAWSConnector):
-    response_schema = TrailResponse
     service_name = 'cloudtrail'
     trails = []
 
@@ -22,6 +20,12 @@ class CloudTrailConnector(SchematicAWSConnector):
         resources = []
         start_time = time.time()
 
+        collect_resource = {
+            'request_method': self.request_data,
+            'resource': TrailResource,
+            'response_schema': TrailResponse
+        }
+
         # init cloud service type
         for cst in CLOUD_SERVICE_TYPES:
             resources.append(cst)
@@ -29,12 +33,7 @@ class CloudTrailConnector(SchematicAWSConnector):
         # merge data
         for region_name in self.region_names:
             self.reset_region(region_name)
-
-            # merge data
-            for data in self.request_data(region_name):
-                resources.append(self.response_schema(
-                    {'resource': TrailResource({'data': data,
-                                                'reference': ReferenceModel(data.reference)})}))
+            resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
 
         print(f' Cloud Trail Finished {time.time() - start_time} Seconds')
         return resources

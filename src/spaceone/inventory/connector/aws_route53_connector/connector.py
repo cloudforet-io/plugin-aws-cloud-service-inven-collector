@@ -20,15 +20,18 @@ class Route53Connector(SchematicAWSConnector):
         resources = []
         start_time = time.time()
 
-        # init cloud service type
-        for cst in CLOUD_SERVICE_TYPES:
-            resources.append(cst)
+        try:
+            # init cloud service type
+            for cst in CLOUD_SERVICE_TYPES:
+                resources.append(cst)
 
-        # merge data
-        for data in self.request_data():
-            resources.append(self.response_schema(
-                {'resource': HostedZoneResource({'data': data,
-                                                 'reference': ReferenceModel(data.reference)})}))
+            # merge data
+            for data in self.request_data():
+                resources.append(self.response_schema(
+                    {'resource': HostedZoneResource({'data': data,
+                                                     'reference': ReferenceModel(data.reference)})}))
+        except Exception as e:
+            print(f'[ERROR {self.service_name}] {e}')
 
         print(f' Route53 Finished {time.time() - start_time} Seconds')
         return resources

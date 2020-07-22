@@ -8,17 +8,12 @@ from spaceone.inventory.connector.aws_documentdb_connector.schema.resource impor
     SubnetGroupResource, SubnetGroupResponse, ParameterGroupResource, ParameterGroupResponse
 from spaceone.inventory.connector.aws_documentdb_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
-from spaceone.inventory.libs.schema.resource import ReferenceModel
 
 _LOGGER = logging.getLogger(__name__)
 EXCLUDE_REGION = ['us-west-1', 'ap-east-1', 'eu-north-1', 'me-south-1', 'sa-east-1']
 
 
 class DocumentDBConnector(SchematicAWSConnector):
-    cluster_response_schema = ClusterResponse
-    subnet_group_response_schema = SubnetGroupResponse
-    parameter_group_response_schema = ParameterGroupResponse
-
     service_name = 'docdb'
 
     _parameter_groups = []
@@ -39,33 +34,38 @@ class DocumentDBConnector(SchematicAWSConnector):
 
             self.reset_region(region_name)
 
-            # request parameter group
-            for data in self.request_parameter_group_data(region_name):
-                self._parameter_groups.append(data)
-                resources.append(self.parameter_group_response_schema(
-                    {'resource': ParameterGroupResource({'data': data,
-                                                         'reference': ReferenceModel(data.reference)})}))
+            collect_resources = [
+                {
+                    'request_method': self.request_parameter_group_data,
+                    'resource': ParameterGroupResource,
+                    'response_schema': ParameterGroupResponse
+                },
+                {
+                    'request_method': self.request_subnet_group_data,
+                    'resource': SubnetGroupResource,
+                    'response_schema': SubnetGroupResponse
+                },
+                {
+                    'request_method': self.request_cluster_data,
+                    'resource': ClusterResource,
+                    'response_schema': ClusterResponse,
+                    'kwargs': {
+                        'raw_instances': self._describe_instances(),
+                        'raw_snapshots': self._describe_snapshots()
+                    }
+                },
+            ]
 
-            # request subnet group
-            for data in self.request_subnet_group_data(region_name):
-                self._subnet_groups.append(data)
-                resources.append(self.subnet_group_response_schema(
-                    {'resource': SubnetGroupResource({'data': data,
-                                                      'reference': ReferenceModel(data.reference)})}))
-
-            raw_instances = self._describe_instances()
-            raw_snapshots = self._describe_snapshots()
-
-            # request cluster
-            for data in self.request_cluster_data(raw_instances, raw_snapshots, region_name):
-                resources.append(self.cluster_response_schema(
-                    {'resource': ClusterResource({'data': data,
-                                                  'reference': ReferenceModel(data.reference)})}))
+            for collect_resource in collect_resources:
+                resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
 
         print(f' DocumentDB Finished {time.time() - start_time} Seconds')
         return resources
 
-    def request_cluster_data(self, raw_instances, raw_snapshots, region_name) -> List[Cluster]:
+    def request_cluster_data(self, region_name, **kwargs) -> List[Cluster]:
+        raw_instances = kwargs.get('raw_instances', [])
+        raw_snapshots = kwargs.get('raw_snapshots', [])
+
         paginator = self.client.get_paginator('describe_db_clusters')
         response_iterator = paginator.paginate(
             Filters=[{'Name': 'engine', 'Values': ['docdb']}],

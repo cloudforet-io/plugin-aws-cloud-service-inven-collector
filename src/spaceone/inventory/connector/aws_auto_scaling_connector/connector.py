@@ -8,14 +8,11 @@ from spaceone.inventory.connector.aws_auto_scaling_connector.schema.resource imp
     LaunchConfigurationResource, AutoScalingGroupResponse, LaunchConfigurationResponse
 from spaceone.inventory.connector.aws_auto_scaling_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
-from spaceone.inventory.libs.schema.resource import ReferenceModel
 
 _LOGGER = logging.getLogger(__name__)
 
 
 class AutoScalingConnector(SchematicAWSConnector):
-    auto_scaling_group_response_schema = AutoScalingGroupResponse
-    launch_configuration_response_schema = LaunchConfigurationResponse
     _launch_configurations = None
 
     service_name = 'autoscaling'
@@ -25,6 +22,19 @@ class AutoScalingConnector(SchematicAWSConnector):
         resources = []
         start_time = time.time()
 
+        collect_resources = [
+            {
+                'request_method': self.request_launch_configuration_data,
+                'resource': LaunchConfigurationResource,
+                'response_schema': LaunchConfigurationResponse
+            },
+            {
+                'request_method': self.request_auto_scaling_group_data,
+                'resource': AutoScalingGroupResource,
+                'response_schema': AutoScalingGroupResponse
+            },
+        ]
+
         for cst in CLOUD_SERVICE_TYPES:
             resources.append(cst)
 
@@ -33,15 +43,8 @@ class AutoScalingConnector(SchematicAWSConnector):
             self._launch_configurations = []
             self.reset_region(region_name)
 
-            for data in self.request_launch_configuration_data(region_name):
-                resources.append(self.launch_configuration_response_schema(
-                    {'resource': LaunchConfigurationResource({'data': data,
-                                                              'reference': ReferenceModel(data.reference)})}))
-
-            for data in self.request_auto_scaling_group_data(region_name):
-                resources.append(self.auto_scaling_group_response_schema(
-                    {'resource': AutoScalingGroupResource({'data': data,
-                                                           'reference': ReferenceModel(data.reference)})}))
+            for collect_resource in collect_resources:
+                resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
 
         print(f' Auto Scaling Finished {time.time() - start_time} Seconds')
         return resources

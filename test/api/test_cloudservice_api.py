@@ -47,6 +47,10 @@ class TestCloudServiceAPIs(TestCase):
             'region_name': REGION_NAME
         })
 
+    def test_init(self):
+        v_info = self.inventory.Collector.init({'options': {}})
+        print_json(v_info)
+
     def test_verify(self):
         options = {
             'domain': 'mz.co.kr'
