@@ -49,10 +49,19 @@ class User(Model):
     user_name = StringType(deserialize_from="UserName")
     user_id = StringType(deserialize_from="UserId")
     arn = StringType(deserialize_from="Arn")
+    groups = ListType(StringType())
     create_date = DateTimeType(deserialize_from="CreateDate")
     password_last_used = DateTimeType(deserialize_from="PasswordLastUsed")
     permissions_boundary = ModelType(PermissionsBoundary, deserialize_from="PermissionsBoundary")
     tags = ListType(ModelType(Tags), deserialize_from="Tags")
+
+    @serializable
+    def reference(self):
+        return {
+            "resource_id": self.arn,
+            "external_link": f"https://console.aws.amazon.com/iam/home?region={self.region_name}#/users/{self.user_name}"
+        }
+
 
 class Group(Model):
     path = StringType(deserialize_from="Path")
@@ -92,3 +101,19 @@ class Roles(Model):
             "resource_id": self.arn,
             "external_link": f"https://console.aws.amazon.com/iam/home?region={self.region}#/roles/{self.role_name}"
         }
+
+class IdentityProvider(Model):
+    arn = StringType(deserialize_from="Arn")
+    url = StringType(deserialize_from="Url")
+    provider_type = StringType()
+    client_id_list = ListType(StringType, deserialize_from="ClientIDList")
+    thumbprint_list = ListType(StringType, deserialize_from="ThumbprintList")
+    create_date = DateTimeType(deserialize_from="CreateDate")
+
+    @serializable
+    def reference(self):
+        return {
+            "resource_id": self.arn,
+            "external_link": f"https://console.aws.amazon.com/iam/home?region={self.region}#/roles/{self.arn}"
+        }
+
