@@ -10,7 +10,7 @@ from spaceone.inventory.connector.aws_rds_connector.schema.resource import Datab
     OptionGroupResponse
 from spaceone.inventory.connector.aws_rds_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
-from spaceone.inventory.libs.schema.resource import ReferenceModel
+
 
 _LOGGER = logging.getLogger(__name__)
 RDS_FILTER = ['aurora', 'aurora-mysql', 'mysql', 'mariadb', 'postgres',
@@ -19,18 +19,45 @@ RDS_FILTER = ['aurora', 'aurora-mysql', 'mysql', 'mariadb', 'postgres',
 
 
 class RDSConnector(SchematicAWSConnector):
-    db_response_schema = DatabaseResponse
-    ss_response_schema = SnapshotResponse
-    sg_response_schema = SubnetGroupResponse
-    pg_response_schema = ParameterGroupResponse
-    og_response_schema = OptionGroupResponse
-
     service_name = 'rds'
 
     def get_resources(self):
         print("** RDS START **")
         resources = []
         start_time = time.time()
+
+        collect_resources = [
+            {
+                'request_method': self.db_cluster_data,
+                'resource': DBClusterResource,
+                'response_schema': DatabaseResponse
+            },
+            {
+                'request_method': self.db_instance_data,
+                'resource': DBInstanceResource,
+                'response_schema': DatabaseResponse
+            },
+            {
+                'request_method': self.snapshot_request_data,
+                'resource': SnapshotResource,
+                'response_schema': SnapshotResponse
+            },
+            {
+                'request_method': self.subnet_group_request_data,
+                'resource': SubnetGroupResource,
+                'response_schema': SubnetGroupResponse
+            },
+            {
+                'request_method': self.parameter_group_request_data,
+                'resource': ParameterGroupResource,
+                'response_schema': ParameterGroupResponse
+            },
+            {
+                'request_method': self.option_group_request_data,
+                'resource': OptionGroupResource,
+                'response_schema': OptionGroupResponse
+            }
+        ]
 
         # init cloud service type
         for cst in CLOUD_SERVICE_TYPES:
@@ -40,35 +67,8 @@ class RDSConnector(SchematicAWSConnector):
             # print(f'[ {region_name} ]')
             self.reset_region(region_name)
 
-            for data in self.db_cluster_data(region_name):
-                resources.append(self.db_response_schema(
-                    {'resource': DBClusterResource({'data': data,
-                                                    'reference': ReferenceModel(data.reference)})}))
-
-            for data in self.db_instance_data(region_name):
-                resources.append(self.db_response_schema(
-                    {'resource': DBInstanceResource({'data': data,
-                                                     'reference': ReferenceModel(data.reference)})}))
-
-            for data in self.snapshot_request_data(region_name):
-                resources.append(self.ss_response_schema(
-                    {'resource': SnapshotResource({'data': data,
-                                                   'reference': ReferenceModel(data.reference)})}))
-
-            for data in self.subnet_group_request_data(region_name):
-                resources.append(self.sg_response_schema(
-                    {'resource': SubnetGroupResource({'data': data,
-                                                      'reference': ReferenceModel(data.reference)})}))
-
-            for data in self.parameter_group_request_data(region_name):
-                resources.append(self.pg_response_schema(
-                    {'resource': ParameterGroupResource({'data': data,
-                                                         'reference': ReferenceModel(data.reference)})}))
-
-            for data in self.option_group_request_data(region_name):
-                resources.append(self.og_response_schema(
-                    {'resource': OptionGroupResource({'data': data,
-                                                      'reference': ReferenceModel(data.reference)})}))
+            for collect_resource in collect_resources:
+                resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
 
         print(f' RDS Finished {time.time() - start_time} Seconds')
         return resources

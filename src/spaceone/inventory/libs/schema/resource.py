@@ -1,7 +1,7 @@
 from schematics.models import Model
 from schematics.types import ListType, StringType, PolyModelType, DictType, ModelType
-from .dynamic_layout import BaseLayoutField, QuerySearchTableDynamicLayout, QuerySearchTableLayoutOption, \
-    ItemDynamicLayout, ItemLayoutOption
+from .dynamic_layout import BaseLayoutField, QuerySearchTableDynamicLayout
+from .dynamic_search import BaseDynamicSearch
 
 
 class MetaDataViewSubData(Model):
@@ -15,6 +15,7 @@ class MetaDataViewTable(Model):
 class MetaDataView(Model):
     table = PolyModelType(MetaDataViewTable, serialize_when_none=False)
     sub_data = PolyModelType(MetaDataViewSubData, serialize_when_none=False)
+    search = ListType(PolyModelType(BaseDynamicSearch), serialize_when_none=False)
 
 
 class BaseMetaData(Model):
@@ -42,6 +43,11 @@ class CloudServiceTypeMeta(BaseMetaData):
     def set_fields(cls, name='', fields=[]):
         _table = MetaDataViewTable({'layout': QuerySearchTableDynamicLayout.set_fields(name, fields)})
         return cls({'view': MetaDataView({'table': _table})})
+
+    @classmethod
+    def set_meta(cls, name='', fields=[], search=[]):
+        table_meta = MetaDataViewTable({'layout': QuerySearchTableDynamicLayout.set_fields(name, fields)})
+        return cls({'view': MetaDataView({'table': table_meta, 'search': search})})
 
 
 class CloudServiceMeta(BaseMetaData):
@@ -82,4 +88,5 @@ class CloudServiceResource(Model):
 class CloudServiceResponse(BaseResponse):
     resource_type = StringType(default='inventory.CloudService')
     resource = PolyModelType(CloudServiceResource)
+
 

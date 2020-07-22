@@ -268,8 +268,8 @@ last = '''
     @serializable
     def reference(self):
         return {
-            "id": self.arn,
-            "link": f"https://console.aws.amazon.com/"
+            "resource_id": self.arn,
+            "external_link": f"https://console.aws.amazon.com/"
         }'''
 if __name__ == '__main__':
     # klass, models = normalize('SampleData', sample_simple)
@@ -298,41 +298,25 @@ if __name__ == '__main__':
     # print(f"{make_models(models)}\n\n{klass}")
 
     data ='''{
-                    'FromPort': 123,
-                    'IpProtocol': 'string',
-                    'IpRanges': [
-                        {
-                            'CidrIp': 'string',
-                            'Description': 'string'
-                        },
-                    ],
-                    'Ipv6Ranges': [
-                        {
-                            'CidrIpv6': 'string',
-                            'Description': 'string'
-                        },
-                    ],
-                    'PrefixListIds': [
-                        {
-                            'Description': 'string',
-                            'PrefixListId': 'string'
-                        },
-                    ],
-                    'ToPort': 123,
-                    'UserIdGroupPairs': [
-                        {
-                            'Description': 'string',
-                            'GroupId': 'string',
-                            'GroupName': 'string',
-                            'PeeringStatus': 'string',
-                            'UserId': 'string',
-                            'VpcId': 'string',
-                            'VpcPeeringConnectionId': 'string'
-                        },
-                    ]
-                },'''
+            'Path': 'string',
+            'UserName': 'string',
+            'UserId': 'string',
+            'Arn': 'string',
+            'CreateDate': datetime(2015, 1, 1),
+            'PasswordLastUsed': datetime(2015, 1, 1),
+            'PermissionsBoundary': {
+                'PermissionsBoundaryType': 'PermissionsBoundaryPolicy',
+                'PermissionsBoundaryArn': 'string'
+            },
+            'Tags': [
+                {
+                    'Key': 'string',
+                    'Value': 'string'
+                },
+            ]
+        },'''
     print('origin')
     print(data)
-    klass, models = normalize('SecurityGroupInPermission', data)
+    klass, models = normalize('User', data)
     print('to class')
     print(f"{first}{make_models(models)}{klass}{last}")

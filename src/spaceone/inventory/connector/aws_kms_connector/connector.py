@@ -6,13 +6,11 @@ from spaceone.inventory.connector.aws_kms_connector.schema.data import Key
 from spaceone.inventory.connector.aws_kms_connector.schema.resource import KeyResource, KeyResponse
 from spaceone.inventory.connector.aws_kms_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
-from spaceone.inventory.libs.schema.resource import ReferenceModel
 
 _LOGGER = logging.getLogger(__name__)
 
 
 class KMSConnector(SchematicAWSConnector):
-    response_schema = KeyResponse
     service_name = 'kms'
 
     def get_resources(self) -> List[KeyResource]:
@@ -20,17 +18,19 @@ class KMSConnector(SchematicAWSConnector):
         resources = []
         start_time = time.time()
 
+        collect_resource = {
+            'request_method': self.request_data,
+            'resource': KeyResource,
+            'response_schema': KeyResponse
+        }
+
         # init cloud service type
         for cst in CLOUD_SERVICE_TYPES:
             resources.append(cst)
 
         for region_name in self.region_names:
             self.reset_region(region_name)
-
-            for data in self.request_data(region_name):
-                resources.append(self.response_schema(
-                    {'resource': KeyResource({'data': data,
-                                              'reference': ReferenceModel(data.reference)})}))
+            resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
 
         print(f' KMS Finished {time.time() - start_time} Seconds')
         return resources
@@ -44,13 +44,17 @@ class KMSConnector(SchematicAWSConnector):
             key = response.get('KeyMetadata')
             alias_info = next((alias for alias in alias_list if alias.get('TargetKeyId', '') == key.get('KeyId')), None)
 
-            key['key_type_path'] = self._set_key_type_path(key.get('KeyManager'))
-            key['region_name'] = region_name
-            key['account_id'] = self.account_id
+            key.update({
+                'key_type_path': self._set_key_type_path(key.get('KeyManager')),
+                'region_name': region_name,
+                'account_id': self.account_id
+            })
 
             if alias_info is not None:
-                key['alias_arn'] = alias_info['AliasArn']
-                key['alias_name'] = alias_info['AliasName']
+                key.update({
+                    'alias_arn': alias_info['AliasArn'],
+                    'alias_name': alias_info['AliasName']
+                })
 
             res = Key(key, strict=False)
             yield res

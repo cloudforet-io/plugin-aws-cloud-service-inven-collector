@@ -12,7 +12,7 @@ class LatestMatchingVersion(Model):
     layer_version_arn = StringType(deserialize_from="LayerVersionArn")
     version = IntType(deserialize_from="Version")
     description = StringType(deserialize_from="Description")
-    created_date = StringType(deserialize_from="CreatedDate")
+    created_date = DateTimeType(deserialize_from="CreatedDate")
     compatible_runtimes = ListType(StringType,
                                    deserialize_from="CompatibleRuntimes",
                                    choices=('nodejs', 'nodejs4.3', 'nodejs6.10', 'nodejs8.10', 'nodejs10.x',

@@ -7,19 +7,24 @@ from spaceone.inventory.connector.aws_dynamodb_connector.schema.data import Tabl
 from spaceone.inventory.connector.aws_dynamodb_connector.schema.resource import TableResource, TableResponse
 from spaceone.inventory.connector.aws_dynamodb_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
-from spaceone.inventory.libs.schema.resource import ReferenceModel
 
 _LOGGER = logging.getLogger(__name__)
 
 
 class DynamoDBConnector(SchematicAWSConnector):
-    response_schema = TableResponse
     service_name = 'dynamodb'
 
     def get_resources(self) -> List[TableResource]:
         resources = []
         print("** DynamoDB START **")
         start_time = time.time()
+
+        collect_resource = {
+            'request_method': self.request_data,
+            'resource': TableResource,
+            'response_schema': TableResponse
+        }
+
         # init cloud service type
         for cst in CLOUD_SERVICE_TYPES:
             resources.append(cst)
@@ -27,11 +32,7 @@ class DynamoDBConnector(SchematicAWSConnector):
         for region_name in self.region_names:
             # print(f"[ DynamoDB {region_name} ]")
             self.reset_region(region_name)
-
-            for data in self.request_data(region_name):
-                resources.append(self.response_schema(
-                    {'resource': TableResource({'data': data,
-                                                'reference': ReferenceModel(data.reference)})}))
+            resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
 
         print(f' DynamoDB Finished {time.time() - start_time} Seconds')
         return resources

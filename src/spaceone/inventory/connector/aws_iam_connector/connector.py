@@ -13,7 +13,7 @@ from spaceone.inventory.libs.schema.resource import ReferenceModel
 _LOGGER = logging.getLogger(__name__)
 
 
-class S3Connector(SchematicAWSConnector):
+class IAMConnector(SchematicAWSConnector):
     response_schema = BucketResponse
     service_name = 's3'
 
@@ -22,18 +22,15 @@ class S3Connector(SchematicAWSConnector):
         resources = []
         start_time = time.time()
 
-        try:
-            # init cloud service type
-            for cst in CLOUD_SERVICE_TYPES:
-                resources.append(cst)
+        # init cloud service type
+        for cst in CLOUD_SERVICE_TYPES:
+            resources.append(cst)
 
-            # merge data
-            for data in self.request_data():
-                resources.append(self.response_schema(
-                    {'resource': BucketResource({'data': data,
-                                                 'reference': ReferenceModel(data.reference)})}))
-        except Exception as e:
-            print(f'[ERROR {self.service_name}] {e}')
+        # merge data
+        for data in self.request_data():
+            resources.append(self.response_schema(
+                {'resource': BucketResource({'data': data,
+                                             'reference': ReferenceModel(data.reference)})}))
 
         print(f' S3 Finished {time.time() - start_time} Seconds')
         return resources

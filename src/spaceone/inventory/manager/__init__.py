@@ -24,5 +24,6 @@ from spaceone.inventory.manager.s3_manager import S3ConnectorManager
 from spaceone.inventory.manager.dynamodb_manager import DynamoDBConnectorManager
 from spaceone.inventory.manager.vpc_manager import VPCConnectorManager
 from spaceone.inventory.manager.ec2_manager import EC2ConnectorManager
+from spaceone.inventory.manager.iam_manager import IAMConnectorManager
 
 # from spaceone.inventory.manager.workspace_manager import WorkspaceCollectorManager

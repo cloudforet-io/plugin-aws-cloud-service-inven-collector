@@ -7,20 +7,24 @@ from spaceone.inventory.connector.aws_api_gateway_connector.schema.resource impo
     HTTPWebsocketResource, RestAPIResponse, HTTPWebsocketResponse
 from spaceone.inventory.connector.aws_api_gateway_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
-from spaceone.inventory.libs.schema.resource import ReferenceModel
 
 _LOGGER = logging.getLogger(__name__)
 
 
 # Collect REST API
 class APIGatewayConnector(SchematicAWSConnector):
-    response_schema = RestAPIResponse
     service_name = 'apigateway'
 
     def get_resources(self):
         print("** API Gateway START **")
         resources = []
         start_time = time.time()
+
+        collect_resource = {
+            'request_method': self.request_data,
+            'resource': RestAPIResource,
+            'response_schema': RestAPIResponse
+        }
 
         for cst in CLOUD_SERVICE_TYPES:
             resources.append(cst)
@@ -29,9 +33,7 @@ class APIGatewayConnector(SchematicAWSConnector):
             # print(f'[ APIGateway {region_name} ]')
             self.reset_region(region_name)
 
-            for data in self.request_data(region_name):
-                resources.append(self.response_schema(
-                    {'resource': RestAPIResource({'data': data, 'reference': ReferenceModel(data.reference)})}))
+            resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
 
         print(f' API Gateway Finished {time.time() - start_time} Seconds')
         return resources
@@ -73,13 +75,18 @@ class APIGatewayConnector(SchematicAWSConnector):
 
 # Collect HTTP or WebSocket
 class APIGatewayV2Connector(SchematicAWSConnector):
-    response_schema = HTTPWebsocketResponse
     service_name = 'apigatewayv2'
 
     def get_resources(self):
         resources = []
         print("** API Gateway V2 START **")
         start_time = time.time()
+
+        collect_resource = {
+            'request_method': self.request_data,
+            'resource': RestAPIResource,
+            'response_schema': RestAPIResponse
+        }
 
         for cst in CLOUD_SERVICE_TYPES:
             resources.append(cst)
@@ -88,10 +95,7 @@ class APIGatewayV2Connector(SchematicAWSConnector):
             # print(f'[ APIGatewayV2 {region_name} ]')
             self.reset_region(region_name)
 
-            for data in self.request_data(region_name):
-                resources.append(self.response_schema(
-                    {'resource': HTTPWebsocketResource({'data': data,
-                                                        'reference': ReferenceModel(data.reference)})}))
+            resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
 
         print(f' API Gateway V2 Finished {time.time() - start_time} Seconds')
         return resources
@@ -104,6 +108,7 @@ class APIGatewayV2Connector(SchematicAWSConnector):
                 'PageSize': 50,
             }
         )
+
         for data in response_iterator:
             for raw in data.get('Items', []):
                 raw.update({

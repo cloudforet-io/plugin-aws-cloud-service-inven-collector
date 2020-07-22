@@ -1,0 +1,1 @@
+from spaceone.inventory.connector.aws_iam_connector.connector import IAMConnector

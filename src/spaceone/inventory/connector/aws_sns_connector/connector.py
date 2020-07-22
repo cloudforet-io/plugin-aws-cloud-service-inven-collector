@@ -6,13 +6,11 @@ from spaceone.inventory.connector.aws_sns_connector.schema.data import Topic, Su
 from spaceone.inventory.connector.aws_sns_connector.schema.resource import TopicResource, TopicResponse
 from spaceone.inventory.connector.aws_sns_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
-from spaceone.inventory.libs.schema.resource import ReferenceModel
 
 _LOGGER = logging.getLogger(__name__)
 
 
 class SNSConnector(SchematicAWSConnector):
-    response_schema = TopicResponse
     service_name = 'sns'
     _kms_client = None
     kms_keys = None
@@ -22,6 +20,12 @@ class SNSConnector(SchematicAWSConnector):
         resources = []
         start_time = time.time()
 
+        collect_resource = {
+            'request_method': self.request_data,
+            'resource': TopicResource,
+            'response_schema': TopicResponse
+        }
+
         # init cloud service type
         for cst in CLOUD_SERVICE_TYPES:
             resources.append(cst)
@@ -29,12 +33,7 @@ class SNSConnector(SchematicAWSConnector):
         # merge data
         for region_name in self.region_names:
             self.reset_region(region_name)
-
-            # merge data
-            for data in self.request_data(region_name):
-                resources.append(self.response_schema(
-                    {'resource': TopicResource({'data': data,
-                                                'reference': ReferenceModel(data.reference)})}))
+            resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
 
         print(f' SNS Finished {time.time() - start_time} Seconds')
         return resources

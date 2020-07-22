@@ -7,20 +7,31 @@ from spaceone.inventory.connector.aws_ebs_connector.schema.resource import Volum
     SnapshotResource, SnapshotResponse
 from spaceone.inventory.connector.aws_ebs_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
-from spaceone.inventory.libs.schema.resource import ReferenceModel
 
 _LOGGER = logging.getLogger(__name__)
 
 
 class EBSConnector(SchematicAWSConnector):
-    response_volume_schema = VolumeResponse
-    response_snapshot_schema = SnapshotResponse
     service_name = 'ec2'
 
     def get_resources(self):
         print("** EBS START **")
         resources = []
         start_time = time.time()
+
+        collect_resources = [
+            {
+                'request_method': self.request_volume_data,
+                'resource': VolumeResource,
+                'response_schema': VolumeResponse
+            },
+            {
+                'request_method': self.request_snapshot_data,
+                'resource': SnapshotResource,
+                'response_schema': SnapshotResponse
+            },
+        ]
+
         # init cloud service type
         for cst in CLOUD_SERVICE_TYPES:
             resources.append(cst)
@@ -28,17 +39,8 @@ class EBSConnector(SchematicAWSConnector):
         for region_name in self.region_names:
             self.reset_region(region_name)
 
-            # GET Volumes
-            for data in self.request_volume_data(region_name):
-                resources.append(self.response_volume_schema(
-                    {'resource': VolumeResource({'data': data,
-                                                 'reference': ReferenceModel(data.reference)})}))
-
-            # GET Snapshots
-            for data in self.request_snapshot_data(region_name):
-                resources.append(self.response_snapshot_schema(
-                    {'resource': SnapshotResource({'data': data,
-                                                   'reference': ReferenceModel(data.reference)})}))
+            for collect_resource in collect_resources:
+                resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
 
         print(f' EBS Finished {time.time() - start_time} Seconds')
         return resources

@@ -493,8 +493,8 @@ customergw_metadata = CloudServiceMeta.set_layouts(layouts=[customergw, customer
 
 # VPN GATEWAY
 vpngw = ItemDynamicLayout.set_fields('Virtual Private Gateway', fields=[
-    TextDyField.data_source('Name', 'data.name'),
     TextDyField.data_source('ID', 'data.vpn_gateway_id'),
+    TextDyField.data_source('Name', 'data.name'),
     EnumDyField.data_source('State', 'data.state', default_state={
         'safe': ['available'],
         'warning': ['pending', 'deleting'],
@@ -739,4 +739,3 @@ class VPNConnectionResponse(CloudServiceResponse):
         '1': ['data.vpn_connection_id', 'provider', 'cloud_service_type', 'cloud_service_group']
     })
     resource = PolyModelType(VPNConnectionResource)
-
