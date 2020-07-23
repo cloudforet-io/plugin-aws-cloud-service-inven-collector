@@ -3,218 +3,234 @@ import logging
 from typing import List
 from botocore.exceptions import ClientError
 
-from spaceone.inventory.connector.aws_s3_connector.schema.data import Bucket, Versioning, ServerAccessLogging, \
-    WebsiteHosting, ObjectLock, Encryption, Tags, TransferAcceleration, NotificationConfiguration, RequestPayment
-from spaceone.inventory.connector.aws_s3_connector.schema.resource import BucketResource, BucketResponse
-from spaceone.inventory.connector.aws_s3_connector.schema.service_type import CLOUD_SERVICE_TYPES
+from spaceone.inventory.connector.aws_iam_connector.schema.data import Tags, PermissionsBoundary, Permission, \
+    PermissionSummary, Policy, CredentialKeyInfo, User, Group, RoleLastUsed, Condition, Role, IdentityProvider
+from spaceone.inventory.connector.aws_iam_connector.schema.resource import IAMResource, GroupResource, GroupResponse, \
+    UserResource, UserResponse, RoleResource, RoleResponse, PolicyResource, PolicyResponse, IdentityProviderResource, \
+    IdentityProviderResponse
+
+from spaceone.inventory.connector.aws_iam_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
 from spaceone.inventory.libs.schema.resource import ReferenceModel
 
 _LOGGER = logging.getLogger(__name__)
 
+PAGINATOR_MAX_ITEMS = 10000
+PAGINATOR_PAGE_SIZE = 50
+
 
 class IAMConnector(SchematicAWSConnector):
-    response_schema = BucketResponse
-    service_name = 's3'
+    service_name = 'iam'
 
-    def get_resources(self) -> List[BucketResource]:
-        print("** S3 START **")
+    def get_resources(self):
+        print("** IAM START **")
         resources = []
         start_time = time.time()
+
+        collect_resources = [
+            {
+                'request_method': self.request_group_data(),
+                'resource': GroupResource,
+                'response_schema': GroupResponse
+            },
+            {
+                'request_method': self.request_user_data(),
+                'resource': UserResource,
+                'response_schema': UserResponse
+            },
+            {
+                'request_method': self.request_role_data(),
+                'resource': RoleResource,
+                'response_schema': RoleResponse
+            },
+            {
+                'request_method': self.request_policy_data(),
+                'resource': PolicyResource,
+                'response_schema': PolicyResponse
+            },
+            {
+                'request_method': self.request_identity_provider_data(),
+                'resource': IdentityProviderResource,
+                'response_schema': IdentityProviderResponse
+            }
+        ]
 
         # init cloud service type
         for cst in CLOUD_SERVICE_TYPES:
             resources.append(cst)
 
-        # merge data
-        for data in self.request_data():
-            resources.append(self.response_schema(
-                {'resource': BucketResource({'data': data,
-                                             'reference': ReferenceModel(data.reference)})}))
+        for region_name in self.region_names:
+            self.reset_region(region_name)
 
-        print(f' S3 Finished {time.time() - start_time} Seconds')
+            for collect_resource in collect_resources:
+                resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
+
+        print(f' EBS Finished {time.time() - start_time} Seconds')
         return resources
 
-    def request_data(self) -> List[Bucket]:
-        response = self.client.list_buckets()
-
-        for raw in response.get('Buckets', []):
-            bucket_name = raw.get('Name')
-
-            raw.update({
-                'arn': self.generate_arn(service=self.service_name, region="", account_id="", resource_type=bucket_name, resource_id="*"),
-                'account_id': self.account_id
-            })
-
-            if region_name := self.get_bucket_location(bucket_name):
-                raw.update({'region_name': region_name})
-
-            if versioning := self.get_bucket_versioning(bucket_name):
-                raw.update({'versioning': versioning})
-
-            if server_access_logging := self.get_server_access_logging(bucket_name):
-                raw.update({'server_access_logging': server_access_logging})
-
-            if website_hosting := self.get_website_hosting(bucket_name):
-                raw.update({'website_hosting': website_hosting})
-
-            if encryption := self.get_encryption(bucket_name):
-                raw.update({'encryption': encryption})
-
-            if object_lock := self.get_object_lock(bucket_name):
-                raw.update({'object_lock': object_lock})
-
-            if transfer_acceleration := self.get_transfer_acceleration(bucket_name):
-                raw.update({'transfer_acceleration': transfer_acceleration})
-
-            if request_payment := self.get_request_payment(bucket_name):
-                raw.update({'request_payment': request_payment})
-
-            if notification_configurations := self.get_notification_configurations(bucket_name):
-                raw.update({'notification_configurations': notification_configurations})
-
-            if tags := self.get_tags(bucket_name):
-                raw.update({'tags': tags})
-
-            # object_count, object_total_size = self.get_object_info(bucket_name)
-            #
-            # raw.update({
-            #     'object_count': object_count,
-            #     'object_total_size': object_total_size
-            # })
-
-            res = Bucket(raw, strict=False)
-            yield res
-
-    def get_bucket_versioning(self, bucket_name):
-        response = self.client.get_bucket_versioning(Bucket=bucket_name)
-
-        if status := response.get('Status'):
-            version = {
-                'status': status,
-                'mfa_delete': response.get('MFADelete')
-            }
-            return Versioning(version, strict=False)
-
-        return None
-
-    def get_server_access_logging(self, bucket_name):
-        response = self.client.get_bucket_logging(Bucket=bucket_name)
-
-        if access_logging := response.get('LoggingEnabled'):
-            return ServerAccessLogging(access_logging, strict=False)
-
-        return None
-
-    def get_website_hosting(self, bucket_name):
-        try:
-            response = self.client.get_bucket_website(Bucket=bucket_name)
-            del response['ResponseMetadata']
-            return WebsiteHosting(response, strict=False)
-
-        except ClientError as e:
-            return None
-
-    def get_encryption(self, bucket_name):
-        try:
-            response = self.client.get_bucket_encryption(Bucket=bucket_name)
-
-            if encryption := response.get('ServerSideEncryptionConfiguration'):
-                return Encryption(encryption, strict=False)
-            else:
-                return None
-        except ClientError as e:
-            return None
-
-    def get_object_lock(self, bucket_name):
-        try:
-            response = self.client.get_object_lock_configuration(Bucket=bucket_name)
-
-            if object_lock := response.get('ObjectLockConfiguration'):
-                return ObjectLock(object_lock, strict=False)
-            else:
-                return None
-        except ClientError as e:
-            return None
-
-    def get_transfer_acceleration(self, bucket_name):
-        response = self.client.get_bucket_accelerate_configuration(Bucket=bucket_name)
-
-        if transfer_acceleration := response.get('Status'):
-            return TransferAcceleration({'transfer_acceleration': transfer_acceleration}, strict=False)
-
-        return None
-
-    def get_request_payment(self, bucket_name):
-        response = self.client.get_bucket_request_payment(Bucket=bucket_name)
-
-        if payer := response.get('Payer'):
-            return RequestPayment({'request_payment': payer}, strict=False)
-
-        return None
-
-    def get_notification_configurations(self, bucket_name):
-        response = self.client.get_bucket_notification_configuration(Bucket=bucket_name)
-
-        sns = self.set_notification('SNS Topic', 'TopicArn', response.get('TopicConfigurations', []))
-        que = self.set_notification('Queue', 'QueueArn', response.get('QueueConfigurations', []))
-        func = self.set_notification('Lambda Function', 'LambdaFunctionArn', response.get('LambdaFunctionConfigurations', []))
-
-        total_noti = sns + que + func
-
-        if len(total_noti) > 0:
-            return total_noti
-        else:
-            return None
-
-    def get_tags(self, bucket_name):
-        try:
-            response = self.client.get_bucket_tagging(Bucket=bucket_name)
-            return list(map(lambda tag: Tags(tag, strict=False), response.get('TagSet', [])))
-        except ClientError as e:
-            return None
-
-    def get_bucket_location(self, bucket_name):
-        response = self.client.get_bucket_location(Bucket=bucket_name)
-        return response.get('LocationConstraint')
-
-    def get_object_info(self, bucket_name):
-        object_count = 0
-        object_total_size = 0
-
-        paginator = self.client.get_paginator('list_objects_v2')
+    def request_group_data(self, region_name) -> List[Group]:
+        paginator = self.client.get_paginator('list_groups')
         response_iterator = paginator.paginate(
-            Bucket=bucket_name,
             PaginationConfig={
                 'MaxItems': 10000,
                 'PageSize': 50,
             }
         )
+
         for data in response_iterator:
-            object_count = object_count + data.get('KeyCount', 0)
+            for raw in data.get('Groups', []):
+                users = self.list_user_with_group_name(GroupName=raw['GroupName'])
+                attached_policies = self.list_policy_with_group_name(GroupName=raw['GroupName'])
 
-            for raw in data.get('Contents', []):
-                object_total_size = object_total_size + raw.get('Size', 0)
-
-        return object_count, object_total_size
-
-    @staticmethod
-    def set_notification(notification_type, arn_key, confs):
-        configurations = []
-
-        for _conf in confs:
-            dic = {
-                'id': _conf.get('Id', ''),
-                'notification_type': notification_type,
-                'arn': _conf.get(arn_key, ''),
-                'events': _conf.get('Events', []),
-            }
-
-            if _conf.get('Filter'):
-                dic.update({
-                    'filter': _conf.get('Filter')
+                raw.update({
+                    'users': self._get_user_info_with_group(users),
+                    'user_count': len(users),
+                    'attached_permission': self._get_policies_info_with_group(attached_policies)
                 })
 
-            configurations.append(NotificationConfiguration(dic, strict=False))
+                yield Group(raw, strict=False)
 
-        return configurations
+    def request_user_data(self, region_name) -> List[User]:
+        paginator = self.client.get_paginator('describe_volumes')
+        response_iterator = paginator.paginate(
+            PaginationConfig={
+                'MaxItems': 10000,
+                'PageSize': 50,
+            }
+        )
+
+        for data in response_iterator:
+            for raw in data.get('Volumes', []):
+                if name := self._get_name_from_tags(raw.get('Tags', [])):
+                    raw['name'] = name
+
+
+                yield User(raw, strict=False)
+
+    def request_role_data(self, region_name) -> List[Role]:
+        paginator = self.client.get_paginator('describe_volumes')
+        response_iterator = paginator.paginate(
+            PaginationConfig={
+                'MaxItems': 10000,
+                'PageSize': 50,
+            }
+        )
+
+        for data in response_iterator:
+            for raw in data.get('Volumes', []):
+                if name := self._get_name_from_tags(raw.get('Tags', [])):
+                    raw['name'] = name
+
+                attr = self.client.describe_volume_attribute(Attribute='productCodes', VolumeId=raw['VolumeId'])
+
+                yield Role(raw, strict=False)
+
+    def request_policy_data(self) -> List[Policy]:
+        paginator = self.client.get_paginator('list_policies')
+        response_iterator = paginator.paginate(
+            PaginationConfig={
+                'MaxItems': 10000,
+                'PageSize': 50,
+            }
+        )
+
+
+        for data in policies:
+            for raw in data.get('Policies', []):
+
+
+                yield Policy(raw, strict=False)
+
+
+    def request_identity_provider_data(self) -> List[IdentityProvider]:
+        response = self.client.list_open_id_connect_providers()
+
+        for arn_vo in response.get('OpenIDConnectProviderList', []):
+            arn = arn_vo.get('Arn')
+            identity_provider = self.list_open_id_connect_provider_info_with_arn(arn)
+            identity_provider.update({
+                'arn': arn,
+                'provider_type': self._get_provider_type(identity_provider.get('Url', ''))
+            })
+
+            yield IdentityProvider(identity_provider, strict=False)
+
+    def list_user_with_group_name(self, group_name, **query):
+        users = []
+        query = self._generate_query(is_paginate=True, **query)
+        query.update({
+            'GroupName': group_name
+        })
+        paginator = self.client.get_paginator('get_group')
+        response_iterator = paginator.paginate(**query)
+
+        for data in response_iterator:
+            users.extend(data.get('Users', []))
+
+        return users
+
+    def list_policy_with_group_name(self, group_name, **query):
+        policies = []
+        query = self._generate_query(is_paginate=True, **query)
+        query.update({'GroupName': group_name})
+        paginator = self.client.get_paginator('list_group_policies')
+        response_iterator = paginator.paginate(**query)
+
+        for data in response_iterator:
+            policies.extend(data.get('PolicyNames', []))
+
+        return policies
+
+
+    def list_open_id_connect_provider_info_with_arn(self, oidcp_arn):
+        response = self.client.get_open_id_connect_provider(OpenIDConnectProviderArn=oidcp_arn)
+        return response
+
+    def list_policies(self, **query):
+        policies = []
+        paginator = self.client.get_paginator('list_policies')
+        query = self._generate_query(is_paginate=True, **query)
+        query.update({'Scope': 'Local'})
+        iterator_local = paginator.paginate(**query)
+        query.update({'Scope': 'AWS'})
+        iterator_aws = paginator.paginate(**query)
+
+        for data in iterator_aws:
+            po = [dict(policy, policy_type='AWS') for policy in data.get('Policies', [])]
+            policies.extend(po)
+
+        for data in iterator_local:
+            po = [dict(policy, policy_type='Custom') for policy in data.get('Policies', [])]
+            policies.extend(po)
+
+        return policies
+
+    @staticmethod
+    def _get_name_from_tags(tags):
+        for _tag in tags:
+            if 'Name' in _tag.get('Key'):
+                return _tag.get('Value')
+
+        return None
+
+    @staticmethod
+    def _generate_query(is_paginate=False, **query):
+        if is_paginate:
+            query.update({
+                'PaginationConfig': {
+                    'MaxItems': PAGINATOR_MAX_ITEMS,
+                    'PageSize': PAGINATOR_PAGE_SIZE,
+                }
+            })
+
+        return query
+
+
+    @staticmethod
+    def _get_provider_type(url):
+        if url == '':
+            return url
+        else:
+            provider_type = url.split('.')
+            return provider_type[0].upper()
+
