@@ -20,6 +20,12 @@ PAGINATOR_PAGE_SIZE = 50
 
 
 class IAMConnector(SchematicAWSConnector):
+    group_response_schema = GroupResponse
+    user_response_schema = UserResponse
+    role_response_schema = RoleResponse
+    policy_response_schema = PolicyResponse
+    identity_provider_response_schema = IdentityProviderResponse
+
     service_name = 'iam'
 
     def get_resources(self):
@@ -27,43 +33,33 @@ class IAMConnector(SchematicAWSConnector):
         resources = []
         start_time = time.time()
 
-        collect_resources = [
-            {
-                'request_method': self.request_group_data(),
-                'resource': GroupResource,
-                'response_schema': GroupResponse
-            },
-            {
-                'request_method': self.request_user_data(),
-                'resource': UserResource,
-                'response_schema': UserResponse
-            },
-            {
-                'request_method': self.request_role_data(),
-                'resource': RoleResource,
-                'response_schema': RoleResponse
-            },
-            {
-                'request_method': self.request_policy_data(),
-                'resource': PolicyResource,
-                'response_schema': PolicyResponse
-            },
-            {
-                'request_method': self.request_identity_provider_data(),
-                'resource': IdentityProviderResource,
-                'response_schema': IdentityProviderResponse
-            }
-        ]
-
         # init cloud service type
         for cst in CLOUD_SERVICE_TYPES:
             resources.append(cst)
 
-        for region_name in self.region_names:
-            self.reset_region(region_name)
+        try:
+            for data in self.request_group_data():
+                resources.append(self.group_response_schema(
+                    {'resource': GroupResource({'data': data, 'reference': ReferenceModel(data.reference)})}))
 
-            for collect_resource in collect_resources:
-                resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
+            for data in self.request_user_data():
+                resources.append(self.user_response_schema(
+                    {'resource': UserResource({'data': data, 'reference': ReferenceModel(data.reference)})}))
+
+            for data in self.request_role_data():
+                resources.append(self.role_response_schema(
+                    {'resource': RoleResource({'data': data, 'reference': ReferenceModel(data.reference)})}))
+
+            for data in self.request_policy_data():
+                resources.append(self.policy_response_schema(
+                    {'resource': PolicyResource({'data': data, 'reference': ReferenceModel(data.reference)})}))
+
+            for data in self.request_identity_provider_data():
+                resources.append(self.identity_provider_response_schema(
+                    {'resource': IdentityProvider({'data': data, 'reference': ReferenceModel(data.reference)})}))
+
+        except Exception as e:
+            print(f'[ERROR {self.service_name}] {e}')
 
         print(f' EBS Finished {time.time() - start_time} Seconds')
         return resources
@@ -104,7 +100,6 @@ class IAMConnector(SchematicAWSConnector):
                 if name := self._get_name_from_tags(raw.get('Tags', [])):
                     raw['name'] = name
 
-
                 yield User(raw, strict=False)
 
     def request_role_data(self, region_name) -> List[Role]:
@@ -134,7 +129,6 @@ class IAMConnector(SchematicAWSConnector):
             }
         )
 
-
         for data in policies:
             for raw in data.get('Policies', []):
 
@@ -145,8 +139,8 @@ class IAMConnector(SchematicAWSConnector):
     def request_identity_provider_data(self) -> List[IdentityProvider]:
         response = self.client.list_open_id_connect_providers()
 
-        for arn_vo in response.get('OpenIDConnectProviderList', []):
-            arn = arn_vo.get('Arn')
+        for arn_dict in response.get('OpenIDConnectProviderList', []):
+            arn = arn_dict.get('Arn')
             identity_provider = self.list_open_id_connect_provider_info_with_arn(arn)
             identity_provider.update({
                 'arn': arn,
@@ -180,7 +174,6 @@ class IAMConnector(SchematicAWSConnector):
             policies.extend(data.get('PolicyNames', []))
 
         return policies
-
 
     def list_open_id_connect_provider_info_with_arn(self, oidcp_arn):
         response = self.client.get_open_id_connect_provider(OpenIDConnectProviderArn=oidcp_arn)

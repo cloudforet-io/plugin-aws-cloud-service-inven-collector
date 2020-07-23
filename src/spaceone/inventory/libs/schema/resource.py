@@ -26,7 +26,6 @@ class BaseResponse(Model):
     state = StringType(default='SUCCESS', choices=('SUCCESS', 'FAILURE', 'TIMEOUT'))
     resource_type = StringType(required=True)
     match_rules = DictType(ListType(StringType), default={})
-    replace_rules = DictType(ListType(StringType), default={})
     resource = PolyModelType(Model, default={})
 
 
@@ -85,8 +84,19 @@ class CloudServiceResource(Model):
     _metadata = PolyModelType(CloudServiceMeta, serialize_when_none=False, serialized_name='metadata')
 
 
+class RegionResource(Model):
+    name = StringType(default="")
+    region_code = StringType()
+    region_type = StringType(default="AWS")
+    tags = DictType(StringType)
+
+
 class CloudServiceResponse(BaseResponse):
     resource_type = StringType(default='inventory.CloudService')
     resource = PolyModelType(CloudServiceResource)
 
 
+class RegionResponse(BaseResponse):
+    resource_type = StringType(default='inventory.Region')
+    match_rules = DictType(ListType(StringType), default={'1': ['region_type', 'region_code']})
+    resource = PolyModelType(RegionResource)

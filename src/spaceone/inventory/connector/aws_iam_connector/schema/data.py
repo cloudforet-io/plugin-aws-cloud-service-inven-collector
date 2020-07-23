@@ -93,6 +93,7 @@ class User(Model):
             "external_link": f"https://console.aws.amazon.com/iam/home?region={self.region_name}#/users/{self.user_name}"
         }
 
+
 class Group(Model):
     path = StringType(deserialize_from="Path")
     group_name = StringType(deserialize_from="GroupName")
@@ -110,14 +111,17 @@ class Group(Model):
             "external_link": f"https://console.aws.amazon.com/iam/home?region={self.region_name}#/groups/{self.group_name}"
         }
 
+
 class RoleLastUsed(Model):
     last_used_data = DateTimeType(deserialize_from="LastUsedDate")
     region = StringType(deserialize_from="Region")
+
 
 class Condition(Model):
     condition = StringType()
     Key = StringType()
     Value = StringType()
+
 
 class Role(Model):
     path = StringType(deserialize_from="Path")
