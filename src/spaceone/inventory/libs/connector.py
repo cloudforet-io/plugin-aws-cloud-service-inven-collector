@@ -117,6 +117,7 @@ class SchematicAWSConnector(AWSConnector):
                 'kwargs': {}
         }
         '''
+
         resources = []
 
         try:
