@@ -1,29 +1,106 @@
 from spaceone.inventory.libs.schema.dynamic_field import TextDyField, SearchField
-from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, CloudServiceTypeMeta
+from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, \
+    CloudServiceTypeMeta
 
-cst_bucket = CloudServiceTypeResource()
-cst_bucket.name = 'Bucket'
-cst_bucket.provider = 'aws'
-cst_bucket.group = 'S3'
-cst_bucket.tags = {
-    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-S3.svg',
+# GROUP
+cst_group = CloudServiceTypeResource()
+cst_group.name = 'Group'
+cst_group.provider = 'aws'
+cst_group.group = 'IAM'
+cst_group.tags = {
+    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/',
     'spaceone:is_major': 'true',
 }
 
-cst_bucket._metadata = CloudServiceTypeMeta.set_meta(
+cst_group._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'data.name'),
-        TextDyField.data_source('Region', 'data.region_name'),
-        TextDyField.data_source('Access', 'data.access'),
+        # TODO: GROUP MAIN TABLE FIELDS
     ],
     search=[
-        SearchField.set(name='Bucket Name', key='data.name'),
-        SearchField.set(name='ARN', key='data.arn'),
-        SearchField.set(name='Region', key='data.region_name'),
-        SearchField.set(name='AWS Account ID', key='data.account_id'),
+        # TODO: GROUP SEARCH META
+    ]
+)
+
+# USER
+cst_user = CloudServiceTypeResource()
+cst_user.name = 'User'
+cst_user.provider = 'aws'
+cst_user.group = 'IAM'
+cst_user.tags = {
+    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/',
+    'spaceone:is_major': 'true',
+}
+
+cst_user._metadata = CloudServiceTypeMeta.set_meta(
+    fields=[
+        # TODO: USER MAIN TABLE FIELDS
+    ],
+    search=[
+        # TODO: USER SEARCH META
+    ]
+)
+
+# ROLE
+cst_role = CloudServiceTypeResource()
+cst_role.name = 'Role'
+cst_role.provider = 'aws'
+cst_role.group = 'IAM'
+cst_role.tags = {
+    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/',
+    'spaceone:is_major': 'false',
+}
+
+cst_role._metadata = CloudServiceTypeMeta.set_meta(
+    fields=[
+        # TODO: ROLE MAIN TABLE FIELDS
+    ],
+    search=[
+        # TODO: ROLE SEARCH META
+    ]
+)
+
+# POLICY
+cst_policy = CloudServiceTypeResource()
+cst_policy.name = 'Policy'
+cst_policy.provider = 'aws'
+cst_policy.group = 'IAM'
+cst_policy.tags = {
+    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/',
+    'spaceone:is_major': 'false',
+}
+
+cst_policy._metadata = CloudServiceTypeMeta.set_meta(
+    fields=[
+        # TODO: POLICY MAIN TABLE FIELDS
+    ],
+    search=[
+        # TODO: POLICY SEARCH META
+    ]
+)
+
+# IDENTITY PROVIDER
+cst_identity_provider = CloudServiceTypeResource()
+cst_identity_provider.name = 'IdentityProvider'
+cst_identity_provider.provider = 'aws'
+cst_identity_provider.group = 'IAM'
+cst_identity_provider.tags = {
+    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/',
+    'spaceone:is_major': 'false',
+}
+
+cst_identity_provider._metadata = CloudServiceTypeMeta.set_meta(
+    fields=[
+        # TODO: IDENTITY PROVIDER MAIN TABLE FIELDS
+    ],
+    search=[
+        # TODO: IDENTITY PROVIDER SEARCH META
     ]
 )
 
 CLOUD_SERVICE_TYPES = [
-    CloudServiceTypeResponse({'resource': cst_bucket}),
+    CloudServiceTypeResponse({'resource': cst_group}),
+    CloudServiceTypeResponse({'resource': cst_user}),
+    CloudServiceTypeResponse({'resource': cst_role}),
+    CloudServiceTypeResponse({'resource': cst_policy}),
+    CloudServiceTypeResponse({'resource': cst_identity_provider}),
 ]
