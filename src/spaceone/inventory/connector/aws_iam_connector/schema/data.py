@@ -16,34 +16,35 @@ class PermissionsBoundary(Model):
 
 class Permission(Model):
     effect = StringType(deserialize_from="Effect")
-    action = ListType(StringType())
-    resource = StringType(deserialize_from="Resource")
+    action = ListType(StringType(), default=[])
+    resource = ListType(deserialize_from="Resource", default=[])
     condition = DictType(deserialize_from="Condition", serialize_when_none=False)
+    sid = StringType(deserialize_from="Sid", serialize_when_none=False)
 
 class PermissionSummary(Model):
-    version = StringType(StringType())
+    version = StringType(deserialize_from="Version")
     Statement = ListType(ModelType(Permission))
 
-# Policies
-# Policy Type list_policy by scope AWS, Local
-# AWS -> AWS Managed
-# Local -> Customer managed
-
+class PermissionVersions(Model):
+    create_date = DateTimeType(deserialize_from="CreateDate")
+    is_default_version = BooleanType(deserialize_from="IsDefaultVersion")
+    version_id = StringType(deserialize_from="VersionId")
 
 class Policy(Model):
-    policy_name = StringType(deserialize_from="PolicyName")
-    policy_id = StringType(deserialize_from="PolicyId")
-    policy_type = StringType()
     arn = StringType(deserialize_from="Arn")
-    path = StringType(deserialize_from="Path")
-    default_version_id = StringType(deserialize_from="DefaultVersionId")
     attachment_count = IntType(deserialize_from="AttachmentCount")
-    permissions_boundary_usage_count = IntType(deserialize_from="PermissionsBoundaryUsageCount")
     is_attachable = BooleanType(deserialize_from="IsAttachable")
-    description = StringType(deserialize_from="Description")
+    default_version_id = StringType(deserialize_from="DefaultVersionId")
+    path = StringType(deserialize_from="Path")
+    permissions_boundary_usage_count = IntType(deserialize_from="PermissionsBoundaryUsageCount")
+    policy_id = StringType(deserialize_from="PolicyId")
+    policy_name = StringType(deserialize_from="PolicyName")
+    policy_type = StringType()
+    description = StringType(deserialize_from="Description", default='')
     create_date = DateTimeType(deserialize_from="CreateDate")
     update_date = DateTimeType(deserialize_from="UpdateDate")
     permission = ListType(ModelType(PermissionSummary))
+    permission_versions = ListType(ModelType(PermissionVersions))
 
     @serializable
     def reference(self):
@@ -53,38 +54,63 @@ class Policy(Model):
         }
 
 
-class CredentialKeyInfo(Model):
+class SignInCredential(Model):
+    summary = ListType(StringType())
+    console_password = StringType()
+    assigned_mfa_device = StringType()
+
+class AccessKeyLastUsed(Model):
+    last_update_date = DateTimeType(deserialize_from="LastUsedDate", serialize_when_none=False)
+    service_name = StringType(deserialize_from="ServiceName")
+    region = StringType(deserialize_from="Region")
+
+class AccessKeyInfo(Model):
     key_id = StringType()
-    status = StringType()
+    status = StringType(deserialize_from="Status", choices=("Active", "Inactive")),
+    access_key_last_used = ModelType(AccessKeyLastUsed, serialize_when_none=False)
+    last_update_date_display = StringType(default='N/A')
+    create_date = DateTimeType(deserialize_from="CreateDate")
+
+class SSHKeyInfo(Model):
+    key_id = StringType()
+    status = StringType(deserialize_from="Status", choices=("Active", "Inactive"))
+    upload_date = DateTimeType(deserialize_from="UploadDate")
+
+class ServiceSpecificCredentialInfo(Model):
+    service_name = StringType(deserialize_from="ServiceName")
+    service_specific_credential_id = StringType(deserialize_from="ServiceSpecificCredentialId")
+    service_user_name = StringType(deserialize_from="ServiceUserName")
+    status = StringType(deserialize_from="Status")
     create_date = DateTimeType(deserialize_from="CreateDate")
 
 
-# Paginator.ListAccessKeys(list_access_keys)(UserName) : access_key
-# Paginator.ListSSHPublicKeys(list_ssh_public_keys)(UserName): ssh_public_key
-# cl.list_service_specific_credentials() : cassandra_credential, code_commit_credential
-# filter with userName
+class GroupForUser(Model):
+    group_name = StringType()
+    attached_policy_name = ListType(StringType())
+    create_date = DateTimeType(deserialize_from="CreateDate")
+
 
 class User(Model):
     path = StringType(deserialize_from="Path")
     user_name = StringType(deserialize_from="UserName")
     user_id = StringType(deserialize_from="UserId")
     arn = StringType(deserialize_from="Arn")
-    groups = ListType(StringType())
     create_date = DateTimeType(deserialize_from="CreateDate")
-    access_key = ListType(ModelType(CredentialKeyInfo))
-    ssh_public_key = ListType(ModelType(CredentialKeyInfo))
-    code_commit_credential = ListType(ModelType(CredentialKeyInfo))
-    cassandra_credential = ListType(ModelType(CredentialKeyInfo))
+    password_last_used = DateTimeType(deserialize_from="PasswordLastUsed", serialize_when_none=False)
+    groups = ListType(GroupForUser)
+    groups_display = StringType(default='')
+    sign_in_credential = ModelType(SignInCredential)
+    access_key = ListType(ModelType(AccessKeyInfo))
+    ssh_public_key = ListType(ModelType(SSHKeyInfo))
+    code_commit_credential = ListType(ModelType(ServiceSpecificCredentialInfo))
+    cassandra_credential = ListType(ModelType(ServiceSpecificCredentialInfo))
     access_key_age = IntType(default=0)
     access_key_age_display = StringType(default="")
-    password_last_used = DateTimeType(deserialize_from="PasswordLastUsed")
+    last_active_age = IntType(default=0)
     last_activity = StringType(default="")
     mfa_device = StringType(default="Not enabled")
-    permissions_boundary = ModelType(PermissionsBoundary, deserialize_from="PermissionsBoundary")
     policies = ListType(ModelType(Policy))
     tags = ListType(ModelType(Tags), deserialize_from="Tags")
-
-    # TODO: add sign-in credentials
 
     @serializable
     def reference(self):
@@ -110,35 +136,51 @@ class Group(Model):
             "resource_id": self.arn,
             "external_link": f"https://console.aws.amazon.com/iam/home?region={self.region_name}#/groups/{self.group_name}"
         }
+#
+# class Principal(Model):
+#     federated = StringType(deserialize_from="Federated", serialize_when_none=False)
+#     service = StringType(deserialize_from="Service", serialize_when_none=False)
+#     aws = StringType(deserialize_from="AWS", serialize_when_none=False)
 
+class RolePolicyDocument(Model):
+    action = StringType(deserialize_from="Action")
+    condition = DictType(deserialize_from="Condition", serialize_when_none=False)
+    effect = StringType(deserialize_from="Effect")
+    principal = DictType(deserialize_from="Principal")
+    sid = StringType(deserialize_from="Sid", serialize_when_none=False)
+
+class Condition:
+    condition = StringType()
+    key = StringType()
+    value = StringType()
+
+class TrustRelationShip(Model):
+    trust_relationship = ListType(StringType())
+    condition = ListType(ModelType(Condition), default=[])
+
+class AssumeRolePolicyDocument(Model):
+    version = StringType(deserialize_from="Version")
+    statement = ListType(ModelType(RolePolicyDocument))
 
 class RoleLastUsed(Model):
     last_used_data = DateTimeType(deserialize_from="LastUsedDate")
     region = StringType(deserialize_from="Region")
 
-
-class Condition(Model):
-    condition = StringType()
-    Key = StringType()
-    Value = StringType()
-
-
 class Role(Model):
-    path = StringType(deserialize_from="Path")
-    role_name = StringType(deserialize_from="RoleName")
-    role_id = StringType(deserialize_from="RoleId")
     arn = StringType(deserialize_from="Arn")
+    assume_role_policy_document = ModelType(AssumeRolePolicyDocument, deserialize_from="AssumeRolePolicyDocument")
     create_date = DateTimeType(deserialize_from="CreateDate")
-    assume_role_policy_document = StringType(deserialize_from="AssumeRolePolicyDocument")
-    description = StringType(deserialize_from="Description")
+    description = StringType(deserialize_from="Description", default='')
     max_session_duration = IntType(deserialize_from="MaxSessionDuration")
-    permissions_boundary = ModelType(PermissionsBoundary, deserialize_from="PermissionsBoundary")
+    path = StringType(deserialize_from="Path")
+    role_id = StringType(deserialize_from="RoleId")
+    role_name = StringType(deserialize_from="RoleName")
+    last_activity = StringType(default="None")
+    role_last_used = ModelType(RoleLastUsed, deserialize_from="RoleLastUsed", default={})
+    trusted_entities = ListType(StringType())
+    trust_relationship = ListType(ModelType(TrustRelationShip))
     policies = ListType(ModelType(Policy))
     tags = ListType(ModelType(Tags))
-    role_last_used = ModelType(RoleLastUsed, deserialize_from="RoleLastUsed")
-    last_activity = StringType(default="")
-    trusted_entities = StringType(default="")
-    condition = ListType(ModelType(Condition))
 
     @serializable
     def reference(self):
