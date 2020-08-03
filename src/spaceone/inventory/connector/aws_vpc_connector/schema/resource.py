@@ -90,14 +90,13 @@ vpc_peercon = TableDynamicLayout.set_fields('Peering Connection', 'data.peering_
 ])
 
 vpc_egress_gw = ItemDynamicLayout.set_fields('Egress Only Internet Gateway', 'data.egress_only_internet_gateway',
-                                             fields=[
-                                                 TextDyField.data_source('Egress Only Internet Gateway ID',
-                                                                         'data.egress_only_internet_gateway_id'),
-                                                 ListDyField.data_source('State', 'data.attachments', default_badge={
-                                                     'type': 'inline',
-                                                     'sub_key': 'state'
-                                                 }),
-                                             ])
+                                             fields=[TextDyField.data_source('Egress Only Internet Gateway ID',
+                                                                             'data.egress_only_internet_gateway_id',),
+                                                     ListDyField.data_source('State', 'data.attachments',
+                                                                             default_badge={
+                                                                                 'type': 'inline',
+                                                                                 'sub_key': 'state'}),
+                                                     ])
 
 vpn_gw = ItemDynamicLayout.set_fields('VPN Gateway', fields=[
     TextDyField.data_source('Name', 'data.vpn_gateway.name'),
