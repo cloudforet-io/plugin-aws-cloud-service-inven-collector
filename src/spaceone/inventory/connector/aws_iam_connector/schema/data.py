@@ -2,6 +2,7 @@ import logging
 
 from schematics import Model
 from schematics.types import ModelType, StringType, IntType, DateTimeType, serializable, ListType, BooleanType, DictType
+DEFAULT_REGION = 'us-east-1'
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -10,25 +11,39 @@ class Tags(Model):
     key = StringType(deserialize_from="Key")
     value = StringType(deserialize_from="Value")
 
+
+class Condition(Model):
+    condition = StringType(serialized_name='condition')
+    key = StringType()
+    value = StringType()
+
+
 class PermissionsBoundary(Model):
-    permissions_boundary_type = StringType(deserialize_from="PermissionsBoundaryType", choices=("PermissionsBoundaryPolicy"))
+    permissions_boundary_type = StringType(deserialize_from="PermissionsBoundaryType")
     permissions_boundary_arn = StringType(deserialize_from="PermissionsBoundaryArn")
 
+
 class Permission(Model):
-    effect = StringType(deserialize_from="Effect")
     action = ListType(StringType(), default=[])
-    resource = ListType(deserialize_from="Resource", default=[])
-    condition = DictType(deserialize_from="Condition", serialize_when_none=False)
+    resource = ListType(StringType(), default=[])
+    effect = StringType(deserialize_from="Effect")
+    condition = ListType(ModelType(Condition), serialize_when_none=False)
     sid = StringType(deserialize_from="Sid", serialize_when_none=False)
+
 
 class PermissionSummary(Model):
     version = StringType(deserialize_from="Version")
-    Statement = ListType(ModelType(Permission))
+    statement = ListType(ModelType(Permission), default=[], deserialize_from="Statement")
+
 
 class PermissionVersions(Model):
     create_date = DateTimeType(deserialize_from="CreateDate")
     is_default_version = BooleanType(deserialize_from="IsDefaultVersion")
     version_id = StringType(deserialize_from="VersionId")
+
+class PolicyUsage(Model):
+    name = StringType()
+    type = StringType()
 
 class Policy(Model):
     arn = StringType(deserialize_from="Arn")
@@ -40,17 +55,19 @@ class Policy(Model):
     policy_id = StringType(deserialize_from="PolicyId")
     policy_name = StringType(deserialize_from="PolicyName")
     policy_type = StringType()
+    policy_usage = ListType(ModelType(PolicyUsage), default=[])
     description = StringType(deserialize_from="Description", default='')
     create_date = DateTimeType(deserialize_from="CreateDate")
     update_date = DateTimeType(deserialize_from="UpdateDate")
-    permission = ListType(ModelType(PermissionSummary))
-    permission_versions = ListType(ModelType(PermissionVersions))
+    permission = ModelType(PermissionSummary)
+    # Skip permission version due to heavy API call
+    # permission_versions = ListType(ModelType(PermissionVersions))
 
     @serializable
     def reference(self):
         return {
             "resource_id": self.arn,
-            "external_link": f"https://console.aws.amazon.com/iam/home?region={self.region_name}#/policies/{self.arn}/$serviceLevelSummary"
+            "external_link": f"https://console.aws.amazon.com/iam/home?region={DEFAULT_REGION}#/policies/{self.arn}/$serviceLevelSummary"
         }
 
 
@@ -64,6 +81,7 @@ class AccessKeyLastUsed(Model):
     service_name = StringType(deserialize_from="ServiceName")
     region = StringType(deserialize_from="Region")
 
+
 class AccessKeyInfo(Model):
     key_id = StringType()
     status = StringType(deserialize_from="Status", choices=("Active", "Inactive")),
@@ -71,10 +89,12 @@ class AccessKeyInfo(Model):
     last_update_date_display = StringType(default='N/A')
     create_date = DateTimeType(deserialize_from="CreateDate")
 
+
 class SSHKeyInfo(Model):
     key_id = StringType()
     status = StringType(deserialize_from="Status", choices=("Active", "Inactive"))
     upload_date = DateTimeType(deserialize_from="UploadDate")
+
 
 class ServiceSpecificCredentialInfo(Model):
     service_name = StringType(deserialize_from="ServiceName")
@@ -97,7 +117,7 @@ class User(Model):
     arn = StringType(deserialize_from="Arn")
     create_date = DateTimeType(deserialize_from="CreateDate")
     password_last_used = DateTimeType(deserialize_from="PasswordLastUsed", serialize_when_none=False)
-    groups = ListType(GroupForUser)
+    groups = ListType(ModelType(GroupForUser))
     groups_display = StringType(default='')
     sign_in_credential = ModelType(SignInCredential)
     access_key = ListType(ModelType(AccessKeyInfo))
@@ -116,7 +136,7 @@ class User(Model):
     def reference(self):
         return {
             "resource_id": self.arn,
-            "external_link": f"https://console.aws.amazon.com/iam/home?region={self.region_name}#/users/{self.user_name}"
+            "external_link": f"https://console.aws.amazon.com/iam/home?region={DEFAULT_REGION}#/users/{self.user_name}"
         }
 
 
@@ -134,33 +154,29 @@ class Group(Model):
     def reference(self):
         return {
             "resource_id": self.arn,
-            "external_link": f"https://console.aws.amazon.com/iam/home?region={self.region_name}#/groups/{self.group_name}"
+            "external_link": f"https://console.aws.amazon.com/iam/home?region={DEFAULT_REGION}#/groups/{self.group_name}"
         }
-#
-# class Principal(Model):
-#     federated = StringType(deserialize_from="Federated", serialize_when_none=False)
-#     service = StringType(deserialize_from="Service", serialize_when_none=False)
-#     aws = StringType(deserialize_from="AWS", serialize_when_none=False)
 
-class RolePolicyDocument(Model):
-    action = StringType(deserialize_from="Action")
-    condition = DictType(deserialize_from="Condition", serialize_when_none=False)
-    effect = StringType(deserialize_from="Effect")
-    principal = DictType(deserialize_from="Principal")
-    sid = StringType(deserialize_from="Sid", serialize_when_none=False)
 
-class Condition:
-    condition = StringType()
+class PrincipalMeta(Model):
     key = StringType()
     value = StringType()
 
+class RolePolicyDocument(Model):
+    action = ListType(StringType(), deserialize_from="Action")
+    condition = ListType(ModelType(Condition), serialize_when_none=False)
+    effect = ListType(StringType(), deserialize_from="Effect")
+    principal = ListType(ModelType(PrincipalMeta), deserialize_from="Principal")
+    sid = ListType(StringType(), serialize_when_none=False)
+
 class TrustRelationShip(Model):
-    trust_relationship = ListType(StringType())
+    trusted_entities = ListType(StringType())
     condition = ListType(ModelType(Condition), default=[])
+
 
 class AssumeRolePolicyDocument(Model):
     version = StringType(deserialize_from="Version")
-    statement = ListType(ModelType(RolePolicyDocument))
+    statement = ListType(ModelType(RolePolicyDocument), default=[])
 
 class RoleLastUsed(Model):
     last_used_data = DateTimeType(deserialize_from="LastUsedDate")
@@ -168,7 +184,8 @@ class RoleLastUsed(Model):
 
 class Role(Model):
     arn = StringType(deserialize_from="Arn")
-    assume_role_policy_document = ModelType(AssumeRolePolicyDocument, deserialize_from="AssumeRolePolicyDocument")
+    assume_role_policy_document = ModelType(AssumeRolePolicyDocument, deserialize_from="AssumeRolePolicyDocument",
+                                            default={})
     create_date = DateTimeType(deserialize_from="CreateDate")
     description = StringType(deserialize_from="Description", default='')
     max_session_duration = IntType(deserialize_from="MaxSessionDuration")
@@ -186,7 +203,7 @@ class Role(Model):
     def reference(self):
         return {
             "resource_id": self.arn,
-            "external_link": f"https://console.aws.amazon.com/iam/home?region={self.region}#/roles/{self.role_name}"
+            "external_link": f"https://console.aws.amazon.com/iam/home?region={DEFAULT_REGION}#/roles/{self.role_name}"
         }
 
 
@@ -202,6 +219,6 @@ class IdentityProvider(Model):
     def reference(self):
         return {
             "resource_id": self.arn,
-            "external_link": f"https://console.aws.amazon.com/iam/home?region={self.region}#/providers/{self.arn}"
+            "external_link": f"https://console.aws.amazon.com/iam/home?region={DEFAULT_REGION}#/providers/{self.arn}"
         }
 

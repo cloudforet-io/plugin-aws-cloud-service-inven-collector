@@ -8,7 +8,7 @@ cst_group.name = 'Group'
 cst_group.provider = 'aws'
 cst_group.group = 'IAM'
 cst_group.tags = {
-    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/',
+    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/AWS-Identity-and-Access-Management_IAM.svg',
     'spaceone:is_major': 'true',
 }
 
@@ -33,7 +33,7 @@ cst_user.name = 'User'
 cst_user.provider = 'aws'
 cst_user.group = 'IAM'
 cst_user.tags = {
-    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/',
+    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/AWS-Identity-and-Access-Management_IAM.svg',
     'spaceone:is_major': 'true',
 }
 
@@ -92,7 +92,7 @@ cst_role.name = 'Role'
 cst_role.provider = 'aws'
 cst_role.group = 'IAM'
 cst_role.tags = {
-    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/',
+    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/AWS-Identity-and-Access-Management-IAM_Role_light-bg.svg',
     'spaceone:is_major': 'false',
 }
 
@@ -109,6 +109,7 @@ cst_role._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Policy Name', key='data.policies.policy_name'),
         SearchField.set(name='Last Used Time', key='data.role_last_used.last_used_data', data_type='datetime'),
         SearchField.set(name='Creation Time', key='data.create_date', data_type='datetime'),
+
     ]
 )
 
@@ -118,18 +119,29 @@ cst_policy.name = 'Policy'
 cst_policy.provider = 'aws'
 cst_policy.group = 'IAM'
 cst_policy.tags = {
-    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/',
+    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/AWS-Identity-and-Access-Management_IAM.svg',
     'spaceone:is_major': 'false',
 }
 
 cst_policy._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Role Name', 'data.role_name'),
-        TextDyField.data_source('Trusted Entities', 'data.trusted_entities'),
-        TextDyField.data_source('Last Activity', 'data.last_activity'),
+        TextDyField.data_source('Policy Name', 'data.policy_name'),
+        TextDyField.data_source('Policy Arn', 'data.arn'),
+        TextDyField.data_source('Policy ID', 'data.policy_id'),
+        TextDyField.data_source('Attachment Count', 'data.attachment_count'),
     ],
     search=[
-        # TODO: POLICY SEARCH META
+        SearchField.set(name='Policy Name', key='data.policy_name'),
+        SearchField.set(name='Policy ARN', key='data.arn'),
+        SearchField.set(name='Policy ID', key='data.policy_id'),
+        SearchField.set(name='Permission Usage Count', key='data.permissions_boundary_usage_count',
+                        data_type='integer'),
+        SearchField.set(name='Update Time', key='data.update_date', data_type='datetime'),
+        SearchField.set(name='Creation Time', key='data.create_date', data_type='datetime'),
+        SearchField.set(name='Is Attachable', key='data.is_attachable', enums={
+                    'true': {'label': 'true'},
+                    'false': {'label': 'false'},
+                }),
     ]
 )
 
@@ -145,10 +157,15 @@ cst_identity_provider.tags = {
 
 cst_identity_provider._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        # TODO: IDENTITY PROVIDER MAIN TABLE FIELDS
+        TextDyField.data_source(name='Identity Provider URL', key='data.url'),
+        TextDyField.data_source(name='Identity Provider ARN', key='data.arn'),
+        TextDyField.data_source(name='provider_type', key='data.provider_type'),
     ],
     search=[
-        # TODO: IDENTITY PROVIDER SEARCH META
+        SearchField.set(name='Identity Provider URL', key='data.url'),
+        SearchField.set(name='Identity Provider ARN', key='data.arn'),
+        SearchField.set(name='provider_type', key='data.provider_type'),
+        SearchField.set(name='Creation Time', key='data.create_date', data_type='datetime')
     ]
 )
 
