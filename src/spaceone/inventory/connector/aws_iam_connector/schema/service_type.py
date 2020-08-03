@@ -1,4 +1,5 @@
-from spaceone.inventory.libs.schema.dynamic_field import TextDyField, SearchField, DateTimeDyField
+from spaceone.inventory.libs.schema.dynamic_field import TextDyField, SearchField, DateTimeDyField, ListDyField, \
+    EnumDyField
 from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, \
     CloudServiceTypeMeta
 
@@ -40,10 +41,15 @@ cst_user.tags = {
 cst_user._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
         TextDyField.data_source('User Name', 'data.user_name'),
-        TextDyField.data_source('Groups', 'data.groups.group_name'),
+        ListDyField.data_source('Groups', 'data.groups', default_badge={
+            'type': 'outline',
+            'sub_key': 'group_name',
+        }),
         TextDyField.data_source('Access Key Age', 'data.access_key_age_display'),
         TextDyField.data_source('Last Activity', 'data.last_activity'),
-        TextDyField.data_source('MFA', 'data.mfa_device'),
+        EnumDyField.data_source('MFA', 'data.mfa_device', default_badge={
+            'indigo.500': ['Virtual'], 'coral.600': ['Not enabled'],
+        }),
     ],
     search=[
         SearchField.set(name='User Name', key='data.user_name'),
@@ -99,7 +105,7 @@ cst_role.tags = {
 cst_role._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
         TextDyField.data_source('Role Name', 'data.role_name'),
-        TextDyField.data_source('Trusted Entities', 'data.trusted_entities'),
+        ListDyField.data_source('Trusted Entities', 'data.trusted_entities', default_badge={'type': 'outline'}),
         TextDyField.data_source('Last Activity', 'data.last_activity'),
     ],
     search=[
@@ -126,7 +132,6 @@ cst_policy.tags = {
 cst_policy._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
         TextDyField.data_source('Policy Name', 'data.policy_name'),
-        TextDyField.data_source('Policy Arn', 'data.arn'),
         TextDyField.data_source('Policy ID', 'data.policy_id'),
         TextDyField.data_source('Attachment Count', 'data.attachment_count'),
     ],
@@ -158,8 +163,7 @@ cst_identity_provider.tags = {
 cst_identity_provider._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
         TextDyField.data_source(name='Identity Provider URL', key='data.url'),
-        TextDyField.data_source(name='Identity Provider ARN', key='data.arn'),
-        TextDyField.data_source(name='provider_type', key='data.provider_type'),
+        EnumDyField.data_source(name='provider_type', key='data.provider_type', default_badge={'indigo.500': ['OIDC']}),
     ],
     search=[
         SearchField.set(name='Identity Provider URL', key='data.url'),

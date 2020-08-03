@@ -105,9 +105,9 @@ class IAMConnector(SchematicAWSConnector):
         query = self._generate_default_query()
         response_iterator = paginator.paginate(**query)
 
+        users = []
         for data in response_iterator:
             for user in data.get('Users', []):
-
                 user_name = user.get('UserName')
                 user_info = self.get_user_info(user_name)
                 mfa_devices = self.list_mfa_devices(user_name)
@@ -146,7 +146,9 @@ class IAMConnector(SchematicAWSConnector):
                 # pprint(user)
                 # print()
                 # print('----------------------')
-                yield User(user, strict=False)
+                users.append(User(user, strict=False))
+
+        return users
 
     def request_role_data(self, policies) -> List[Role]:
         paginator = self.client.get_paginator('list_roles')
@@ -166,10 +168,10 @@ class IAMConnector(SchematicAWSConnector):
 
                 role.update({
                     'AssumeRolePolicyDocument': assume_role_policy_document,
-                    'trusted_relationship': {
+                    'trust_relationship': [{
                         'trusted_entities': trusted_relationship,
                         'condition': conditions
-                    },
+                    }],
                     'trusted_entities': trust_entities,
                     'policies': matched_policies,
                     'role_last_used': role_last_used,

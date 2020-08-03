@@ -41,9 +41,11 @@ class PermissionVersions(Model):
     is_default_version = BooleanType(deserialize_from="IsDefaultVersion")
     version_id = StringType(deserialize_from="VersionId")
 
+
 class PolicyUsage(Model):
     name = StringType()
     type = StringType()
+
 
 class Policy(Model):
     arn = StringType(deserialize_from="Arn")
@@ -60,8 +62,7 @@ class Policy(Model):
     create_date = DateTimeType(deserialize_from="CreateDate")
     update_date = DateTimeType(deserialize_from="UpdateDate")
     permission = ModelType(PermissionSummary)
-    # Skip permission version due to heavy API call
-    # permission_versions = ListType(ModelType(PermissionVersions))
+    permission_versions = ListType(ModelType(PermissionVersions))
 
     @serializable
     def reference(self):
@@ -75,6 +76,7 @@ class SignInCredential(Model):
     summary = ListType(StringType())
     console_password = StringType()
     assigned_mfa_device = StringType()
+
 
 class AccessKeyLastUsed(Model):
     last_update_date = DateTimeType(deserialize_from="LastUsedDate", serialize_when_none=False)
@@ -162,12 +164,14 @@ class PrincipalMeta(Model):
     key = StringType()
     value = StringType()
 
+
 class RolePolicyDocument(Model):
     action = ListType(StringType(), deserialize_from="Action")
     condition = ListType(ModelType(Condition), serialize_when_none=False)
     effect = ListType(StringType(), deserialize_from="Effect")
     principal = ListType(ModelType(PrincipalMeta), deserialize_from="Principal")
     sid = ListType(StringType(), serialize_when_none=False)
+
 
 class TrustRelationShip(Model):
     trusted_entities = ListType(StringType())
@@ -178,9 +182,11 @@ class AssumeRolePolicyDocument(Model):
     version = StringType(deserialize_from="Version")
     statement = ListType(ModelType(RolePolicyDocument), default=[])
 
+
 class RoleLastUsed(Model):
     last_used_data = DateTimeType(deserialize_from="LastUsedDate")
     region = StringType(deserialize_from="Region")
+
 
 class Role(Model):
     arn = StringType(deserialize_from="Arn")

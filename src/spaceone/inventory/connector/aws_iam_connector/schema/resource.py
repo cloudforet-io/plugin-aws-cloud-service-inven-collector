@@ -7,7 +7,7 @@ from spaceone.inventory.libs.schema.dynamic_field import TextDyField, DateTimeDy
 from spaceone.inventory.libs.schema.dynamic_layout import ItemDynamicLayout, TableDynamicLayout, \
     SimpleTableDynamicLayout, ListDynamicLayout
 
-
+# GROUP
 group_base = ItemDynamicLayout.set_fields('Group', fields=[
     TextDyField.data_source('Group ARN', 'data.arn'),
     TextDyField.data_source('Group Name', 'data.group_name'),
@@ -21,13 +21,17 @@ group_user_table = TableDynamicLayout.set_fields('Users', root_path='data.users'
     TextDyField.data_source('User Name', 'user_name'),
     TextDyField.data_source('Access Key Age', 'access_key_age_display'),
     TextDyField.data_source('Last Activity', 'last_activity'),
-    TextDyField.data_source('MFA', 'mfa_device'),
+    EnumDyField.data_source('MFA', 'mfa_device', default_badge={
+        'indigo.500': ['Virtual'], 'coral.600': ['Not enabled'],
+    }),
 ])
 
 group_policy_table = TableDynamicLayout.set_fields('Permissions', root_path='data.attached_permission', fields=[
     TextDyField.data_source('Policy Name', 'policy_name'),
     TextDyField.data_source('Policy ID', 'policy_id'),
-    TextDyField.data_source('Policy Type', 'policy_type'),
+    EnumDyField.data_source('Policy Type', 'policy_type', default_badge={
+        'indigo.500': ['AWS Managed'], 'coral.600': ['Local Managed'],
+    }),
     TextDyField.data_source('Policy ARN', 'arn'),
     TextDyField.data_source('Permission Usage Count', 'attachment_count'),
     TextDyField.data_source('Description', 'description'),
@@ -37,71 +41,85 @@ group_policy_table = TableDynamicLayout.set_fields('Permissions', root_path='dat
 
 group_metadata = CloudServiceMeta.set_layouts(layouts=[group_base, group_user_table, group_policy_table])
 
+# USER
 user_base = ItemDynamicLayout.set_fields('User', fields=[
-    TextDyField.data_source('User Name', 'user_name'),
-    TextDyField.data_source('User ID', 'user_id'),
-    TextDyField.data_source('User ARN', 'arn'),
-    TextDyField.data_source('Path', 'path'),
-    TextDyField.data_source('groups', 'groups_display'),
-    TextDyField.data_source('Access Key Age', 'access_key_age_display'),
-    TextDyField.data_source('Last Activity', 'last_activity'),
-    TextDyField.data_source('MFA', 'mfa_device'),
-    DateTimeDyField.data_source('Created At', 'create_date'),
-    DateTimeDyField.data_source('Last Accessed At', 'password_last_used'),
+    TextDyField.data_source('User Name', 'data.user_name'),
+    TextDyField.data_source('User ID', 'data.user_id'),
+    TextDyField.data_source('User ARN', 'data.arn'),
+    TextDyField.data_source('Path', 'data.path'),
+    TextDyField.data_source('groups', 'data.groups_display'),
+    TextDyField.data_source('Access Key Age', 'data.access_key_age_display'),
+    TextDyField.data_source('Last Activity', 'data.last_activity'),
+    EnumDyField.data_source('MFA', 'data.mfa_device', default_badge={
+        'indigo.500': ['Virtual'], 'coral.600': ['Not enabled'],
+    }),
+    DateTimeDyField.data_source('Created At', 'data.create_date'),
+    DateTimeDyField.data_source('Last Accessed At', 'data.password_last_used'),
 ])
 
-user_policy_table = TableDynamicLayout.set_fields('Permission', root_path='data.user.policies', fields=[
+user_policy_table = TableDynamicLayout.set_fields('Permission', root_path='data.policies', fields=[
     TextDyField.data_source('Policy Name', 'policy_name'),
-    TextDyField.data_source('Policy Type', 'policy_type'),
+    EnumDyField.data_source('Policy Type', 'policy_type', default_badge={
+        'indigo.500': ['AWS Managed'], 'coral.600': ['Local Managed'],
+    }),
     TextDyField.data_source('Description', 'description'),
     DateTimeDyField.data_source('Created At', 'create_date'),
 ])
 
-user_group_table = TableDynamicLayout.set_fields('Groups', root_path='data.user.groups', fields=[
+user_group_table = TableDynamicLayout.set_fields('Groups', root_path='data.groups', fields=[
     TextDyField.data_source('Group Name', 'group_name'),
-    TextDyField.data_source('Policy Name', 'attached_policy_name'),
+    ListDyField.data_source('Policy Name', 'attached_policy_name', default_badge={'type': 'outline'}),
     DateTimeDyField.data_source('Created At', 'create_date'),
 ])
 
-sign_in_credentials = ItemDynamicLayout.set_fields('Sign-in Credentials', root_path='data.user.sign_in_credential',
+sign_in_credentials = ItemDynamicLayout.set_fields('Sign-in Credentials', root_path='data.sign_in_credential',
                                                    fields=[
                                                        ListDyField.data_source('Summary', 'summary'),
-                                                       TextDyField.data_source('Console Password', 'console_password'),
+                                                       EnumDyField.data_source('Console Password', 'console_password',
+                                                                               default_badge={
+                                                                                   'indigo.500': ['Enabled'],
+                                                                                   'coral.600': ['Disabled'],
+                                                                               }),
                                                        TextDyField.data_source('Assigned MFA device',
                                                                                'assigned_mfa_device'),
                                                    ])
 
 
-access_key = SimpleTableDynamicLayout.set_fields('Access Keys', root_path='data.user.access_key', fields=[
+access_key = SimpleTableDynamicLayout.set_fields('Access Keys', root_path='data.access_key', fields=[
     TextDyField.data_source('Access Key ID', 'key_id'),
     DateTimeDyField.data_source('Created At', 'create_date'),
     TextDyField.data_source('Last Used', 'last_update_date_display'),
-    EnumDyField.data_source('Status', 'data.status', default_outline_badge=['Active', 'Inactive']),
 ])
 
-ssh_codecommit = SimpleTableDynamicLayout.set_fields('SSH Keys for AWS CodeCommit', root_path='data.user.ssh_public_key'
+ssh_codecommit = SimpleTableDynamicLayout.set_fields('SSH Keys for AWS CodeCommit', root_path='data.ssh_public_key'
                                                      , fields=[
         TextDyField.data_source('SSH Key ID', 'key_id'),
         DateTimeDyField.data_source('Uploaded At', 'upload_date'),
-        EnumDyField.data_source('Status', 'status', default_outline_badge=['Active', 'Inactive']),
+        EnumDyField.data_source('Status', 'status',
+                                default_badge={'indigo.500': ['Active'], 'coral.600': ['Inactive']}),
     ])
 
 https_codecommit = SimpleTableDynamicLayout.set_fields('HTTPS Git Credentials for AWS CodeCommit',
-                                                       root_path='data.user.code_commit_credential',
+                                                       root_path='data.code_commit_credential',
                                                        fields=[
                                                            TextDyField.data_source('User Name', 'service_user_name'),
-                                                           EnumDyField.data_source('Status', 'status',
-                                                                                   default_outline_badge=['Active',
-                                                                                                          'Inactive']),
                                                            DateTimeDyField.data_source('Created At', 'create_date'),
+                                                           EnumDyField.data_source('Status', 'status', default_badge={
+                                                               'indigo.500': ['Active'],
+                                                               'coral.600': ['Inactive']
+                                                           }),
                                                        ])
 
 cred_aws_keyspaces = SimpleTableDynamicLayout.set_fields('Credentials for Amazon Keyspaces (for Apache Cassandra)',
-                                                         root_path='data.user.cassandra_credential', fields=[
-        TextDyField.data_source('User Name', 'service_user_name'),
-        EnumDyField.data_source('Status', 'status', default_outline_badge=['Active', 'Inactive']),
-        DateTimeDyField.data_source('Created At', 'create_date'),
-    ])
+                                                         root_path='data.cassandra_credential',
+                                                         fields=[
+                                                             TextDyField.data_source('User Name', 'service_user_name'),
+                                                             DateTimeDyField.data_source('Created At', 'create_date'),
+                                                             EnumDyField.data_source('Status', 'status',
+                                                                                     default_badge={
+                                                                                         'indigo.500': ['Active'],
+                                                                                         'coral.600': ['Inactive']}),
+                                                         ])
 
 user_security_credential = ListDynamicLayout.set_layouts('Security Credentials', layouts=[sign_in_credentials,
                                                                                           access_key,
@@ -117,75 +135,90 @@ user_tags = SimpleTableDynamicLayout.set_fields('Tags', root_path='data.user.tag
 user_metadata = CloudServiceMeta.set_layouts(layouts=[user_base, user_policy_table, user_group_table,
                                                       user_security_credential, user_tags])
 
+# ROLE
 role_base = ItemDynamicLayout.set_fields('Roles', fields=[
-    TextDyField.data_source('Role ARN', 'arn'),
-    TextDyField.data_source('Description', 'description'),
-    TextDyField.data_source('Role Name', 'role_name'),
-    TextDyField.data_source('Role ID', 'role_id'),
-    TextDyField.data_source('Path', 'path'),
-    DateTimeDyField.data_source('Created At', 'create_date'),
-    ListDyField.data_source('Trusted entities', 'trusted_entities'),
-    TextDyField.data_source('Last Activity', 'last_activity'),
-    TextDyField.data_source('Maximum session duration', 'max_session_duration'),
+    TextDyField.data_source('Role ARN', 'data.arn'),
+    TextDyField.data_source('Description', 'data.description'),
+    TextDyField.data_source('Role Name', 'data.role_name'),
+    TextDyField.data_source('Role ID', 'data.role_id'),
+    TextDyField.data_source('Path', 'data.path'),
+    ListDyField.data_source('Trusted entities', 'data.trusted_entities', default_badge={'type': 'outline'}),
+    TextDyField.data_source('Last Activity', 'data.last_activity'),
+    TextDyField.data_source('Maximum session duration', 'data.max_session_duration'),
+    DateTimeDyField.data_source('Created At', 'data.create_date'),
 ])
 
-role_policy_table = TableDynamicLayout.set_fields('Permissions', root_path='data.role.policies', fields=[
+role_policy_table = TableDynamicLayout.set_fields('Permissions', root_path='data.policies', fields=[
     TextDyField.data_source('Policy Name', 'policy_name'),
     TextDyField.data_source('Policy ID', 'policy_id'),
     TextDyField.data_source('Used As', 'attachment_count'),
-    TextDyField.data_source('Policy Type', 'policy_type'),
+    EnumDyField.data_source('Policy Type', 'policy_type', default_badge={
+        'indigo.500': ['AWS Managed'], 'coral.600': ['Local Managed'],
+    }),
     TextDyField.data_source('Description', 'description'),
     DateTimeDyField.data_source('Created At', 'create_date'),
 
 ])
 
-role_trust_relationship_entities = ItemDynamicLayout.set_fields('Trusted Entities', root_path='data.role.trust_relationship', fields=[
-    ListDyField.data_source('Trusted entities', 'trust_relationship'),
-])
-
-role_trust_relationship_condition = SimpleTableDynamicLayout.set_fields('Conditions', root_path='data.role.trust_relationship', fields=[
-    TextDyField.data_source('Condition', 'condition'),
-    TextDyField.data_source('Key', 'key'),
-    TextDyField.data_source('Value', 'value'),
-])
-
-role_trust_relationship = ListDynamicLayout.set_layouts(name='Trust relationships',
-                                                        layouts=[role_trust_relationship_entities,
-                                                                 role_trust_relationship_condition])
+role_trust_relationships = TableDynamicLayout.set_fields('Trust Relationships', root_path='data.trust_relationship',
+                                                         fields=[
+                                                             ListDyField.data_source('Trusted Entities',
+                                                                                     'trusted_entities',
+                                                                                     default_badge={'type': 'outline'}),
+                                                             ListDyField.data_source('Condition', 'condition',
+                                                                                     default_badge={
+                                                                                         'type': 'outline',
+                                                                                         'sub_key': 'condition',
+                                                                                     }),
+                                                             ListDyField.data_source('Condition Key', 'condition',
+                                                                                     default_badge={
+                                                                                         'sub_key': 'key',
+                                                                                     }),
+                                                             ListDyField.data_source('Condition Value', 'condition',
+                                                                                     default_badge={
+                                                                                         'sub_key': 'value',
+                                                                                     }),
+                                                         ])
 
 role_tags = SimpleTableDynamicLayout.set_fields('Tags', root_path='data.role.tags', fields=[
     TextDyField.data_source('Key', 'key'),
     TextDyField.data_source('Value', 'value'),
 ])
 
-role_metadata = CloudServiceMeta.set_layouts(layouts=[role_base, role_policy_table, role_trust_relationship, role_tags])
+role_metadata = CloudServiceMeta.set_layouts(layouts=[role_base, role_policy_table, role_trust_relationships, role_tags])
 
 # POLICY
 policy_base = ItemDynamicLayout.set_fields('Policy', fields=[
-    TextDyField.data_source('Policy Name', 'policy_name'),
-    TextDyField.data_source('Policy ARN', 'arn'),
-    TextDyField.data_source('Policy ID', 'policy_id'),
-    TextDyField.data_source('Policy Type', 'policy_type'),
-    TextDyField.data_source('Used As', 'attachment_count'),
-    TextDyField.data_source('Description', 'description'),
-    TextDyField.data_source('Path', 'path'),
-    DateTimeDyField.data_source('Created At', 'create_date'),
+    TextDyField.data_source('Policy Name', 'data.policy_name'),
+    TextDyField.data_source('Policy ARN', 'data.arn'),
+    TextDyField.data_source('Policy ID', 'data.policy_id'),
+    EnumDyField.data_source('Policy Type', 'data.policy_type', default_badge={
+        'indigo.500': ['AWS Managed'], 'coral.600': ['Local Managed'],
+    }),
+    TextDyField.data_source('Attachment Count', 'data.attachment_count'),
+    TextDyField.data_source('Description', 'data.description'),
+    TextDyField.data_source('Path', 'data.path'),
+    DateTimeDyField.data_source('Created At', 'data.create_date'),
 ])
 
-policy_permission = TableDynamicLayout.set_fields('Permission', root_path='data.policy.permission.statement', fields=[
+policy_permission = TableDynamicLayout.set_fields('Permission', root_path='data.permission.statement', fields=[
     ListDyField.data_source('Action', 'action'),
     ListDyField.data_source('Condition', 'condition'),
     ListDyField.data_source('Resource', 'resource'),
-    TextDyField.data_source('Effect', 'effect'),
+    EnumDyField.data_source('Effect', 'effect', default_badge={
+        'indigo.500': ['Allow'], 'coral.600': ['Deny']
+    }),
     TextDyField.data_source('Sid', 'sid'),
 ])
 
-policy_usage = TableDynamicLayout.set_fields('Policy Usage', root_path='data.policy.policy_usage', fields=[
+policy_usage = TableDynamicLayout.set_fields('Policy Usage', root_path='data.policy_usage', fields=[
     TextDyField.data_source('Name', 'name'),
-    TextDyField.data_source('Type', 'type'),
+    EnumDyField.data_source('Type', 'type', default_badge={
+        'indigo.500': ['Group'], 'coral.600': ['User'], 'green.500': ['Role'],
+    }),
 ])
 
-policy_version = TableDynamicLayout.set_fields('Policy Versions', root_path='data.policy.permission_versions', fields=[
+policy_version = TableDynamicLayout.set_fields('Policy Versions', root_path='data.permission_versions', fields=[
     TextDyField.data_source('Version ID', 'version_id'),
     EnumDyField.data_source('Is Default version', 'is_default_version', default_badge={
         'indigo.500': ['true'], 'coral.600': ['false']
@@ -193,12 +226,13 @@ policy_version = TableDynamicLayout.set_fields('Policy Versions', root_path='dat
     DateTimeDyField.data_source('Created At', 'create_date'),
 ])
 
-policy_metadata = CloudServiceMeta.set_layouts(layouts=[policy_base, policy_permission, policy_usage])
+policy_metadata = CloudServiceMeta.set_layouts(layouts=[policy_base, policy_permission, policy_usage, policy_version])
 
+# Identity Provider
 identity_provider_base = ItemDynamicLayout.set_fields('Identity Provider', fields=[
-    TextDyField.data_source('Provider Name', 'url'),
-    TextDyField.data_source('Type', 'provider_type'),
-    DateTimeDyField.data_source('Created At', 'create_date'),
+    TextDyField.data_source('Provider Name', 'data.url'),
+    EnumDyField.data_source('Type', 'data.provider_type', default_badge={'indigo.500': ['OIDC']}),
+    DateTimeDyField.data_source('Created At', 'data.create_date'),
 ])
 
 identity_provider_metadata = CloudServiceMeta.set_layouts(layouts=[identity_provider_base])
