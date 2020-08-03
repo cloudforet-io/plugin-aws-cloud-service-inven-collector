@@ -92,7 +92,7 @@ cst_role.name = 'Role'
 cst_role.provider = 'aws'
 cst_role.group = 'IAM'
 cst_role.tags = {
-    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/AWS-Identity-and-Access-Management-IAM_Role_light-bg.svg',
+    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/AWS-Identity-and-Access-Management_IAM.svg',
     'spaceone:is_major': 'false',
 }
 
@@ -151,7 +151,7 @@ cst_identity_provider.name = 'IdentityProvider'
 cst_identity_provider.provider = 'aws'
 cst_identity_provider.group = 'IAM'
 cst_identity_provider.tags = {
-    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/',
+    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/AWS-Identity-and-Access-Management_IAM.svg',
     'spaceone:is_major': 'false',
 }
 

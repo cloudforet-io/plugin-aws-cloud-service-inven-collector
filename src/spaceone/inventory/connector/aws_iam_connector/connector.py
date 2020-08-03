@@ -93,11 +93,11 @@ class IAMConnector(SchematicAWSConnector):
                     'user_count': len(group_user_info),
                     'attached_permission': matched_policies
                 })
-                print('-------Group---------')
-                print()
-                pprint(group)
-                print()
-                print('----------------------')
+                # print('-------Group---------')
+                # print()
+                # pprint(group)
+                # print()
+                # print('----------------------')
                 yield Group(group, strict=False)
 
     def request_user_data(self, policies) -> List[User]:
@@ -141,11 +141,11 @@ class IAMConnector(SchematicAWSConnector):
                         'assigned_mfa_device': user_info.get('Arn') if len(mfa_devices) > 0 else 'Not assigned'
                     }
                 })
-                print('-------User---------')
-                print()
-                pprint(user)
-                print()
-                print('----------------------')
+                # print('-------User---------')
+                # print()
+                # pprint(user)
+                # print()
+                # print('----------------------')
                 yield User(user, strict=False)
 
     def request_role_data(self, policies) -> List[Role]:
@@ -177,11 +177,11 @@ class IAMConnector(SchematicAWSConnector):
                     'tags': role_info.get('Tags', [])
                 })
 
-                print('-------Role---------')
-                print()
-                pprint(role)
-                print()
-                print('----------------------')
+                # print('-------Role---------')
+                # print()
+                # pprint(role)
+                # print()
+                # print('----------------------')
 
                 yield Role(role, strict=False)
 
@@ -195,11 +195,11 @@ class IAMConnector(SchematicAWSConnector):
                 'arn': arn,
                 'provider_type': self._get_provider_type(identity_provider.get('Url', ''))
             })
-            print('-------Identity_Provider---------')
-            print()
-            pprint(identity_provider)
-            print()
-            print('----------------------')
+            # print('-------Identity_Provider---------')
+            # print()
+            # pprint(identity_provider)
+            # print()
+            # print('----------------------')
             yield IdentityProvider(identity_provider, strict=False)
 
     # For Users list_service_specific_credentials
@@ -248,11 +248,11 @@ class IAMConnector(SchematicAWSConnector):
                                'permission_versions': self.list_policy_versions(policy_arn),
                                'policy_type': 'Custom Managed'})
 
-                print('-------Policy---------')
-                print()
-                pprint(policy)
-                print()
-                print('----------------------')
+                # print('-------Policy---------')
+                # print()
+                # pprint(policy)
+                # print()
+                # print('----------------------')
 
                 policies.append(Policy(policy, strict=False))
 
