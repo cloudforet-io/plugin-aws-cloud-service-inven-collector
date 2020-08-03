@@ -9,7 +9,7 @@ from spaceone.inventory.libs.schema.dynamic_layout import ItemDynamicLayout, Tab
 
 
 group_base = ItemDynamicLayout.set_fields('Group', fields=[
-    TextDyField.data_source('Group ARN', 'data.path'),
+    TextDyField.data_source('Group ARN', 'data.arn'),
     TextDyField.data_source('Group Name', 'data.group_name'),
     TextDyField.data_source('Group ID', 'data.group_id'),
     TextDyField.data_source('Path', 'data.path'),
@@ -50,7 +50,7 @@ user_base = ItemDynamicLayout.set_fields('User', fields=[
     DateTimeDyField.data_source('Last Accessed At', 'password_last_used'),
 ])
 
-user_policy_table = TableDynamicLayout.set_fields('Permissions', root_path='data.user.policies', fields=[
+user_policy_table = TableDynamicLayout.set_fields('Permission', root_path='data.user.policies', fields=[
     TextDyField.data_source('Policy Name', 'policy_name'),
     TextDyField.data_source('Policy Type', 'policy_type'),
     TextDyField.data_source('Description', 'description'),
@@ -160,28 +160,10 @@ role_tags = SimpleTableDynamicLayout.set_fields('Tags', root_path='data.role.tag
 
 role_metadata = CloudServiceMeta.set_layouts(layouts=[role_base, role_policy_table, role_trust_relationship, role_tags])
 
-
-#
-# class Policy(Model):
-#     arn = StringType(deserialize_from="Arn")
-#     attachment_count = IntType(deserialize_from="AttachmentCount")
-#     is_attachable = BooleanType(deserialize_from="IsAttachable")
-#     default_version_id = StringType(deserialize_from="DefaultVersionId")
-#     path = StringType(deserialize_from="Path")
-#     permissions_boundary_usage_count = IntType(deserialize_from="PermissionsBoundaryUsageCount")
-#     policy_id = StringType(deserialize_from="PolicyId")
-#     policy_name = StringType(deserialize_from="PolicyName")
-#     policy_type = StringType()
-#     description = StringType(deserialize_from="Description", default='')
-#     create_date = DateTimeType(deserialize_from="CreateDate")
-#     update_date = DateTimeType(deserialize_from="UpdateDate")
-#     permission = ListType(ModelType(PermissionSummary))
-#     permission_versions = ListType(ModelType(PermissionVersions))
-
 # POLICY
 policy_base = ItemDynamicLayout.set_fields('Policy', fields=[
     TextDyField.data_source('Policy Name', 'policy_name'),
-    TextDyField.data_source('Policy ARN', 'policy_arn'),
+    TextDyField.data_source('Policy ARN', 'arn'),
     TextDyField.data_source('Policy ID', 'policy_id'),
     TextDyField.data_source('Policy Type', 'policy_type'),
     TextDyField.data_source('Used As', 'attachment_count'),
@@ -190,12 +172,17 @@ policy_base = ItemDynamicLayout.set_fields('Policy', fields=[
     DateTimeDyField.data_source('Created At', 'create_date'),
 ])
 
-policy_permission = TableDynamicLayout.set_fields('Permissions', root_path='data.', fields=[
-    # TODO: PERMISSION TABLE FIELDS for POLICY
+policy_permission = TableDynamicLayout.set_fields('Permission', root_path='data.policy.permission.statement', fields=[
+    ListDyField.data_source('Action', 'action'),
+    ListDyField.data_source('Condition', 'condition'),
+    ListDyField.data_source('Resource', 'resource'),
+    TextDyField.data_source('Effect', 'effect'),
+    TextDyField.data_source('Sid', 'sid'),
 ])
 
-policy_usage = TableDynamicLayout.set_fields('Policy Usage', root_path='data.', fields=[
-    # TODO: USAGE TABLE FIELDS for POLICY
+policy_usage = TableDynamicLayout.set_fields('Policy Usage', root_path='data.policy.policy_usage', fields=[
+    TextDyField.data_source('Name', 'name'),
+    TextDyField.data_source('Type', 'type'),
 ])
 
 policy_version = TableDynamicLayout.set_fields('Policy Versions', root_path='data.policy.permission_versions', fields=[
@@ -206,11 +193,12 @@ policy_version = TableDynamicLayout.set_fields('Policy Versions', root_path='dat
     DateTimeDyField.data_source('Created At', 'create_date'),
 ])
 
-policy_metadata = CloudServiceMeta.set_layouts(layouts=[policy_base, policy_permission, policy_usage, policy_version])
+policy_metadata = CloudServiceMeta.set_layouts(layouts=[policy_base, policy_permission, policy_usage])
 
-# IDENTITY PROVIDER
 identity_provider_base = ItemDynamicLayout.set_fields('Identity Provider', fields=[
-    # TODO: IDENTITY ITEM FIELDS
+    TextDyField.data_source('Provider Name', 'url'),
+    TextDyField.data_source('Type', 'provider_type'),
+    DateTimeDyField.data_source('Created At', 'create_date'),
 ])
 
 identity_provider_metadata = CloudServiceMeta.set_layouts(layouts=[identity_provider_base])
@@ -220,7 +208,6 @@ class IAMResource(CloudServiceResource):
     cloud_service_group = StringType(default='IAM')
 
 
-# GROUP
 class GroupResource(IAMResource):
     cloud_service_type = StringType(default='Group')
     data = ModelType(Group)

@@ -1,12 +1,14 @@
 import time
 import logging
 from typing import List
+import traceback
+from pprint import pprint
 from datetime import date, datetime, timezone
 from botocore.exceptions import ClientError
 
-from spaceone.inventory.connector.aws_iam_connector.schema.data import Policy, AccessKeyLastUsed, User, Group, Role, \
-    IdentityProvider
-from spaceone.inventory.connector.aws_iam_connector.schema.resource import IAMResource, GroupResource, GroupResponse, \
+from spaceone.inventory.connector.aws_iam_connector.schema.data \
+    import Policy, AccessKeyLastUsed, User, Group, Role, IdentityProvider, PermissionSummary
+from spaceone.inventory.connector.aws_iam_connector.schema.resource import GroupResource, GroupResponse, \
     UserResource, UserResponse, RoleResource, RoleResponse, PolicyResource, PolicyResponse, IdentityProviderResource, \
     IdentityProviderResponse
 
@@ -31,20 +33,18 @@ class IAMConnector(SchematicAWSConnector):
 
     def get_resources(self):
         print("** IAM START **")
-        resources = []
         start_time = time.time()
-        policies = self.request_policy_data()
-        users = self.request_user_data(policies)
+        resources = []
+
         # init cloud service type
         for cst in CLOUD_SERVICE_TYPES:
             resources.append(cst)
 
         try:
-            for data in policies:
-                resources.append(self.policy_response_schema(
-                    {'resource': PolicyResource({'data': data, 'reference': ReferenceModel(data.reference)})}))
+            policies = self.list_local_managed_policies()
+            users = self.request_user_data(policies)
 
-            for data in self.request_role_dataata(policies):
+            for data in self.request_role_data(policies):
                 resources.append(self.role_response_schema(
                     {'resource': RoleResource({'data': data, 'reference': ReferenceModel(data.reference)})}))
 
@@ -56,14 +56,19 @@ class IAMConnector(SchematicAWSConnector):
                 resources.append(self.group_response_schema(
                     {'resource': GroupResource({'data': data, 'reference': ReferenceModel(data.reference)})}))
 
+            for data in policies:
+                resources.append(self.policy_response_schema(
+                    {'resource': PolicyResource({'data': data, 'reference': ReferenceModel(data.reference)})}))
+
             for data in self.request_identity_provider_data():
                 resources.append(self.identity_provider_response_schema(
-                    {'resource': IdentityProvider({'data': data, 'reference': ReferenceModel(data.reference)})}))
+                    {'resource': IdentityProviderResource({'data': data, 'reference': ReferenceModel(data.reference)})}))
 
         except Exception as e:
+            print(traceback.format_exc())
             print(f'[ERROR {self.service_name}] {e}')
 
-        print(f' EBS Finished {time.time() - start_time} Seconds')
+        print(f' IAM Finished {time.time() - start_time} Seconds')
         return resources
 
     def request_group_data(self, users, policies) -> List[Group]:
@@ -78,20 +83,21 @@ class IAMConnector(SchematicAWSConnector):
         for data in response_iterator:
             for group in data.get('Groups', []):
                 group_name = group.get('GroupName')
-                user_infos = self.list_user_with_group_name(group_name)
-                user_names = [d['UserName'] for d in user_infos if 'UserName' in d]
-                matched_users = [p for p in users if p.get('user_name', '') in user_names]
-
+                group_user_info = self.list_user_with_group_name(group_name)
+                matched_users = self._get_matched_users_with_attached_user_info(users, group_user_info)
                 policy_infos = self.list_policy_with_group_name(group_name)
-                policy_name = [d['PolicyName'] for d in policy_infos if 'PolicyName' in d]
-                matched_policies = [p for p in policies if p.get('policy_name', '') in policy_name]
+                matched_policies = self.get_matched_policies_with_attached_policy_info(policies, policy_infos)
 
                 group.update({
                     'users': matched_users,
-                    'user_count': len(users),
+                    'user_count': len(group_user_info),
                     'attached_permission': matched_policies
                 })
-
+                print('-------Group---------')
+                print()
+                pprint(group)
+                print()
+                print('----------------------')
                 yield Group(group, strict=False)
 
     def request_user_data(self, policies) -> List[User]:
@@ -111,12 +117,12 @@ class IAMConnector(SchematicAWSConnector):
 
                 self._conditional_update_for_password_last_used(user, user_info)
                 self.conditional_update_for_access_key_age_and_access_key_age_display(user, access_keys)
-                code_commit_credential, cassandra_credential = self.list_service_specific_credentials(self, user_name)
+                code_commit_credential, cassandra_credential = self.list_service_specific_credentials(user_name)
                 last_active_age, last_activity = self._get_age_and_age_display(user_info.get('PasswordLastUsed', None))
                 sign_in_link = self._get_sign_in_link(user_info.get('Arn'))
 
-                attached_policies = self.self.list_attached_policy_to_user(user_name)
-                matching_policies = self._get_matched_policies_with_attached_policy_info(policies, attached_policies)
+                attached_policies = self.list_attached_policy_to_user(user_name)
+                matching_policies = self.get_matched_policies_with_attached_policy_info(policies, attached_policies)
 
                 user.update({
                     'access_key': self.list_access_keys(user_name),
@@ -135,9 +141,12 @@ class IAMConnector(SchematicAWSConnector):
                         'assigned_mfa_device': user_info.get('Arn') if len(mfa_devices) > 0 else 'Not assigned'
                     }
                 })
-
+                print('-------User---------')
+                print()
+                pprint(user)
+                print()
+                print('----------------------')
                 yield User(user, strict=False)
-
 
     def request_role_data(self, policies) -> List[Role]:
         paginator = self.client.get_paginator('list_roles')
@@ -151,67 +160,30 @@ class IAMConnector(SchematicAWSConnector):
                 role_last_used, last_activity = self._get_role_last_used_and_activity(role_info)
 
                 attached_policies = self.list_attached_policy_to_role(role_name)
-                matching_policies = self._get_matched_policies_with_attached_policy_info(policies, attached_policies)
-                trusted_relationship, conditions, trust_entities = self._get_trusted_relationship(role)
+                matched_policies = self.get_matched_policies_with_attached_policy_info(policies, attached_policies)
+                assume_role_policy_document, trust_entities, trusted_relationship, conditions = \
+                    self._get_role_policy_doc_and_trusted_entities_and_relationship_meta(role)
 
                 role.update({
+                    'AssumeRolePolicyDocument': assume_role_policy_document,
                     'trusted_relationship': {
-                        'trusted_relationship': trusted_relationship,
+                        'trusted_entities': trusted_relationship,
                         'condition': conditions
                     },
-                    'condition': trusted_relationship,
-                    'trust_entities': trust_entities,
-                    'policies': matching_policies,
+                    'trusted_entities': trust_entities,
+                    'policies': matched_policies,
                     'role_last_used': role_last_used,
                     'last_activity': last_activity,
                     'tags': role_info.get('Tags', [])
                 })
 
+                print('-------Role---------')
+                print()
+                pprint(role)
+                print()
+                print('----------------------')
+
                 yield Role(role, strict=False)
-
-    def request_policy_data(self, **query) -> List[Policy]:
-        policies = []
-        policy_paginator = self.client.get_paginator('list_policies')
-        permission_paginator = self.client.get_paginator('list_policy_versions')
-        query = self._generate_key_query('Scope', 'AWS', '', is_paginate=True, **query)
-        response_iterator_aws = policy_paginator.paginate(**query)
-        query = self._generate_key_query('Scope', 'Local', '', is_paginate=True, **query)
-        response_iterator_local = policy_paginator.paginate(**query)
-
-        for data in response_iterator_local:
-            for policy in data.get('Policies', []):
-                policy_arn = policy.get('Arn')
-
-                query = self._generate_key_query('PolicyArn', policy_arn, 'Scope', is_paginate=True, **query)
-                permission_versions = permission_paginator.paginate(**query)
-                description = self.list_policy_description(policy_arn)
-                permission = self.list_policy_summary(policy_arn, policy.get('DefaultVersionId'))
-
-                for permission_version in permission_versions:
-                    policy.update({'description': description,
-                                   'permission': permission,
-                                   'permission_versions': permission_version.get('Versions', []),
-                                   'policy_type': 'Custom Managed'})
-
-                policies.append(Policy(policy, strict=False))
-
-        for data in response_iterator_aws:
-            for policy in data.get('Policies', []):
-                policy_arn = policy.get('Arn')
-                query = self._generate_key_query('PolicyArn', policy_arn, 'Scope', is_paginate=True, **query)
-                permission_versions = permission_paginator.paginate(**query)
-                description = self.list_policy_description(policy_arn)
-                permission = self.list_policy_summary(policy_arn, policy.get('DefaultVersionId'))
-
-                for permission_version in permission_versions:
-                    policy.update({'description': description,
-                                   'permission': permission,
-                                   'permission_versions': permission_version.get('Versions', []),
-                                   'policy_type': 'AWS Managed'})
-
-                policies.append(Policy(policy, strict=False))
-
-        return policies
 
     def request_identity_provider_data(self) -> List[IdentityProvider]:
         response = self.client.list_open_id_connect_providers()
@@ -223,7 +195,11 @@ class IAMConnector(SchematicAWSConnector):
                 'arn': arn,
                 'provider_type': self._get_provider_type(identity_provider.get('Url', ''))
             })
-
+            print('-------Identity_Provider---------')
+            print()
+            pprint(identity_provider)
+            print()
+            print('----------------------')
             yield IdentityProvider(identity_provider, strict=False)
 
     # For Users list_service_specific_credentials
@@ -246,9 +222,41 @@ class IAMConnector(SchematicAWSConnector):
             response = self.client.get_login_profile(UserName=user_name)
             login_profile = response.get('LoginProfile', {})
         except Exception as e:
-            print(f'[ERROR: No login_profile with {user_name}] : {e}')
+            pass
+            # print(f'[ERROR: No login_profile with {user_name}] : {e}')
+            # print(f' no login_profile data found with {user_name}')
 
         return login_profile
+
+    def list_local_managed_policies(self, **query):
+        policies = []
+        policy_paginator = self.client.get_paginator('list_policies')
+
+        query = self._generate_key_query('Scope', 'Local', '', is_paginate=True, **query)
+        response_iterator_local = policy_paginator.paginate(**query)
+
+        for data in response_iterator_local:
+            for policy in data.get('Policies', []):
+                policy_arn = policy.get('Arn')
+                description = self.list_policy_description(policy_arn)
+                query = self._generate_key_query('PolicyArn', policy_arn, 'Scope', is_paginate=True, **query)
+
+                permission_summary = self.list_policy_summary(policy_arn, policy.get('DefaultVersionId'))
+                policy.update({'description': description,
+                               'policy_usage': self.list_policy_usage(policy_arn),
+                               'permission': permission_summary,
+                               'permission_versions': self.list_policy_versions(policy_arn),
+                               'policy_type': 'Custom Managed'})
+
+                print('-------Policy---------')
+                print()
+                pprint(policy)
+                print()
+                print('----------------------')
+
+                policies.append(Policy(policy, strict=False))
+
+        return policies
 
     def list_access_keys(self, user_name, **query):
         access_keys = []
@@ -274,11 +282,11 @@ class IAMConnector(SchematicAWSConnector):
     def list_ssh_keys(self, user_name, **query):
         ssh_keys = []
         query = self._generate_key_query('UserName', user_name, '', is_paginate=True, **query)
-        paginator = self.client.get_paginator('list_access_keys')
+        paginator = self.client.get_paginator('list_ssh_public_keys')
         response_iterator = paginator.paginate(**query)
 
         for data in response_iterator:
-            for ssh_key in data.get('AccessKeyMetadata', []):
+            for ssh_key in data.get('SSHPublicKeys', []):
                 ssh_keys.append({
                     'key_id': ssh_key.get('SSHPublicKeyId', ''),
                     'status': ssh_key.get('Status', ''),
@@ -294,7 +302,7 @@ class IAMConnector(SchematicAWSConnector):
     def list_service_specific_credentials(self, user_name):
         code_commit_credential = []
         cassandra_credential = []
-        response = self.client.get_role(UserName=user_name)
+        response = self.client.list_service_specific_credentials(UserName=user_name)
         service_specific_credentials = response.get('ServiceSpecificCredentials', [])
         for ssc in service_specific_credentials:
             if 'UserName' in ssc:
@@ -373,15 +381,76 @@ class IAMConnector(SchematicAWSConnector):
         response = self.client.get_access_key_last_used(AccessKeyId=access_key_id)
         return response.get('AccessKeyLastUsed',{})
 
+    def list_policy_info(self, policy_arn):
+        return self.client.get_policy(PolicyArn=policy_arn).get('Policy', {})
+
     def list_policy_description(self, policy_arn):
         policy_info = self.client.get_policy(PolicyArn=policy_arn).get('Policy', {})
         return policy_info.get('Description', '')
+
+    def list_policy_versions(self, policy_arn, **query):
+        versions = []
+        query = self._generate_key_query('PolicyArn', policy_arn, '', is_paginate=True, **query)
+        paginator = self.client.get_paginator('list_policy_versions')
+        response_iterator = paginator.paginate(**query)
+
+        for data in response_iterator:
+            versions.extend(data.get('Versions', []))
+
+        return versions
 
     def list_policy_summary(self, policy_arn, version_id):
         policy_info = self.client.get_policy_version(PolicyArn=policy_arn,
                                                      VersionId=version_id).get('PolicyVersion', {})
         empty_permission_summary = {'Statement': [], 'Version': 'N/A'}
-        return policy_info.get('Document', empty_permission_summary)
+        return_value = policy_info.get('Document', empty_permission_summary)
+        statements = []
+
+        if isinstance(return_value.get('Statement'), list):
+            for statement in return_value.get('Statement'):
+                statements.append(self.get_appropriate_format_statement(statement))
+
+        elif isinstance(return_value.get('Statement'), dict):
+            statements.append(self.get_appropriate_format_statement(return_value.get('Statement')))
+
+        return_value.update({'Statement': statements})
+        return return_value
+
+    def get_matched_policies_with_attached_policy_info(self, policies, attached_policies):
+        matched_policies = []
+        attached_policy_arn = [policy.get('PolicyArn', '') for policy in attached_policies]
+        for policy_arn in attached_policy_arn:
+            policy = [p for p in policies if p.get('arn', '') == policy_arn]
+            if not policy:
+                new_policy = self.list_policy_info(policy_arn)
+                permission_summary = self.list_policy_summary(policy_arn, new_policy.get('DefaultVersionId'))
+                new_policy.update({'policy_usage': self.list_policy_usage(policy_arn),
+                                   'permission': permission_summary,
+                                   'permission_versions': self.list_policy_versions(policy_arn),
+                                   'policy_type': 'AWS Managed'
+                                   })
+                policies.append(Policy(new_policy, strict=False))
+                matched_policies.append(Policy(new_policy, strict=False))
+            else:
+                matched_policies.extend(policy)
+
+        return matched_policies
+
+    def list_policy_usage(self, policy_arn, **query):
+        query = self._generate_key_query('PolicyArn', policy_arn, '', is_paginate=True, **query)
+        paginator = self.client.get_paginator('list_entities_for_policy')
+        iterator_response = paginator.paginate(**query)
+        policy_usage = []
+        for response in iterator_response:
+            group = [{'name': d['GroupName'],
+                      'type': 'Group'} for d in response.get('PolicyGroups', []) if 'GroupName' in d]
+            role = [{'name': d['RoleName'],
+                     'type': 'Role'} for d in response.get('PolicyRoles', []) if 'RoleName' in d]
+            user = [{'name': d['UserName'],
+                     'type': 'User'} for d in response.get('PolicyUsers', []) if 'UserName' in d]
+            policy_usage = [*group, *role, *user]
+
+        return policy_usage
 
     def list_versions_from_policy(self, policy_arn, **query):
         policy_versions = []
@@ -395,13 +464,53 @@ class IAMConnector(SchematicAWSConnector):
 
         return policy_versions
 
+    def get_appropriate_format_statement(self, candidate):
+        action = self._switch_to_list(candidate.get('Action', []))
+        resource = self._switch_to_list(candidate.get('Resource', []))
+        effect = candidate.get('Effect', '')
+        condition = candidate.get('Condition', None)
+        sid = candidate.get('Sid', None)
+
+        statement_candidate = {
+            'action': action,
+            'resource': resource,
+            'effect': effect,
+        }
+
+        if condition is not None:
+            conditions = []
+            for k, v in condition.items():
+                if isinstance(v, dict):
+                    for k2, v2 in v.items():
+                        if isinstance(v2, list):
+                            for value_in_v2 in v2:
+                                conditions.append({
+                                    'condition_name': k,
+                                    'key': k2,
+                                    'value': value_in_v2
+                                })
+                        else:
+                            conditions.append({
+                                'condition_name': k,
+                                'key': k2,
+                                'value': v2
+                            })
+            statement_candidate.update({'condition': conditions})
+
+        if sid is not None:
+            statement_candidate.update({'sid': sid})
+
+        return statement_candidate
+
+    @staticmethod
+    def _switch_to_list(item):
+        return item if isinstance(item, list) else [item]
+
     @staticmethod
     def _conditional_update_for_password_last_used(user, user_info):
         password_last_used = user_info.get('PasswordLastUsed', None)
         if password_last_used is not None:
             user.update({'password_last_used': password_last_used})
-
-
 
     @staticmethod
     def _conditional_update_for_password_last_used(user, user_info):
@@ -437,10 +546,10 @@ class IAMConnector(SchematicAWSConnector):
         return sign_in_link
 
     @staticmethod
-    def _get_matched_users_with_use_info(policies, policies_info):
-        attached_policy_arn = {policy['PolicyArn'] for policy in policies_info}
-        matching_policies = [p for p in policies if p.get('arn', '') in attached_policy_arn]
-        return matching_policies
+    def _get_matched_users_with_attached_user_info(users, user_info):
+        user_names = [d['UserName'] for d in user_info if 'UserName' in d]
+        matched_users = [p for p in users if p.get('user_name', '') in user_names]
+        return matched_users
 
     @staticmethod
     def _get_name_from_tags(tags):
@@ -479,53 +588,91 @@ class IAMConnector(SchematicAWSConnector):
         return query
 
     @staticmethod
-    def _get_trusted_relationship(role):
+    def _get_role_policy_doc_and_trusted_entities_and_relationship_meta(role):
         trusted_relationship = []
         conditions = []
         trust_entities = []
         policy_document = role.get('AssumeRolePolicyDocument', {})
+        modified_statements = []
+        type_modify_version = policy_document.get('Version', '')
+
+        type_modify_statement = policy_document.get('Statement', [])
+
         statements = policy_document.get('Statement', [])
 
+        if isinstance(type_modify_statement, dict):
+            statements = [type_modify_statement]
+
         for statement in statements:
+            inner_principal = []
+            inner_condition = []
+            inner_action = statement.get('Action', []) if isinstance(statement.get('Action', []), list) \
+                else [statement.get('Action', [])]
+            inner_effect = statement.get('Effect', []) if isinstance(statement.get('Effect', []), list) \
+                else [statement.get('Effect', [])]
+            inner_sid = statement.get('Sid', []) if isinstance(statement.get('Sid', []), list) \
+                else [statement.get('Sid', [])]
             principal = statement.get('Principal', {})
             condition = statement.get('Condition', {})
+
             for k, v in condition.items():
                 if isinstance(v, dict):
                     for k2, v2 in v.items():
-                        conditions.append({
+                        cond = {
                             'condition': k,
                             'key': k2,
                             'value': v2
-                        })
+                        }
+                        inner_condition.append(cond)
+                        conditions.append(cond)
 
             if principal.get('Service', None) is not None:
                 if isinstance(principal.get('Service'), list):
                     for svc in principal.get('Service', []):
                         trusted_relationship.append(svc)
                         trust_entities.append(f"AWS service: {svc}")
+                        inner_principal.append({'key': 'service', 'value': svc})
                 else:
                     trusted_relationship.append(principal.get('Service'))
                     trust_entities.append(f"AWS service: {principal.get('Service')}")
+                    inner_principal.append({'key': 'service', 'value': principal.get('Service')})
 
             if principal.get('AWS', None) is not None:
                 if isinstance(principal.get('AWS'), list):
                     for aws in principal.get('AWS', []):
                         trusted_relationship.append(aws)
                         trust_entities.append(f"Account: {aws}")
+                        inner_principal.append({'key': 'aws', 'value': aws})
                 else:
                     trusted_relationship.append(principal.get('AWS'))
                     trust_entities.append(f"Account: {principal.get('AWS')}")
+                    inner_principal.append({'key': 'aws', 'value': principal.get('AWS')})
 
             if principal.get('Federated', None) is not None:
                 if isinstance(principal.get('Federated'), list):
                     for federate in principal.get('Federated', []):
                         trusted_relationship.append(federate)
                         trust_entities.append(f"Identity Provider: {federate}")
+                        inner_principal.append({'key': 'federated', 'value': {federate}})
                 else:
                     trusted_relationship.append(principal.get('Federated'))
                     trust_entities.append(f"Identity Provider: {principal.get('Federated')}")
+                    inner_principal.append({'key': 'aws', 'value': principal.get('Federated')})
 
-        return trusted_relationship, conditions, trust_entities
+            modified_statements.append({
+                'action': inner_action,
+                'effect': inner_effect,
+                'condition': inner_condition,
+                'principal': inner_principal,
+                'sid': inner_sid
+            })
+
+        assume_role_policy_document = {} if type_modify_version == '' else {
+                'statement': modified_statements,
+                'version': type_modify_version
+            }
+
+        return assume_role_policy_document, trust_entities, trusted_relationship, conditions
 
     @staticmethod
     def _get_age_and_age_display(calculating_date):
@@ -568,7 +715,6 @@ class IAMConnector(SchematicAWSConnector):
             return f'{access_key_last_used.get("last_update_date")} with {service_name} in {region}'
         else:
             return 'N/A'
-
 
     @staticmethod
     def _get_provider_type(url):

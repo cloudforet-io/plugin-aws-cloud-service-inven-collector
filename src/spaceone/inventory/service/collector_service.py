@@ -48,7 +48,7 @@ class CollectorService(BaseService):
             'EBSConnectorManager',
             'VPCConnectorManager',
             'EC2ConnectorManager',
-            # 'IAMConnectorManager'
+            'IAMConnectorManager'
         ]
 
     @check_required(['options'])

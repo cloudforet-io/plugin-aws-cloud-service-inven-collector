@@ -1,7 +1,7 @@
 import os
 import logging
 
-from spaceone.core import config
+from spaceone.core import utils, config
 from spaceone.tester import TestCase, print_json
 from google.protobuf.json_format import MessageToDict
 
@@ -30,7 +30,8 @@ export AWS_SECRET_ACCESS_KEY=<YOUR_AWS_SECRET_ACCESS_KEY>
 
 
 class TestCloudServiceAPIs(TestCase):
-    config = config.load_config('./config.yml')
+    config = utils.load_yaml_from_file(
+        os.environ.get('SPACEONE_TEST_CONFIG_FILE', './config.yml'))
     endpoints = config.get('ENDPOINTS', {})
     secret_data = {
         'aws_access_key_id': AKI,
