@@ -105,7 +105,7 @@ cst_role.tags = {
 cst_role._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
         TextDyField.data_source('Role Name', 'data.role_name'),
-        ListDyField.data_source('Trusted Entities', 'data.trusted_entities', default_badge={'type': 'outline'}),
+        ListDyField.data_source('Trusted Entities', 'data.trusted_entities', default_badge={'type': 'outline', 'delimiter': '<br>'}),
         TextDyField.data_source('Last Activity', 'data.last_activity'),
     ],
     search=[

@@ -203,7 +203,7 @@ class Role(Model):
     trusted_entities = ListType(StringType())
     trust_relationship = ListType(ModelType(TrustRelationShip))
     policies = ListType(ModelType(Policy))
-    tags = ListType(ModelType(Tags))
+    tags = ListType(ModelType(Tags), default=[])
 
     @serializable
     def reference(self):

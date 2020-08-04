@@ -139,7 +139,8 @@ class IAMConnector(SchematicAWSConnector):
                         'summary': self._get_summary_with_login_profile(login_profile, sign_in_link, mfa_devices),
                         'console_password': 'Enabled' if login_profile is not None else 'Disabled',
                         'assigned_mfa_device': user_info.get('Arn') if len(mfa_devices) > 0 else 'Not assigned'
-                    }
+                    },
+                    'tags': user_info.get('Tags', [])
                 })
                 # print('-------User---------')
                 # print()
@@ -197,11 +198,7 @@ class IAMConnector(SchematicAWSConnector):
                 'arn': arn,
                 'provider_type': self._get_provider_type(identity_provider.get('Url', ''))
             })
-            # print('-------Identity_Provider---------')
-            # print()
-            # pprint(identity_provider)
-            # print()
-            # print('----------------------')
+
             yield IdentityProvider(identity_provider, strict=False)
 
     # For Users list_service_specific_credentials
