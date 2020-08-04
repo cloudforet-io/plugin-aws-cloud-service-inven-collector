@@ -160,25 +160,28 @@ role_policy_table = TableDynamicLayout.set_fields('Permissions', root_path='data
     DateTimeDyField.data_source('Created At', 'create_date'),
 
 ])
-
+# data.trust_relationship.trusted_entities
 role_trust_relationships = TableDynamicLayout.set_fields('Trust Relationships', root_path='data.trust_relationship',
                                                          fields=[
                                                              ListDyField.data_source('Trusted Entities',
                                                                                      'trusted_entities',
                                                                                      default_badge={'type': 'outline',
                                                                                                     'delimiter': '<br>'}),
-                                                             ListDyField.data_source('Condition', 'condition',
+                                                             ListDyField.data_source('Condition',
+                                                                                     'condition_name',
                                                                                      default_badge={
                                                                                          'type': 'outline',
-                                                                                         'sub_key': 'condition',
+                                                                                          'delimiter': '<br>'
                                                                                      }),
-                                                             ListDyField.data_source('Condition Key', 'condition',
+                                                             ListDyField.data_source('Condition Key',
+                                                                                     'condition_key',
                                                                                      default_badge={
-                                                                                         'sub_key': 'key',
+                                                                                         'delimiter': '<br>'
                                                                                      }),
-                                                             ListDyField.data_source('Condition Value', 'condition',
+                                                             ListDyField.data_source('Condition Value',
+                                                                                     'condition_value',
                                                                                      default_badge={
-                                                                                         'sub_key': 'value',
+                                                                                         'delimiter': '<br>'
                                                                                      }),
                                                          ])
 
