@@ -33,7 +33,6 @@ setup(
     install_requires=[
         'spaceone-core',
         'spaceone-api',
-        'spaceone-tester',
         'boto3',
         'schematics',
         'arnparse',
