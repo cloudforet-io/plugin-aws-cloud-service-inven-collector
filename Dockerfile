@@ -6,9 +6,9 @@ ENV SERVER_TYPE grpc
 ENV PKG_DIR /tmp/pkg
 ENV SRC_DIR /tmp/src
 
-#COPY pkg/*.txt ${PKG_DIR}/
-#RUN pip install --upgrade pip && \
-#    pip install --upgrade -r ${PKG_DIR}/pip_requirements.txt
+COPY pkg/*.txt ${PKG_DIR}/
+RUN pip install --upgrade pip && \
+    pip install --upgrade -r ${PKG_DIR}/pip_requirements.txt
 
 COPY src ${SRC_DIR}
 
@@ -19,4 +19,4 @@ RUN python3 setup.py install && \
 EXPOSE ${CLOUDONE_PORT}
 
 ENTRYPOINT ["spaceone"]
-CMD ["grpc", "inventory"]
+CMD ["grpc", "spaceone.inventory"]

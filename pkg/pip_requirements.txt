@@ -1,8 +1,8 @@
-spaceone-core>=0.1.50
-spaceone-api>=0.1.48
-spaceone-tester
+spaceone-core
+spaceone-api
 docker
 boto3
 schematics
 moto
 arnparse
+moto
