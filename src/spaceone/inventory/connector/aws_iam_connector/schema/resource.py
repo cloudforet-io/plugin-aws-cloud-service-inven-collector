@@ -68,7 +68,8 @@ user_policy_table = TableDynamicLayout.set_fields('Permission', root_path='data.
 
 user_group_table = TableDynamicLayout.set_fields('Groups', root_path='data.groups', fields=[
     TextDyField.data_source('Group Name', 'group_name'),
-    ListDyField.data_source('Policy Name', 'attached_policy_name', default_badge={'type': 'outline'}),
+    ListDyField.data_source('Policy Name', 'attached_policy_name', default_badge={'type': 'outline',
+                                                                                  'delimiter': '<br>'}),
     DateTimeDyField.data_source('Created At', 'create_date'),
 ])
 
@@ -127,7 +128,7 @@ user_security_credential = ListDynamicLayout.set_layouts('Security Credentials',
                                                                                           https_codecommit,
                                                                                           cred_aws_keyspaces])
 
-user_tags = SimpleTableDynamicLayout.set_fields('Tags', root_path='data.user.tags', fields=[
+user_tags = SimpleTableDynamicLayout.set_fields('Tags', root_path='data.tags', fields=[
     TextDyField.data_source('Key', 'key'),
     TextDyField.data_source('Value', 'value'),
 ])
@@ -142,7 +143,7 @@ role_base = ItemDynamicLayout.set_fields('Roles', fields=[
     TextDyField.data_source('Role Name', 'data.role_name'),
     TextDyField.data_source('Role ID', 'data.role_id'),
     TextDyField.data_source('Path', 'data.path'),
-    ListDyField.data_source('Trusted entities', 'data.trusted_entities', default_badge={'type': 'outline'}),
+    ListDyField.data_source('Trusted entities', 'data.trusted_entities', default_badge={'type': 'outline', 'delimiter': '<br>' }),
     TextDyField.data_source('Last Activity', 'data.last_activity'),
     TextDyField.data_source('Maximum session duration', 'data.max_session_duration'),
     DateTimeDyField.data_source('Created At', 'data.create_date'),
@@ -159,28 +160,32 @@ role_policy_table = TableDynamicLayout.set_fields('Permissions', root_path='data
     DateTimeDyField.data_source('Created At', 'create_date'),
 
 ])
-
+# data.trust_relationship.trusted_entities
 role_trust_relationships = TableDynamicLayout.set_fields('Trust Relationships', root_path='data.trust_relationship',
                                                          fields=[
                                                              ListDyField.data_source('Trusted Entities',
                                                                                      'trusted_entities',
-                                                                                     default_badge={'type': 'outline'}),
-                                                             ListDyField.data_source('Condition', 'condition',
+                                                                                     default_badge={'type': 'outline',
+                                                                                                    'delimiter': '<br>'}),
+                                                             ListDyField.data_source('Condition',
+                                                                                     'condition_name',
                                                                                      default_badge={
                                                                                          'type': 'outline',
-                                                                                         'sub_key': 'condition',
+                                                                                          'delimiter': '<br>'
                                                                                      }),
-                                                             ListDyField.data_source('Condition Key', 'condition',
+                                                             ListDyField.data_source('Condition Key',
+                                                                                     'condition_key',
                                                                                      default_badge={
-                                                                                         'sub_key': 'key',
+                                                                                         'delimiter': '<br>'
                                                                                      }),
-                                                             ListDyField.data_source('Condition Value', 'condition',
+                                                             ListDyField.data_source('Condition Value',
+                                                                                     'condition_value',
                                                                                      default_badge={
-                                                                                         'sub_key': 'value',
+                                                                                         'delimiter': '<br>'
                                                                                      }),
                                                          ])
 
-role_tags = SimpleTableDynamicLayout.set_fields('Tags', root_path='data.role.tags', fields=[
+role_tags = SimpleTableDynamicLayout.set_fields('Tags', root_path='data.tags', fields=[
     TextDyField.data_source('Key', 'key'),
     TextDyField.data_source('Value', 'value'),
 ])

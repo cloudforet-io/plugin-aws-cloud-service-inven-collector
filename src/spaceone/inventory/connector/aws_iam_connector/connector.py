@@ -62,7 +62,8 @@ class IAMConnector(SchematicAWSConnector):
 
             for data in self.request_identity_provider_data():
                 resources.append(self.identity_provider_response_schema(
-                    {'resource': IdentityProviderResource({'data': data, 'reference': ReferenceModel(data.reference)})}))
+                    {'resource': IdentityProviderResource(
+                        {'data': data, 'reference': ReferenceModel(data.reference)})}))
 
         except Exception as e:
             print(traceback.format_exc())
@@ -139,7 +140,8 @@ class IAMConnector(SchematicAWSConnector):
                         'summary': self._get_summary_with_login_profile(login_profile, sign_in_link, mfa_devices),
                         'console_password': 'Enabled' if login_profile is not None else 'Disabled',
                         'assigned_mfa_device': user_info.get('Arn') if len(mfa_devices) > 0 else 'Not assigned'
-                    }
+                    },
+                    'tags': user_info.get('Tags', [])
                 })
                 # print('-------User---------')
                 # print()
@@ -163,14 +165,17 @@ class IAMConnector(SchematicAWSConnector):
 
                 attached_policies = self.list_attached_policy_to_role(role_name)
                 matched_policies = self.get_matched_policies_with_attached_policy_info(policies, attached_policies)
-                assume_role_policy_document, trust_entities, trusted_relationship, conditions = \
-                    self._get_role_policy_doc_and_trusted_entities_and_relationship_meta(role)
+                assume_role_policy_document, trust_entities, trusted_relationship, conditions, cond_n, \
+                cond_k, cond_v = self._get_role_policy_doc_and_trusted_entities_and_relationship_meta(role)
 
                 role.update({
                     'AssumeRolePolicyDocument': assume_role_policy_document,
                     'trust_relationship': [{
                         'trusted_entities': trusted_relationship,
-                        'condition': conditions
+                        'condition': conditions,
+                        'condition_name': cond_n,
+                        'condition_key': cond_k,
+                        'condition_value': cond_v
                     }],
                     'trusted_entities': trust_entities,
                     'policies': matched_policies,
@@ -197,11 +202,7 @@ class IAMConnector(SchematicAWSConnector):
                 'arn': arn,
                 'provider_type': self._get_provider_type(identity_provider.get('Url', ''))
             })
-            # print('-------Identity_Provider---------')
-            # print()
-            # pprint(identity_provider)
-            # print()
-            # print('----------------------')
+
             yield IdentityProvider(identity_provider, strict=False)
 
     # For Users list_service_specific_credentials
@@ -381,7 +382,7 @@ class IAMConnector(SchematicAWSConnector):
 
     def get_access_key_last_used(self, access_key_id):
         response = self.client.get_access_key_last_used(AccessKeyId=access_key_id)
-        return response.get('AccessKeyLastUsed',{})
+        return response.get('AccessKeyLastUsed', {})
 
     def list_policy_info(self, policy_arn):
         return self.client.get_policy(PolicyArn=policy_arn).get('Policy', {})
@@ -529,11 +530,11 @@ class IAMConnector(SchematicAWSConnector):
         summary = []
         if login_profile is not None:
             if sign_in_link != '':
-                summary.append(f'Console sign-in link: {sign_in_link}')
+                summary.append(f'• Console sign-in link: {sign_in_link}')
             if len(mfa_devices) > 0:
-                summary.append('MFA is required when signing in.')
+                summary.append('• MFA is required when signing in.')
         else:
-            summary.append('User does not have console management access')
+            summary.append('• User does not have console management access')
 
         return summary
 
@@ -593,6 +594,9 @@ class IAMConnector(SchematicAWSConnector):
     def _get_role_policy_doc_and_trusted_entities_and_relationship_meta(role):
         trusted_relationship = []
         conditions = []
+        conditions_c = []
+        conditions_k = []
+        conditions_v = []
         trust_entities = []
         policy_document = role.get('AssumeRolePolicyDocument', {})
         modified_statements = []
@@ -626,7 +630,9 @@ class IAMConnector(SchematicAWSConnector):
                             'value': v2
                         }
                         inner_condition.append(cond)
-                        conditions.append(cond)
+                        conditions_c.append(k)
+                        conditions_k.append(k2)
+                        conditions_v.append(v2)
 
             if principal.get('Service', None) is not None:
                 if isinstance(principal.get('Service'), list):
@@ -670,11 +676,12 @@ class IAMConnector(SchematicAWSConnector):
             })
 
         assume_role_policy_document = {} if type_modify_version == '' else {
-                'statement': modified_statements,
-                'version': type_modify_version
-            }
+            'statement': modified_statements,
+            'version': type_modify_version
+        }
 
-        return assume_role_policy_document, trust_entities, trusted_relationship, conditions
+        return assume_role_policy_document, trust_entities, trusted_relationship, conditions, conditions_c, \
+               conditions_k, conditions_v
 
     @staticmethod
     def _get_age_and_age_display(calculating_date):
@@ -725,4 +732,3 @@ class IAMConnector(SchematicAWSConnector):
         else:
             provider_type = url.split('.')
             return provider_type[0].upper()
-

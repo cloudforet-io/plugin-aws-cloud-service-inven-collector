@@ -176,7 +176,9 @@ class RolePolicyDocument(Model):
 class TrustRelationShip(Model):
     trusted_entities = ListType(StringType())
     condition = ListType(ModelType(Condition), default=[])
-
+    condition_name = ListType(StringType())
+    condition_key = ListType(StringType())
+    condition_value = ListType(StringType())
 
 class AssumeRolePolicyDocument(Model):
     version = StringType(deserialize_from="Version")
@@ -203,7 +205,7 @@ class Role(Model):
     trusted_entities = ListType(StringType())
     trust_relationship = ListType(ModelType(TrustRelationShip))
     policies = ListType(ModelType(Policy))
-    tags = ListType(ModelType(Tags))
+    tags = ListType(ModelType(Tags), default=[])
 
     @serializable
     def reference(self):
