@@ -167,22 +167,16 @@ role_trust_relationships = TableDynamicLayout.set_fields('Trust Relationships', 
                                                                                      'trusted_entities',
                                                                                      default_badge={'type': 'outline',
                                                                                                     'delimiter': '<br>'}),
-                                                             ListDyField.data_source('Condition',
+                                                             ListDyField.data_source('Condition Name',
                                                                                      'condition_name',
-                                                                                     default_badge={
-                                                                                         'type': 'outline',
-                                                                                          'delimiter': '<br>'
-                                                                                     }),
+                                                                                     default_badge={'type': 'outline',
+                                                                                                    'delimiter': '<br>'}),
                                                              ListDyField.data_source('Condition Key',
                                                                                      'condition_key',
-                                                                                     default_badge={
-                                                                                         'delimiter': '<br>'
-                                                                                     }),
+                                                                                     default_badge={'delimiter': '<br>'}),
                                                              ListDyField.data_source('Condition Value',
                                                                                      'condition_value',
-                                                                                     default_badge={
-                                                                                         'delimiter': '<br>'
-                                                                                     }),
+                                                                                     default_badge={'delimiter': '<br>'})
                                                          ])
 
 role_tags = SimpleTableDynamicLayout.set_fields('Tags', root_path='data.tags', fields=[
