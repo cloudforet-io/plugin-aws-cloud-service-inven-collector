@@ -175,10 +175,10 @@ class RolePolicyDocument(Model):
 
 class TrustRelationShip(Model):
     trusted_entities = ListType(StringType())
-    condition = ListType(ModelType(Condition), default=[])
     condition_name = ListType(StringType())
     condition_key = ListType(StringType())
     condition_value = ListType(StringType())
+
 
 class AssumeRolePolicyDocument(Model):
     version = StringType(deserialize_from="Version")

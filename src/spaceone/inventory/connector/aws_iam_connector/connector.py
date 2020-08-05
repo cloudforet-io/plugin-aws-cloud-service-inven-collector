@@ -165,17 +165,16 @@ class IAMConnector(SchematicAWSConnector):
 
                 attached_policies = self.list_attached_policy_to_role(role_name)
                 matched_policies = self.get_matched_policies_with_attached_policy_info(policies, attached_policies)
-                assume_role_policy_document, trust_entities, trusted_relationship, conditions, cond_n, \
-                cond_k, cond_v = self._get_role_policy_doc_and_trusted_entities_and_relationship_meta(role)
+                assume_role_policy_document, trust_entities, trusted_relationship, conditions = \
+                    self._get_role_policy_doc_and_trusted_entities_and_relationship_meta(role)
 
                 role.update({
                     'AssumeRolePolicyDocument': assume_role_policy_document,
                     'trust_relationship': [{
                         'trusted_entities': trusted_relationship,
-                        'condition': conditions,
-                        'condition_name': cond_n,
-                        'condition_key': cond_k,
-                        'condition_value': cond_v
+                        'condition_name': conditions.get('condition_name', []),
+                        'condition_key': conditions.get('condition_key', []),
+                        'condition_value': conditions.get('condition_value', [])
                     }],
                     'trusted_entities': trust_entities,
                     'policies': matched_policies,
@@ -188,7 +187,7 @@ class IAMConnector(SchematicAWSConnector):
                 # print()
                 # pprint(role)
                 # print()
-                # print('----------------------')
+                # print('--------------------')
 
                 yield Role(role, strict=False)
 
@@ -506,6 +505,101 @@ class IAMConnector(SchematicAWSConnector):
         return statement_candidate
 
     @staticmethod
+    def _get_role_policy_doc_and_trusted_entities_and_relationship_meta(role):
+        policy_document = role.get('AssumeRolePolicyDocument', {})
+        trusted_relationship = []
+        trust_entities = []
+        conditions = {
+            'condition_name': [],
+            'condition_key': [],
+            'condition_value': []
+        }
+
+        modified_statements = []
+        type_modify_version = policy_document.get('Version', '')
+        type_modify_statement = policy_document.get('Statement', [])
+        statements = policy_document.get('Statement', [])
+
+        if isinstance(type_modify_statement, dict):
+            statements = [type_modify_statement]
+
+        for statement in statements:
+            inner_principal = []
+            inner_condition = []
+
+            inner_action = statement.get('Action', []) if isinstance(statement.get('Action', []), list) \
+                else [statement.get('Action', [])]
+            inner_effect = statement.get('Effect', []) if isinstance(statement.get('Effect', []), list) \
+                else [statement.get('Effect', [])]
+            inner_sid = statement.get('Sid', []) if isinstance(statement.get('Sid', []), list) \
+                else [statement.get('Sid', [])]
+            principal = statement.get('Principal', {})
+            condition = statement.get('Condition', {})
+
+            for k, v in condition.items():
+                if isinstance(v, dict):
+                    for k2, v2 in v.items():
+                        condition_value = ' / '.join(v2) if isinstance(v2, list) else v2
+                        cond = {
+                            'condition': k,
+                            'key': k2,
+                            'value': condition_value
+                        }
+
+                        inner_condition.append(cond)
+                        conditions.get('condition_name').append(k)
+                        conditions.get('condition_key').append(k2)
+                        conditions.get('condition_value').append(condition_value)
+
+            if principal.get('Service', None) is not None:
+                if isinstance(principal.get('Service'), list):
+                    for svc in principal.get('Service', []):
+                        trusted_relationship.append(svc)
+                        trust_entities.append(f"AWS service: {svc}")
+                        inner_principal.append({'key': 'service', 'value': svc})
+                else:
+                    trusted_relationship.append(principal.get('Service'))
+                    trust_entities.append(f"AWS service: {principal.get('Service')}")
+                    inner_principal.append({'key': 'service', 'value': principal.get('Service')})
+
+            if principal.get('AWS', None) is not None:
+                if isinstance(principal.get('AWS'), list):
+                    for aws in principal.get('AWS', []):
+                        trusted_relationship.append(aws)
+                        trust_entities.append(f"Account: {aws}")
+                        inner_principal.append({'key': 'aws', 'value': aws})
+                else:
+                    trusted_relationship.append(principal.get('AWS'))
+                    trust_entities.append(f"Account: {principal.get('AWS')}")
+                    inner_principal.append({'key': 'aws', 'value': principal.get('AWS')})
+
+            if principal.get('Federated', None) is not None:
+                if isinstance(principal.get('Federated'), list):
+                    for federate in principal.get('Federated', []):
+                        trusted_relationship.append(federate)
+                        trust_entities.append(f"Identity Provider: {federate}")
+                        inner_principal.append({'key': 'federated', 'value': {federate}})
+                else:
+                    trusted_relationship.append(principal.get('Federated'))
+                    trust_entities.append(f"Identity Provider: {principal.get('Federated')}")
+                    inner_principal.append({'key': 'federated', 'value': principal.get('Federated')})
+
+            modified_statements.append({
+                'action': inner_action,
+                'effect': inner_effect,
+                'condition': inner_condition,
+                'principal': inner_principal,
+                'sid': inner_sid
+            })
+
+        assume_role_policy_document = {} if type_modify_version == '' else {
+            'statement': modified_statements,
+            'version': type_modify_version
+        }
+
+        return assume_role_policy_document, trust_entities, trusted_relationship, conditions
+
+    @staticmethod
     def _switch_to_list(item):
         return item if isinstance(item, list) else [item]
 
@@ -589,99 +683,6 @@ class IAMConnector(SchematicAWSConnector):
             })
 
         return query
-
-    @staticmethod
-    def _get_role_policy_doc_and_trusted_entities_and_relationship_meta(role):
-        trusted_relationship = []
-        conditions = []
-        conditions_c = []
-        conditions_k = []
-        conditions_v = []
-        trust_entities = []
-        policy_document = role.get('AssumeRolePolicyDocument', {})
-        modified_statements = []
-        type_modify_version = policy_document.get('Version', '')
-
-        type_modify_statement = policy_document.get('Statement', [])
-
-        statements = policy_document.get('Statement', [])
-
-        if isinstance(type_modify_statement, dict):
-            statements = [type_modify_statement]
-
-        for statement in statements:
-            inner_principal = []
-            inner_condition = []
-            inner_action = statement.get('Action', []) if isinstance(statement.get('Action', []), list) \
-                else [statement.get('Action', [])]
-            inner_effect = statement.get('Effect', []) if isinstance(statement.get('Effect', []), list) \
-                else [statement.get('Effect', [])]
-            inner_sid = statement.get('Sid', []) if isinstance(statement.get('Sid', []), list) \
-                else [statement.get('Sid', [])]
-            principal = statement.get('Principal', {})
-            condition = statement.get('Condition', {})
-
-            for k, v in condition.items():
-                if isinstance(v, dict):
-                    for k2, v2 in v.items():
-                        cond = {
-                            'condition': k,
-                            'key': k2,
-                            'value': v2
-                        }
-                        inner_condition.append(cond)
-                        conditions_c.append(k)
-                        conditions_k.append(k2)
-                        conditions_v.append(v2)
-
-            if principal.get('Service', None) is not None:
-                if isinstance(principal.get('Service'), list):
-                    for svc in principal.get('Service', []):
-                        trusted_relationship.append(svc)
-                        trust_entities.append(f"AWS service: {svc}")
-                        inner_principal.append({'key': 'service', 'value': svc})
-                else:
-                    trusted_relationship.append(principal.get('Service'))
-                    trust_entities.append(f"AWS service: {principal.get('Service')}")
-                    inner_principal.append({'key': 'service', 'value': principal.get('Service')})
-
-            if principal.get('AWS', None) is not None:
-                if isinstance(principal.get('AWS'), list):
-                    for aws in principal.get('AWS', []):
-                        trusted_relationship.append(aws)
-                        trust_entities.append(f"Account: {aws}")
-                        inner_principal.append({'key': 'aws', 'value': aws})
-                else:
-                    trusted_relationship.append(principal.get('AWS'))
-                    trust_entities.append(f"Account: {principal.get('AWS')}")
-                    inner_principal.append({'key': 'aws', 'value': principal.get('AWS')})
-
-            if principal.get('Federated', None) is not None:
-                if isinstance(principal.get('Federated'), list):
-                    for federate in principal.get('Federated', []):
-                        trusted_relationship.append(federate)
-                        trust_entities.append(f"Identity Provider: {federate}")
-                        inner_principal.append({'key': 'federated', 'value': {federate}})
-                else:
-                    trusted_relationship.append(principal.get('Federated'))
-                    trust_entities.append(f"Identity Provider: {principal.get('Federated')}")
-                    inner_principal.append({'key': 'aws', 'value': principal.get('Federated')})
-
-            modified_statements.append({
-                'action': inner_action,
-                'effect': inner_effect,
-                'condition': inner_condition,
-                'principal': inner_principal,
-                'sid': inner_sid
-            })
-
-        assume_role_policy_document = {} if type_modify_version == '' else {
-            'statement': modified_statements,
-            'version': type_modify_version
-        }
-
-        return assume_role_policy_document, trust_entities, trusted_relationship, conditions, conditions_c, \
-               conditions_k, conditions_v
 
     @staticmethod
     def _get_age_and_age_display(calculating_date):
