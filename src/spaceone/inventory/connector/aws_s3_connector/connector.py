@@ -141,12 +141,14 @@ class S3Connector(SchematicAWSConnector):
             return None
 
     def get_transfer_acceleration(self, bucket_name):
-        response = self.client.get_bucket_accelerate_configuration(Bucket=bucket_name)
-
-        if transfer_acceleration := response.get('Status'):
-            return TransferAcceleration({'transfer_acceleration': transfer_acceleration}, strict=False)
-
-        return None
+        return_value = None
+        try:
+            response = self.client.get_bucket_accelerate_configuration(Bucket=bucket_name)
+            if transfer_acceleration := response.get('Status'):
+                return_value =  TransferAcceleration({'transfer_acceleration': transfer_acceleration}, strict=False)
+        except Exception as e:
+            pass
+        return return_value
 
     def get_request_payment(self, bucket_name):
         response = self.client.get_bucket_request_payment(Bucket=bucket_name)
