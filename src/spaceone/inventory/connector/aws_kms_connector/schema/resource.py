@@ -28,6 +28,9 @@ base = ItemDynamicLayout.set_fields('Keys', fields=[
     }),
     EnumDyField.data_source('Origin', 'data.origin', default_outline_badge=['AWS_KMS', 'EXTERNAL', 'AWS_CLOUDHSM']),
     EnumDyField.data_source('Key Manager', 'data.key_manager', default_outline_badge=['AWS', 'CUSTOMER']),
+    EnumDyField.data_source('CMK Auto Rotation', 'data.key_rotated', default_badge={
+        'indigo.500': ['true'], 'coral.600': ['false']
+    }),
     EnumDyField.data_source('Key Usage', 'data.key_usage', default_outline_badge=['SIGN_VERIFY', 'ENCRYPT_DECRYPT']),
     EnumDyField.data_source('Expiration Model', 'data.expiration_model',
                             default_outline_badge=['KEY_MATERIAL_EXPIRES', 'KEY_MATERIAL_DOES_NOT_EXPIRE']),

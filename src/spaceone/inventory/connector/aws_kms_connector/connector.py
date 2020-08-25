@@ -1,5 +1,6 @@
 import time
 import logging
+
 from typing import List
 
 from spaceone.inventory.connector.aws_kms_connector.schema.data import Key
@@ -47,7 +48,8 @@ class KMSConnector(SchematicAWSConnector):
             key.update({
                 'key_type_path': self._set_key_type_path(key.get('KeyManager')),
                 'region_name': region_name,
-                'account_id': self.account_id
+                'account_id': self.account_id,
+                'key_rotated': self._set_key_rotated(key.get('KeyId'), key.get('KeyManager'))
             })
 
             if alias_info is not None:
@@ -91,3 +93,11 @@ class KMSConnector(SchematicAWSConnector):
             return 'keys'
         else:
             return ''
+
+    def _set_key_rotated(self, key_id, key_manager):
+        rot = False
+        if key_manager == 'CUSTOMER':
+            status = self.client.get_key_rotation_status(KeyId=key_id)
+            rot = status.get('KeyRotationEnabled', False)
+
+        return rot
