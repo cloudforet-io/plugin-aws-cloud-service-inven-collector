@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+runr#!/usr/bin/env bash
 
 # run in container
 cd /opt/test/api
