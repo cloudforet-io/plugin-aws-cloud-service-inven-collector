@@ -5,6 +5,7 @@ cst_trail = CloudServiceTypeResource()
 cst_trail.name = 'Trail'
 cst_trail.provider = 'aws'
 cst_trail.group = 'CloudTrail'
+cst_trail.labels = ['Management']
 cst_trail.tags = {
     'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/aws-cloudtrail.svg',
     'spaceone:is_major': 'true',

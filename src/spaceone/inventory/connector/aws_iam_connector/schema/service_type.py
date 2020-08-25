@@ -8,6 +8,7 @@ cst_group = CloudServiceTypeResource()
 cst_group.name = 'Group'
 cst_group.provider = 'aws'
 cst_group.group = 'IAM'
+cst_group.labels = ['Security']
 cst_group.tags = {
     'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/AWS-Identity-and-Access-Management_IAM.svg',
     'spaceone:is_major': 'true',
@@ -33,6 +34,7 @@ cst_user = CloudServiceTypeResource()
 cst_user.name = 'User'
 cst_user.provider = 'aws'
 cst_user.group = 'IAM'
+cst_user.labels = ['Security']
 cst_user.tags = {
     'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/AWS-Identity-and-Access-Management_IAM.svg',
     'spaceone:is_major': 'true',
@@ -97,6 +99,7 @@ cst_role = CloudServiceTypeResource()
 cst_role.name = 'Role'
 cst_role.provider = 'aws'
 cst_role.group = 'IAM'
+cst_role.labels = ['Security']
 cst_role.tags = {
     'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/AWS-Identity-and-Access-Management_IAM.svg',
     'spaceone:is_major': 'false',
@@ -124,6 +127,7 @@ cst_policy = CloudServiceTypeResource()
 cst_policy.name = 'Policy'
 cst_policy.provider = 'aws'
 cst_policy.group = 'IAM'
+cst_policy.labels = ['Security']
 cst_policy.tags = {
     'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/AWS-Identity-and-Access-Management_IAM.svg',
     'spaceone:is_major': 'false',
@@ -155,6 +159,7 @@ cst_identity_provider = CloudServiceTypeResource()
 cst_identity_provider.name = 'IdentityProvider'
 cst_identity_provider.provider = 'aws'
 cst_identity_provider.group = 'IAM'
+cst_identity_provider.labels = ['Security']
 cst_identity_provider.tags = {
     'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/AWS-Identity-and-Access-Management_IAM.svg',
     'spaceone:is_major': 'false',
