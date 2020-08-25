@@ -60,7 +60,4 @@ class FileSystemResource(EFSResource):
 
 
 class FileSystemResponse(CloudServiceResponse):
-    match_rules = DictType(ListType(StringType), default={
-        '1': ['data.file_system_id', 'provider', 'cloud_service_type', 'cloud_service_group']
-    })
     resource = PolyModelType(FileSystemResource)

@@ -5,6 +5,7 @@ cst_distribution = CloudServiceTypeResource()
 cst_distribution.name = 'Distribution'
 cst_distribution.provider = 'aws'
 cst_distribution.group = 'CloudFront'
+cst_distribution.labels = ['Networking']
 cst_distribution.tags = {
     'spaceone:icon': '',
     'spaceone:is_major': 'true',

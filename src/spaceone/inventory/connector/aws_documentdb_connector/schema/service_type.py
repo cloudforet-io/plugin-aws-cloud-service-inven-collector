@@ -6,6 +6,7 @@ cst_cluster = CloudServiceTypeResource()
 cst_cluster.name = 'Cluster'
 cst_cluster.provider = 'aws'
 cst_cluster.group = 'DocumentDB'
+cst_cluster.labels = ['Database']
 cst_cluster.tags = {
     'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-DocumentDB.svg',
     'spaceone:is_major': 'true',
@@ -50,6 +51,7 @@ cst_subnet_group = CloudServiceTypeResource()
 cst_subnet_group.name = 'SubnetGroup'
 cst_subnet_group.provider = 'aws'
 cst_subnet_group.group = 'DocumentDB'
+cst_subnet_group.labels = ['Database']
 cst_subnet_group.tags = {
     'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-DocumentDB.svg',
     'spaceone:is_major': 'false',
@@ -79,6 +81,7 @@ cst_parameter_group = CloudServiceTypeResource()
 cst_parameter_group.name = 'ParameterGroup'
 cst_parameter_group.provider = 'aws'
 cst_parameter_group.group = 'DocumentDB'
+cst_parameter_group.labels = ['Database']
 cst_parameter_group.tags = {
     'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-DocumentDB.svg',
     'spaceone:is_major': 'false',
