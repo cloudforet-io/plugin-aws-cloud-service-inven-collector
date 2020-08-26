@@ -6,18 +6,11 @@ cst_sg = CloudServiceTypeResource()
 cst_sg.name = 'SecurityGroup'
 cst_sg.provider = 'aws'
 cst_sg.group = 'EC2'
+cst_sg.labels = ['Compute', 'Security']
 cst_sg.tags = {
     'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-VPC_VPN-Gateway_dark-bg.svg',
     'spaceone:is_major': 'true',
 }
-
-# cst_sg._metadata = CloudServiceTypeMeta.set_fields(fields=[
-#     TextDyField.data_source('ID', 'data.group_id'),
-#     TextDyField.data_source('Name', 'data.group_name'),
-#     TextDyField.data_source('VPC ID', 'data.vpc_id'),
-#     TextDyField.data_source('Description', 'data.description'),
-#     TextDyField.data_source('Account ID', 'data.owner_id'),
-# ])
 
 cst_sg._metadata = CloudServiceTypeMeta.set_meta(
     fields=[

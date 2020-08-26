@@ -148,9 +148,6 @@ class ClusterResource(DocumentDBResource):
 
 
 class ClusterResponse(CloudServiceResponse):
-    match_rules = DictType(ListType(StringType), default={
-        '1': ['data.db_cluster_arn', 'provider', 'cloud_service_type', 'cloud_service_group']
-    })
     resource = PolyModelType(ClusterResource)
 
 
@@ -161,9 +158,6 @@ class SubnetGroupResource(DocumentDBResource):
 
 
 class SubnetGroupResponse(CloudServiceResponse):
-    match_rules = DictType(ListType(StringType), default={
-        '1': ['data.db_subnet_group_arn', 'provider', 'cloud_service_type', 'cloud_service_group']
-    })
     resource = PolyModelType(SubnetGroupResource)
 
 
@@ -174,8 +168,5 @@ class ParameterGroupResource(DocumentDBResource):
 
 
 class ParameterGroupResponse(CloudServiceResponse):
-    match_rules = DictType(ListType(StringType), default={
-        '1': ['data.db_cluster_parameter_group_arn', 'provider', 'cloud_service_type', 'cloud_service_group']
-    })
     resource = PolyModelType(ParameterGroupResource)
 

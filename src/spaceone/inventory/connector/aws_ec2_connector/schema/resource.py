@@ -44,7 +44,4 @@ class SecurityGroupResource(EC2Resource):
 
 
 class SecurityGroupResponse(CloudServiceResponse):
-    match_rules = DictType(ListType(StringType), default={
-        '1': ['data.group_id', 'provider', 'cloud_service_type', 'cloud_service_group']
-    })
     resource = PolyModelType(SecurityGroupResource)

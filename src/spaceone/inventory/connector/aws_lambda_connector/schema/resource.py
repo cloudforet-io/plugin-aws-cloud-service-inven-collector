@@ -114,14 +114,8 @@ class LambdaLayerResource(LambdaResource):
 
 
 class LambdaFunctionResponse(CloudServiceResponse):
-    match_rules = DictType(ListType(StringType), default={
-        '1': ['data.arn', 'provider', 'cloud_service_type', 'cloud_service_group']
-    })
     resource = PolyModelType(LambdaFunctionResource)
 
 
 class LambdaLayerResponse(CloudServiceResponse):
-    match_rules = DictType(ListType(StringType), default={
-        '1': ['data.layer_arn', 'provider', 'cloud_service_type', 'cloud_service_group']
-    })
     resource = PolyModelType(LambdaLayerResource)

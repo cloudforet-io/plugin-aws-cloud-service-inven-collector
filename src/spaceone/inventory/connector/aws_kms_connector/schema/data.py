@@ -32,6 +32,7 @@ class Key(Model):
     expiration_model = StringType(deserialize_from="ExpirationModel", choices=("KEY_MATERIAL_EXPIRES",
                                                                                "KEY_MATERIAL_DOES_NOT_EXPIRE"))
     key_manager = StringType(deserialize_from="KeyManager", choices=("AWS", "CUSTOMER"))
+    key_rotated = BooleanType(deserialize_from="KeyRotated", choices=(True, False))
     key_type_path = StringType(default="")
     customer_master_key_spec = StringType(deserialize_from="CustomerMasterKeySpec", choices=("RSA_2048",
                                                                                              "RSA_3072",
