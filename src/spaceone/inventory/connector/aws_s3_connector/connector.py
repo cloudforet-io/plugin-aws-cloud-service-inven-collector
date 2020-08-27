@@ -52,6 +52,9 @@ class S3Connector(SchematicAWSConnector):
             if region_name := self.get_bucket_location(bucket_name):
                 raw.update({'region_name': region_name})
 
+            if public_access := self.get_bucket_public_access(bucket_name):
+                raw.update({'public_access': public_access})
+
             if versioning := self.get_bucket_versioning(bucket_name):
                 raw.update({'versioning': versioning})
 
@@ -86,6 +89,7 @@ class S3Connector(SchematicAWSConnector):
             #     'object_total_size': object_total_size
             # })
 
+            print(raw)
             res = Bucket(raw, strict=False)
             yield res
 
@@ -108,6 +112,21 @@ class S3Connector(SchematicAWSConnector):
             return ServerAccessLogging(access_logging, strict=False)
 
         return None
+
+    def get_bucket_public_access(self, bucket_name):
+        try:
+            response = 'Private'
+            acl = self.client.get_bucket_acl(Bucket=bucket_name)
+            for grants in acl.get('Grants'):
+                uri = grants.get('Grantee').get('URI')
+                if uri is not None and uri.endswith('AllUsers'):
+                    response = 'Public'
+
+            return response
+
+        except ClientError as e:
+            print(e)
+            return None
 
     def get_website_hosting(self, bucket_name):
         try:
@@ -141,12 +160,18 @@ class S3Connector(SchematicAWSConnector):
             return None
 
     def get_transfer_acceleration(self, bucket_name):
-        response = self.client.get_bucket_accelerate_configuration(Bucket=bucket_name)
+        # error s3 : GetAccelerateConfiguration --> only 3 came out and ended...
+        try:
+            response = self.client.get_bucket_accelerate_configuration(Bucket=bucket_name)
 
-        if transfer_acceleration := response.get('Status'):
-            return TransferAcceleration({'transfer_acceleration': transfer_acceleration}, strict=False)
+            if transfer_acceleration := response.get('Status'):
+                return TransferAcceleration({'transfer_acceleration': transfer_acceleration}, strict=False)
 
-        return None
+            else:
+                return None
+
+        except ClientError as e:
+            return None
 
     def get_request_payment(self, bucket_name):
         response = self.client.get_bucket_request_payment(Bucket=bucket_name)

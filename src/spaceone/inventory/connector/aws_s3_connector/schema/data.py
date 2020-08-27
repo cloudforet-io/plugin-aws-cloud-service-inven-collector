@@ -166,6 +166,7 @@ class Versioning(Model):
 class Bucket(Model):
     arn = StringType(default="")
     name = StringType(deserialize_from="Name")
+    public_access = StringType(deserialize_from="PublicAccess", choices=("Public", "Private"))
     versioning = ModelType(Versioning)
     server_access_logging = ModelType(ServerAccessLogging)
     website_hosting = ModelType(WebsiteHosting)
