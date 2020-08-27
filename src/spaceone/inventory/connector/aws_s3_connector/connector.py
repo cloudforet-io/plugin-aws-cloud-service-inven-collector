@@ -89,7 +89,6 @@ class S3Connector(SchematicAWSConnector):
             #     'object_total_size': object_total_size
             # })
 
-            print(raw)
             res = Bucket(raw, strict=False)
             yield res
 
@@ -160,7 +159,6 @@ class S3Connector(SchematicAWSConnector):
             return None
 
     def get_transfer_acceleration(self, bucket_name):
-        # error s3 : GetAccelerateConfiguration --> only 3 came out and ended...
         try:
             response = self.client.get_bucket_accelerate_configuration(Bucket=bucket_name)
 
