@@ -116,7 +116,7 @@ class S3Connector(SchematicAWSConnector):
         try:
             response = 'Private'
             acl = self.client.get_bucket_acl(Bucket=bucket_name)
-            for grants in acl.get('Grants'):
+            for grants in acl.get('Grants', []):
                 uri = grants.get('Grantee').get('URI')
                 if uri is not None and uri.endswith('AllUsers'):
                     response = 'Public'
