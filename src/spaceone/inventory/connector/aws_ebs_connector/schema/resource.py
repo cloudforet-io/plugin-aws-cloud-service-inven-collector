@@ -79,9 +79,6 @@ class VolumeResource(EC2Resource):
 
 
 class VolumeResponse(CloudServiceResponse):
-    match_rules = DictType(ListType(StringType), default={
-        '1': ['data.volume_id', 'provider', 'cloud_service_type', 'cloud_service_group']
-    })
     resource = PolyModelType(VolumeResource)
 
 
@@ -92,7 +89,4 @@ class SnapshotResource(EC2Resource):
 
 
 class SnapshotResponse(CloudServiceResponse):
-    match_rules = DictType(ListType(StringType), default={
-        '1': ['data.snapshot_id', 'provider', 'cloud_service_type', 'cloud_service_group']
-    })
     resource = PolyModelType(SnapshotResource)

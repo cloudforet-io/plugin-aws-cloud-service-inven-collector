@@ -184,14 +184,8 @@ class LaunchConfigurationResource(AutoScalingResource):
 
 
 class AutoScalingGroupResponse(CloudServiceResponse):
-    match_rules = DictType(ListType(StringType), default={
-        '1': ['data.auto_scaling_group_arn', 'provider', 'cloud_service_type', 'cloud_service_group']
-    })
     resource = PolyModelType(AutoScalingGroupResource)
 
 
 class LaunchConfigurationResponse(CloudServiceResponse):
-    match_rules = DictType(ListType(StringType), default={
-        '1': ['data.launch_configuration_arn', 'provider', 'cloud_service_type', 'cloud_service_group']
-    })
     resource = PolyModelType(LaunchConfigurationResource)

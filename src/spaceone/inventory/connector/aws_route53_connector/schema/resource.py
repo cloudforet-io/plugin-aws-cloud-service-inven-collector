@@ -51,7 +51,4 @@ class HostedZoneResource(Route53Resource):
 
 
 class HostedZoneResponse(CloudServiceResponse):
-    match_rules = DictType(ListType(StringType), default={
-        '1': ['data.id', 'provider', 'cloud_service_type', 'cloud_service_group']
-    })
     resource = PolyModelType(HostedZoneResource)

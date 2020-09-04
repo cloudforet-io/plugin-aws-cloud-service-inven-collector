@@ -650,91 +650,52 @@ class VPNConnectionResource(VPCResource):
 
 # Response
 class VPCResponse(CloudServiceResponse):
-    match_rules = DictType(ListType(StringType), default={
-        '1': ['data.vpc_id', 'provider', 'cloud_service_type', 'cloud_service_group']
-    })
     resource = PolyModelType(VPCResource)
 
 
 class SubnetResponse(CloudServiceResponse):
-    match_rules = DictType(ListType(StringType), default={
-        '1': ['data.subnet_arn', 'provider', 'cloud_service_type', 'cloud_service_group']
-    })
     resource = PolyModelType(SubnetResource)
 
 
 class RouteTableResponse(CloudServiceResponse):
-    match_rules = DictType(ListType(StringType), default={
-        '1': ['data.route_table_id', 'provider', 'cloud_service_type', 'cloud_service_group']
-    })
     resource = PolyModelType(RouteTableResource)
 
 
 class InternetGatewayResponse(CloudServiceResponse):
-    match_rules = DictType(ListType(StringType), default={
-        '1': ['data.internet_gateway_id', 'provider', 'cloud_service_type', 'cloud_service_group']
-    })
     resource = PolyModelType(InternetGatewayResource)
 
 
 class EgressOnlyInternetGatewayResponse(CloudServiceResponse):
-    match_rules = DictType(ListType(StringType), default={
-        '1': ['data.egress_only_internet_gateway_id', 'provider', 'cloud_service_type', 'cloud_service_group']
-    })
     resource = PolyModelType(EgressOnlyInternetGatewayResource)
 
 
 class EndpointResponse(CloudServiceResponse):
-    match_rules = DictType(ListType(StringType), default={
-        '1': ['data.vpc_endpoint_id', 'provider', 'cloud_service_type', 'cloud_service_group']
-    })
     resource = PolyModelType(EndpointResource)
 
 
 class NATGatewayResponse(CloudServiceResponse):
-    match_rules = DictType(ListType(StringType), default={
-        '1': ['data.nat_gateway_id', 'provider', 'cloud_service_type', 'cloud_service_group']
-    })
     resource = PolyModelType(NATGatewayResource)
 
 
 class PeeringConnectionResponse(CloudServiceResponse):
-    match_rules = DictType(ListType(StringType), default={
-        '1': ['data.vpc_peering_connection_id', 'provider', 'cloud_service_type', 'cloud_service_group']
-    })
     resource = PolyModelType(PeeringConnectionResource)
 
 
 class NetworkACLResponse(CloudServiceResponse):
-    match_rules = DictType(ListType(StringType), default={
-        '1': ['data.network_acl_id', 'provider', 'cloud_service_type', 'cloud_service_group']
-    })
     resource = PolyModelType(NetworkACLResource)
 
 
 class TransitGatewayResponse(CloudServiceResponse):
-    match_rules = DictType(ListType(StringType), default={
-        '1': ['data.transit_gateway_id', 'provider', 'cloud_service_type', 'cloud_service_group']
-    })
     resource = PolyModelType(TransitGatewayResource)
 
 
 class CustomerGatewayResponse(CloudServiceResponse):
-    match_rules = DictType(ListType(StringType), default={
-        '1': ['data.customer_gateway_id', 'provider', 'cloud_service_type', 'cloud_service_group']
-    })
     resource = PolyModelType(CustomerGatewayResource)
 
 
 class VPNGatewayResponse(CloudServiceResponse):
-    match_rules = DictType(ListType(StringType), default={
-        '1': ['data.vpn_gateway_id', 'provider', 'cloud_service_type', 'cloud_service_group']
-    })
     resource = PolyModelType(VPNGatewayResource)
 
 
 class VPNConnectionResponse(CloudServiceResponse):
-    match_rules = DictType(ListType(StringType), default={
-        '1': ['data.vpn_connection_id', 'provider', 'cloud_service_type', 'cloud_service_group']
-    })
     resource = PolyModelType(VPNConnectionResource)

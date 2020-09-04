@@ -133,14 +133,8 @@ class TargetGroupResource(ELBResource):
 
 
 class LoadBalancerResponse(CloudServiceResponse):
-    match_rules = DictType(ListType(StringType), default={
-        '1': ['data.load_balancer_arn', 'provider', 'cloud_service_type', 'cloud_service_group']
-    })
     resource = PolyModelType(LoadBalancerResource)
 
 
 class TargetGroupResponse(CloudServiceResponse):
-    match_rules = DictType(ListType(StringType), default={
-        '1': ['data.target_group_arn', 'provider', 'cloud_service_type', 'cloud_service_group']
-    })
     resource = PolyModelType(TargetGroupResource)

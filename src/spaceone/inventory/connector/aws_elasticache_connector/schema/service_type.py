@@ -5,6 +5,7 @@ cst_memcached = CloudServiceTypeResource()
 cst_memcached.name = 'Memcached'
 cst_memcached.provider = 'aws'
 cst_memcached.group = 'ElastiCache'
+cst_memcached.labels = ['Database']
 cst_memcached.tags = {
     'spaceone:icon': '',
     'spaceone:is_major': 'true',
@@ -28,6 +29,7 @@ cst_redis = CloudServiceTypeResource()
 cst_redis.name = 'Redis'
 cst_redis.provider = 'aws'
 cst_redis.group = 'ElastiCache'
+cst_redis.labels = ['Database']
 cst_redis.tags = {
     'spaceone:icon': '',
     'spaceone:is_major': 'true',

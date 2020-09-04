@@ -66,7 +66,4 @@ class DistributionResource(CloudFrontResource):
 
 
 class CloudFrontResponse(CloudServiceResponse):
-    match_rules = DictType(ListType(StringType), default={
-        '1': ['data.arn', 'provider', 'cloud_service_type', 'cloud_service_group']
-    })
     resource = PolyModelType(DistributionResource)

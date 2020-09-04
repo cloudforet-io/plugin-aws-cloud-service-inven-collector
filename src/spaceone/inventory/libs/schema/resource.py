@@ -66,6 +66,7 @@ class CloudServiceTypeResource(Model):
     provider = StringType()
     group = StringType()
     _metadata = PolyModelType(CloudServiceTypeMeta, serialize_when_none=False, serialized_name='metadata')
+    labels = ListType(StringType(), serialize_when_none=False)
     tags = DictType(StringType, serialize_when_none=False)
 
 
@@ -92,6 +93,9 @@ class RegionResource(Model):
 
 
 class CloudServiceResponse(BaseResponse):
+    match_rules = DictType(ListType(StringType), default={
+        '1': ['reference.resource_id', 'provider', 'cloud_service_type', 'cloud_service_group']
+    })
     resource_type = StringType(default='inventory.CloudService')
     resource = PolyModelType(CloudServiceResource)
 

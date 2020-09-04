@@ -77,7 +77,4 @@ class ClusterResource(ECSResource):
 
 
 class ClusterResponse(CloudServiceResponse):
-    match_rules = DictType(ListType(StringType), default={
-        '1': ['data.cluster_arn', 'provider', 'cloud_service_type', 'cloud_service_group']
-    })
     resource = PolyModelType(ClusterResource)
