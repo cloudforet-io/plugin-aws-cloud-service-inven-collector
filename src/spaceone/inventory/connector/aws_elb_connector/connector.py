@@ -96,7 +96,7 @@ class ELBConnector(SchematicAWSConnector):
         for data in response_iterator:
             for raw in data.get('LoadBalancers', []):
                 raw['attributes'] = self.request_lb_attributes(raw.get('LoadBalancerArn'))
-                raw['security_groups'] = self.request_lb_sg(raw.get('LoadBalancerArn'))
+                raw['security_group'] = self.request_lb_sg(raw.get('LoadBalancerArn'))
                 load_balancers.append(raw)
 
         return load_balancers
@@ -120,6 +120,7 @@ class ELBConnector(SchematicAWSConnector):
     def request_lb_sg(self, lb_arn):
         response = self.client.describe_load_balancers(LoadBalancerArns=[lb_arn])
         res = response.get('LoadBalancers')[0].get('SecurityGroups')
+
         return res
 
     def request_lb_attributes(self, lb_arn):

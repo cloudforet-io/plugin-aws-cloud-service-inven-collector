@@ -25,10 +25,7 @@ lb_base = ItemDynamicLayout.set_fields('Load Balancers', fields=[
     EnumDyField.data_source('Scheme', 'data.scheme', default_badge={
         'indigo.500': ['internet-facing'], 'coral.600': ['internal']
     }),
-    ListDyField.data_source('Security Groups', 'data.security_groups', default_badge={
-        'type': 'outline',
-        'sub_key': 'sg_name'
-    }),
+    ListDyField.data_source('Security Groups', 'data.security_groups', default_badge={'type': 'outline'}),
     EnumDyField.data_source('IP address type', 'data.ip_address_type', default_outline_badge=['ipv4', 'dualstack']),
     TextDyField.data_source('VPC ID', 'data.vpc_id'),
     ListDyField.data_source('Availability Zones', 'data.availability_zones', default_badge={
