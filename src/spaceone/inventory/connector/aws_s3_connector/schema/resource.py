@@ -10,6 +10,10 @@ bucket = ItemDynamicLayout.set_fields('Buckets', fields=[
     TextDyField.data_source('Name', 'data.name'),
     TextDyField.data_source('ARN', 'data.arn'),
     TextDyField.data_source('Region', 'data.region_name'),
+    EnumDyField.data_source('Public Access', 'data.public_access', default_badge={
+        'indigo.500': ['Private'],
+        'coral.600': ['Public']
+    }),
 ])
 
 # object_info = ItemDynamicLayout.set_fields('Objects', fields=[
