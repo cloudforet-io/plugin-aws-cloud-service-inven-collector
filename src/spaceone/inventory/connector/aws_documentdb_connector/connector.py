@@ -76,8 +76,10 @@ class DocumentDBConnector(SchematicAWSConnector):
         )
         for data in response_iterator:
             for raw in data.get('DBClusters', []):
+                instances = self._match_instances(raw_instances, raw.get('DBClusterIdentifier'))
                 raw.update({
-                    'instances': self._match_instances(raw_instances, raw.get('DBClusterIdentifier')),
+                    'instances': instances,
+                    'instance_count': len(instances),
                     'snapshots': self._match_snapshots(raw_snapshots, raw.get('DBClusterIdentifier')),
                     'subnet_group': self._match_subnet_group(raw.get('DBSubnetGroup')),
                     'parameter_group': self._match_parameter_group(raw.get('DBClusterParameterGroup')),
