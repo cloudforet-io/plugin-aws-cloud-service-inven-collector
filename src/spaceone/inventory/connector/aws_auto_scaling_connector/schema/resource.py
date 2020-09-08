@@ -1,6 +1,6 @@
 from schematics.types import ModelType, StringType, PolyModelType, DictType, ListType
 
-from spaceone.inventory.connector.aws_auto_scaling_connector.schema.data import AutoScalingGroup, LaunchConfiguration
+from spaceone.inventory.connector.aws_auto_scaling_connector.schema.data import AutoScalingGroup, LaunchConfiguration, LaunchTemplate
 from spaceone.inventory.libs.schema.dynamic_field import TextDyField, ListDyField, BadgeDyField, DateTimeDyField, \
     EnumDyField
 from spaceone.inventory.libs.schema.dynamic_layout import ItemDynamicLayout, TableDynamicLayout, ListDynamicLayout, \
@@ -48,6 +48,13 @@ asg_meta_lc = ItemDynamicLayout.set_fields('Launch Configuration', fields=[
         'indigo.500': ['true'], 'coral.600': ['false']
     }),
     DateTimeDyField.data_source('Creation Time', 'data.launch_configuration.created_time'),
+])
+
+# TAB - Launch Template
+asg_meta_lt = ItemDynamicLayout.set_fields('Launch Template', fields=[
+    TextDyField.data_source('ID', 'data.launch_template.launch_template_id'),
+    TextDyField.data_source('Name', 'data.launch_template.launch_template_name'),
+    TextDyField.data_source('Version', 'data.launch_template.version')
 ])
 
 # TAB - Instance
@@ -122,7 +129,7 @@ asg_meta_tags = TableDynamicLayout.set_fields('Tags', 'data.tags', fields=[
         'indigo.500': ['true'], 'coral.600': ['false']
     }),
 ])
-asg_meta = CloudServiceMeta.set_layouts([asg_meta_autoscaling, asg_meta_lc, asg_meta_instance, asg_meta_policy,
+asg_meta = CloudServiceMeta.set_layouts([asg_meta_autoscaling, asg_meta_lc, asg_meta_lt, asg_meta_instance, asg_meta_policy,
                                          asg_meta_notification, asg_meta_scheduled_action, asg_meta_lifecycle_hooks,
                                          asg_meta_tags])
 
@@ -167,6 +174,33 @@ lc_meta_base_bd = SimpleTableDynamicLayout.set_fields('Block Devices', 'data.blo
 lc_meta = CloudServiceMeta.set_layouts([lc_meta_base_lc, lc_meta_base_bd, ])
 
 
+'''
+LAUNCH TEMPLATE
+'''
+# TAB - BASE - Launch Template
+lt_meta_base_lt = ItemDynamicLayout.set_fields('Launch Template', fields=[
+    # TextDyField.data_source('Name', 'data.launch_template.name')
+])
+
+lt_meta_base_storage = SimpleTableDynamicLayout.set_fields('Storage', fields=[
+
+])
+
+lt_meta_base_tag = SimpleTableDynamicLayout.set_fields('Tags', fields=[
+
+])
+
+lt_meta_base_ni = SimpleTableDynamicLayout.set_fields('Network Interface', fields=[
+
+])
+
+lt_meta_base_detail = ItemDynamicLayout.set_fields('Advanced Details', fields=[
+
+])
+
+lt_meta = CloudServiceMeta.set_layouts([lt_meta_base_lt, lt_meta_base_storage, lt_meta_base_tag, lt_meta_base_ni, lt_meta_base_detail, ])
+
+
 class AutoScalingResource(CloudServiceResource):
     cloud_service_group = StringType(default='AutoScaling')
 
@@ -183,9 +217,19 @@ class LaunchConfigurationResource(AutoScalingResource):
     _metadata = ModelType(CloudServiceMeta, default=lc_meta, serialized_name='metadata')
 
 
+class LaunchTemplateResource(AutoScalingResource):
+    cloud_service_type = StringType(default='LaunchTemplate')
+    data = ModelType(LaunchTemplate)
+    _metadata = ModelType(CloudServiceMeta, default=lt_meta, serialized_name='metadata')
+
+
 class AutoScalingGroupResponse(CloudServiceResponse):
     resource = PolyModelType(AutoScalingGroupResource)
 
 
 class LaunchConfigurationResponse(CloudServiceResponse):
     resource = PolyModelType(LaunchConfigurationResource)
+
+
+class LaunchTemplateResponse(CloudServiceResponse):
+    resource = PolyModelType(LaunchTemplateResource)
