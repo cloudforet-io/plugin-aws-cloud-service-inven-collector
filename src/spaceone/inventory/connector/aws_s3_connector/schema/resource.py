@@ -32,7 +32,7 @@ versioning = ItemDynamicLayout.set_fields('Versioning', fields=[
     }),
 ])
 
-website_hosting = ItemDynamicLayout.set_fields('Website Hostring', fields=[
+website_hosting = ItemDynamicLayout.set_fields('Website Hosting', fields=[
     TextDyField.data_source('Hostname', 'data.website_hosting.redirect_all_requests_to.host_name'),
     EnumDyField.data_source('Protocol', 'data.website_hosting.redirect_all_requests_to.protocol',
                             default_outline_badge=['HTTP', 'HTTPS']),
