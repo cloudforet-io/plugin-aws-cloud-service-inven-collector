@@ -140,7 +140,10 @@ class AutoScalingConnector(SchematicAWSConnector):
                     'default_version': match_lt_version.get('DefaultVersion'),
                     'region_name': region_name,
                     'account_id': self.account_id,
-                    'launch_template_data': match_lt_data
+                    'launch_template_data': match_lt_data,
+                    'arn': self.generate_arn(service="ec2", region="", account_id="",
+                                             resource_type="launch_template",
+                                             resource_id=raw['LaunchTemplateId']+'/v'+str(match_lt_version.get('VersionNumber')))
                 })
                 res = LaunchTemplate2(raw, strict=False)
                 self._launch_templates.append(res)
@@ -151,6 +154,7 @@ class AutoScalingConnector(SchematicAWSConnector):
         lt_versions = ec2_client.describe_launch_template_versions(LaunchTemplateId=lt)
         res = lt_versions.get('LaunchTemplateVersions', [])[0]
         return res
+
 
     def _match_launch_template_data(self, lt_ver):
         res = lt_ver.get('LaunchTemplateData', [])

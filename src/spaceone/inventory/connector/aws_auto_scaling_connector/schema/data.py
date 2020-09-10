@@ -167,28 +167,34 @@ class LaunchConfiguration(Model):
 '''
 LAUNCH TEMPLATE
 '''
+
+
 class LicenseSpecification(Model):
     license_configuration_arn = StringType(deserialize_from="LicenseConfigurationArn")
+
 
 class ElasticInferenceAccelerators(Model):
     type = StringType(deserialize_from="Type")
     count = IntType(deserialize_from="Count")
 
+
 class Tags(Model):
     key = StringType(deserialize_from="Key")
     value = StringType(deserialize_from="Value")
 
+
 class TagSpecifications(Model):
-    resource_type = StringType(deserialize_from="ResourceType") # ?
+    resource_type = StringType(deserialize_from="ResourceType")
     tags = ListType(ModelType(Tags), deserialize_from="Tags")
+
 
 class Placement(Model):
     availability_zone = StringType(deserialize_from="AvailabilityZone")
-    affinity = StringType(deserialize_from="Affinity") # ?
-    group_name = StringType(deserialize_from="GroupName") # ?
-    host_id = StringType(deserialize_from="HostId") # what host ?
+    affinity = StringType(deserialize_from="Affinity")
+    group_name = StringType(deserialize_from="GroupName")
+    host_id = StringType(deserialize_from="HostId")
     tenancy = StringType(deserialize_from="Tenancy", choices=("default", "dedicated", "host"))
-    spread_domain = StringType(deserialize_from="SpreadDomain") # ?
+    spread_domain = StringType(deserialize_from="SpreadDomain")
     host_resource_group_arn = StringType(deserialize_from="HostResourceGroupARN")
     partition_num = IntType(deserialize_from="PartitionNumber")
 
@@ -196,21 +202,24 @@ class Placement(Model):
 class Monitoring(Model):
     enabled = BooleanType(deserialize_from="Enabled")
 
+
 class PrivateIpAddresses(Model):
     primary = BooleanType(deserialize_from="Primary")
     private_ip_address = StringType(deserialize_from="PrivateIpAddress")
 
+
 class Ipv6Addresses(Model):
     Ipv6Address = StringType(deserialize_from="Ipv6Address")
 
+
 class NetworkInterfaces(Model):
-    associate_carrier_ip_address = BooleanType(deserialize_from="AssociateCarrierIpAddress") # ?
-    associate_public_ip_address = BooleanType(deserialize_from="AssociatePublicIpAddress") # ?
+    associate_carrier_ip_address = BooleanType(deserialize_from="AssociateCarrierIpAddress")
+    associate_public_ip_address = BooleanType(deserialize_from="AssociatePublicIpAddress")
     delete_on_termination = BooleanType(deserialize_from="DeleteOnTermination")
     description = StringType(deserialize_from="Description")
-    device_index = IntType(deserialize_from="DeviceIndex") # ?
-    groups = ListType(StringType, deserialize_from="Groups") # ?
-    interface_type = StringType(deserialize_from="InterfaceType") # ?
+    device_index = IntType(deserialize_from="DeviceIndex")
+    groups = ListType(StringType, deserialize_from="Groups")
+    interface_type = StringType(deserialize_from="InterfaceType")
     ipv6_address_count = IntType(deserialize_from="Ipv6AddressCount")
     ipv6_addresses = ListType(ModelType(Ipv6Addresses), deserialize_from="Ipv6Addresses")
     network_interface_id = StringType(deserialize_from="NetworkInterfaceId")
@@ -223,14 +232,15 @@ class NetworkInterfaces(Model):
 
 class AutoScalingLaunchTemplateBlockDeviceMappings(Model):
     device_name = StringType(deserialize_from="DeviceName")
-    virtual_name = StringType(deserialize_from="VirtualName") # ?
-    ebs = ModelType(Ebs, deserialize_from="EBS") # 재사용 되려나..?
-    no_device = BooleanType(deserialize_from="NoDevice") # ?
+    virtual_name = StringType(deserialize_from="VirtualName")
+    ebs = ModelType(Ebs, deserialize_from="EBS")
+    no_device = BooleanType(deserialize_from="NoDevice")
 
 
 class IamInstanceProfile(Model):
     arn = StringType(deserialize_from="ARN")
     name = StringType(deserialize_from="Name")
+
 
 class LaunchTemplateData(Model):
     kernel_id = StringType(deserialize_from="KernelId")
@@ -244,11 +254,13 @@ class LaunchTemplateData(Model):
     monitoring = ModelType(Monitoring, deserialize_from="Monitoring")
     placement = ModelType(Placement, deserialize_from="Placement")
     ram_disk_id = StringType(deserialize_from="RamDiskId")
-    disable_api_termination = BooleanType(deserialize_from="DisableApiTermination") # ?
-    instance_initiated_shutdown_behavior = StringType(deserialize_from="InstanceInitiatedShutdownBehavior", choices=("stop", "terminate"))
+    disable_api_termination = BooleanType(deserialize_from="DisableApiTermination")
+    instance_initiated_shutdown_behavior = StringType(deserialize_from="InstanceInitiatedShutdownBehavior",
+                                                      choices=("stop", "terminate"))
     user_data = StringType(deserialize_from="UserData")
     tag_specifications = ListType(ModelType(TagSpecifications), deserialize_from="TagSpecifications")
-    elastic_inference_accelerators = ListType(ModelType(ElasticInferenceAccelerators), deserialize_from="ElasticInferenceAccelerators")
+    elastic_inference_accelerators = ListType(ModelType(ElasticInferenceAccelerators),
+                                              deserialize_from="ElasticInferenceAccelerators")
     security_group_ids = ListType(StringType, deserialize_from="SecurityGroupIds")
     security_groups = ListType(StringType, deserialize_from="SecurityGroups")
     license_specification = ListType(ModelType(LicenseSpecification), deserialize_from="LicenseSpecification")
@@ -265,17 +277,20 @@ class LaunchTemplate2(Model):
     launch_template_data = ModelType(LaunchTemplateData, deserialize_from="LaunchTemplateData")
     region_name = StringType(default='')
     account_id = StringType(default='')
+    arn = StringType()
 
     @serializable
     def reference(self):
         return {
-            "resource_id": self.launch_template_id,
+            "resource_id": self.arn,
             "external_link": f"https://console.aws.amazon.com/ec2autoscaling/home?region={self.region_name}#/details?id={self.launch_template_id}"
         }
 
 '''
 AUTO SCALING GROUPS
 '''
+
+
 class LaunchTemplate(Model):
     launch_template_id = StringType(deserialize_from="LaunchTemplateId")
     launch_template_name = StringType(deserialize_from="LaunchTemplateName")
