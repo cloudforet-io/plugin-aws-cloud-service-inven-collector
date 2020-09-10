@@ -216,6 +216,7 @@ class NetworkInterfaces(Model):
     network_interface_id = StringType(deserialize_from="NetworkInterfaceId")
     private_ip_address = StringType(deserialize_from="PrivateIpAddress")
     private_ip_addresses = ListType(ModelType(PrivateIpAddresses), deserialize_from="PrivateIpAddresses")
+    primary_ip_address = StringType(deserialize_from="PrimaryIpAddress")
     secondary_private_ip_address_count = IntType(deserialize_from="SecondaryPrivateIpAddressCount")
     subnet_id = StringType(deserialize_from="SubnetId")
 
@@ -253,13 +254,13 @@ class LaunchTemplateData(Model):
     license_specification = ListType(ModelType(LicenseSpecification), deserialize_from="LicenseSpecification")
 
 
-class LaunchTemplate(Model):
+class LaunchTemplate2(Model):
     launch_template_id = StringType(deserialize_from="LaunchTemplateId")
     launch_template_name = StringType(deserialize_from="LaunchTemplateName")
     version = IntType(deserialize_from="Version")
     version_description = StringType(deserialize_from="VersionDescription")
     create_time = DateTimeType(deserialize_from="CreateTime")
-    create_by = StringType(deserialize_from="CreateBy")
+    created_by = StringType(deserialize_from="CreatedBy")
     default_version = BooleanType(deserialize_from="DefaultVersion")
     launch_template_data = ModelType(LaunchTemplateData, deserialize_from="LaunchTemplateData")
     region_name = StringType(default='')
@@ -269,7 +270,7 @@ class LaunchTemplate(Model):
     def reference(self):
         return {
             "resource_id": self.launch_template_id,
-            "external_link": f"https://console.aws.amazon.com/ec2/v2/home?region={self.region_name}#LaunchTemplateDetails:launchTemplateId={self.launch_template_id}"
+            "external_link": f"https://console.aws.amazon.com/ec2autoscaling/home?region={self.region_name}#/details?id={self.launch_template_id}"
         }
 
 '''

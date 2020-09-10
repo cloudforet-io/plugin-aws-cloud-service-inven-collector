@@ -3,7 +3,7 @@ import logging
 from typing import List
 
 from spaceone.inventory.connector.aws_auto_scaling_connector.schema.data import AutoScalingGroup, LaunchConfiguration, \
-    AutoScalingPolicy, LifecycleHook, NotificationConfiguration, ScheduledAction, LaunchTemplate
+    AutoScalingPolicy, LifecycleHook, NotificationConfiguration, ScheduledAction, LaunchTemplate2
 from spaceone.inventory.connector.aws_auto_scaling_connector.schema.resource import AutoScalingGroupResource, \
     LaunchConfigurationResource, LaunchTemplateResource, AutoScalingGroupResponse, LaunchConfigurationResponse, LaunchTemplateResponse
 from spaceone.inventory.connector.aws_auto_scaling_connector.schema.service_type import CLOUD_SERVICE_TYPES
@@ -30,14 +30,14 @@ class AutoScalingConnector(SchematicAWSConnector):
                 'response_schema': LaunchConfigurationResponse
             },
             {
-                'request_method': self.request_auto_scaling_group_data,
-                'resource': AutoScalingGroupResource,
-                'response_schema': AutoScalingGroupResponse
-            },
-            {
                 'request_method': self.request_launch_template_data,
                 'resource': LaunchTemplateResource,
                 'response_schema': LaunchTemplateResponse
+            },
+            {
+                'request_method': self.request_auto_scaling_group_data,
+                'resource': AutoScalingGroupResource,
+                'response_schema': AutoScalingGroupResponse
             }
         ]
 
@@ -118,7 +118,7 @@ class AutoScalingConnector(SchematicAWSConnector):
                 self._launch_configurations.append(res)
                 yield res
 
-    def request_launch_template_data(self, region_name) -> List[LaunchTemplate]:
+    def request_launch_template_data(self, region_name) -> List[LaunchTemplate2]:
         ec2_client = self.session.client('ec2')
         paginator = ec2_client.get_paginator('describe_launch_templates')
         response_iterator = paginator.paginate(
@@ -130,13 +130,31 @@ class AutoScalingConnector(SchematicAWSConnector):
 
         for data in response_iterator:
             for raw in data.get('LaunchTemplates', []):
+
+                match_lt_version = self._match_launch_template_version(raw.get('LaunchTemplateId'))
+                match_lt_data = self._match_launch_template_data(match_lt_version)
+
                 raw.update({
+                    'version': match_lt_version.get('VersionNumber'),
+                    'version_description': match_lt_version.get('VersionDescription'),
+                    'default_version': match_lt_version.get('DefaultVersion'),
                     'region_name': region_name,
-                    'account_id': self.account_id
+                    'account_id': self.account_id,
+                    'launch_template_data': match_lt_data
                 })
-                print(raw)
-                res = LaunchTemplate(raw, strict=False)
+                res = LaunchTemplate2(raw, strict=False)
+                self._launch_templates.append(res)
                 yield res
+
+    def _match_launch_template_version(self, lt):
+        ec2_client = self.session.client('ec2')
+        lt_versions = ec2_client.describe_launch_template_versions(LaunchTemplateId=lt)
+        res = lt_versions.get('LaunchTemplateVersions', [])[0]
+        return res
+
+    def _match_launch_template_data(self, lt_ver):
+        res = lt_ver.get('LaunchTemplateData', [])
+        return res
 
 
     def _match_launch_configuration(self, lc):
