@@ -65,7 +65,46 @@ launch_configuration._metadata = CloudServiceTypeMeta.set_meta(
 )
 
 
+launch_template = CloudServiceTypeResource()
+launch_template.name = 'LaunchTemplate'
+launch_template.provider = 'aws'
+launch_template.group = 'AutoScaling'
+launch_template.labels = ['Compute']
+launch_template.tags = {
+    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-EC2-Auto-Scaling.svg',
+    'spaceone:is_major': 'false',
+}
+
+launch_template._metadata = CloudServiceTypeMeta.set_meta(
+    fields=[
+        TextDyField.data_source('Name', 'data.launch_template_name'),
+        TextDyField.data_source('AMI ID', 'data.launch_template_data.image_id'),
+        TextDyField.data_source('Owner', 'data.created_by'),
+        TextDyField.data_source('Default Version', 'data.default_version', default_badge={
+            'indigo.500': ['true'], 'coral.600': ['false']
+        }),
+        TextDyField.data_source('Version', 'data.version'),
+        DateTimeDyField.data_source('Creation Time', 'data.created_time'),
+    ],
+    search=[
+        SearchField.set(name='Name', key='data.launch_template_name'),
+        SearchField.set(name='ID', key='data.launch_template_id'),
+        SearchField.set(name='AMI ID', key='data.launch_template_data.image_id'),
+        SearchField.set(name='Owner', key='data.created_by'),
+        SearchField.set(name='Default Version', key='data.default_version', data_type='boolean'),
+        SearchField.set(name='Versions', key='data.version'),
+        SearchField.set(name='Instance Type', key='data.launch_template_data.instance_type'),
+        SearchField.set(name='Monitoring', key='data.launch_template_data.monitoring.enabled', data_type='boolean'),
+        SearchField.set(name='Security Group ID', key='data.launch_template_data.security_group_ids'),
+        SearchField.set(name='Created Time', key='data.create_time', data_type='datetime'),
+        SearchField.set(name='Region', key='data.region_name'),
+        SearchField.set(name='AWS Account ID', key='data.account_id'),
+    ]
+)
+
+
 CLOUD_SERVICE_TYPES = [
     CloudServiceTypeResponse({'resource': cst_asg}),
     CloudServiceTypeResponse({'resource': launch_configuration}),
+    CloudServiceTypeResponse({'resource': launch_template})
 ]

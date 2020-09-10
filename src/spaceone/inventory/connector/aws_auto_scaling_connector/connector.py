@@ -3,9 +3,9 @@ import logging
 from typing import List
 
 from spaceone.inventory.connector.aws_auto_scaling_connector.schema.data import AutoScalingGroup, LaunchConfiguration, \
-    AutoScalingPolicy, LifecycleHook, NotificationConfiguration, ScheduledAction
+    AutoScalingPolicy, LifecycleHook, NotificationConfiguration, ScheduledAction, LaunchTemplate2
 from spaceone.inventory.connector.aws_auto_scaling_connector.schema.resource import AutoScalingGroupResource, \
-    LaunchConfigurationResource, AutoScalingGroupResponse, LaunchConfigurationResponse
+    LaunchConfigurationResource, LaunchTemplateResource, AutoScalingGroupResponse, LaunchConfigurationResponse, LaunchTemplateResponse
 from spaceone.inventory.connector.aws_auto_scaling_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
 
@@ -14,6 +14,7 @@ _LOGGER = logging.getLogger(__name__)
 
 class AutoScalingConnector(SchematicAWSConnector):
     _launch_configurations = None
+    _launch_templates = None
 
     service_name = 'autoscaling'
 
@@ -29,10 +30,15 @@ class AutoScalingConnector(SchematicAWSConnector):
                 'response_schema': LaunchConfigurationResponse
             },
             {
+                'request_method': self.request_launch_template_data,
+                'resource': LaunchTemplateResource,
+                'response_schema': LaunchTemplateResponse
+            },
+            {
                 'request_method': self.request_auto_scaling_group_data,
                 'resource': AutoScalingGroupResource,
                 'response_schema': AutoScalingGroupResponse
-            },
+            }
         ]
 
         for cst in CLOUD_SERVICE_TYPES:
@@ -41,6 +47,7 @@ class AutoScalingConnector(SchematicAWSConnector):
         for region_name in self.region_names:
             # print(f'[ AutoScaling {region_name} ]')
             self._launch_configurations = []
+            self._launch_templates = []
             self.reset_region(region_name)
 
             for collect_resource in collect_resources:
@@ -110,6 +117,49 @@ class AutoScalingConnector(SchematicAWSConnector):
                 res = LaunchConfiguration(raw, strict=False)
                 self._launch_configurations.append(res)
                 yield res
+
+    def request_launch_template_data(self, region_name) -> List[LaunchTemplate2]:
+        ec2_client = self.session.client('ec2')
+        paginator = ec2_client.get_paginator('describe_launch_templates')
+        response_iterator = paginator.paginate(
+            PaginationConfig={
+                'MaxItems': 10000,
+                'PageSize': 50,
+            }
+        )
+
+        for data in response_iterator:
+            for raw in data.get('LaunchTemplates', []):
+
+                match_lt_version = self._match_launch_template_version(raw.get('LaunchTemplateId'))
+                match_lt_data = self._match_launch_template_data(match_lt_version)
+
+                raw.update({
+                    'version': match_lt_version.get('VersionNumber'),
+                    'version_description': match_lt_version.get('VersionDescription'),
+                    'default_version': match_lt_version.get('DefaultVersion'),
+                    'region_name': region_name,
+                    'account_id': self.account_id,
+                    'launch_template_data': match_lt_data,
+                    'arn': self.generate_arn(service="ec2", region="", account_id="",
+                                             resource_type="launch_template",
+                                             resource_id=raw['LaunchTemplateId']+'/v'+str(match_lt_version.get('VersionNumber')))
+                })
+                res = LaunchTemplate2(raw, strict=False)
+                self._launch_templates.append(res)
+                yield res
+
+    def _match_launch_template_version(self, lt):
+        ec2_client = self.session.client('ec2')
+        lt_versions = ec2_client.describe_launch_template_versions(LaunchTemplateId=lt)
+        res = lt_versions.get('LaunchTemplateVersions', [])[0]
+        return res
+
+
+    def _match_launch_template_data(self, lt_ver):
+        res = lt_ver.get('LaunchTemplateData', [])
+        return res
+
 
     def _match_launch_configuration(self, lc):
         return next((launch_configuration for launch_configuration in self._launch_configurations
