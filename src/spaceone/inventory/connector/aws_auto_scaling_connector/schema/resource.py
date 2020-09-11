@@ -251,9 +251,17 @@ lt_meta_base_detail = ItemDynamicLayout.set_fields('Advanced Details', 'data.lau
 ])
 
 lt_meta_base_tag = SimpleTableDynamicLayout.set_fields('Tags', 'data.launch_template_data.tag_specifications', fields=[
-    TextDyField.data_source('Key', 'tags.key'),
-    TextDyField.data_source('Value', 'tags.value'),
-    TextDyField.data_source('Resource Type', 'resource_type')
+    TextDyField.data_source('Resource Type', 'resource_type'),
+    ListDyField.data_source('Tag Keys', 'tags', default_badge={
+        'type': 'outline',
+        'sub_key': 'key',
+        'delimiter': '<br>'
+    }),
+    ListDyField.data_source('Tag Values', 'tags', default_badge={
+        'type': 'outline',
+        'sub_key': 'value',
+        'delimiter': '<br>'
+    })
 ])
 
 lt_meta = CloudServiceMeta.set_layouts([lt_meta_base_lt, lt_meta_base_storage, lt_meta_base_ni, lt_meta_base_detail, lt_meta_base_tag, ])
