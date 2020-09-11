@@ -3,7 +3,7 @@ import logging
 from typing import List
 
 from spaceone.inventory.connector.aws_auto_scaling_connector.schema.data import AutoScalingGroup, LaunchConfiguration, \
-    AutoScalingPolicy, LifecycleHook, NotificationConfiguration, ScheduledAction, LaunchTemplate2
+    AutoScalingPolicy, LifecycleHook, NotificationConfiguration, ScheduledAction, LaunchTemplateDetail
 from spaceone.inventory.connector.aws_auto_scaling_connector.schema.resource import AutoScalingGroupResource, \
     LaunchConfigurationResource, LaunchTemplateResource, AutoScalingGroupResponse, LaunchConfigurationResponse, LaunchTemplateResponse
 from spaceone.inventory.connector.aws_auto_scaling_connector.schema.service_type import CLOUD_SERVICE_TYPES
@@ -118,7 +118,7 @@ class AutoScalingConnector(SchematicAWSConnector):
                 self._launch_configurations.append(res)
                 yield res
 
-    def request_launch_template_data(self, region_name) -> List[LaunchTemplate2]:
+    def request_launch_template_data(self, region_name) -> List[LaunchTemplateDetail]:
         ec2_client = self.session.client('ec2')
         paginator = ec2_client.get_paginator('describe_launch_templates')
         response_iterator = paginator.paginate(
@@ -145,7 +145,7 @@ class AutoScalingConnector(SchematicAWSConnector):
                                              resource_type="launch_template",
                                              resource_id=raw['LaunchTemplateId']+'/v'+str(match_lt_version.get('VersionNumber')))
                 })
-                res = LaunchTemplate2(raw, strict=False)
+                res = LaunchTemplateDetail(raw, strict=False)
                 self._launch_templates.append(res)
                 yield res
 
