@@ -6,6 +6,7 @@ cst_rds_database = CloudServiceTypeResource()
 cst_rds_database.name = 'Database'
 cst_rds_database.provider = 'aws'
 cst_rds_database.group = 'RDS'
+cst_rds_database.labels = ['Database']
 cst_rds_database.tags = {
     'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-RDS.svg',
     'spaceone:is_major': 'true',
@@ -81,6 +82,7 @@ cst_rds_snapshot = CloudServiceTypeResource()
 cst_rds_snapshot.name = 'Snapshot'
 cst_rds_snapshot.provider = 'aws'
 cst_rds_snapshot.group = 'RDS'
+cst_rds_snapshot.labels = ['Database']
 cst_rds_snapshot.tags = {
     'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-RDS.svg',
     'spaceone:is_major': 'false',
@@ -123,6 +125,7 @@ cst_rds_subnetgrp = CloudServiceTypeResource()
 cst_rds_subnetgrp.name = 'SubnetGroup'
 cst_rds_subnetgrp.provider = 'aws'
 cst_rds_subnetgrp.group = 'RDS'
+cst_rds_subnetgrp.labels = ['Database']
 cst_rds_subnetgrp.tags = {
     'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-RDS.svg',
     'spaceone:is_major': 'false',
@@ -151,6 +154,7 @@ cst_rds_paramgrp = CloudServiceTypeResource()
 cst_rds_paramgrp.name = 'ParameterGroup'
 cst_rds_paramgrp.provider = 'aws'
 cst_rds_paramgrp.group = 'RDS'
+cst_rds_paramgrp.labels = ['Database']
 cst_rds_paramgrp.tags = {
     'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-RDS.svg',
     'spaceone:is_major': 'false',
@@ -174,6 +178,7 @@ cst_rds_optgrp = CloudServiceTypeResource()
 cst_rds_optgrp.name = 'OptionGroup'
 cst_rds_optgrp.provider = 'aws'
 cst_rds_optgrp.group = 'RDS'
+cst_rds_optgrp.labels = ['Database']
 cst_rds_optgrp.tags = {
     'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-RDS.svg',
     'spaceone:is_major': 'false',

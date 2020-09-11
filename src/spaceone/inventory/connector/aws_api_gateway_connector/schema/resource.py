@@ -60,14 +60,8 @@ class HTTPWebsocketResource(APIGatewayResource):
 
 
 class RestAPIResponse(CloudServiceResponse):
-    match_rules = DictType(ListType(StringType), default={
-        '1': ['data.id', 'provider', 'cloud_service_type', 'cloud_service_group']
-    })
     resource = PolyModelType(RestAPIResource)
 
 
 class HTTPWebsocketResponse(CloudServiceResponse):
-    match_rules = DictType(ListType(StringType), default={
-        '1': ['data.api_id', 'provider', 'cloud_service_type', 'cloud_service_group']
-    })
     resource = PolyModelType(HTTPWebsocketResource)

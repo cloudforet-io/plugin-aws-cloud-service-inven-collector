@@ -9,6 +9,7 @@ cst_connection = CloudServiceTypeResource()
 cst_connection.name = 'Connection'
 cst_connection.provider = 'aws'
 cst_connection.group = 'DirectConnect'
+cst_connection.labels = ['Networking']
 cst_connection.tags = {
     'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/AWS-Direct-Connect.svg',
     'spaceone:is_major': 'true',
@@ -63,6 +64,7 @@ cst_dc_gw = CloudServiceTypeResource()
 cst_dc_gw.name = 'DirectConnectGateway'
 cst_dc_gw.provider = 'aws'
 cst_dc_gw.group = 'DirectConnect'
+cst_dc_gw.labels = ['Networking']
 cst_dc_gw.tags = {
     'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/AWS-Direct-Connect.svg',
     'spaceone:is_major': 'false',
@@ -102,6 +104,7 @@ cst_vp_gw = CloudServiceTypeResource()
 cst_vp_gw.name = 'VirtualPrivateGateway'
 cst_vp_gw.provider = 'aws'
 cst_vp_gw.group = 'DirectConnect'
+cst_vp_gw.labels = ['Networking']
 cst_vp_gw.tags = {
     'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/AWS-Direct-Connect.svg',
     'spaceone:is_major': 'false',
@@ -139,6 +142,7 @@ cst_lags = CloudServiceTypeResource()
 cst_lags.name = 'LAG'
 cst_lags.provider = 'aws'
 cst_lags.group = 'DirectConnect'
+cst_lags.labels = ['Networking']
 cst_lags.tags = {
     'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/AWS-Direct-Connect.svg',
     'spaceone:is_major': 'false',

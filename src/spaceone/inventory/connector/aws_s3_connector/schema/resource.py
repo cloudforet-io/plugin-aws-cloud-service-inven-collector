@@ -10,6 +10,10 @@ bucket = ItemDynamicLayout.set_fields('Buckets', fields=[
     TextDyField.data_source('Name', 'data.name'),
     TextDyField.data_source('ARN', 'data.arn'),
     TextDyField.data_source('Region', 'data.region_name'),
+    EnumDyField.data_source('Public Access', 'data.public_access', default_badge={
+        'indigo.500': ['Private'],
+        'coral.600': ['Public']
+    }),
 ])
 
 # object_info = ItemDynamicLayout.set_fields('Objects', fields=[
@@ -28,7 +32,7 @@ versioning = ItemDynamicLayout.set_fields('Versioning', fields=[
     }),
 ])
 
-website_hosting = ItemDynamicLayout.set_fields('Website Hostring', fields=[
+website_hosting = ItemDynamicLayout.set_fields('Website Hosting', fields=[
     TextDyField.data_source('Hostname', 'data.website_hosting.redirect_all_requests_to.host_name'),
     EnumDyField.data_source('Protocol', 'data.website_hosting.redirect_all_requests_to.protocol',
                             default_outline_badge=['HTTP', 'HTTPS']),
@@ -105,7 +109,4 @@ class BucketResource(S3Resource):
 
 
 class BucketResponse(CloudServiceResponse):
-    match_rules = DictType(ListType(StringType), default={
-        '1': ['data.arn', 'provider', 'cloud_service_type', 'cloud_service_group']
-    })
     resource = PolyModelType(BucketResource)

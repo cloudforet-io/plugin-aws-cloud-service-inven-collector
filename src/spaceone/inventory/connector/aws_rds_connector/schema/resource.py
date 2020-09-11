@@ -290,9 +290,6 @@ class DBClusterResource(DatabaseResource):
 
 
 class DatabaseResponse(CloudServiceResponse):
-    match_rules = DictType(ListType(StringType), default={
-        '1': ['data.arn', 'provider', 'cloud_service_type', 'cloud_service_group']
-    })
     resource = PolyModelType([DBInstanceResource, DBClusterResource])
 
 
@@ -303,9 +300,6 @@ class SnapshotResource(RDSResource):
 
 
 class SnapshotResponse(CloudServiceResponse):
-    match_rules = DictType(ListType(StringType), default={
-        '1': ['data.db_snapshot_arn', 'provider', 'cloud_service_type', 'cloud_service_group']
-    })
     resource = PolyModelType(SnapshotResource)
 
 
@@ -316,9 +310,6 @@ class SubnetGroupResource(RDSResource):
 
 
 class SubnetGroupResponse(CloudServiceResponse):
-    match_rules = DictType(ListType(StringType), default={
-        '1': ['data.db_subnet_group_arn', 'provider', 'cloud_service_type', 'cloud_service_group']
-    })
     resource = PolyModelType(SubnetGroupResource)
 
 
@@ -329,9 +320,6 @@ class ParameterGroupResource(RDSResource):
 
 
 class ParameterGroupResponse(CloudServiceResponse):
-    match_rules = DictType(ListType(StringType), default={
-        '1': ['data.db_parameter_group_arn', 'provider', 'cloud_service_type', 'cloud_service_group']
-    })
     resource = PolyModelType(ParameterGroupResource)
 
 
@@ -342,7 +330,4 @@ class OptionGroupResource(RDSResource):
 
 
 class OptionGroupResponse(CloudServiceResponse):
-    match_rules = DictType(ListType(StringType), default={
-        '1': ['data.option_group_arn', 'provider', 'cloud_service_type', 'cloud_service_group']
-    })
     resource = PolyModelType(OptionGroupResource)

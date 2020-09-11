@@ -91,9 +91,6 @@ class ConnectionResource(DirectConnectResource):
 
 
 class ConnectionResponse(CloudServiceResponse):
-    match_rules = DictType(ListType(StringType), default={
-        '1': ['data.connection_id', 'provider', 'cloud_service_type', 'cloud_service_group']
-    })
     resource = PolyModelType(ConnectionResource)
 
 
@@ -105,9 +102,6 @@ class DirectConnectGatewayResource(DirectConnectResource):
 
 
 class DirectConnectGatewayResponse(CloudServiceResponse):
-    match_rules = DictType(ListType(StringType), default={
-        '1': ['data.direct_connect_gateway_id', 'provider', 'cloud_service_type', 'cloud_service_group']
-    })
     resource = PolyModelType(DirectConnectGatewayResource)
 
 
@@ -119,9 +113,6 @@ class VirtualPrivateGatewayResource(DirectConnectResource):
 
 
 class VirtualPrivateGatewayResponse(CloudServiceResponse):
-    match_rules = DictType(ListType(StringType), default={
-        '1': ['data.virtual_gateway_id', 'provider', 'cloud_service_type', 'cloud_service_group']
-    })
     resource = PolyModelType(VirtualPrivateGatewayResource)
 
 
@@ -133,7 +124,4 @@ class LAGResource(DirectConnectResource):
 
 
 class LAGResponse(CloudServiceResponse):
-    match_rules = DictType(ListType(StringType), default={
-        '1': ['data.lag_id', 'provider', 'cloud_service_type', 'cloud_service_group']
-    })
     resource = PolyModelType(LAGResource)

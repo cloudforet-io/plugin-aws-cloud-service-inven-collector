@@ -241,6 +241,7 @@ class IAMResource(CloudServiceResource):
     cloud_service_group = StringType(default='IAM')
 
 
+# GROUP
 class GroupResource(IAMResource):
     cloud_service_type = StringType(default='Group')
     data = ModelType(Group)
@@ -248,9 +249,6 @@ class GroupResource(IAMResource):
 
 
 class GroupResponse(CloudServiceResponse):
-    match_rules = DictType(ListType(StringType), default={
-        '1': ['data.arn', 'provider', 'cloud_service_type', 'cloud_service_group']
-    })
     resource = PolyModelType(GroupResource)
 
 
@@ -262,9 +260,6 @@ class UserResource(IAMResource):
 
 
 class UserResponse(CloudServiceResponse):
-    match_rules = DictType(ListType(StringType), default={
-        '1': ['data.arn', 'provider', 'cloud_service_type', 'cloud_service_group']
-    })
     resource = PolyModelType(UserResource)
 
 
@@ -276,9 +271,6 @@ class RoleResource(IAMResource):
 
 
 class RoleResponse(CloudServiceResponse):
-    match_rules = DictType(ListType(StringType), default={
-        '1': ['data.arn', 'provider', 'cloud_service_type', 'cloud_service_group']
-    })
     resource = PolyModelType(RoleResource)
 
 
@@ -290,9 +282,6 @@ class PolicyResource(IAMResource):
 
 
 class PolicyResponse(CloudServiceResponse):
-    match_rules = DictType(ListType(StringType), default={
-        '1': ['data.arn', 'provider', 'cloud_service_type', 'cloud_service_group']
-    })
     resource = PolyModelType(PolicyResource)
 
 
@@ -304,7 +293,4 @@ class IdentityProviderResource(IAMResource):
 
 
 class IdentityProviderResponse(CloudServiceResponse):
-    match_rules = DictType(ListType(StringType), default={
-        '1': ['data.arn', 'provider', 'cloud_service_type', 'cloud_service_group']
-    })
     resource = PolyModelType(IdentityProviderResource)

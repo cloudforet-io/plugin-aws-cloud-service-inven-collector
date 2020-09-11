@@ -25,6 +25,7 @@ lb_base = ItemDynamicLayout.set_fields('Load Balancers', fields=[
     EnumDyField.data_source('Scheme', 'data.scheme', default_badge={
         'indigo.500': ['internet-facing'], 'coral.600': ['internal']
     }),
+    ListDyField.data_source('Security Groups', 'data.security_groups', default_badge={'type': 'outline'}),
     EnumDyField.data_source('IP address type', 'data.ip_address_type', default_outline_badge=['ipv4', 'dualstack']),
     TextDyField.data_source('VPC ID', 'data.vpc_id'),
     ListDyField.data_source('Availability Zones', 'data.availability_zones', default_badge={
@@ -129,14 +130,8 @@ class TargetGroupResource(ELBResource):
 
 
 class LoadBalancerResponse(CloudServiceResponse):
-    match_rules = DictType(ListType(StringType), default={
-        '1': ['data.load_balancer_arn', 'provider', 'cloud_service_type', 'cloud_service_group']
-    })
     resource = PolyModelType(LoadBalancerResource)
 
 
 class TargetGroupResponse(CloudServiceResponse):
-    match_rules = DictType(ListType(StringType), default={
-        '1': ['data.target_group_arn', 'provider', 'cloud_service_type', 'cloud_service_group']
-    })
     resource = PolyModelType(TargetGroupResource)

@@ -90,7 +90,4 @@ class TableResource(DynamoDBResource):
 
 
 class TableResponse(CloudServiceResponse):
-    match_rules = DictType(ListType(StringType), default={
-        '1': ['data.table_arn', 'provider', 'cloud_service_type', 'cloud_service_group']
-    })
     resource = PolyModelType(TableResource)
