@@ -233,7 +233,7 @@ class NetworkInterfaces(Model):
 class AutoScalingLaunchTemplateBlockDeviceMappings(Model):
     device_name = StringType(deserialize_from="DeviceName")
     virtual_name = StringType(deserialize_from="VirtualName")
-    ebs = ModelType(Ebs, deserialize_from="EBS")
+    ebs = ModelType(Ebs, deserialize_from="Ebs")
     no_device = BooleanType(deserialize_from="NoDevice")
 
 
@@ -246,7 +246,8 @@ class LaunchTemplateData(Model):
     kernel_id = StringType(deserialize_from="KernelId")
     ebs_optimized = BooleanType(deserialize_from="EbsOptimized")
     iam_instance_profile = ModelType(IamInstanceProfile, deserialize_from="IamInstanceProfile")
-    block_device_mappings = ListType(ModelType(AutoScalingLaunchTemplateBlockDeviceMappings), deserialize_from="")
+    block_device_mappings = ListType(ModelType(AutoScalingLaunchTemplateBlockDeviceMappings),
+                                     deserialize_from="BlockDeviceMappings")
     network_interfaces = ListType(ModelType(NetworkInterfaces), deserialize_from="NetworkInterfaces")
     image_id = StringType(deserialize_from="ImageId")
     instance_type = StringType(deserialize_from="InstanceType")
@@ -266,7 +267,7 @@ class LaunchTemplateData(Model):
     license_specification = ListType(ModelType(LicenseSpecification), deserialize_from="LicenseSpecification")
 
 
-class LaunchTemplate2(Model):
+class LaunchTemplateDetail(Model):
     launch_template_id = StringType(deserialize_from="LaunchTemplateId")
     launch_template_name = StringType(deserialize_from="LaunchTemplateName")
     version = IntType(deserialize_from="Version")
