@@ -47,20 +47,36 @@ class RedshiftConnector(SchematicAWSConnector):
         )
         for data in response_iterator:
             for raw in data.get('Clusters', []):
+
                 raw.update({
                     'region_name': region_name,
                     'account_id': self.account_id,
                     'arn': self.generate_arn(service=self.service_name, region=region_name,
                                              account_id=self.account_id, resource_type='cluster',
                                              resource_id=raw.get('ClusterIdentifier')),
-                    'tags': list(self.describe_tags(raw.get('Cluster')))
+                    'tags': list(self.describe_tags({"service": self.service_name,
+                                                     "region": region_name,
+                                                     "account_id": self.account_id,
+                                                     "resource_id": raw.get('ClusterIdentifier', '')}))
                 })
 
                 res = Cluster(raw, strict=False)
                 yield res
 
-    def describe_tags(self, resource_name, resource_type):
-        response = self.client.describe_tags(ResourceName=resource_name, ResourceType=resource_type)
+    def describe_tags(self, arn_vo):
+        response = {}
+        tag_arn = self._generate_redshift_arn(service=arn_vo.get('service', ''),
+                                              region=arn_vo.get('region', ''),
+                                              account_id=arn_vo.get('account_id', ''),
+                                              resource_id=arn_vo.get('resource_id', ''))
+        try:
+            response = self.client.describe_tags(ResourceName=tag_arn)
+        except Exception as e:
+            pass
 
         for tag_resource in response.get('TaggedResources', []):
             yield Tags(tag_resource.get('Tag', {}), strict=False)
+
+    @staticmethod
+    def _generate_redshift_arn(service="", region="", account_id="", resource_id=""):
+        return f'arn:aws:{service}:{region}:{account_id}:cluster:{resource_id}'
