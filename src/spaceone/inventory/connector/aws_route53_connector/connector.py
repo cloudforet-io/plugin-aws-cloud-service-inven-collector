@@ -6,7 +6,7 @@ from spaceone.inventory.connector.aws_route53_connector.schema.data import Hoste
 from spaceone.inventory.connector.aws_route53_connector.schema.resource import HostedZoneResource, HostedZoneResponse
 from spaceone.inventory.connector.aws_route53_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
-from spaceone.inventory.libs.schema.resource import ReferenceModel
+from spaceone.inventory.libs.schema.resource import ReferenceModel, CloudWatchModel
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -27,9 +27,12 @@ class Route53Connector(SchematicAWSConnector):
 
             # merge data
             for data in self.request_data():
+                if getattr(data, 'set_cloudwatch', None):
+                    data.cloudwatch = CloudWatchModel(data.set_cloudwatch())
+
                 resources.append(self.response_schema(
                     {'resource': HostedZoneResource({'data': data,
-                                                     'reference': ReferenceModel(data.reference)})}))
+                                                     'reference': ReferenceModel(data.reference())})}))
         except Exception as e:
             print(f'[ERROR {self.service_name}] {e}')
 

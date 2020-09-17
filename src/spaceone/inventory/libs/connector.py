@@ -123,7 +123,7 @@ class SchematicAWSConnector(AWSConnector):
 
         try:
             for data in collect_resource_info['request_method'](region_name, **collect_resource_info.get('kwargs', {})):
-                if getattr(data, 'set_cloudwatch'):
+                if getattr(data, 'set_cloudwatch', None):
                     data.cloudwatch = CloudWatchModel(data.set_cloudwatch(region_name))
 
                 resources.append(collect_resource_info['response_schema'](
