@@ -2,7 +2,7 @@ import logging
 
 from schematics import Model
 from schematics.types import ModelType, StringType, IntType, DateTimeType, serializable, ListType, BooleanType
-
+from spaceone.inventory.libs.schema.resource import CloudWatchModel, CloudWatchDimensionModel
 _LOGGER = logging.getLogger(__name__)
 
 
@@ -60,13 +60,11 @@ class OptionGroup(Model):
     vpc_id = StringType(deserialize_from="VpcId")
     option_group_arn = StringType(deserialize_from="OptionGroupArn")
     account_id = StringType()
-    region_name = StringType()
 
-    @serializable
-    def reference(self):
+    def reference(self, region_code):
         return {
             "resource_id": self.option_group_arn,
-            "external_link": f"https://console.aws.amazon.com/rds/home?region={self.region_name}#option-group-details:option-group-name={self.option_group_name}"
+            "external_link": f"https://console.aws.amazon.com/rds/home?region={region_code}#option-group-details:option-group-name={self.option_group_name}"
         }
 
 
@@ -93,17 +91,15 @@ class ParameterGroup(Model):
     db_parameter_group_family = StringType(deserialize_from="DBParameterGroupFamily")
     description = StringType(deserialize_from="Description")
     db_parameter_group_arn = StringType(deserialize_from="DBParameterGroupArn")
-    region_name = StringType()
     account_id = StringType()
     parameters = ListType(ModelType(Parameter), default=[])
     tags = ListType(ModelType(Tags))
     db_parameter_group_type = StringType()
 
-    @serializable
-    def reference(self):
+    def reference(self, region_code):
         return {
             "resource_id": self.db_parameter_group_arn,
-            "external_link": f"https://console.aws.amazon.com/rds/home?region={self.region_name}#parameter-groups-detail:ids={self.db_parameter_group_name};type={self.db_parameter_group_type};editing=false"
+            "external_link": f"https://console.aws.amazon.com/rds/home?region={region_code}#parameter-groups-detail:ids={self.db_parameter_group_name};type={self.db_parameter_group_type};editing=false"
         }
 
 
@@ -127,15 +123,13 @@ class SubnetGroup(Model):
     subnet_group_status = StringType(deserialize_from="SubnetGroupStatus")
     subnets = ListType(ModelType(SubnetGroupSubnets), deserialize_from="Subnets")
     db_subnet_group_arn = StringType(deserialize_from="DBSubnetGroupArn")
-    region_name = StringType()
     account_id = StringType()
     tags = ListType(ModelType(Tags))
 
-    @serializable
-    def reference(self):
+    def reference(self, region_code):
         return {
             "resource_id": self.db_subnet_group_arn,
-            "external_link": f"https://console.aws.amazon.com/rds/home?region={self.region_name}#db-subnet-group:id={self.db_subnet_group_name}"
+            "external_link": f"https://console.aws.amazon.com/rds/home?region={region_code}#db-subnet-group:id={self.db_subnet_group_name}"
         }
 
 '''
@@ -175,15 +169,13 @@ class Snapshot(Model):
     iam_database_authentication_enabled = BooleanType(deserialize_from="IAMDatabaseAuthenticationEnabled")
     processor_features = ListType(ModelType(Features), deserialize_from="ProcessorFeatures")
     dbi_resource_id = StringType(deserialize_from="DbiResourceId")
-    region_name = StringType()
     account_id = StringType()
     tags = ListType(ModelType(Tags))
 
-    @serializable
-    def reference(self):
+    def reference(self, region_code):
         return {
             "resource_id": self.db_snapshot_arn,
-            "external_link": f"https://console.aws.amazon.com/rds/home?region={self.region_name}#snapshot:engine={self.engine};id={self.db_snapshot_identifier}"
+            "external_link": f"https://console.aws.amazon.com/rds/home?region={region_code}#snapshot:engine={self.engine};id={self.db_snapshot_identifier}"
         }
 
 
@@ -459,27 +451,25 @@ class Database(Model):
     multi_az = BooleanType()
     cluster = ModelType(Cluster, serialize_when_none=False)
     instance = ModelType(Instance, serialize_when_none=False)
-    region_name = StringType()
     account_id = StringType()
+    cloudwatch = ModelType(CloudWatchModel, serialize_when_none=False)
 
-    @serializable
-    def reference(self):
+    def reference(self, region_code):
         return {
             "resource_id": self.arn,
-            "external_link": f"https://console.aws.amazon.com/rds/home?region={self.region_name}#database:id={self.db_identifier};is-cluster=false"
+            "external_link": f"https://console.aws.amazon.com/rds/home?region={region_code}#database:id={self.db_identifier};is-cluster=false"
         }
 
-    @serializable
-    def cloudwatch(self):
+    def cloudwatch(self, region_code):
         dimensions = []
 
         if self.role == 'cluster':
-            dimensions.append({"Name": "DBClusterIdentifier", "Value": self.db_identifier})
+            dimensions.append(CloudWatchDimensionModel({"Name": "DBClusterIdentifier", "Value": self.db_identifier}))
         elif self.role == 'instance':
-            dimensions.append({"Name": "DBInstanceIdentifier", "Value": self.db_identifier})
+            dimensions.append(CloudWatchDimensionModel({"Name": "DBInstanceIdentifier", "Value": self.db_identifier}))
 
         return {
             "namespace": "AWS/RDS",
             "dimensions": dimensions,
-            "region_name": self.region_name
+            "region_name": region_code
         }

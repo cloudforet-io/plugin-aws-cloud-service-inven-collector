@@ -1,9 +1,8 @@
 from spaceone.api.inventory.plugin import collector_pb2_grpc, collector_pb2
 from spaceone.core.pygrpc import BaseAPI
 from spaceone.core.pygrpc.message_type import *
-
 from spaceone.inventory.service import CollectorService
-
+import traceback
 
 class Collector(BaseAPI, collector_pb2_grpc.CollectorServicer):
     pb2 = collector_pb2
@@ -30,12 +29,22 @@ class Collector(BaseAPI, collector_pb2_grpc.CollectorServicer):
         collector_svc: CollectorService = self.locator.get_service('CollectorService', metadata)
 
         with collector_svc:
-            for resource in collector_svc.list_resources(params):
-                res = {
-                    'state': (resource['state']),
-                    'message': '',
-                    'resource_type': (resource['resource_type']),
-                    'match_rules': change_struct_type(resource['match_rules']),
-                    'resource': change_struct_type(resource['resource'])
-                }
-                yield self.locator.get_info('ResourceInfo', res)
+            try:
+                for resource in collector_svc.list_resources(params):
+                    res = {
+                        'state': (resource['state']),
+                        'message': '',
+                        'resource_type': (resource['resource_type']),
+                        'match_rules': change_struct_type(resource['match_rules']),
+                        'resource': change_struct_type(resource['resource'])
+                    }
+
+                    yield self.locator.get_info('ResourceInfo', res)
+
+            except Exception as e:
+                print(traceback.format_exc())
+                print(f'[ERROR: ResourceInfo]: {e}')
+
+
+
+
