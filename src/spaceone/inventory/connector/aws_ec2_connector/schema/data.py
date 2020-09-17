@@ -59,12 +59,10 @@ class SecurityGroup(Model):
     ip_permissions_egress = ListType(ModelType(SecurityGroupIpPermission))
     tags = ListType(ModelType(Tags, deserialize_from="Tags"))
     vpc_id = StringType(deserialize_from="VpcId")
-    region_name = StringType(default="")
     account_id = StringType(default="")
 
-    @serializable
-    def reference(self):
+    def reference(self, region_code):
         return {
             "resource_id": self.group_id,
-            "external_link": f"https://console.aws.amazon.com/ec2/v2/home?region={self.region_name}#SecurityGroups:group-id={self.group_id}"
+            "external_link": f"https://console.aws.amazon.com/ec2/v2/home?region={region_code}#SecurityGroups:group-id={self.group_id}"
         }

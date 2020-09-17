@@ -92,7 +92,6 @@ class EC2Connector(SchematicAWSConnector):
                                                       strict=False))
 
                 raw.update({
-                    'region_name': region_name,
                     'account_id': self.account_id,
                     'ip_permissions': inbound_rules,
                     'ip_permissions_egress': outbound_rules

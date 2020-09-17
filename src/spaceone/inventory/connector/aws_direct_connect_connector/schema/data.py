@@ -2,6 +2,7 @@ import logging
 
 from schematics import Model
 from schematics.types import ModelType, StringType, IntType, DateTimeType, serializable, ListType, BooleanType
+from spaceone.inventory.libs.schema.resource import CloudWatchModel, CloudWatchDimensionModel
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -55,13 +56,11 @@ class LAG(Model):
     tags = ListType(ModelType(Tags, deserialize_from="tags"))
     provider_name = StringType(deserialize_from="providerName")
     account_id = StringType()
-    region_name = StringType()
 
-    @serializable
-    def reference(self):
+    def reference(self, region_code):
         return {
             "resource_id": self.lag_id,
-            "external_link": f"https://console.aws.amazon.com/directconnect/v2/home?region={self.region}#/lags/arn:aws:directconnect:{self.region}:{self.owner_account}:{self.lag_id}"
+            "external_link": f"https://console.aws.amazon.com/directconnect/v2/home?region={region_code}#/lags/arn:aws:directconnect:{region_code}:{self.owner_account}:{self.lag_id}"
         }
 
 
@@ -74,13 +73,11 @@ class VirtualPrivateGateway(Model):
     region = StringType(deserialize_from="region")
     owner_account = StringType(deserialize_from="ownerAccount")
     account_id = StringType()
-    region_name = StringType()
 
-    @serializable
-    def reference(self):
+    def reference(self, region_code):
         return {
             "resource_id": self.virtual_gateway_id,
-            "external_link": f"https://console.aws.amazon.com/directconnect/v2/home?region={self.region}#/virtual-gateways/arn:aws:ec2:{self.region}:{self.owner_account}:{self.virtual_gateway_id}"
+            "external_link": f"https://console.aws.amazon.com/directconnect/v2/home?region={region_code}#/virtual-gateways/arn:aws:ec2:{region_code}:{self.owner_account}:{self.virtual_gateway_id}"
         }
 
 
@@ -97,14 +94,12 @@ class DirectConnecGateway(Model):
                                                                                                     "deleting",
                                                                                                     "deleted"))
     state_change_error = StringType(deserialize_from="stateChangeError")
-    region_name = StringType(deserialize_from="region")
     account_id = StringType()
 
-    @serializable
-    def reference(self):
+    def reference(self, region_code):
         return {
             "resource_id": self.direct_connect_gateway_id,
-            "external_link": f"https://console.aws.amazon.com/directconnect/v2/home?region={self.region_name}#/dxgateways/{self.direct_connect_gateway_id}"
+            "external_link": f"https://console.aws.amazon.com/directconnect/v2/home?region={region_code}#/dxgateways/{self.direct_connect_gateway_id}"
         }
 
 
@@ -161,29 +156,22 @@ class VirtualInterface(Model):
     bgp_peers = ListType(ModelType(VirtualInterfacebgpPeers,
                                    deserialize_from="bgpPeers"))
     region = StringType(deserialize_from="region")
-    region_name = StringType()
     aws_device_v2 = StringType(deserialize_from="awsDeviceV2")
     tags = ListType(ModelType(Tags, deserialize_from="tags"))
     account_id = StringType()
+    cloudwatch = ModelType(CloudWatchModel, serialize_when_none=False)
 
-    @serializable
-    def reference(self):
+    def reference(self, region_code):
         return {
             "resource_id": self.virtual_interface_id,
-            "external_link": f"https://console.aws.amazon.com/directconnect/v2/home?region={self.region}#/virtual-interfaces/arn:aws:directconnect:{self.region}:{self.owner_account}:{self.virtual_interface_id}"
+            "external_link": f"https://console.aws.amazon.com/directconnect/v2/home?region={region_code}#/virtual-interfaces/arn:aws:directconnect:{region_code}:{self.owner_account}:{self.virtual_interface_id}"
         }
 
-    @serializable
-    def cloudwatch(self):
+    def set_cloudwatch(self, region_code):
         return {
             "namespace": "AWS/DX",
-            "dimensions": [
-                {
-                    "Name": "VirtualInterfaceId",
-                    "Value": self.virtual_interface_id
-                }
-            ],
-            "region_name": self.region_name
+            "dimensions": [CloudWatchDimensionModel({'Name': 'VirtualInterfaceId', 'Value': self.virtual_interface_id})],
+            "region_name": region_code
         }
 
 
@@ -213,24 +201,17 @@ class Connection(Model):
     provider_name = StringType(deserialize_from="providerName")
     virtual_interfaces = ListType(ModelType(VirtualInterface))
     account_id = StringType()
-    region_name = StringType()
+    cloudwatch = ModelType(CloudWatchModel, serialize_when_none=False)
 
-    @serializable
-    def reference(self):
+    def reference(self, region_code):
         return {
             "resource_id": self.arn,
-            "external_link": f"https://console.aws.amazon.com/directconnect/v2/home?region={self.region}#/connections/arn:aws:directconnect:{self.region}:{self.owner_account}:{self.connection_id}"
+            "external_link": f"https://console.aws.amazon.com/directconnect/v2/home?region={region_code}#/connections/arn:aws:directconnect:{region_code}:{self.owner_account}:{self.connection_id}"
         }
 
-    @serializable
-    def cloudwatch(self):
+    def set_cloudwatch(self, region_code):
         return {
             "namespace": "AWS/DX",
-            "dimensions": [
-                {
-                    "Name": "ConnectionId",
-                    "Value": self.connection_id
-                }
-            ],
-            "region_name": self.region_name
+            "dimensions": [CloudWatchDimensionModel({'Name': 'ConnectionId', 'Value': self.connection_id})],
+            "region_name": region_code
         }

@@ -94,7 +94,6 @@ class AutoScalingConnector(SchematicAWSConnector):
                                                   self._describe_scheduled_actions(raw['AutoScalingGroupName']))),
                     'lifecycle_hooks': list(map(lambda lifecycle_hook: LifecycleHook(lifecycle_hook, strict=False),
                                                 self._describe_lifecycle_hooks(raw['AutoScalingGroupName']))),
-                    'region_name': region_name,
                     'account_id': self.account_id
                 })
                 res = AutoScalingGroup(raw, strict=False)
@@ -112,7 +111,6 @@ class AutoScalingConnector(SchematicAWSConnector):
         for data in response_iterator:
             for raw in data.get('LaunchConfigurations', []):
                 raw.update({
-                    'region_name': region_name,
                     'account_id': self.account_id
                 })
                 res = LaunchConfiguration(raw, strict=False)
@@ -138,7 +136,6 @@ class AutoScalingConnector(SchematicAWSConnector):
                     'version': match_lt_version.get('VersionNumber'),
                     'version_description': match_lt_version.get('VersionDescription'),
                     'default_version': match_lt_version.get('DefaultVersion'),
-                    'region_name': region_name,
                     'account_id': self.account_id,
                     'launch_template_data': match_lt_data,
                     'arn': self.generate_arn(service="ec2", region="", account_id="",

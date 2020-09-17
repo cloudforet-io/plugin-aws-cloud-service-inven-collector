@@ -46,7 +46,6 @@ class ECSConnector(SchematicAWSConnector):
                 'services': self.set_services(raw['clusterArn']),
                 'tasks': self.set_tasks(raw['clusterArn']),
                 'container_instances': self.set_container_instances(raw['clusterArn']),
-                'region_name': region_name,
                 'account_id': self.account_id
             })
             res = Cluster(raw, strict=False)
