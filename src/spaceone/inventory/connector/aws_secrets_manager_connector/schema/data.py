@@ -1,7 +1,7 @@
 import logging
 
 from schematics import Model
-from schematics.types import ModelType, StringType, IntType, DateTimeType, serializable, ListType, BooleanType
+from schematics.types import ModelType, StringType, IntType, DateTimeType, ListType, BooleanType
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -34,12 +34,10 @@ class Secret(Model):
     tags = ListType(ModelType(SecretTags), deserialize_from="Tags")
     secret_versions_to_stages = ModelType(SecretVersionsToStages, deserialize_from="SecretVersionsToStages")
     owning_service = StringType(deserialize_from="OwningService")
-    region_name = StringType(default='')
     account_id = StringType(default='')
 
-    @serializable
-    def reference(self):
+    def reference(self, region_code):
         return {
             "resource_id": self.arn,
-            "external_link": f"https://console.aws.amazon.com/secretsmanager/home?region={self.region_name}#/secret?name={self.name}"
+            "external_link": f"https://console.aws.amazon.com/secretsmanager/home?region={region_code}#/secret?name={self.name}"
         }
