@@ -2,6 +2,7 @@ import logging
 
 from schematics import Model
 from schematics.types import ModelType, StringType, IntType, DateTimeType, serializable, ListType, BooleanType
+from spaceone.inventory.libs.schema.resource import CloudWatchModel, CloudWatchDimensionModel
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -43,23 +44,17 @@ class Topic(Model):
     tags = ListType(ModelType(Tags))
     region_name = StringType(default="")
     account_id = StringType(default="")
+    cloudwatch = ModelType(CloudWatchModel, serialize_when_none=False)
 
-    @serializable
-    def reference(self):
+    def reference(self, region_code):
         return {
             "resource_id": self.topic_arn,
-            "external_link": f"https://console.aws.amazon.com/sns/v3/home?region={self.region_name}#/topic/{self.topic_arn}"
+            "external_link": f"https://console.aws.amazon.com/sns/v3/home?region={region_code}#/topic/{self.topic_arn}"
         }
 
-    @serializable
-    def cloudwatch(self):
+    def set_cloudwatch(self, region_code):
         return {
             "namespace": "AWS/SNS",
-            "dimensions": [
-                {
-                    "Name": "TopicName",
-                    "Value": self.name
-                }
-            ],
-            "region_name": self.region_name
+            "dimensions": [CloudWatchDimensionModel({'Name': 'TopicName', 'Value': self.name})],
+            "region_name": region_code
         }
