@@ -1,4 +1,4 @@
-from schematics.models import Model
+from schematics import Model
 from schematics.types import ListType, StringType, PolyModelType, DictType, ModelType
 from .dynamic_layout import BaseLayoutField, QuerySearchTableDynamicLayout
 from .dynamic_search import BaseDynamicSearch
@@ -35,6 +35,20 @@ class ReferenceModel(Model):
 
     resource_id = StringType(required=False, serialize_when_none=False)
     external_link = StringType(required=False, serialize_when_none=False)
+
+
+class CloudWatchDimensionModel(Model):
+    name = StringType(serialized_name='Name')
+    value = StringType(serialized_name='Value')
+
+
+class CloudWatchModel(Model):
+    class Option:
+        serialize_when_none = False
+
+    namespace = StringType()
+    region_name = StringType()
+    dimensions = ListType(ModelType(CloudWatchDimensionModel))
 
 
 class CloudServiceTypeMeta(BaseMetaData):
@@ -82,6 +96,8 @@ class CloudServiceResource(Model):
     cloud_service_group = StringType()
     data = PolyModelType(Model, default=lambda: {})
     reference = ModelType(ReferenceModel)
+    region_type = StringType(default="AWS")
+    region_code = StringType()
     _metadata = PolyModelType(CloudServiceMeta, serialize_when_none=False, serialized_name='metadata')
 
 
