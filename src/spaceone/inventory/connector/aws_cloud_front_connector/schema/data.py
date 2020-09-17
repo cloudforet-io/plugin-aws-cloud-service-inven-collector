@@ -2,6 +2,8 @@ import logging
 
 from schematics import Model
 from schematics.types import ModelType, StringType, IntType, DateTimeType, serializable, ListType, BooleanType
+from spaceone.inventory.libs.schema.resource import CloudWatchModel, CloudWatchDimensionModel
+
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -279,23 +281,17 @@ class DistributionData(Model):
     alias_icp_recordals = ListType(ModelType(AliasICPRecordals), deserialize_from="AliasICPRecordals")
     account_id = StringType()
     tags = ListType(ModelType(Tags))
+    cloudwatch = ModelType(CloudWatchModel, serialize_when_none=False)
 
-    @serializable
     def reference(self):
         return {
             "resource_id": self.arn,
             "external_link": f"https://console.aws.amazon.com/cloudfront/home?#distribution-settings:{self.id}"
         }
 
-    @serializable
-    def cloudwatch(self):
+    def set_cloudwatch(self, region_code='us-east-1'):
         return {
             "namespace": "AWS/CloudFront",
-            "dimensions": [
-                {
-                    "Name": "DistributionId",
-                    "Value": self.id
-                }
-            ],
-            "region_name": "us-east-1"
+            "dimensions": [CloudWatchDimensionModel({'Name': 'DistributionId', 'Value': self.id})],
+            "region_name": region_code
         }
