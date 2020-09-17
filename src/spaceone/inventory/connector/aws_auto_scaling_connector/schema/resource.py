@@ -1,6 +1,6 @@
 from schematics.types import ModelType, StringType, PolyModelType, DictType, ListType
 
-from spaceone.inventory.connector.aws_auto_scaling_connector.schema.data import AutoScalingGroup, LaunchConfiguration, LaunchTemplate2
+from spaceone.inventory.connector.aws_auto_scaling_connector.schema.data import AutoScalingGroup, LaunchConfiguration, LaunchTemplateDetail
 from spaceone.inventory.libs.schema.dynamic_field import TextDyField, ListDyField, BadgeDyField, DateTimeDyField, \
     EnumDyField
 from spaceone.inventory.libs.schema.dynamic_layout import ItemDynamicLayout, TableDynamicLayout, ListDynamicLayout, \
@@ -188,18 +188,16 @@ lt_meta_base_lt = ItemDynamicLayout.set_fields('Launch Template', fields=[
     TextDyField.data_source('Version Description', 'data.version_description'),
     TextDyField.data_source('AMI ID', 'data.launch_template_data.image_id'),
     TextDyField.data_source('Instance Type', 'data.launch_template_data.instance_type'),
-    TextDyField.data_source('Availability Zone', 'data.launch_template_data.placement.availability_zone'),
     TextDyField.data_source('Key Name', 'data.launch_template_data.key_name'),
     ListDyField.data_source('Security Groups', 'data.launch_template_data.security_group_ids', default_badge={'type': 'outline'}),
-    # ListDyField.data_source('Security Group Ids', 'data.security_groups', default_badge={'type': 'outline'}),
     DateTimeDyField.data_source('Creation Time', 'data.create_time'),
     TextDyField.data_source('Created By', 'data.created_by')
 
 ])
 
-lt_meta_base_storage = SimpleTableDynamicLayout.set_fields('Storage', 'data.launch_template_data.block_device_mappings', fields=[
+lt_meta_base_storage = TableDynamicLayout.set_fields('Storage', 'data.launch_template_data.block_device_mappings', fields=[
     TextDyField.data_source('Device Name', 'device_name'),
-    TextDyField.data_source('Type', 'ebs.volume_type'),
+    EnumDyField.data_source('Type', 'ebs.volume_type', default_outline_badge=['standard', 'io1', 'gp2', 'st1', 'sc1']),
     TextDyField.data_source('Snapshot', 'ebs.snapshot_id'),
     TextDyField.data_source('Size(GiB)', 'ebs.volume_size'),
     TextDyField.data_source('IOPS', 'ebs.iops'),
@@ -211,7 +209,7 @@ lt_meta_base_storage = SimpleTableDynamicLayout.set_fields('Storage', 'data.laun
     })
 ])
 
-lt_meta_base_ni = SimpleTableDynamicLayout.set_fields('Network Interface', 'data.launch_template_data.network_interfaces', fields=[
+lt_meta_base_ni = TableDynamicLayout.set_fields('Network Interface', 'data.launch_template_data.network_interfaces', fields=[
     TextDyField.data_source('Device Index', 'device_index'),
     TextDyField.data_source('Description', 'description'),
     TextDyField.data_source('Subnet Id', 'subnet_id'),
@@ -219,12 +217,10 @@ lt_meta_base_ni = SimpleTableDynamicLayout.set_fields('Network Interface', 'data
     TextDyField.data_source('Secondary IP Number', 'secondary_private_ip_address_count'),
     ListDyField.data_source('IPv6', 'ipv6_addresses', default_badge={
         'type': 'outline',
-        'sub_key': 'ipv6_addresses',
         'delimiter': '<br>'
     }),
     ListDyField.data_source('Security Groups', 'groups', default_badge={
         'type': 'outline',
-        'sub_key': 'groups',
         'delimiter': '<br>'
     }),
     EnumDyField.data_source('Delete On Termination', 'delete_on_termination', default_badge={
@@ -234,7 +230,7 @@ lt_meta_base_ni = SimpleTableDynamicLayout.set_fields('Network Interface', 'data
 ])
 
 lt_meta_base_detail = ItemDynamicLayout.set_fields('Advanced Details', 'data.launch_template_data', fields=[
-    TextDyField.data_source('IAM Instance Profile', 'iam_instance_profile'),
+    TextDyField.data_source('IAM Instance Profile', 'iam_instance_profile.name'),
     EnumDyField.data_source('Monitoring', 'monitoring.enabled', default_badge={
         'indigo.500': ['true'], 'coral.600': ['false']
     }),
@@ -246,7 +242,6 @@ lt_meta_base_detail = ItemDynamicLayout.set_fields('Advanced Details', 'data.lau
     TextDyField.data_source('RAM Disk ID', 'ram_disk_id'),
     ListDyField.data_source('License Specification', 'license_specification', default_badge={
         'type': 'outline',
-        'sub_key': 'license_specification',
         'delimiter': '<br>'
     }),
     EnumDyField.data_source('EBS Optimized', 'ebs_optimized', default_badge={
@@ -256,9 +251,17 @@ lt_meta_base_detail = ItemDynamicLayout.set_fields('Advanced Details', 'data.lau
 ])
 
 lt_meta_base_tag = SimpleTableDynamicLayout.set_fields('Tags', 'data.launch_template_data.tag_specifications', fields=[
-    TextDyField.data_source('Key', 'tags.key'),
-    TextDyField.data_source('Value', 'tags.value'),
-    TextDyField.data_source('Resource Type', 'resource_type')
+    TextDyField.data_source('Resource Type', 'resource_type'),
+    ListDyField.data_source('Tag Keys', 'tags', default_badge={
+        'type': 'outline',
+        'sub_key': 'key',
+        'delimiter': '<br>'
+    }),
+    ListDyField.data_source('Tag Values', 'tags', default_badge={
+        'type': 'outline',
+        'sub_key': 'value',
+        'delimiter': '<br>'
+    })
 ])
 
 lt_meta = CloudServiceMeta.set_layouts([lt_meta_base_lt, lt_meta_base_storage, lt_meta_base_ni, lt_meta_base_detail, lt_meta_base_tag, ])
@@ -282,7 +285,7 @@ class LaunchConfigurationResource(AutoScalingResource):
 
 class LaunchTemplateResource(AutoScalingResource):
     cloud_service_type = StringType(default='LaunchTemplate')
-    data = ModelType(LaunchTemplate2)
+    data = ModelType(LaunchTemplateDetail)
     _metadata = ModelType(CloudServiceMeta, default=lt_meta, serialized_name='metadata')
 
 

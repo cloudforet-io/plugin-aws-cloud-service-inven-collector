@@ -1,4 +1,4 @@
-from spaceone.inventory.libs.schema.dynamic_field import TextDyField, ListDyField, DateTimeDyField, SearchField
+from spaceone.inventory.libs.schema.dynamic_field import TextDyField, ListDyField, DateTimeDyField, SearchField, EnumDyField
 from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, \
     CloudServiceTypeMeta
 
@@ -80,11 +80,11 @@ launch_template._metadata = CloudServiceTypeMeta.set_meta(
         TextDyField.data_source('Name', 'data.launch_template_name'),
         TextDyField.data_source('AMI ID', 'data.launch_template_data.image_id'),
         TextDyField.data_source('Owner', 'data.created_by'),
-        TextDyField.data_source('Default Version', 'data.default_version', default_badge={
+        EnumDyField.data_source('Default Version', 'data.default_version', default_badge={
             'indigo.500': ['true'], 'coral.600': ['false']
         }),
         TextDyField.data_source('Version', 'data.version'),
-        DateTimeDyField.data_source('Creation Time', 'data.created_time'),
+        DateTimeDyField.data_source('Creation Time', 'data.create_time'),
     ],
     search=[
         SearchField.set(name='Name', key='data.launch_template_name'),
