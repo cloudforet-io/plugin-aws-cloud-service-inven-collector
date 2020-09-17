@@ -3,7 +3,7 @@ from typing import List
 from boto3.session import Session
 from spaceone.core import utils
 from spaceone.core.connector import BaseConnector
-from spaceone.inventory.libs.schema.resource import CloudServiceResponse, ReferenceModel
+from spaceone.inventory.libs.schema.resource import CloudServiceResponse, ReferenceModel, CloudWatchModel
 
 
 DEFAULT_REGION = 'us-east-1'
@@ -92,6 +92,7 @@ class AWSConnector(BaseConnector):
 
 
 class SchematicAWSConnector(AWSConnector):
+    region_type = 'aws'
     function_response_schema = CloudServiceResponse
 
     def get_resources(self) -> List[CloudServiceResponse]:
@@ -122,9 +123,17 @@ class SchematicAWSConnector(AWSConnector):
 
         try:
             for data in collect_resource_info['request_method'](region_name, **collect_resource_info.get('kwargs', {})):
+                if getattr(data, 'set_cloudwatch'):
+                    data.cloudwatch = CloudWatchModel(data.set_cloudwatch(region_name))
+
                 resources.append(collect_resource_info['response_schema'](
-                    {'resource': collect_resource_info['resource']({'data': data,
-                                                                    'reference': ReferenceModel(data.reference)})}))
+                    {'resource': collect_resource_info['resource'](
+                        {'data': data,
+                         'region_type': 'AWS',
+                         'region_code': region_name,
+                         'reference': ReferenceModel(data.reference(region_name))})}
+                ))
+
         except Exception as e:
             print(f'[ERROR {service_name}] REGION : {region_name} {e}')
 
