@@ -83,7 +83,6 @@ class DocumentDBConnector(SchematicAWSConnector):
                     'snapshots': self._match_snapshots(raw_snapshots, raw.get('DBClusterIdentifier')),
                     'subnet_group': self._match_subnet_group(raw.get('DBSubnetGroup')),
                     'parameter_group': self._match_parameter_group(raw.get('DBClusterParameterGroup')),
-                    'region_name': region_name,
                     'account_id': self.account_id,
                     'tags': self.request_tags(raw['DBClusterArn'])
                 })
@@ -108,7 +107,6 @@ class DocumentDBConnector(SchematicAWSConnector):
         for data in response_iterator:
             for raw in data.get('DBSubnetGroups', []):
                 raw.update({
-                    'region_name': region_name,
                     'account_id': self.account_id,
                     'tags': self.request_tags(raw['DBSubnetGroupArn'])
                 })
@@ -120,7 +118,6 @@ class DocumentDBConnector(SchematicAWSConnector):
 
         for pg_data in res_pgs.get('DBClusterParameterGroups', []):
             pg_data.update({
-                'region_name': region_name,
                 'account_id': self.account_id,
                 'parameters': self.request_parameter_data(pg_data['DBClusterParameterGroupName']),
                 'tags': self.request_tags(pg_data['DBClusterParameterGroupArn'])

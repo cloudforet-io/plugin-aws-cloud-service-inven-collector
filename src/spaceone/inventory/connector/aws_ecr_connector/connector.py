@@ -56,7 +56,6 @@ class ECRConnector(SchematicAWSConnector):
                 raw.update({
                     'images': list(self._describe_images(raw)),
                     'tags': self.request_tags(raw.get('repositoryArn')),
-                    'region_name': region_name,
                     'account_id': self.account_id
                 })
                 res = Repository(raw, strict=False)

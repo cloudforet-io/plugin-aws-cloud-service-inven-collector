@@ -71,7 +71,6 @@ class DynamoDBConnector(SchematicAWSConnector):
                     'time_to_live': self._get_time_to_live(table_name),
                     'continuous_backup': self._get_continuous_backup(table_name),
                     'contributor_insight': self._get_contributor_insights(table_name),
-                    'region_name': region_name,
                     'tags': self.request_tags(table.get('TableArn')),
                     'account_id': self.account_id
                 })

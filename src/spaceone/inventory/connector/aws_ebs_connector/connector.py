@@ -62,7 +62,6 @@ class EBSConnector(SchematicAWSConnector):
                 attr = self.client.describe_volume_attribute(Attribute='productCodes', VolumeId=raw['VolumeId'])
                 raw.update({
                     'attribute': Attribute(attr, strict=False),
-                    'region_name': region_name,
                     'account_id': self.account_id,
                     'arn': self.generate_arn(service=self.service_name, region=region_name,
                                              account_id=self.account_id, resource_type="volume",
@@ -93,7 +92,6 @@ class EBSConnector(SchematicAWSConnector):
                     raw['name'] = name
 
                 raw.update({
-                    'region_name': region_name,
                     'account_id': self.account_id,
                     'arn': self.generate_arn(service=self.service_name, region=region_name,
                                              account_id=self.account_id, resource_type="snapshot",
