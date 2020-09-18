@@ -278,7 +278,7 @@ class Cluster(Model):
             "external_link": f"https://console.aws.amazon.com/docdb/home?region={region_code}#cluster-details/{self.db_cluster_identifier}"
         }
 
-    def cloudwatch(self, region_code):
+    def set_cloudwatch(self, region_code):
         return {
             "namespace": "AWS/DocDB",
             "dimensions": [CloudWatchDimensionModel({'Name': 'DBClusterIdentifier', 'Value': self.db_cluster_identifier})],

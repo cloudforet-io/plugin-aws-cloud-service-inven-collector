@@ -455,12 +455,13 @@ class Database(Model):
     cloudwatch = ModelType(CloudWatchModel, serialize_when_none=False)
 
     def reference(self, region_code):
+        is_cluster = 'true' if self.role == 'cluster' else 'false'
         return {
             "resource_id": self.arn,
-            "external_link": f"https://console.aws.amazon.com/rds/home?region={region_code}#database:id={self.db_identifier};is-cluster=false"
+            "external_link": f"https://console.aws.amazon.com/rds/home?region={region_code}#database:id={self.db_identifier};is-cluster={is_cluster}"
         }
 
-    def cloudwatch(self, region_code):
+    def set_cloudwatch(self, region_code):
         dimensions = []
 
         if self.role == 'cluster':
