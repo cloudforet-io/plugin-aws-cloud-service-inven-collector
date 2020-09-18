@@ -68,7 +68,7 @@ class Policy(Model):
     def reference(self):
         return {
             "resource_id": self.arn,
-            "external_link": f"https://console.aws.amazon.com/iam/home?region={DEFAULT_REGION}#/policies/{self.arn}/$serviceLevelSummary"
+            "external_link": f"https://console.aws.amazon.com/iam/home?region={DEFAULT_REGION}#/policies/{self.arn}$serviceLevelSummary"
         }
 
 
