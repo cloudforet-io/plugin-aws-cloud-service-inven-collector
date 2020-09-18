@@ -1,5 +1,7 @@
 import time
 import logging
+import traceback
+
 from typing import List
 
 from spaceone.inventory.connector.aws_elb_connector.schema.data import LoadBalancer, TargetGroup, Tags, \
@@ -24,64 +26,72 @@ class ELBConnector(SchematicAWSConnector):
         resources = []
         start_time = time.time()
 
+        collect_resources = [{
+            'request_method': self.request_target_group_data,
+            'resource': TargetGroupResource,
+            'response_schema': TargetGroupResponse
+        }, {
+            'request_method': self.request_load_balancer_data,
+            'resource': LoadBalancerResource,
+            'response_schema': LoadBalancerResponse
+        }]
+
         # init cloud service type
         for cst in CLOUD_SERVICE_TYPES:
             resources.append(cst)
 
         for region_name in self.region_names:
             self.reset_region(region_name)
+            self.target_groups = []
+            self.load_balancers = []
 
-            try:
-                # Target Groups
-                raw_tgs = self.request_target_group(region_name)
-                tg_arns = [raw_tg.get('TargetGroupArn') for raw_tg in raw_tgs if raw_tg.get('TargetGroupArn')]
-
-                if len(tg_arns) > 0:
-                    all_tags = self.request_tags(tg_arns)
-
-                for raw_tg in raw_tgs:
-                    match_tags = self.search_tags(all_tags, raw_tg.get('TargetGroupArn'))
-                    raw_tg.update({
-                        'region_name': region_name,
-                        'account_id': self.account_id,
-                        'tags': list(map(lambda match_tag: Tags(match_tag, strict=False), match_tags))
-                    })
-
-                    target_group = TargetGroup(raw_tg, strict=False)
-
-                    resources.append(self.tg_response_schema(
-                        {'resource': TargetGroupResource({'data': target_group,
-                                                          'reference': ReferenceModel(target_group.reference)})}))
-
-                # Load Balancers
-                all_tags = []
-                raw_lbs = self.request_loadbalancer(region_name)
-                lb_arns = [raw_lb.get('LoadBalancerArn') for raw_lb in raw_lbs if raw_lb.get('LoadBalancerArn')]
-
-                if len(lb_arns) > 0:
-                    all_tags = self.request_tags(lb_arns)
-
-                for raw_lb in raw_lbs:
-                    match_tags = self.search_tags(all_tags, raw_lb.get('LoadBalancerArn'))
-                    raw_listeners = self.request_listeners(raw_lb.get('LoadBalancerArn'))
-                    raw_lb.update({
-                        'region_name': region_name,
-                        'account_id': self.account_id,
-                        'listeners': list(map(lambda _listener: Listener(_listener, strict=False), raw_listeners)),
-                        'tags': list(map(lambda match_tag: Tags(match_tag, strict=False), match_tags))
-                    })
-
-                    load_balancer = LoadBalancer(raw_lb, strict=False)
-
-                    resources.append(self.lb_response_schema(
-                        {'resource': LoadBalancerResource({'data': load_balancer,
-                                                           'reference': ReferenceModel(load_balancer.reference)})}))
-
-            except Exception as e:
-                print(f'[ERROR {self.service_name}] {e}')
+            for collect_resource in collect_resources:
+                resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
 
         print(f' ELB Finished {time.time() - start_time} Seconds')
         return resources
+
+    def request_target_group_data(self, region_name):
+        raw_tgs = self.request_target_group(region_name)
+        tg_arns = [raw_tg.get('TargetGroupArn') for raw_tg in raw_tgs if raw_tg.get('TargetGroupArn')]
+
+        if len(tg_arns) > 0:
+            all_tags = self.request_tags(tg_arns)
+
+        for raw_tg in raw_tgs:
+            match_tags = self.search_tags(all_tags, raw_tg.get('TargetGroupArn'))
+            raw_tg.update({
+                'region_name': region_name,
+                'account_id': self.account_id,
+                'tags': list(map(lambda match_tag: Tags(match_tag, strict=False), match_tags))
+            })
+
+            target_group = TargetGroup(raw_tg, strict=False)
+            self.target_groups.append(target_group)
+            yield target_group
+
+    def request_load_balancer_data(self, region_name):
+        all_tags = []
+        raw_lbs = self.request_loadbalancer(region_name)
+        lb_arns = [raw_lb.get('LoadBalancerArn') for raw_lb in raw_lbs if raw_lb.get('LoadBalancerArn')]
+
+        if len(lb_arns) > 0:
+            all_tags = self.request_tags(lb_arns)
+
+        for raw_lb in raw_lbs:
+            match_tags = self.search_tags(all_tags, raw_lb.get('LoadBalancerArn'))
+            raw_listeners = self.request_listeners(raw_lb.get('LoadBalancerArn'))
+            raw_lb.update({
+                'region_name': region_name,
+                'account_id': self.account_id,
+                'listeners': list(map(lambda _listener: Listener(_listener, strict=False), raw_listeners)),
+                'tags': list(map(lambda match_tag: Tags(match_tag, strict=False), match_tags))
+            })
+
+            load_balancer = LoadBalancer(raw_lb, strict=False)
+            self.load_balancers.append(load_balancer)
+            yield load_balancer
+
 
     def request_loadbalancer(self, region_name):
         load_balancers = []
@@ -196,7 +206,7 @@ class ELBConnector(SchematicAWSConnector):
     def request_tags(self, resource_arns):
         def chunks(l, n):
             for i in range(0, len(l), n):
-                yield l[i:i+n]
+                yield l[i:i + n]
 
         all_tags = []
         for _arns in list(chunks(resource_arns, 20)):

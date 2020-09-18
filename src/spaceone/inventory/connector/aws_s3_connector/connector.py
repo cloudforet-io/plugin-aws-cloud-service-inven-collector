@@ -9,6 +9,7 @@ from spaceone.inventory.connector.aws_s3_connector.schema.resource import Bucket
 from spaceone.inventory.connector.aws_s3_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
 from spaceone.inventory.libs.schema.resource import ReferenceModel
+from spaceone.inventory.libs.schema.resource import CloudWatchModel
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -29,9 +30,14 @@ class S3Connector(SchematicAWSConnector):
 
             # merge data
             for data in self.request_data():
+                # This is Global API, yet set up its region for bucket
+                if getattr(data, 'set_cloudwatch', None):
+                    data.cloudwatch = CloudWatchModel(data.set_cloudwatch())
+
                 resources.append(self.response_schema(
                     {'resource': BucketResource({'data': data,
-                                                 'reference': ReferenceModel(data.reference)})}))
+                                                 'region_code': data.get('region_name', ''),
+                                                 'reference': ReferenceModel(data.reference())})}))
         except Exception as e:
             print(f'[ERROR {self.service_name}] {e}')
 
@@ -45,7 +51,8 @@ class S3Connector(SchematicAWSConnector):
             bucket_name = raw.get('Name')
 
             raw.update({
-                'arn': self.generate_arn(service=self.service_name, region="", account_id="", resource_type=bucket_name, resource_id="*"),
+                'arn': self.generate_arn(service=self.service_name, region="", account_id="", resource_type=bucket_name,
+                                         resource_id="*"),
                 'account_id': self.account_id
             })
 
@@ -145,7 +152,7 @@ class S3Connector(SchematicAWSConnector):
         try:
             response = self.client.get_bucket_accelerate_configuration(Bucket=bucket_name)
             if transfer_acceleration := response.get('Status'):
-                return_value =  TransferAcceleration({'transfer_acceleration': transfer_acceleration}, strict=False)
+                return_value = TransferAcceleration({'transfer_acceleration': transfer_acceleration}, strict=False)
         except Exception as e:
             pass
         return return_value
@@ -163,7 +170,8 @@ class S3Connector(SchematicAWSConnector):
 
         sns = self.set_notification('SNS Topic', 'TopicArn', response.get('TopicConfigurations', []))
         que = self.set_notification('Queue', 'QueueArn', response.get('QueueConfigurations', []))
-        func = self.set_notification('Lambda Function', 'LambdaFunctionArn', response.get('LambdaFunctionConfigurations', []))
+        func = self.set_notification('Lambda Function', 'LambdaFunctionArn',
+                                     response.get('LambdaFunctionConfigurations', []))
 
         total_noti = sns + que + func
 

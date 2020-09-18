@@ -1,8 +1,8 @@
 import logging
 
 from schematics import Model
-from schematics.types import ModelType, StringType, IntType, DateTimeType, serializable, ListType, BooleanType
-
+from schematics.types import ModelType, StringType, IntType, ListType
+from spaceone.inventory.libs.schema.resource import CloudWatchModel, CloudWatchDimensionModel
 _LOGGER = logging.getLogger(__name__)
 
 TOPIC_EVENTS = ("s3:ReducedRedundancyLostObject", "s3:ObjectCreated:*", "s3:ObjectCreated:Put", "s3:ObjectCreated:Post",
@@ -178,25 +178,24 @@ class Bucket(Model):
     notification_configurations = ListType(ModelType(NotificationConfiguration))
     region_name = StringType(default="")
     account_id = StringType(default="")
+    cloudwatch = ModelType(CloudWatchModel, serialize_when_none=False)
     # object_count = IntType(default=0)
     # object_total_size = IntType(default=0)
 
-    @serializable
     def reference(self):
         return {
             "resource_id": self.arn,
             "external_link": f"https://console.aws.amazon.com/s3/buckets/{self.name}/?region={self.region_name}"
         }
 
-    @serializable
-    def cloudwatch(self):
+    def set_cloudwatch(self):
         return {
             "namespace": "AWS/S3",
-            "dimensions": [
+            "dimensions": [CloudWatchDimensionModel(
                 {
                     "Name": "BucketName",
                     "Value": self.name
-                }
+                })
             ],
             "region_name": self.region_name
         }
