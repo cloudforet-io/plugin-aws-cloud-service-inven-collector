@@ -28,14 +28,12 @@ class Layer(Model):
     layer_arn = StringType(deserialize_from="LayerArn")
     latest_matching_version = ModelType(LatestMatchingVersion, deserialize_from="LatestMatchingVersion")
     version = IntType(default=1)
-    region_name = StringType()
     account_id = StringType()
 
-    @serializable
-    def reference(self):
+    def reference(self, region_code):
         return {
             "resource_id": self.layer_arn,
-            "external_link": f"https://console.aws.amazon.com/lambda/home?region={self.region_name}#/layers/{self.layer_name}/versions/{self.version}"
+            "external_link": f"https://console.aws.amazon.com/lambda/home?region={region_code}#/layers/{self.layer_name}/versions/{self.version}"
         }
 
 
@@ -115,7 +113,6 @@ class LambdaFunctionData(Model):
     name = StringType(deserialize_from='FunctionName', default='')
     arn = StringType(deserialize_from='FunctionArn', default='')
     master_arn = StringType(deserialize_from='MasterArn', default='')
-    region_name = StringType(default='')
     account_id = StringType(default='')
 
     runtime = StringType(deserialize_from='Runtime', default='')
@@ -142,9 +139,8 @@ class LambdaFunctionData(Model):
     # get sub resource - lambda layer
     layers = ListType(ModelType(FunctionLayer), deserialize_from='Layers', default=[])
 
-    @serializable
-    def reference(self):
+    def reference(self, region_code):
         return {
             "resource_id": self.arn,
-            "external_link": f"https://console.aws.amazon.com/lambda/home?region={self.region_name}#/functions/{self.name}"
+            "external_link": f"https://console.aws.amazon.com/lambda/home?region={region_code}#/functions/{self.name}"
         }

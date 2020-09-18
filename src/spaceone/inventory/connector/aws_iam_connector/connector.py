@@ -4,10 +4,9 @@ from typing import List
 import traceback
 from pprint import pprint
 from datetime import date, datetime, timezone
-from botocore.exceptions import ClientError
 
-from spaceone.inventory.connector.aws_iam_connector.schema.data \
-    import Policy, AccessKeyLastUsed, User, Group, Role, IdentityProvider, PermissionSummary
+from spaceone.inventory.connector.aws_iam_connector.schema.data import Policy, AccessKeyLastUsed, User, Group, Role, \
+    IdentityProvider
 from spaceone.inventory.connector.aws_iam_connector.schema.resource import GroupResource, GroupResponse, \
     UserResource, UserResponse, RoleResource, RoleResponse, PolicyResource, PolicyResponse, IdentityProviderResource, \
     IdentityProviderResponse
@@ -46,24 +45,24 @@ class IAMConnector(SchematicAWSConnector):
 
             for data in self.request_role_data(policies):
                 resources.append(self.role_response_schema(
-                    {'resource': RoleResource({'data': data, 'reference': ReferenceModel(data.reference)})}))
+                    {'resource': RoleResource({'data': data, 'reference': ReferenceModel(data.reference())})}))
 
             for data in users:
                 resources.append(self.user_response_schema(
-                    {'resource': UserResource({'data': data, 'reference': ReferenceModel(data.reference)})}))
+                    {'resource': UserResource({'data': data, 'reference': ReferenceModel(data.reference())})}))
 
             for data in self.request_group_data(users, policies):
                 resources.append(self.group_response_schema(
-                    {'resource': GroupResource({'data': data, 'reference': ReferenceModel(data.reference)})}))
+                    {'resource': GroupResource({'data': data, 'reference': ReferenceModel(data.reference())})}))
 
             for data in policies:
                 resources.append(self.policy_response_schema(
-                    {'resource': PolicyResource({'data': data, 'reference': ReferenceModel(data.reference)})}))
+                    {'resource': PolicyResource({'data': data, 'reference': ReferenceModel(data.reference())})}))
 
             for data in self.request_identity_provider_data():
                 resources.append(self.identity_provider_response_schema(
                     {'resource': IdentityProviderResource(
-                        {'data': data, 'reference': ReferenceModel(data.reference)})}))
+                        {'data': data, 'reference': ReferenceModel(data.reference())})}))
 
         except Exception as e:
             print(traceback.format_exc())
@@ -602,12 +601,6 @@ class IAMConnector(SchematicAWSConnector):
     @staticmethod
     def _switch_to_list(item):
         return item if isinstance(item, list) else [item]
-
-    @staticmethod
-    def _conditional_update_for_password_last_used(user, user_info):
-        password_last_used = user_info.get('PasswordLastUsed', None)
-        if password_last_used is not None:
-            user.update({'password_last_used': password_last_used})
 
     @staticmethod
     def _conditional_update_for_password_last_used(user, user_info):

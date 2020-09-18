@@ -2,6 +2,7 @@ import logging
 
 from schematics import Model
 from schematics.types import ModelType, StringType, IntType, DateTimeType, serializable, ListType, BooleanType
+from spaceone.inventory.libs.schema.resource import CloudWatchModel, CloudWatchDimensionModel
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -172,26 +173,19 @@ class Cluster(Model):
     tags = ListType(ModelType(Tags), deserialize_from="tags")
     encryption_config = ListType(ModelType(ClusterencryptionConfig), deserialize_from="encryptionConfig")
     node_groups = ListType(ModelType(NodeGroup))
-    region_name = StringType(default="")
     account_id = StringType(default="")
     updates = ListType(ModelType(Update))
+    cloudwatch = ModelType(CloudWatchModel, serialize_when_none=False)
 
-    @serializable
-    def reference(self):
+    def reference(self, region_code):
         return {
             "resource_id": self.arn,
-            "external_link": f"https://console.aws.amazon.com/eks/home?region={self.region_name}#/clusters/{self.name}"
+            "external_link": f"https://console.aws.amazon.com/eks/home?region={region_code}#/clusters/{self.name}"
         }
 
-    @serializable
-    def cloudwatch(self):
+    def set_cloudwatch(self, region_code):
         return {
             "namespace": "ContainerInsights",
-            "dimensions": [
-                {
-                    "Name": "ClusterName",
-                    "Value": self.name
-                }
-            ],
-            "region_name": self.region_name
+            "dimensions": [CloudWatchDimensionModel({'Name': 'ClusterName', 'Value': self.name})],
+            "region_name": region_code
         }

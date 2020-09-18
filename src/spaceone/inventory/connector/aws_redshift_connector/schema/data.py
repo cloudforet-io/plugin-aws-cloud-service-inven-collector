@@ -1,6 +1,7 @@
 import logging
 
 from schematics import Model
+from spaceone.inventory.libs.schema.resource import CloudWatchModel, CloudWatchDimensionModel
 from schematics.types import ModelType, StringType, IntType, DateTimeType, serializable, ListType, BooleanType, \
     FloatType
 
@@ -270,25 +271,18 @@ class Cluster(Model):
     snapshots = ListType(ModelType(Snapshot))
     snapshot_schedules = ListType(ModelType(SnapshotSchedule))
     scheduled_actions = ListType(ModelType(ScheduledAction))
-    region_name = StringType(default="")
     account_id = StringType(default="")
+    cloudwatch = ModelType(CloudWatchModel, serialize_when_none=False)
 
-    @serializable
-    def reference(self):
+    def reference(self, region_code):
         return {
             "resource_id": self.arn,
-            "external_link": f"https://console.aws.amazon.com/redshiftv2/home?region={self.region_name}#cluster-details?cluster={self.cluster_identifier}"
+            "external_link": f"https://console.aws.amazon.com/redshiftv2/home?region={region_code}#cluster-details?cluster={self.cluster_identifier}"
         }
 
-    @serializable
-    def cloudwatch(self):
+    def set_cloudwatch(self, region_code):
         return {
             "namespace": "AWS/Redshift",
-            "dimensions": [
-                {
-                    "Name": "ClusterIdentifier",
-                    "Value": self.cluster_identifier
-                }
-            ],
-            "region_name": self.region_name
+            "dimensions": [CloudWatchDimensionModel({"Name": "ClusterIdentifier", "Value": self.cluster_identifier})],
+            "region_name": region_code
         }

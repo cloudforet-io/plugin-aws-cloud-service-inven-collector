@@ -49,7 +49,6 @@ class EFSConnector(SchematicAWSConnector):
                 raw.update({
                     'life_cycle_policies': self.describe_lifecycle_configuration(raw['FileSystemId']),
                     'mount_targets': list(self.describe_mount_targets(raw['FileSystemId'])),
-                    'region_name': region_name,
                     'account_id': self.account_id,
                     'arn': self.generate_arn(service="elasticfilesystem", region=region_name,
                                              account_id=self.account_id, resource_type='file-system',

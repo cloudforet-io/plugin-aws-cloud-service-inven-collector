@@ -1,8 +1,8 @@
 import logging
 
 from schematics import Model
-from schematics.types import ModelType, StringType, IntType, DateTimeType, serializable, ListType, BooleanType
-
+from schematics.types import ModelType, StringType, IntType, DateTimeType, ListType, BooleanType
+from spaceone.inventory.libs.schema.resource import CloudWatchModel, CloudWatchDimensionModel
 _LOGGER = logging.getLogger(__name__)
 
 
@@ -102,14 +102,12 @@ class VPNConnection(Model):
     routes = ListType(ModelType(VPNConnectionRoutes), deserialize_from="Routes")
     tags = ListType(ModelType(Tags), deserialize_from="Tags")
     vgw_telemetry = ListType(ModelType(VPNConnectionVgwTelemetry), deserialize_from="VgwTelemetry")
-    region_name = StringType(default="")
     account_id = StringType(default="")
 
-    @serializable
-    def reference(self):
+    def reference(self, region_code):
         return {
             "resource_id": self.vpn_connection_id,
-            "external_link": f"https://console.aws.amazon.com/vpc/home?region={self.region_name}#VpnConnections:VpnConnectionId={self.vpn_connection_id};sort=VpnConnectionId"
+            "external_link": f"https://console.aws.amazon.com/vpc/home?region={region_code}#VpnConnections:VpnConnectionId={self.vpn_connection_id};sort=VpnConnectionId"
         }
 
 
@@ -131,14 +129,12 @@ class VPNGateway(Model):
     amazon_side_asn = IntType(deserialize_from="AmazonSideAsn")
     tags = ListType(ModelType(Tags), deserialize_from="Tags")
     vpn_connection = ModelType(VPNConnection)
-    region_name = StringType(default="")
     account_id = StringType(default="")
 
-    @serializable
-    def reference(self):
+    def reference(self, region_code):
         return {
             "resource_id": self.vpn_gateway_id,
-            "external_link": f"https://console.aws.amazon.com/vpc/home?region={self.region_name}#VpnGateways:VpnGatewayId={self.vpn_gateway_id};sort=VpnGatewayId"
+            "external_link": f"https://console.aws.amazon.com/vpc/home?region={region_code}#VpnGateways:VpnGatewayId={self.vpn_gateway_id};sort=VpnGatewayId"
         }
 
 
@@ -159,11 +155,10 @@ class CustomerGateway(Model):
     region_name = StringType(default="")
     account_id = StringType(default="")
 
-    @serializable
-    def reference(self):
+    def reference(self, region_code):
         return {
             "resource_id": self.customer_gateway_id,
-            "external_link": f"https://console.aws.amazon.com/vpc/home?region={self.region_name}#CustomerGateways:CustomerGatewayId={self.customer_gateway_id};sort=CustomerGatewayId"
+            "external_link": f"https://console.aws.amazon.com/vpc/home?region={region_code}#CustomerGateways:CustomerGatewayId={self.customer_gateway_id};sort=CustomerGatewayId"
         }
 
 '''
@@ -234,27 +229,20 @@ class TransitGateway(Model):
     transit_gateway_route_table = ModelType(TransitGatewayRouteTables)
     tags = ListType(ModelType(Tags), deserialize_from="Tags")
     vpn_connections = ListType(ModelType(VPNConnection))
-    region_name = StringType(default="")
     account_id = StringType(default="")
+    cloudwatch = ModelType(CloudWatchModel, serialize_when_none=False)
 
-    @serializable
-    def reference(self):
+    def reference(self, region_code):
         return {
             "resource_id": self.transit_gateway_arn,
-            "external_link": f"https://console.aws.amazon.com/vpc/home?region={self.region_name}#TransitGateways:transitGatewayId={self.transit_gateway_id};sort=ownerId"
+            "external_link": f"https://console.aws.amazon.com/vpc/home?region={region_code}#TransitGateways:transitGatewayId={self.transit_gateway_id};sort=ownerId"
         }
 
-    @serializable
-    def cloudwatch(self):
+    def set_cloudwatch(self, region_code):
         return {
             "namespace": "AWS/TransitGateway",
-            "dimensions": [
-                {
-                    "Name": "TransitGateway",
-                    "Value": self.transit_gateway_id
-                }
-            ],
-            "region_name": self.region_name
+            "dimensions": [CloudWatchDimensionModel({'Name': 'TransitGateway', 'Value': self.transit_gateway_id})],
+            "region_name": region_code
         }
 
 
@@ -306,14 +294,12 @@ class NetworkACL(Model):
     tags = ListType(ModelType(Tags), deserialize_from="Tags")
     vpc_id = StringType(deserialize_from="VpcId")
     owner_id = StringType(deserialize_from="OwnerId")
-    region_name = StringType(default="")
     account_id = StringType(default="")
 
-    @serializable
-    def reference(self):
+    def reference(self, region_code):
         return {
             "resource_id": self.arn,
-            "external_link": f"https://console.aws.amazon.com/vpc/home?region={self.region_name}#acls:networkAclId={self.network_acl_id}"
+            "external_link": f"https://console.aws.amazon.com/vpc/home?region={region_code}#acls:networkAclId={self.network_acl_id}"
         }
 
 
@@ -360,14 +346,12 @@ class PeeringConnection(Model):
     status = ModelType(Status, deserialize_from="Status")
     tags = ListType(ModelType(Tags), deserialize_from="Tags")
     vpc_peering_connection_id = StringType(deserialize_from="VpcPeeringConnectionId")
-    region_name = StringType(default="")
     account_id = StringType(default="")
 
-    @serializable
-    def reference(self):
+    def reference(self, region_code):
         return {
             "resource_id": self.arn,
-            "external_link": f"https://console.aws.amazon.com/vpc/home?region={self.region_name}#PeeringConnections:vpcPeeringConnectionId={self.vpc_peering_connection_id}"
+            "external_link": f"https://console.aws.amazon.com/vpc/home?region={region_code}#PeeringConnections:vpcPeeringConnectionId={self.vpc_peering_connection_id}"
         }
 
 '''
@@ -402,27 +386,20 @@ class NATGateway(Model):
     subnet_id = StringType(deserialize_from="SubnetId")
     vpc_id = StringType(deserialize_from="VpcId")
     tags = ListType(ModelType(Tags), deserialize_from="Tags")
-    region_name = StringType(default="")
     account_id = StringType(default="")
+    cloudwatch = ModelType(CloudWatchModel, serialize_when_none=False)
 
-    @serializable
-    def reference(self):
+    def reference(self, region_code):
         return {
             "resource_id": self.arn,
-            "external_link": f"https://console.aws.amazon.com/vpc/home?region={self.region_name}#NatGateways:natGatewayId={self.nat_gateway_id}"
+            "external_link": f"https://console.aws.amazon.com/vpc/home?region={region_code}#NatGateways:natGatewayId={self.nat_gateway_id}"
         }
 
-    @serializable
-    def cloudwatch(self):
+    def set_cloudwatch(self, region_code):
         return {
             "namespace": "AWS/NATGateway",
-            "dimensions": [
-                {
-                    "Name": "NatGatewayId",
-                    "Value": self.nat_gateway_id
-                }
-            ],
-            "region_name": self.region_name
+            "dimensions": [CloudWatchDimensionModel({'Name': 'NatGatewayId', 'Value': self.nat_gateway_id})],
+            "region_name": region_code
         }
 
 
@@ -465,14 +442,12 @@ class Endpoint(Model):
     tags = ListType(ModelType(Tags), deserialize_from="Tags")
     owner_id = StringType(deserialize_from="OwnerId")
     last_error = ModelType(LastError, deserialize_from="LastError")
-    region_name = StringType(default="")
     account_id = StringType(default="")
 
-    @serializable
-    def reference(self):
+    def reference(self, region_code):
         return {
             "resource_id": self.arn,
-            "external_link": f"https://console.aws.amazon.com/vpc/home?region={self.region_name}#Endpoints:vpcEndpointId={self.vpc_endpoint_id}"
+            "external_link": f"https://console.aws.amazon.com/vpc/home?region={region_code}#Endpoints:vpcEndpointId={self.vpc_endpoint_id}"
         }
 
 
@@ -490,14 +465,12 @@ class EgressOnlyInternetGateway(Model):
     attachments = ListType(ModelType(EgressOnlyInternetGatewayAttachments), deserialize_from="Attachments")
     egress_only_internet_gateway_id = StringType(deserialize_from="EgressOnlyInternetGatewayId")
     tags = ListType(ModelType(Tags), deserialize_from="Tags")
-    region_name = StringType(default="")
     account_id = StringType(default="")
 
-    @serializable
-    def reference(self):
+    def reference(self, region_code):
         return {
             "resource_id": self.arn,
-            "external_link": f"https://console.aws.amazon.com/vpc/home?region={self.region_name}#EgressOnlyInternetGateways:egressOnlyInternetGatewayId={self.egress_only_internet_gateway_id}"
+            "external_link": f"https://console.aws.amazon.com/vpc/home?region={region_code}#EgressOnlyInternetGateways:egressOnlyInternetGatewayId={self.egress_only_internet_gateway_id}"
         }
 
 
@@ -520,11 +493,10 @@ class InternetGateway(Model):
     region_name = StringType(default="")
     account_id = StringType(default="")
 
-    @serializable
-    def reference(self):
+    def reference(self, region_code):
         return {
             "resource_id": self.arn,
-            "external_link": f"https://console.aws.amazon.com/vpc/home?region={self.region_name}#igws:internetGatewayId={self.internet_gateway_id}"
+            "external_link": f"https://console.aws.amazon.com/vpc/home?region={region_code}#igws:internetGatewayId={self.internet_gateway_id}"
         }
 
 
@@ -583,14 +555,12 @@ class RouteTable(Model):
     vpc_id = StringType(deserialize_from="VpcId")
     owner_id = StringType(deserialize_from="OwnerId")
     main = StringType(default="")
-    region_name = StringType(default="")
     account_id = StringType(default="")
 
-    @serializable
-    def reference(self):
+    def reference(self, region_code):
         return {
             "resource_id": self.arn,
-            "external_link": f"https://console.aws.amazon.com/vpc/home?region={self.region_name}#RouteTables:routeTableId={self.route_table_id}"
+            "external_link": f"https://console.aws.amazon.com/vpc/home?region={region_code}#RouteTables:routeTableId={self.route_table_id}"
         }
 
 '''
@@ -610,14 +580,12 @@ class DHCPOptions(Model):
     dhcp_options_id = StringType(deserialize_from="DhcpOptionsId")
     owner_id = StringType(deserialize_from="OwnerId")
     tags = ListType(ModelType(Tags), deserialize_from="Tags")
-    region_name = StringType(default="")
     account_id = StringType(default="")
 
-    @serializable
-    def reference(self):
+    def reference(self, region_code):
         return {
             "resource_id": self.arn,
-            "external_link": f"https://console.aws.amazon.com/vpc/home?region={self.region_name}#dhcpOptions:DhcpOptionsId={self.dhcp_options_id}"
+            "external_link": f"https://console.aws.amazon.com/vpc/home?region={region_code}#dhcpOptions:DhcpOptionsId={self.dhcp_options_id}"
         }
 
 '''
@@ -660,11 +628,10 @@ class Subnet(Model):
     account_id = StringType(default="")
     subnet_type = StringType(choices=["public", "private"], default="private")
 
-    @serializable
-    def reference(self):
+    def reference(self, region_code):
         return {
             "resource_id": self.subnet_arn,
-            "external_link": f"https://console.aws.amazon.com/vpc/home?region={self.region_name}#subnets:SubnetId={self.subnet_id}"
+            "external_link": f"https://console.aws.amazon.com/vpc/home?region={region_code}#subnets:SubnetId={self.subnet_id}"
         }
 
 '''
@@ -713,7 +680,6 @@ class VPC(Model):
     egress_only_internet_gateway = ModelType(EgressOnlyInternetGateway, serialize_when_none=False)
     endpoints = ListType(ModelType(Endpoint))
     peering_connections = ListType(ModelType(PeeringConnection))
-    region_name = StringType(default="")
     account_id = StringType(default="")
     nat_gateways = ListType(ModelType(NATGateway))
     internet_gateway = ModelType(InternetGateway, serialize_when_none=False)
@@ -722,9 +688,8 @@ class VPC(Model):
     enable_dns_support = StringType(choices=("Enabled", "Disabled"))
     enable_dns_hostnames = StringType(choices=("Enabled", "Disabled"))
 
-    @serializable
-    def reference(self):
+    def reference(self, region_code):
         return {
             "resource_id": self.arn,
-            "external_link": f"https://console.aws.amazon.com/vpc/home?region={self.region_name}#vpcs:VpcId={self.vpc_id}"
+            "external_link": f"https://console.aws.amazon.com/vpc/home?region={region_code}#vpcs:VpcId={self.vpc_id}"
         }

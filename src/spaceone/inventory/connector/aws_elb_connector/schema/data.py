@@ -1,7 +1,8 @@
 import logging
 from arnparse import arnparse
 from schematics import Model
-from schematics.types import ModelType, StringType, IntType, DateTimeType, serializable, ListType, BooleanType
+from spaceone.inventory.libs.schema.resource import CloudWatchModel, CloudWatchDimensionModel
+from schematics.types import ModelType, StringType, IntType, DateTimeType, ListType, BooleanType
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -143,16 +144,14 @@ class TargetGroup(Model):
     matcher = ModelType(Matcher, deserialize_from="Matcher")
     load_balancer_arns = ListType(StringType, deserialize_from="LoadBalancerArns")
     target_type = StringType(deserialize_from="TargetType", choices=("instance", "ip", "lambda"))
-    region_name = StringType(default="")
     account_id = StringType(default="")
     tags = ListType(ModelType(Tags))
     attributes = ModelType(TargetGroupAttributes)
 
-    @serializable
-    def reference(self):
+    def reference(self, region_code):
         return {
             "resource_id": self.target_group_arn,
-            "external_link": f"https://console.aws.amazon.com/ec2/v2/home?region={self.region_name}#TargetGroups:search={self.target_group_arn};sort=targetGroupName"
+            "external_link": f"https://console.aws.amazon.com/ec2/v2/home?region={region_code}#TargetGroups:search={self.target_group_arn};sort=targetGroupName"
         }
 
 '''
@@ -198,24 +197,22 @@ class LoadBalancer(Model):
     availability_zones = ListType(ModelType(LoadBalancerAvailabilityZones), deserialize_from="AvailabilityZones")
     security_group = ListType(StringType, deserialize_from="SecurityGroup")
     ip_address_type = StringType(deserialize_from="IpAddressType", choices=("ipv4", "dualstack"))
-    region_name = StringType(default="")
     account_id = StringType(default="")
     tags = ListType(ModelType(Tags))
     listeners = ListType(ModelType(Listener))
     attributes = ModelType(LoadBalancerAttributes)
+    cloudwatch = ModelType(CloudWatchModel, serialize_when_none=False)
 
-    @serializable
-    def reference(self):
+    def reference(self, region_code):
         return {
             "resource_id": self.load_balancer_arn,
-            "external_link": f"https://console.aws.amazon.com/ec2/v2/home?region={self.region_name}#LoadBalancers:search={self.load_balancer_arn};sort=loadBalancerName"
+            "external_link": f"https://console.aws.amazon.com/ec2/v2/home?region={region_code}#LoadBalancers:search={self.load_balancer_arn};sort=loadBalancerName"
         }
 
-    @serializable
-    def cloudwatch(self):
+    def set_cloudwatch(self, region_code):
         namespace = ''
         _arn = arnparse(self.load_balancer_arn)
-        dimensions = [{'Name': 'LoadBalancer', 'Value': _arn.resource}]
+        dimensions = [CloudWatchDimensionModel({'Name': 'LoadBalancer', 'Value': _arn.resource})]
 
         if self.type == 'application':
             namespace = 'AWS/ApplicationELB'
@@ -225,5 +222,5 @@ class LoadBalancer(Model):
         return {
             "namespace": namespace,
             "dimensions": dimensions,
-            "region_name": self.region_name
+            "region_name": region_code
         }

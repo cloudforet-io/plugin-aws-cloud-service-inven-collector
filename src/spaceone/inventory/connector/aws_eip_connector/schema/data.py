@@ -29,11 +29,9 @@ class ElasticIPAddress(Model):
     network_border_group = StringType(deserialize_from="NetworkBorderGroup")
     customer_owned_ip = StringType(deserialize_from="CustomerOwnedIp")
     customer_owned_ipv4_pool = StringType(deserialize_from="CustomerOwnedIpv4Pool")
-    region_name = StringType(default="")
 
-    @serializable
-    def reference(self):
+    def reference(self, region_code):
         return {
             "resource_id": self.public_ip,
-            "external_link": f"https://console.aws.amazon.com/ec2/v2/home?region={self.region_name}#ElasticIpDetails:PublicIp={self.public_ip}"
+            "external_link": f"https://console.aws.amazon.com/ec2/v2/home?region={region_code}#ElasticIpDetails:PublicIp={self.public_ip}"
         }

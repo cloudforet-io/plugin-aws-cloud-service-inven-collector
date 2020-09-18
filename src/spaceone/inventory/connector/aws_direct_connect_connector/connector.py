@@ -72,7 +72,6 @@ class DirectConnectConnector(SchematicAWSConnector):
 
         for raw in response.get('connections', []):
             raw.update({
-                'region_name': region_name,
                 'account_id': self.account_id
             })
             yield Connection(raw, strict=False)
@@ -82,7 +81,6 @@ class DirectConnectConnector(SchematicAWSConnector):
 
         for raw in response.get('directConnectGateways', []):
             raw.update({
-                'region_name': '',
                 'account_id': self.account_id
             })
             yield DirectConnecGateway(raw, strict=False)
@@ -92,7 +90,6 @@ class DirectConnectConnector(SchematicAWSConnector):
 
         for raw in response.get('virtualGateways', []):
             raw.update({
-                'region_name': region_name,
                 'account_id': self.account_id
             })
             yield VirtualPrivateGateway(raw, strict=False)
@@ -102,7 +99,6 @@ class DirectConnectConnector(SchematicAWSConnector):
 
         for raw in response.get('lags', []):
             raw.update({
-                'region_name': region_name,
                 'account_id': self.account_id
             })
             yield LAG(raw, strict=False)

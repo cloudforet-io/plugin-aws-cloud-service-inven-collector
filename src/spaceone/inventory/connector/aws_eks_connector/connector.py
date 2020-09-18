@@ -59,7 +59,6 @@ class EKSConnector(SchematicAWSConnector):
                     cluster.update({
                         'updates': list(self.list_updates(_cluster_name)),
                         'node_groups': list(self.list_node_groups(_cluster_name)),
-                        'region_name': region_name,
                         'account_id': self.account_id,
                         'tags': list(map(lambda tag: Tags(tag, strict=False),
                                          self._convert_tag_format(cluster.get('tags'))))

@@ -3,6 +3,8 @@ import logging
 from schematics import Model
 from schematics.types import ModelType, StringType, IntType, DateTimeType, serializable, ListType, BooleanType, \
     DictType
+from spaceone.inventory.libs.schema.resource import CloudWatchModel, CloudWatchDimensionModel
+
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -29,32 +31,25 @@ class HTTPWebsocket(Model):
     disable_schema_validation = BooleanType(deserialize_from="DisableSchemaValidation")
     import_info = ListType(StringType,deserialize_from="ImportInfo")
     name = StringType(deserialize_from="Name")
-    protocol_type = StringType(deserialize_from="ProtocolType", choices=("WEBSOCKET","HTTP"))
+    protocol_type = StringType(deserialize_from="ProtocolType", choices=("WEBSOCKET", "HTTP"))
     route_selection_expression = StringType(deserialize_from="RouteSelectionExpression")
     tags = DictType(StringType, deserialize_from="Tags")
     version = StringType(deserialize_from="Version")
     warnings = ListType(StringType, deserialize_from="Warnings")
-    region_name = StringType(default='')
-    account_id = StringType(default='')
+    account_id = StringType(default="")
+    cloudwatch = ModelType(CloudWatchModel, serialize_when_none=False)
 
-    @serializable
-    def reference(self):
+    def reference(self, region_code):
         return {
             "resource_id": self.arn,
-            "external_link": f"https://console.aws.amazon.com/apigateway/home?region={self.region_name}#/apis/{self.api_id}/routes"
+            "external_link": f"https://console.aws.amazon.com/apigateway/home?region={region_code}#/apis/{self.api_id}/routes"
         }
 
-    @serializable
-    def cloudwatch(self):
+    def set_cloudwatch(self, region_code):
         return {
             "namespace": "AWS/ApiGateway",
-            "dimensions": [
-                {
-                    "Name": "ApiId",
-                    "Value": self.api_id
-                }
-            ],
-            "region_name": self.region_name
+            "dimensions": [CloudWatchDimensionModel({'Name': 'ApiId', 'Value': self.api_id})],
+            "region_name": region_code
         }
 
 
@@ -141,27 +136,20 @@ class RestAPI(Model):
     api_key_source = StringType(deserialize_from="apiKeySource", choices=("HEADER", "AUTHORIZER"))
     endpoint_configuration = ModelType(EndpointConfiguration, deserialize_from="endpointConfiguration")
     policy = StringType(deserialize_from="policy")
-    tags = DictType(StringType, deserialize_from="tags")
     resources = ListType(ModelType(Resource), default=[])
-    region_name = StringType(default='')
-    account_id = StringType(default='')
+    tags = DictType(StringType, deserialize_from="tags")
+    account_id = StringType(default="")
+    cloudwatch = ModelType(CloudWatchModel, serialize_when_none=False)
 
-    @serializable
-    def reference(self):
+    def reference(self, region_code):
         return {
             "resource_id": self.arn,
-            "external_link": f"https://console.aws.amazon.com/apigateway/home?region={self.region_name}#/apis/{self.id}/resources/"
+            "external_link": f"https://console.aws.amazon.com/apigateway/home?region={region_code}#/apis/{self.id}/resources/"
         }
 
-    @serializable
-    def cloudwatch(self):
+    def set_cloudwatch(self, region_code):
         return {
             "namespace": "AWS/ApiGateway",
-            "dimensions": [
-                {
-                    "Name": "ApiName",
-                    "Value": self.name
-                }
-            ],
-            "region_name": self.region_name
+            "dimensions": [CloudWatchDimensionModel({'Name': 'ApiName', 'Value': self.name})],
+            "region_name": region_code
         }
