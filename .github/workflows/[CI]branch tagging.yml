@@ -1,7 +1,7 @@
 name: "[CI]branch tagging"
 on:
   push:
-    branchs:
+    branches:
       - master
     tags:
       - "v*.*"

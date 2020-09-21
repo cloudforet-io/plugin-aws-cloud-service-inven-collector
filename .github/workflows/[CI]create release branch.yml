@@ -1,8 +1,5 @@
 name: "[CI]create branch"
 on:
-  push:
-    branchs:
-      - master
   workflow_dispatch:
     inputs:
       tag:
@@ -12,31 +9,23 @@ on:
   repository_dispatch:
     types: [create_release_branch]
 
+env:
+  VERSION: v${{ github.event.inputs.tag }}-rc0
+  BRANCH: release-${{ github.event.inputs.tag }}
+
 jobs:
-  hello:
+  create_branch:
     runs-on: ubuntu-latest
     steps:
+      - name: task
+        uses: actions/checkout@v2
       - run: |
-          echo "hello"
-
-
-# env:
-#   VERSION: v${{ github.event.inputs.tag }}-rc0
-#   BRANCH: release-${{ github.event.inputs.tag }}
-
-# jobs:
-#   create_branch:
-#     runs-on: ubuntu-latest
-#     steps:
-#       - name: task
-#         uses: actions/checkout@v2
-#       - run: |
-#           echo ${{ env.VERSION }} > src/VERSION
-#           git config user.name github-actions
-#           git config user.email github-actions@github.com
-#           git add .
-#           git commit -m "[CI/CD] create branch ${{ env.BRANCH }}"
-#           git tag ${{ env.VERSION }}
-#           git push --atomic origin master ${{ env.VERSION }}
-#           git checkout -b ${{ env.BRANCH }}
-#           git push --set-upstream origin ${{ env.BRANCH }}
+          echo ${{ env.VERSION }} > src/VERSION
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add .
+          git commit -m "[CI/CD] create branch ${{ env.BRANCH }}"
+          git tag ${{ env.VERSION }}
+          git push --atomic origin master ${{ env.VERSION }}
+          git checkout -b ${{ env.BRANCH }}
+          git push --set-upstream origin ${{ env.BRANCH }}
