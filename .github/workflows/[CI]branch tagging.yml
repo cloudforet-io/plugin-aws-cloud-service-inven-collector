@@ -70,7 +70,6 @@ jobs:
   update_local_version_file:
     needs: condition_check
     runs-on: ubuntu-latest
-    if: needs.condition_check.outputs.NOT_FIRST_TAG == 'false'
     env:
       VERSION: ${{ needs.condition_check.outputs.TAG }}
       BRANCH: ${{ needs.condition_check.outputs.BRANCH }}
