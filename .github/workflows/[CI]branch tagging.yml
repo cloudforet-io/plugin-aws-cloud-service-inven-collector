@@ -129,6 +129,15 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
           tags: ${{ env.VERSION }}
+      - name: Upload docker, also spaceone
+        if: env.REPO == 'spaceone'
+        uses: docker/build-push-action@v1
+        with:
+          path: .
+          repository: pyengine/${{ env.SERVICE }}
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          tags: ${{ env.VERSION }}
 
   notify_to_slack:
     if: github.repository_owner == 'spaceone-dev'
