@@ -34,10 +34,20 @@ class S3Connector(SchematicAWSConnector):
                 if getattr(data, 'set_cloudwatch', None):
                     data.cloudwatch = CloudWatchModel(data.set_cloudwatch())
 
+                bucket_resource = {
+                    'data': data,
+                    'reference': ReferenceModel(data.reference())
+                }
+
+                if data.get('region_name'):
+                    bucket_resource.update({
+                        'region_code': data.get('region_name'),
+                        'region_type': 'AWS'
+                    })
+
                 resources.append(self.response_schema(
-                    {'resource': BucketResource({'data': data,
-                                                 'region_code': data.get('region_name', ''),
-                                                 'reference': ReferenceModel(data.reference())})}))
+                    {'resource': BucketResource(bucket_resource)}))
+
         except Exception as e:
             print(f'[ERROR {self.service_name}] {e}')
 
