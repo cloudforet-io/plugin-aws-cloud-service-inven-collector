@@ -187,10 +187,7 @@ cst_rds_optgrp._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
         TextDyField.data_source('Name', 'data.db_parameter_group_name'),
         TextDyField.data_source('Description', 'data.description'),
-        EnumDyField.data_source('Engine', 'data.engine_name',
-                                default_outline_badge=['aurora', 'mysql', 'mariadb', 'postgres', 'oracle-ee', 'oracle-se',
-                                                       'oracle-se1', 'oracle-se2', 'sqlserver-ex', 'sqlserver-web',
-                                                       'sqlserver-se', 'sqlserver-ee']),
+        TextDyField.data_source('Engine', 'data.engine_name'),
         TextDyField.data_source('Engine version', 'data.major_engine_version'),
     ],
     search=[

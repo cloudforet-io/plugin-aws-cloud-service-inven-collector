@@ -96,8 +96,8 @@ class CloudServiceResource(Model):
     cloud_service_group = StringType()
     data = PolyModelType(Model, default=lambda: {})
     reference = ModelType(ReferenceModel)
-    region_type = StringType(default="AWS")
-    region_code = StringType()
+    region_type = StringType(serialize_when_none=False)
+    region_code = StringType(serialize_when_none=False)
     _metadata = PolyModelType(CloudServiceMeta, serialize_when_none=False, serialized_name='metadata')
 
 
