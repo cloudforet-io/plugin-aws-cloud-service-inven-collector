@@ -26,6 +26,6 @@ jobs:
           git add .
           git commit -m "[CI/CD] create branch ${{ env.BRANCH }}"
           git tag ${{ env.VERSION }}
-          git push --atomic origin master ${{ env.VERSION }}
+          git push && git push ${{ env.VERSION }}
           git checkout -b ${{ env.BRANCH }}
           git push --set-upstream origin ${{ env.BRANCH }}
