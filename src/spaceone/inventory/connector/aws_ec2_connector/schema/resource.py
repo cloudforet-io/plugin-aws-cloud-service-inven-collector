@@ -39,7 +39,7 @@ ami = ItemDynamicLayout.set_fields('AMI', fields=[
     TextDyField.data_source('Owner', 'data.owner_id'),
     TextDyField.data_source('Source', 'data.image_location'),
     EnumDyField.data_source('Status', 'data.state', default_state={
-        'available': ['available'],
+        'safe': ['available'],
         'warning': ['pending', 'transient', 'deregistered', 'invalid'],
         'alert': ['error', 'failed']
     }),
