@@ -1,7 +1,7 @@
 from schematics.types import DictType, ListType, ModelType, PolyModelType, StringType
-from spaceone.inventory.connector.aws_ec2_connector.schema.data import SecurityGroup
+from spaceone.inventory.connector.aws_ec2_connector.schema.data import SecurityGroup, Image
 from spaceone.inventory.libs.schema.resource import CloudServiceMeta, CloudServiceResource, CloudServiceResponse
-from spaceone.inventory.libs.schema.dynamic_field import TextDyField, DateTimeDyField, EnumDyField
+from spaceone.inventory.libs.schema.dynamic_field import TextDyField, DateTimeDyField, EnumDyField, ListDyField
 from spaceone.inventory.libs.schema.dynamic_layout import ItemDynamicLayout, SimpleTableDynamicLayout, \
     TableDynamicLayout
 
@@ -29,8 +29,44 @@ outbound_rules = TableDynamicLayout.set_fields('Outbound Rules', 'data.ip_permis
     TextDyField.data_source('Description', 'description_display'),
 ])
 
-tags = SimpleTableDynamicLayout.set_tags()
-metadata = CloudServiceMeta.set_layouts(layouts=[sg, inbound_rules, outbound_rules, tags])
+sg_tags = SimpleTableDynamicLayout.set_tags()
+sg_metadata = CloudServiceMeta.set_layouts(layouts=[sg, inbound_rules, outbound_rules, sg_tags])
+
+
+ami = ItemDynamicLayout.set_fields('AMI', fields=[
+    TextDyField.data_source('AMI ID', 'data.image_id'),
+    TextDyField.data_source('AMI Name', 'data.name'),
+    TextDyField.data_source('Owner', 'data.owner_id'),
+    TextDyField.data_source('Source', 'data.image_location'),
+    EnumDyField.data_source('Status', 'data.state', default_state={
+        'available': ['available'],
+        'warning': ['pending', 'transient', 'deregistered', 'invalid'],
+        'alert': ['error', 'failed']
+    }),
+    TextDyField.data_source('State Reason', 'data.state_reason.message'),
+    DateTimeDyField.data_source('Creation Date', 'data.creation_date'),
+    TextDyField.data_source('Platform Details', 'data.platform_details'),
+    TextDyField.data_source('Architecture', 'data.architecture'),
+    TextDyField.data_source('Usage Operation', 'data.usage_operation'),
+    TextDyField.data_source('Image Type', 'data.image_type'),
+    TextDyField.data_source('Virtualization Type', 'data.virtualization_type'),
+    TextDyField.data_source('Description', 'data.description'),
+    TextDyField.data_source('Root Device Name', 'data.root_device_name'),
+    TextDyField.data_source('Root Device Type', 'data.root_device_type'),
+    TextDyField.data_source('RAM Disk ID', 'data.platform'),
+    TextDyField.data_source('Kernel ID', 'data.platform'),
+    ListDyField.data_source('Block Devices', 'data.block_device_mappings', default_badge={
+            'sub_key': 'device_name',
+    }),
+])
+
+ami_permission = TableDynamicLayout.set_fields('Permission', 'data.launch_permissions', fields=[
+    TextDyField.data_source('AWS Account ID', 'user_id')
+])
+
+ami_tags = SimpleTableDynamicLayout.set_tags()
+
+ami_metadata = CloudServiceMeta.set_layouts(layouts=[ami, ami_permission, ami_tags])
 
 
 class EC2Resource(CloudServiceResource):
@@ -40,8 +76,18 @@ class EC2Resource(CloudServiceResource):
 class SecurityGroupResource(EC2Resource):
     cloud_service_type = StringType(default='SecurityGroup')
     data = ModelType(SecurityGroup)
-    _metadata = ModelType(CloudServiceMeta, default=metadata, serialized_name='metadata')
+    _metadata = ModelType(CloudServiceMeta, default=sg_metadata, serialized_name='metadata')
 
 
 class SecurityGroupResponse(CloudServiceResponse):
     resource = PolyModelType(SecurityGroupResource)
+
+
+class ImageResource(EC2Resource):
+    cloud_service_type = StringType(default='AMI')
+    data = ModelType(Image)
+    _metadata = ModelType(CloudServiceMeta, default=ami_metadata, serialized_name='metadata')
+
+
+class ImageResponse(CloudServiceResponse):
+    resource = PolyModelType(ImageResource)
