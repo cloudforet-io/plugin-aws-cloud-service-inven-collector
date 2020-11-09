@@ -55,7 +55,7 @@ cst_ami._metadata = CloudServiceTypeMeta.set_meta(
             'indigo.500': ['true'], 'coral.600': ['false']
         }),
         EnumDyField.data_source('Status', 'data.state', default_state={
-            'available': ['available'],
+            'safe': ['available'],
             'warning': ['pending', 'transient', 'deregistered', 'invalid'],
             'alert': ['error', 'failed']
         }),

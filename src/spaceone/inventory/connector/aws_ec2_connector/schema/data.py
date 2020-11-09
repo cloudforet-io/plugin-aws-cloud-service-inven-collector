@@ -71,7 +71,7 @@ class Image(Model):
     root_device_type = StringType(deserialize_from="RootDeviceType", choices=("ebs", "instance-store"))
     sriov_net_support = StringType(deserialize_from="SriovNetSupport")
     state_reason = ModelType(ImageStateReason, deserialize_from="StateReason")
-    tags = ListType(ModelType(Tags, deserialize_from="Tags"))
+    tags = ListType(ModelType(Tags), deserialize_from="Tags")
     virtualization_type = StringType(deserialize_from="VirtualizationType", choices=("hvm", "paravirtual"))
     launch_permissions = ListType(ModelType(LaunchPermission))
 
