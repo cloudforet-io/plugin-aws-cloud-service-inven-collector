@@ -2,6 +2,7 @@ import logging
 
 from schematics import Model
 from schematics.types import ModelType, StringType, IntType, DateTimeType, serializable, ListType, BooleanType
+from spaceone.inventory.libs.schema.resource import CloudWatchModel, CloudWatchDimensionModel
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -193,29 +194,22 @@ class Table(Model):
     auto_scaling_policies = ListType(StringType, choices=("READ", "WRITE"))
     encryption_type = StringType(default="")
     index_count = IntType(default=0)
-    region_name = StringType(default="")
     account_id = StringType(default="")
     time_to_live = ModelType(TimeToLive)
     continuous_backup = ModelType(ContinuousBackup)
     contributor_insight = ModelType(ContributorInsight)
     tags = ListType(ModelType(Tag))
+    cloudwatch = ModelType(CloudWatchModel, serialize_when_none=False)
 
-    @serializable
-    def reference(self):
+    def reference(self, region_code):
         return {
             "resource_id": self.table_arn,
-            "external_link": f"https://console.aws.amazon.com/dynamodb/home?region={self.region_name}#tables:selected={self.table_name};tab=overview"
+            "external_link": f"https://console.aws.amazon.com/dynamodb/home?region={region_code}#tables:selected={self.table_name};tab=overview"
         }
 
-    @serializable
-    def cloudwatch(self):
+    def set_cloudwatch(self, region_code):
         return {
             "namespace": "AWS/DynamoDB",
-            "dimensions": [
-                {
-                    "Name": "TableName",
-                    "Value": self.table_name
-                }
-            ],
-            "region_name": self.region_name
+            "dimensions": [CloudWatchDimensionModel({'Name': 'TableName', 'Value': self.table_name})],
+            "region_name": region_code
         }

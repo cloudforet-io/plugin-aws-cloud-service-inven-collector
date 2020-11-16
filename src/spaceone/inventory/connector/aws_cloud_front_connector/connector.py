@@ -3,10 +3,11 @@ import logging
 from typing import List
 
 from spaceone.inventory.connector.aws_cloud_front_connector.schema.data import DistributionData, Tags
-from spaceone.inventory.connector.aws_cloud_front_connector.schema.resource import CloudFrontResponse,DistributionResource
+from spaceone.inventory.connector.aws_cloud_front_connector.schema.resource import CloudFrontResponse,\
+    DistributionResource
 from spaceone.inventory.connector.aws_cloud_front_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
-from spaceone.inventory.libs.schema.resource import ReferenceModel
+from spaceone.inventory.libs.schema.resource import ReferenceModel, CloudWatchModel
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -26,9 +27,12 @@ class CFConnector(SchematicAWSConnector):
         try:
             for data in self.request_data():
                 # print(f"[ CloudFront DATA ]")
+                if getattr(data, 'set_cloudwatch', None):
+                    data.cloudwatch = CloudWatchModel(data.set_cloudwatch())
+
                 resources.append(self.response_schema(
                     {'resource': DistributionResource({'data': data,
-                                                       'reference': ReferenceModel(data.reference)})}))
+                                                       'reference': ReferenceModel(data.reference())})}))
         except Exception as e:
             print(f'[ERROR {self.service_name}] {e}')
 

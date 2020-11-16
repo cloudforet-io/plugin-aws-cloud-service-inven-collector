@@ -2,6 +2,7 @@ import logging
 
 from schematics import Model
 from schematics.types import IntType, ModelType, StringType, serializable
+from spaceone.inventory.libs.schema.resource import CloudWatchModel, CloudWatchDimensionModel
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -15,7 +16,6 @@ class QueData(Model):
     class Option:
         serialize_when_none = False
 
-    region_name = StringType(default='')
     url = StringType()
     arn = StringType(deserialize_from="QueueArn")
     approximate_number_of_messages = IntType(deserialize_from="ApproximateNumberOfMessages")
@@ -35,27 +35,21 @@ class QueData(Model):
     kms_data_key_reuse_period_seconds = StringType(deserialize_from="KmsDataKeyReusePeriodSeconds")
     account_id = StringType()
     policy = StringType(deserialize_from="Policy")
+    cloudwatch = ModelType(CloudWatchModel, serialize_when_none=False)
 
     @serializable
     def name(self):
         return self.arn.split(':')[-1]
 
-    @serializable
-    def reference(self):
+    def reference(self, region_code):
         return {
             "resource_id": self.arn,
-            "external_link": f"https://{self.region_name}.console.aws.amazon.com/sqs/home?{self.region_name}#queue-browser:selected={self.url};prefix={self.name}"
+            "external_link": f"https://{region_code}.console.aws.amazon.com/sqs/home?{region_code}#queue-browser:selected={self.url};prefix={self.name}"
         }
 
-    @serializable
-    def cloudwatch(self):
+    def set_cloudwatch(self, region_code):
         return {
             "namespace": "AWS/SQS",
-            "dimensions": [
-                {
-                    "Name": "QueueName",
-                    "Value": self.name
-                }
-            ],
-            "region_name": self.region_name
+            "dimensions": [CloudWatchDimensionModel({"Name": "QueueName", "Value": self.name})],
+            "region_name": region_code
         }

@@ -1,7 +1,8 @@
 import logging
 
 from schematics import Model
-from schematics.types import ModelType, StringType, IntType, DateTimeType, serializable, ListType, BooleanType
+from schematics.types import ModelType, StringType, DateTimeType, ListType, BooleanType
+from spaceone.inventory.libs.schema.resource import CloudWatchModel, CloudWatchDimensionModel
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -44,25 +45,18 @@ class Key(Model):
                                                                                              "SYMMETRIC_DEFAULT"))
     encryption_algorithms = ListType(StringType, deserialize_from="EncryptionAlgorithms")
     signing_algorithms = ListType(StringType, deserialize_from="SigningAlgorithms")
-    region_name = StringType(default="")
     account_id = StringType(default="")
+    cloudwatch = ModelType(CloudWatchModel, serialize_when_none=False)
 
-    @serializable
-    def reference(self):
+    def reference(self, region_code):
         return {
             "resource_id": self.arn,
-            "external_link": f"https://console.aws.amazon.com/kms/home?region={self.region_name}#/kms/{self.key_type_path}/{self.key_id}/"
+            "external_link": f"https://console.aws.amazon.com/kms/home?region={region_code}#/kms/{self.key_type_path}/{self.key_id}/"
         }
 
-    @serializable
-    def cloudwatch(self):
+    def set_cloudwatch(self, region_code):
         return {
             "namespace": "AWS/KMS",
-            "dimensions": [
-                {
-                    "Name": "KeyId",
-                    "Value": self.key_id
-                }
-            ],
-            "region_name": self.region_name
+            "dimensions": [CloudWatchDimensionModel({'Name': 'KeyId', 'Value': self.key_id})],
+            "region_name": region_code
         }

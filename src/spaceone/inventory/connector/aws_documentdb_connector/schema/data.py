@@ -2,6 +2,7 @@ import logging
 
 from schematics import Model
 from schematics.types import ModelType, StringType, IntType, DateTimeType, serializable, ListType, BooleanType
+from spaceone.inventory.libs.schema.resource import CloudWatchModel, CloudWatchDimensionModel
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -33,14 +34,12 @@ class Snapshot(Model):
     kms_key_id = StringType(deserialize_from="KmsKeyId")
     db_cluster_snapshot_arn = StringType(deserialize_from="DBClusterSnapshotArn")
     source_db_cluster_snapshot_arn = StringType(deserialize_from="SourceDBClusterSnapshotArn")
-    region_name = StringType(default='')
     tags = ListType(ModelType(Tag))
 
-    @serializable
-    def reference(self):
+    def reference(self, region_code):
         return {
             "resource_id": self.source_db_cluster_snapshot_arn,
-            "external_link": f"https://console.aws.amazon.com/docdb/home?region={self.region_name}#snapshot-details/{self.db_cluster_snapshot_identifier}"
+            "external_link": f"https://console.aws.amazon.com/docdb/home?region={region_code}#snapshot-details/{self.db_cluster_snapshot_identifier}"
         }
 
 
@@ -69,15 +68,13 @@ class ParameterGroup(Model):
     description = StringType(deserialize_from="Description")
     db_cluster_parameter_group_arn = StringType(deserialize_from="DBClusterParameterGroupArn")
     parameters = ListType(ModelType(Parameter))
-    region_name = StringType(default="")
     account_id = StringType(default="")
     tags = ListType(ModelType(Tag))
 
-    @serializable
-    def reference(self):
+    def reference(self, region_code):
         return {
             "resource_id": self.db_cluster_parameter_group_arn,
-            "external_link": f"https://console.aws.amazon.com/docdb/home?region={self.region_name}#parameterGroup-details/{self.db_cluster_parameter_group_name}"
+            "external_link": f"https://console.aws.amazon.com/docdb/home?region={region_code}#parameterGroup-details/{self.db_cluster_parameter_group_name}"
         }
 
 
@@ -101,15 +98,13 @@ class SubnetGroup(Model):
     subnet_group_status = StringType(deserialize_from="SubnetGroupStatus")
     subnets = ListType(ModelType(SubnetGroupSubnets), deserialize_from="Subnets")
     db_subnet_group_arn = StringType(deserialize_from="DBSubnetGroupArn")
-    region_name = StringType(default='')
     account_id = StringType(default='')
     tags = ListType(ModelType(Tag))
 
-    @serializable
-    def reference(self):
+    def reference(self, region_code):
         return {
             "resource_id": self.db_subnet_group_arn,
-            "external_link": f"https://console.aws.amazon.com/docdb/home?region={self.region_name}#subnetGroup-details/{self.db_subnet_group_name}"
+            "external_link": f"https://console.aws.amazon.com/docdb/home?region={region_code}#subnetGroup-details/{self.db_subnet_group_name}"
         }
 
 '''
@@ -201,27 +196,20 @@ class Instance(Model):
     promotion_tier = IntType(deserialize_from="PromotionTier")
     db_instance_arn = StringType(deserialize_from="DBInstanceArn")
     enabled_cloudwatch_logs_exports = ListType(StringType, deserialize_from="EnabledCloudwatchLogsExports")
-    region_name = StringType(default="")
     tags = ListType(ModelType(Tag))
+    cloudwatch = ModelType(CloudWatchModel, serialize_when_none=False)
 
-    @serializable
-    def reference(self):
+    def reference(self, region_code):
         return {
             "resource_id": self.db_instance_arn,
-            "external_link": f"https://console.aws.amazon.com/docdb/home?region={self.region_name}#instance-details/{self.db_instance_identifier}"
+            "external_link": f"https://console.aws.amazon.com/docdb/home?region={region_code}#instance-details/{self.db_instance_identifier}"
         }
 
-    @serializable
-    def cloudwatch(self):
+    def set_cloudwatch(self, region_code):
         return {
             "namespace": "AWS/DocDB",
-            "dimensions": [
-                {
-                    "Name": "DBInstanceIdentifier",
-                    "Value": self.db_instance_identifier
-                }
-            ],
-            "region_name": self.region_name
+            "dimensions": [CloudWatchDimensionModel({'Name': 'DBInstanceIdentifier', 'Value': self.db_instance_identifier})],
+            "region_name": region_code
         }
 
 
@@ -280,26 +268,19 @@ class Cluster(Model):
     deletion_protection = BooleanType(deserialize_from="DeletionProtection")
     instances = ListType(ModelType(Instance))
     snapshots = ListType(ModelType(Snapshot))
-    region_name = StringType(default='')
     account_id = StringType(default='')
     tags = ListType(ModelType(Tag))
+    cloudwatch = ModelType(CloudWatchModel, serialize_when_none=False)
 
-    @serializable
-    def reference(self):
+    def reference(self, region_code):
         return {
             "resource_id": self.db_cluster_arn,
-            "external_link": f"https://console.aws.amazon.com/docdb/home?region={self.region_name}#cluster-details/{self.db_cluster_identifier}"
+            "external_link": f"https://console.aws.amazon.com/docdb/home?region={region_code}#cluster-details/{self.db_cluster_identifier}"
         }
 
-    @serializable
-    def cloudwatch(self):
+    def set_cloudwatch(self, region_code):
         return {
             "namespace": "AWS/DocDB",
-            "dimensions": [
-                {
-                    "Name": "DBClusterIdentifier",
-                    "Value": self.db_cluster_identifier
-                }
-            ],
-            "region_name": self.region_name
+            "dimensions": [CloudWatchDimensionModel({'Name': 'DBClusterIdentifier', 'Value': self.db_cluster_identifier})],
+            "region_name": region_code
         }

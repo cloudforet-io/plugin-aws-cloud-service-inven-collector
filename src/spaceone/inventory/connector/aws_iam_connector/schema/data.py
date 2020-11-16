@@ -1,7 +1,8 @@
 import logging
 
 from schematics import Model
-from schematics.types import ModelType, StringType, IntType, DateTimeType, serializable, ListType, BooleanType, DictType
+from schematics.types import ModelType, StringType, IntType, DateTimeType, serializable, ListType, BooleanType
+
 DEFAULT_REGION = 'us-east-1'
 
 _LOGGER = logging.getLogger(__name__)
@@ -64,11 +65,10 @@ class Policy(Model):
     permission = ModelType(PermissionSummary)
     permission_versions = ListType(ModelType(PermissionVersions))
 
-    @serializable
     def reference(self):
         return {
             "resource_id": self.arn,
-            "external_link": f"https://console.aws.amazon.com/iam/home?region={DEFAULT_REGION}#/policies/{self.arn}/$serviceLevelSummary"
+            "external_link": f"https://console.aws.amazon.com/iam/home?region={DEFAULT_REGION}#/policies/{self.arn}$serviceLevelSummary"
         }
 
 
@@ -134,7 +134,6 @@ class User(Model):
     policies = ListType(ModelType(Policy))
     tags = ListType(ModelType(Tags), deserialize_from="Tags")
 
-    @serializable
     def reference(self):
         return {
             "resource_id": self.arn,
@@ -152,7 +151,6 @@ class Group(Model):
     create_date = DateTimeType(deserialize_from="CreateDate")
     attached_permission = ListType(ModelType(Policy))
 
-    @serializable
     def reference(self):
         return {
             "resource_id": self.arn,
@@ -207,7 +205,6 @@ class Role(Model):
     policies = ListType(ModelType(Policy))
     tags = ListType(ModelType(Tags), default=[])
 
-    @serializable
     def reference(self):
         return {
             "resource_id": self.arn,
@@ -223,7 +220,6 @@ class IdentityProvider(Model):
     thumbprint_list = ListType(StringType, deserialize_from="ThumbprintList")
     create_date = DateTimeType(deserialize_from="CreateDate")
 
-    @serializable
     def reference(self):
         return {
             "resource_id": self.arn,

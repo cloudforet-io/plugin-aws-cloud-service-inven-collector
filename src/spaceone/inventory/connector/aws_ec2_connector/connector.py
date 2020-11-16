@@ -2,8 +2,10 @@ import time
 import logging
 from typing import List
 
-from spaceone.inventory.connector.aws_ec2_connector.schema.data import SecurityGroup, SecurityGroupIpPermission
-from spaceone.inventory.connector.aws_ec2_connector.schema.resource import SecurityGroupResource, SecurityGroupResponse
+from spaceone.inventory.connector.aws_ec2_connector.schema.data import SecurityGroup, SecurityGroupIpPermission, \
+    Image, LaunchPermission
+from spaceone.inventory.connector.aws_ec2_connector.schema.resource import SecurityGroupResource, SecurityGroupResponse, \
+    ImageResource, ImageResponse
 from spaceone.inventory.connector.aws_ec2_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
 
@@ -20,11 +22,18 @@ class EC2Connector(SchematicAWSConnector):
         resources = []
         start_time = time.time()
 
-        collect_resource = {
-            'request_method': self.request_security_group_data,
-            'resource': SecurityGroupResource,
-            'response_schema': SecurityGroupResponse
-        }
+        collect_resources = [
+            {
+                'request_method': self.request_security_group_data,
+                'resource': SecurityGroupResource,
+                'response_schema': SecurityGroupResponse
+            },
+            {
+                'request_method': self.request_ami_data,
+                'resource': ImageResource,
+                'response_schema': ImageResponse
+            },
+        ]
 
         # init cloud service type
         for cst in CLOUD_SERVICE_TYPES:
@@ -32,10 +41,28 @@ class EC2Connector(SchematicAWSConnector):
 
         for region_name in self.region_names:
             self.reset_region(region_name)
-            resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
+
+            for collect_resource in collect_resources:
+                resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
 
         print(f' EC2 Finished {time.time() - start_time} Seconds')
         return resources
+
+    def request_ami_data(self, region_name) -> List[Image]:
+        results = self.client.describe_images(Owners=['self'])
+
+        for image in results.get('Images', []):
+            try:
+                permission_info = self.client.describe_image_attribute(Attribute='launchPermission', ImageId=image['ImageId'])
+            except Exception as e:
+                permission_info = {}
+
+            if permission_info:
+                image.update({
+                    'launch_permissions': [LaunchPermission(_permission, strict=False) for _permission in permission_info.get('LaunchPermissions', [])]
+                })
+
+            yield Image(image, strict=False)
 
     def request_security_group_data(self, region_name) -> List[SecurityGroup]:
         # Get default VPC
@@ -60,17 +87,20 @@ class EC2Connector(SchematicAWSConnector):
                 for in_rule in raw.get('IpPermissions', []):
                     for _ip_range in in_rule.get('IpRanges', []):
                         inbound_rules.append(
-                            SecurityGroupIpPermission(self.custom_security_group_rule_info(in_rule, _ip_range, 'ip_ranges'),
+                            SecurityGroupIpPermission(self.custom_security_group_rule_info(in_rule, _ip_range,
+                                                                                           'ip_ranges'),
                                                       strict=False))
 
                     for _user_group_pairs in in_rule.get('UserIdGroupPairs', []):
                         inbound_rules.append(
-                            SecurityGroupIpPermission(self.custom_security_group_rule_info(in_rule, _user_group_pairs, 'user_id_group_pairs'),
+                            SecurityGroupIpPermission(self.custom_security_group_rule_info(in_rule, _user_group_pairs,
+                                                                                           'user_id_group_pairs'),
                                                       strict=False))
 
                     for _ip_v6_range in in_rule.get('Ipv6Ranges', []):
                         inbound_rules.append(
-                            SecurityGroupIpPermission(self.custom_security_group_rule_info(in_rule, _ip_v6_range, 'ipv6_ranges'),
+                            SecurityGroupIpPermission(self.custom_security_group_rule_info(in_rule, _ip_v6_range,
+                                                                                           'ipv6_ranges'),
                                                       strict=False))
 
                 # Outbound Rules
@@ -78,21 +108,23 @@ class EC2Connector(SchematicAWSConnector):
                 for out_rule in raw.get('IpPermissionsEgress', []):
                     for _ip_range in out_rule.get('IpRanges', []):
                         outbound_rules.append(
-                            SecurityGroupIpPermission(self.custom_security_group_rule_info(out_rule, _ip_range, 'ip_ranges'),
+                            SecurityGroupIpPermission(self.custom_security_group_rule_info(out_rule, _ip_range,
+                                                                                           'ip_ranges'),
                                                       strict=False))
 
                     for _user_group_pairs in out_rule.get('UserIdGroupPairs', []):
                         outbound_rules.append(
-                            SecurityGroupIpPermission(self.custom_security_group_rule_info(out_rule, _user_group_pairs, 'user_id_group_pairs'),
+                            SecurityGroupIpPermission(self.custom_security_group_rule_info(out_rule, _user_group_pairs,
+                                                                                           'user_id_group_pairs'),
                                                       strict=False))
 
                     for _ip_v6_range in out_rule.get('Ipv6Ranges', []):
                         outbound_rules.append(
-                            SecurityGroupIpPermission(self.custom_security_group_rule_info(out_rule, _ip_v6_range, 'ipv6_ranges'),
+                            SecurityGroupIpPermission(self.custom_security_group_rule_info(out_rule, _ip_v6_range,
+                                                                                           'ipv6_ranges'),
                                                       strict=False))
 
                 raw.update({
-                    'region_name': region_name,
                     'account_id': self.account_id,
                     'ip_permissions': inbound_rules,
                     'ip_permissions_egress': outbound_rules

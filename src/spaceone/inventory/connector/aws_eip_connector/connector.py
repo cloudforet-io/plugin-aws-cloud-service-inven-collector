@@ -56,7 +56,6 @@ class EIPConnector(SchematicAWSConnector):
                     _ip['public_dns'] = public_dns
 
             _ip.update({
-                'region_name': region_name,
                 'account_id': self.account_id,
                 'name': self._get_name_from_tags(_ip.get('Tags', []))
             })

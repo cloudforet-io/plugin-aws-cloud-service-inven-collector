@@ -226,7 +226,7 @@ rt_subnet_assoc = TableDynamicLayout.set_fields('Subnet Associations', 'data.sub
     TextDyField.data_source('Subnet ID', 'subnet_id'),
     EnumDyField.data_source('State', 'association_state.state', default_state={
         'safe': ['associated'],
-        'warning': ['associating', 'disassociating', ''],
+        'warning': ['associating', 'disassociating'],
         'alert': ['failed'],
         'disable': ['disassociated']
     }),

@@ -194,11 +194,10 @@ class Redis(Model):
     creation_time = DateTimeType()
     region = StringType(default="")
 
-    @serializable
-    def reference(self):
+    def reference(self, region_code):
         return {
             "resource_id": self.arn,
-            "external_link": f"https://console.aws.amazon.com/elasticache/home?region={self.region_name}#redis-group-detail:id={self.cluster_name}"
+            "external_link": f"https://console.aws.amazon.com/elasticache/home?region={region_code}#redis-group-detail:id={self.cluster_name}"
         }
 
 
@@ -230,9 +229,8 @@ class Memcached(Model):
     nodes = ListType(ModelType(ClusterCacheNodes))
     region = StringType(default="")
 
-    @serializable
-    def reference(self):
+    def reference(self, region_code):
         return {
             "resource_id": self.arn,
-            "external_link": f"https://console.aws.amazon.com/elasticache/home?region={self.reigon}#memcached-nodes:id={self.cluster_name};nodes"
+            "external_link": f"https://console.aws.amazon.com/elasticache/home?region={region_code}#memcached-nodes:id={self.cluster_name};nodes"
         }

@@ -56,14 +56,12 @@ class Repository(Model):
     image_tag_mutability = StringType(deserialize_from="imageTagMutability", choices=("MUTABLE", "IMMUTABLE"))
     image_scanning_configuration = ModelType(imageScanningConfiguration, deserialize_from="imageScanningConfiguration")
     images = ListType(ModelType(Image))
-    region_name = StringType(default="")
     account_id = StringType(default="")
     tags = ListType(ModelType(Tag))
 
-    @serializable
-    def reference(self):
+    def reference(self, region_code):
         return {
             "resource_id": self.repository_arn,
-            "external_link": f"https://console.aws.amazon.com/ecr/repositories/{self.repository_name}/?region={self.region_name}"
+            "external_link": f"https://console.aws.amazon.com/ecr/repositories/{self.repository_name}/?region={region_code}"
         }
 

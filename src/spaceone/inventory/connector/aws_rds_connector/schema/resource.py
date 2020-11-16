@@ -18,10 +18,7 @@ summary = ItemDynamicLayout.set_fields('Summary', fields=[
                     'renaming', 'starting', 'stopping', 'upgrading'],
         'alert': ['failed', 'inaccessible-encryption-credentials', 'restore-error', 'stopped', 'storage-full']
     }),
-    EnumDyField.data_source('Engine', 'data.engine',
-                            default_outline_badge=['aurora', 'aurora-mysql', 'docdb', 'mysql', 'mariadb', 'postgres', 'oracle-ee', 'oracle-se',
-                                                   'oracle-se1', 'oracle-se2', 'sqlserver-ex', 'sqlserver-web',
-                                                   'sqlserver-se', 'sqlserver-ee']),
+    TextDyField.data_source('Engine', 'data.engine'),
     TextDyField.data_source('Class', 'data.size'),
     TextDyField.data_source('Region & AZ', 'data.availability_zone'),
 ])

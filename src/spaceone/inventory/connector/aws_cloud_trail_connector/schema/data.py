@@ -58,8 +58,7 @@ class Trail(Model):
     tags = ListType(ModelType(CloudTrailTags))
     account_id = StringType(default="")
 
-    @serializable
-    def reference(self):
+    def reference(self, region_name=None):
         return {
             "resource_id": self.trail_arn,
             "external_link": f"https://console.aws.amazon.com/cloudtrail/home?region={self.home_region}#/configuration/{self.trail_arn.replace('/', '@')}"

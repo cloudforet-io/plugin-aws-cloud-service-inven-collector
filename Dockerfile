@@ -8,7 +8,8 @@ ENV SRC_DIR /tmp/src
 
 COPY pkg/*.txt ${PKG_DIR}/
 RUN pip install --upgrade pip && \
-    pip install --upgrade -r ${PKG_DIR}/pip_requirements.txt
+    pip install --upgrade -r ${PKG_DIR}/pip_requirements.txt && \
+    pip install --upgrade --pre spaceone-core spaceone-api
 
 COPY src ${SRC_DIR}
 

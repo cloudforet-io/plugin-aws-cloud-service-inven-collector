@@ -53,7 +53,7 @@ class APIGatewayConnector(SchematicAWSConnector):
                 raw.update({
                     'resources': list(map(lambda _resource_raw: self.set_rest_api_resource(_resource_raw),
                                           _res.get('items', []))),
-                    'region_name': region_name,
+                    # 'region_name': region_name,
                     'account_id': self.account_id,
                     'arn': self.generate_arn(service=self.service_name, region=region_name,
                                              account_id="", resource_type='restapis',
@@ -112,10 +112,11 @@ class APIGatewayV2Connector(SchematicAWSConnector):
         for data in response_iterator:
             for raw in data.get('Items', []):
                 raw.update({
-                    'region_name': region_name,
                     'account_id': self.account_id,
                     'arn': self.generate_arn(service=self.service_name, region=region_name,
                                              account_id="", resource_type='api',
                                              resource_id=raw.get('api_id'))
                 })
+
                 yield HTTPWebsocket(raw, strict=False)
+

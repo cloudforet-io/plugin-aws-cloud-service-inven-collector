@@ -9,6 +9,7 @@ from spaceone.inventory.connector.aws_s3_connector.schema.resource import Bucket
 from spaceone.inventory.connector.aws_s3_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
 from spaceone.inventory.libs.schema.resource import ReferenceModel
+from spaceone.inventory.libs.schema.resource import CloudWatchModel
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -29,9 +30,24 @@ class S3Connector(SchematicAWSConnector):
 
             # merge data
             for data in self.request_data():
+                # This is Global API, yet set up its region for bucket
+                if getattr(data, 'set_cloudwatch', None):
+                    data.cloudwatch = CloudWatchModel(data.set_cloudwatch())
+
+                bucket_resource = {
+                    'data': data,
+                    'reference': ReferenceModel(data.reference())
+                }
+
+                if data.get('region_name'):
+                    bucket_resource.update({
+                        'region_code': data.get('region_name'),
+                        'region_type': 'AWS'
+                    })
+
                 resources.append(self.response_schema(
-                    {'resource': BucketResource({'data': data,
-                                                 'reference': ReferenceModel(data.reference)})}))
+                    {'resource': BucketResource(bucket_resource)}))
+
         except Exception as e:
             print(f'[ERROR {self.service_name}] {e}')
 
@@ -45,15 +61,13 @@ class S3Connector(SchematicAWSConnector):
             bucket_name = raw.get('Name')
 
             raw.update({
-                'arn': self.generate_arn(service=self.service_name, region="", account_id="", resource_type=bucket_name, resource_id="*"),
+                'arn': self.generate_arn(service=self.service_name, region="", account_id="", resource_type=bucket_name,
+                                         resource_id="*"),
                 'account_id': self.account_id
             })
 
             if region_name := self.get_bucket_location(bucket_name):
                 raw.update({'region_name': region_name})
-
-            if public_access := self.get_bucket_public_access(bucket_name):
-                raw.update({'public_access': public_access})
 
             if versioning := self.get_bucket_versioning(bucket_name):
                 raw.update({'versioning': versioning})
@@ -112,21 +126,6 @@ class S3Connector(SchematicAWSConnector):
 
         return None
 
-    def get_bucket_public_access(self, bucket_name):
-        try:
-            response = 'Private'
-            acl = self.client.get_bucket_acl(Bucket=bucket_name)
-            for grants in acl.get('Grants', []):
-                uri = grants.get('Grantee').get('URI')
-                if uri is not None and uri.endswith('AllUsers'):
-                    response = 'Public'
-
-            return response
-
-        except ClientError as e:
-            print(e)
-            return None
-
     def get_website_hosting(self, bucket_name):
         try:
             response = self.client.get_bucket_website(Bucket=bucket_name)
@@ -159,17 +158,14 @@ class S3Connector(SchematicAWSConnector):
             return None
 
     def get_transfer_acceleration(self, bucket_name):
+        return_value = None
         try:
             response = self.client.get_bucket_accelerate_configuration(Bucket=bucket_name)
-
             if transfer_acceleration := response.get('Status'):
-                return TransferAcceleration({'transfer_acceleration': transfer_acceleration}, strict=False)
-
-            else:
-                return None
-
-        except ClientError as e:
-            return None
+                return_value = TransferAcceleration({'transfer_acceleration': transfer_acceleration}, strict=False)
+        except Exception as e:
+            pass
+        return return_value
 
     def get_request_payment(self, bucket_name):
         response = self.client.get_bucket_request_payment(Bucket=bucket_name)
@@ -184,7 +180,8 @@ class S3Connector(SchematicAWSConnector):
 
         sns = self.set_notification('SNS Topic', 'TopicArn', response.get('TopicConfigurations', []))
         que = self.set_notification('Queue', 'QueueArn', response.get('QueueConfigurations', []))
-        func = self.set_notification('Lambda Function', 'LambdaFunctionArn', response.get('LambdaFunctionConfigurations', []))
+        func = self.set_notification('Lambda Function', 'LambdaFunctionArn',
+                                     response.get('LambdaFunctionConfigurations', []))
 
         total_noti = sns + que + func
 

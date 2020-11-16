@@ -3,6 +3,7 @@ import logging
 from schematics import Model
 from schematics.types import ModelType, StringType, IntType, FloatType, DateTimeType, serializable, ListType, \
     BooleanType
+from spaceone.inventory.libs.schema.resource import CloudWatchModel, CloudWatchDimensionModel
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -156,11 +157,10 @@ class LaunchConfiguration(Model):
     region_name = StringType(default='')
     account_id = StringType(default='')
 
-    @serializable
-    def reference(self):
+    def reference(self, region_code):
         return {
             "resource_id": self.launch_configuration_arn,
-            "external_link": f"https://console.aws.amazon.com/ec2/autoscaling/home?region={self.region_name}#LaunchConfigurations:id={self.launch_configuration_name}"
+            "external_link": f"https://console.aws.amazon.com/ec2/autoscaling/home?region={region_code}#LaunchConfigurations:id={self.launch_configuration_name}"
         }
 
 
@@ -276,15 +276,13 @@ class LaunchTemplateDetail(Model):
     created_by = StringType(deserialize_from="CreatedBy")
     default_version = BooleanType(deserialize_from="DefaultVersion")
     launch_template_data = ModelType(LaunchTemplateData, deserialize_from="LaunchTemplateData")
-    region_name = StringType(default='')
     account_id = StringType(default='')
     arn = StringType()
 
-    @serializable
-    def reference(self):
+    def reference(self, region_code):
         return {
             "resource_id": self.arn,
-            "external_link": f"https://console.aws.amazon.com/ec2autoscaling/home?region={self.region_name}#/details?id={self.launch_template_id}"
+            "external_link": f"https://console.aws.amazon.com/ec2autoscaling/home?region={region_code}#/details?id={self.launch_template_id}"
         }
 
 '''
@@ -391,25 +389,18 @@ class AutoScalingGroup(Model):
     new_instances_protected_from_scale_in = BooleanType(deserialize_from="NewInstancesProtectedFromScaleIn")
     service_linked_role_arn = StringType(deserialize_from="ServiceLinkedRoleARN")
     max_instance_lifetime = IntType(deserialize_from="MaxInstanceLifetime")
-    region_name = StringType(default='')
     account_id = StringType(default='')
+    cloudwatch = ModelType(CloudWatchModel, serialize_when_none=False)
 
-    @serializable
-    def reference(self):
+    def reference(self, region_code):
         return {
             "resource_id": self.auto_scaling_group_arn,
-            "external_link": f"https://console.aws.amazon.com/ec2/autoscaling/home?region={self.region_name}#AutoScalingGroups:id={self.auto_scaling_group_name}"
+            "external_link": f"https://console.aws.amazon.com/ec2/autoscaling/home?region={region_code}#AutoScalingGroups:id={self.auto_scaling_group_name}"
         }
 
-    @serializable
-    def cloudwatch(self):
+    def set_cloudwatch(self, region_code):
         return {
             "namespace": "AWS/AutoScaling",
-            "dimensions": [
-                {
-                    "Name": "AutoScalingGroupName",
-                    "Value": self.auto_scaling_group_name
-                }
-            ],
-            "region_name": self.region_name
+            "dimensions": [CloudWatchDimensionModel({'Name': 'AutoScalingGroupName', 'Value': self.auto_scaling_group_name})],
+            "region_name": region_code
         }

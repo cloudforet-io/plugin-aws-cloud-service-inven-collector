@@ -2,6 +2,7 @@ import logging
 
 from schematics import Model
 from schematics.types import ModelType, StringType, IntType, DateTimeType, serializable, ListType, BooleanType
+from spaceone.inventory.libs.schema.resource import CloudWatchModel, CloudWatchDimensionModel
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -32,26 +33,19 @@ class Snapshot(Model):
     volume_size = IntType(deserialize_from="VolumeSize")
     owner_alias = StringType(deserialize_from="OwnerAlias")
     tags = ListType(ModelType(Tags), deserialize_from="Tags")
-    region_name = StringType(default="")
+    cloudwatch = ModelType(CloudWatchModel, serialize_when_none=False)
 
-    @serializable
-    def reference(self):
+    def reference(self, region_code):
         return {
             "resource_id": self.arn,
-            "external_link": f"https://console.aws.amazon.com/ec2/v2/home?region={self.region_name}#Snapshots:visibility=owned-by-me;snapshotId={self.snapshot_id};sort=snapshotId"
+            "external_link": f"https://console.aws.amazon.com/ec2/v2/home?region={region_code}#Snapshots:visibility=owned-by-me;snapshotId={self.snapshot_id};sort=snapshotId"
         }
 
-    @serializable
-    def cloudwatch(self):
+    def set_cloudwatch(self, region_code):
         return {
             "namespace": "AWS/EBS",
-            "dimensions": [
-                {
-                    "Name": "SnapshotId",
-                    "Value": self.snapshot_id
-                }
-            ],
-            "region_name": self.region_name
+            "dimensions": [CloudWatchDimensionModel({'Name': 'SnapshotId', 'Value': self.snapshot_id})],
+            "region_name": region_code
         }
 
 
@@ -106,25 +100,18 @@ class Volume(Model):
     volume_type = StringType(deserialize_from="VolumeType", choices=("standard", "io1", "gp2", "sc1", "st1"))
     fast_restored = BooleanType(deserialize_from="FastRestored")
     multi_attach_enabled = BooleanType(deserialize_from="MultiAttachEnabled")
-    region_name = StringType(default="")
     attribute = ModelType(Attribute)
+    cloudwatch = ModelType(CloudWatchModel, serialize_when_none=False)
 
-    @serializable
-    def reference(self):
+    def reference(self, region_code):
         return {
             "resource_id": self.arn,
-            "external_link": f"https://console.aws.amazon.com/ec2/v2/home?region={self.region_name}#Volumes:search={self.volume_id};sort=state"
+            "external_link": f"https://console.aws.amazon.com/ec2/v2/home?region={region_code}#Volumes:search={self.volume_id};sort=state"
         }
 
-    @serializable
-    def cloudwatch(self):
+    def set_cloudwatch(self, region_code):
         return {
             "namespace": "AWS/EBS",
-            "dimensions": [
-                {
-                    "Name": "VolumeId",
-                    "Value": self.volume_id
-                }
-            ],
-            "region_name": self.region_name
+            "dimensions": [CloudWatchDimensionModel({'Name': 'VolumeId', 'Value': self.volume_id})],
+            "region_name": region_code
         }

@@ -3,6 +3,7 @@ import logging
 from schematics import Model
 from schematics.types import ModelType, StringType, IntType, DateTimeType, serializable, ListType, BooleanType, \
     FloatType
+from spaceone.inventory.libs.schema.resource import CloudWatchModel, CloudWatchDimensionModel
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -67,27 +68,20 @@ class FileSystem(Model):
     throughput_mode = StringType(deserialize_from="ThroughputMode", choices=("bursting", "provisioned"))
     provisioned_throughput_in_mibps = FloatType(deserialize_from="ProvisionedThroughputInMibps")
     tags = ListType(ModelType(FileSystemTags), deserialize_from="Tags")
-    region_name = StringType(default="")
     account_id = StringType(default="")
     life_cycle_policies = ListType(ModelType(LifecyclePolicy))
     mount_targets = ListType(ModelType(MountTarget))
+    cloudwatch = ModelType(CloudWatchModel, serialize_when_none=False)
 
-    @serializable
-    def reference(self):
+    def reference(self, region_code):
         return {
             "resource_id": self.arn,
-            "external_link": f"https://console.aws.amazon.com/efs/home?region={self.region_name}#/filesystems/{self.file_system_id}"
+            "external_link": f"https://console.aws.amazon.com/efs/home?region={region_code}#/filesystems/{self.file_system_id}"
         }
 
-    @serializable
-    def cloudwatch(self):
+    def set_cloudwatch(self, region_code):
         return {
             "namespace": "AWS/EFS",
-            "dimensions": [
-                {
-                    "Name": "FileSystemId",
-                    "Value": self.file_system_id
-                }
-            ],
-            "region_name": self.region_name
+            "dimensions": [CloudWatchDimensionModel({'Name': 'FileSystemId', 'Value': self.file_system_id})],
+            "region_name": region_code
         }
