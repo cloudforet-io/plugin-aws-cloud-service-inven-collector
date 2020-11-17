@@ -5,11 +5,10 @@ from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, Cl
 cst_asg = CloudServiceTypeResource()
 cst_asg.name = 'AutoScalingGroup'
 cst_asg.provider = 'aws'
-cst_asg.group = 'AutoScaling'
+cst_asg.group = 'EC2'
 cst_asg.labels = ['Compute']
 cst_asg.tags = {
     'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-EC2-Auto-Scaling.svg',
-    'spaceone:is_major': 'true',
 }
 
 cst_asg._metadata = CloudServiceTypeMeta.set_meta(
@@ -36,11 +35,10 @@ cst_asg._metadata = CloudServiceTypeMeta.set_meta(
 launch_configuration = CloudServiceTypeResource()
 launch_configuration.name = 'LaunchConfiguration'
 launch_configuration.provider = 'aws'
-launch_configuration.group = 'AutoScaling'
+launch_configuration.group = 'EC2'
 launch_configuration.labels = ['Compute']
 launch_configuration.tags = {
     'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-EC2-Auto-Scaling.svg',
-    'spaceone:is_major': 'false',
 }
 
 launch_configuration._metadata = CloudServiceTypeMeta.set_meta(
@@ -68,11 +66,10 @@ launch_configuration._metadata = CloudServiceTypeMeta.set_meta(
 launch_template = CloudServiceTypeResource()
 launch_template.name = 'LaunchTemplate'
 launch_template.provider = 'aws'
-launch_template.group = 'AutoScaling'
+launch_template.group = 'EC2'
 launch_template.labels = ['Compute']
 launch_template.tags = {
     'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-EC2-Auto-Scaling.svg',
-    'spaceone:is_major': 'false',
 }
 
 launch_template._metadata = CloudServiceTypeMeta.set_meta(

@@ -63,6 +63,7 @@ class EBSConnector(SchematicAWSConnector):
                 raw.update({
                     'attribute': Attribute(attr, strict=False),
                     'account_id': self.account_id,
+                    'size': self.get_size_gb_to_bytes(raw.get('Size', 0)),
                     'arn': self.generate_arn(service=self.service_name, region=region_name,
                                              account_id=self.account_id, resource_type="volume",
                                              resource_id=raw.get('VolumeId'))
@@ -121,3 +122,6 @@ class EBSConnector(SchematicAWSConnector):
         except IndexError:
             return ''
 
+    @staticmethod
+    def get_size_gb_to_bytes(gb_size):
+        return gb_size * 1024 * 1024 * 1024

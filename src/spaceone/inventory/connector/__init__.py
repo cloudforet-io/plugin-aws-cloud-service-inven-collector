@@ -4,7 +4,7 @@ from spaceone.inventory.connector.aws_rds_connector.connector import RDSConnecto
 from spaceone.inventory.connector.aws_route53_connector.connector import Route53Connector
 from spaceone.inventory.connector.aws_auto_scaling_connector.connector import AutoScalingConnector
 from spaceone.inventory.connector.aws_elasticache_connector.connector import ElastiCacheConnector
-from spaceone.inventory.connector.aws_api_gateway_connector.connector import APIGatewayConnector, APIGatewayV2Connector
+from spaceone.inventory.connector.aws_api_gateway_connector.connector import APIGatewayConnector
 from spaceone.inventory.connector.aws_direct_connect_connector.connector import DirectConnectConnector
 from spaceone.inventory.connector.aws_efs_connector.connector import EFSConnector
 from spaceone.inventory.connector.aws_documentdb_connector.connector import DocumentDBConnector
