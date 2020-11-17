@@ -1,7 +1,7 @@
 import logging
 
 from schematics import Model
-from schematics.types import ModelType, StringType, IntType, ListType
+from schematics.types import ModelType, StringType, IntType, ListType, FloatType
 from spaceone.inventory.libs.schema.resource import CloudWatchModel, CloudWatchDimensionModel
 _LOGGER = logging.getLogger(__name__)
 
@@ -160,27 +160,28 @@ VERSIONING
 '''
 class Versioning(Model):
     status = StringType(deserialize_from="Status", choices=("Enabled", "Disabled"))
-    mfa_delete = StringType(deserialize_from="MFADelete", choices=("Enabled", "Disabled"))
+    mfa_delete = StringType(deserialize_from="MFADelete", choices=("Enabled", "Disabled"), serialize_when_none=False)
 
 
 class Bucket(Model):
     arn = StringType(default="")
     name = StringType(deserialize_from="Name")
     public_access = StringType(choices=("Public", "Private"))
-    versioning = ModelType(Versioning)
-    server_access_logging = ModelType(ServerAccessLogging)
-    website_hosting = ModelType(WebsiteHosting)
-    encryption = ModelType(Encryption)
-    object_lock = ModelType(ObjectLock)
-    tags = ListType(ModelType(Tags))
+    versioning = ModelType(Versioning, serialize_when_none=False)
+    server_access_logging = ModelType(ServerAccessLogging, serialize_when_none=False)
+    website_hosting = ModelType(WebsiteHosting, serialize_when_none=False)
+    encryption = ModelType(Encryption, serialize_when_none=False)
+    object_lock = ModelType(ObjectLock, serialize_when_none=False)
+    tags = ListType(ModelType(Tags), default=[])
     transfer_acceleration = ModelType(TransferAcceleration)
     request_payment = ModelType(RequestPayment)
-    notification_configurations = ListType(ModelType(NotificationConfiguration))
+    notification_configurations = ListType(ModelType(NotificationConfiguration), default=[])
     region_name = StringType(default="")
     account_id = StringType(default="")
     cloudwatch = ModelType(CloudWatchModel, serialize_when_none=False)
-    # object_count = IntType(default=0)
-    # object_total_size = IntType(default=0)
+    object_count = IntType(default=0)
+    object_total_size = FloatType(default=0.0)
+    size = FloatType(default=0.0)
 
     def reference(self):
         return {

@@ -113,7 +113,7 @@ class RedshiftResource(CloudServiceResource):
 
 
 class ClusterResource(RedshiftResource):
-    cloud_service_type = StringType(default='RedshiftCluster')
+    cloud_service_type = StringType(default='Cluster')
     data = ModelType(Cluster)
     _metadata = ModelType(CloudServiceMeta, default=metadata, serialized_name='metadata')
 

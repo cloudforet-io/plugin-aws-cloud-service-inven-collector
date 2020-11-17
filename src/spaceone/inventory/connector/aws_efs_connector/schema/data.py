@@ -58,7 +58,7 @@ class FileSystem(Model):
     file_system_id = StringType(deserialize_from="FileSystemId")
     creation_time = DateTimeType(deserialize_from="CreationTime")
     life_cycle_state = StringType(deserialize_from="LifeCycleState", choices=("creating", "available", "updating",
-                                                                              "deleting", "deleted"))
+                                                                         "deleting", "deleted"))
     name = StringType(deserialize_from="Name")
     number_of_mount_targets = IntType(deserialize_from="NumberOfMountTargets")
     size_in_bytes = ModelType(SizeInBytes, deserialize_from="SizeInBytes")
@@ -72,6 +72,7 @@ class FileSystem(Model):
     life_cycle_policies = ListType(ModelType(LifecyclePolicy))
     mount_targets = ListType(ModelType(MountTarget))
     cloudwatch = ModelType(CloudWatchModel, serialize_when_none=False)
+    size = FloatType(default=0.0)
 
     def reference(self, region_code):
         return {
