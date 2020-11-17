@@ -48,13 +48,13 @@ class APIGatewayResource(CloudServiceResource):
 
 
 class RestAPIResource(APIGatewayResource):
-    cloud_service_type = StringType(default='RestAPI')
+    cloud_service_type = StringType(default='API')
     data = ModelType(RestAPI)
     _metadata = ModelType(CloudServiceMeta, default=rest_api_meta, serialized_name='metadata')
 
 
 class HTTPWebsocketResource(APIGatewayResource):
-    cloud_service_type = StringType(default='HTTPWebsocket')
+    cloud_service_type = StringType(default='API')
     data = ModelType(HTTPWebsocket)
     _metadata = ModelType(CloudServiceMeta, default=websocket_meta, serialized_name='metadata')
 
