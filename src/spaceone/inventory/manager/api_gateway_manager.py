@@ -6,7 +6,3 @@ from spaceone.inventory.libs.manager import AWSManager
 
 class APIGatewayConnectorManager(AWSManager):
     connector_name = 'APIGatewayConnector'
-
-
-class APIGatewayV2ConnectorManager(AWSManager):
-    connector_name = 'APIGatewayV2Connector'

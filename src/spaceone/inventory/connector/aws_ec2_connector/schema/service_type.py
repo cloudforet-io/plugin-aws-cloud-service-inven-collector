@@ -10,7 +10,7 @@ cst_instance.labels = ['Compute']
 cst_instance.is_primary = True
 cst_instance.is_major = True
 cst_instance.tags = {
-    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-VPC_VPN-Gateway_dark-bg.svg',
+    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/aws-ec2.svg',
 }
 
 cst_sg = CloudServiceTypeResource()
@@ -20,7 +20,6 @@ cst_sg.group = 'EC2'
 cst_sg.labels = ['Compute', 'Security']
 cst_sg.tags = {
     'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-VPC_VPN-Gateway_dark-bg.svg',
-    'spaceone:is_major': 'true',
 }
 
 cst_sg._metadata = CloudServiceTypeMeta.set_meta(
@@ -92,6 +91,7 @@ cst_ami._metadata = CloudServiceTypeMeta.set_meta(
 
 
 CLOUD_SERVICE_TYPES = [
+    CloudServiceTypeResponse({'resource': cst_instance}),
     CloudServiceTypeResponse({'resource': cst_sg}),
     CloudServiceTypeResponse({'resource': cst_ami}),
 ]
