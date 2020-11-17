@@ -1,7 +1,7 @@
 from spaceone.inventory.manager.cloudfront_manager import CloudFrontConnectorManager
 from spaceone.inventory.manager.lambda_manager import LambdaConnectorManager
 from spaceone.inventory.manager.rds_manager import RDSConnectorManager
-from spaceone.inventory.manager.api_gateway_manager import APIGatewayConnectorManager, APIGatewayV2ConnectorManager
+from spaceone.inventory.manager.api_gateway_manager import APIGatewayConnectorManager
 from spaceone.inventory.manager.auto_scaling_manager import AutoScalingConnectorManager
 from spaceone.inventory.manager.direct_connect_manager import DirectConnectConnectorManager
 from spaceone.inventory.manager.documentdb_manager import DocumentDBConnectorManager
