@@ -9,6 +9,7 @@ cst_instance.group = 'EC2'
 cst_instance.labels = ['Compute']
 cst_instance.is_primary = True
 cst_instance.is_major = True
+cst_instance.resource_type = 'inventory.Server'
 cst_instance.tags = {
     'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/aws-ec2.svg',
 }
