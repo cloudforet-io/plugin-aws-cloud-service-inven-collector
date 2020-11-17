@@ -103,7 +103,7 @@ class S3Connector(SchematicAWSConnector):
             if tags := self.get_tags(bucket_name):
                 raw.update({'tags': tags})
 
-            count, size = self.get_count_and_size(bucket_name, region_name)
+            count, size = self.get_count_and_size(bucket_name, raw.get('region_name'))
 
             raw.update({
                 'object_count': count,
