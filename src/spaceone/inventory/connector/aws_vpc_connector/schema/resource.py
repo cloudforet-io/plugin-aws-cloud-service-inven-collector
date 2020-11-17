@@ -47,6 +47,22 @@ vpc_subnet = TableDynamicLayout.set_fields('Subnet', 'data.subnets', fields=[
     }),
 ])
 
+vpc_route = TableDynamicLayout.set_fields('Route Tables', 'data.route_tables', fields=[
+    TextDyField.data_source('Route Table ID', 'route_table_id'),
+    TextDyField.data_source('Name', 'name'),
+    EnumDyField.data_source('Main', 'main', default_badge={
+        'indigo.500': ['Yes'], 'coral.600': ['No']
+    }),
+    ListDyField.data_source('Routes', 'routes', default_badge={
+        'type': 'outline',
+        'sub_key': 'destination',
+    }),
+    ListDyField.data_source('Subnets', 'subnet_associations', default_badge={
+        'type': 'outline',
+        'sub_key': 'subnet_id',
+    }),
+])
+
 vpc_igw = ItemDynamicLayout.set_fields('Internet Gateway', fields=[
     TextDyField.data_source('Internet Gateway ID', 'data.internet_gateway.internet_gateway_id'),
     EnumDyField.data_source('State', 'data.internet_gateway.state', default_state={
@@ -141,7 +157,7 @@ vpc_transit_gw = ItemDynamicLayout.set_fields('Transit Gateway', fields=[
 ])
 
 vpc_tags = SimpleTableDynamicLayout.set_tags()
-vpc_metadata = CloudServiceMeta.set_layouts(layouts=[vpc, vpc_subnet, vpc_igw, vpc_natgw, vpc_endpoints,
+vpc_metadata = CloudServiceMeta.set_layouts(layouts=[vpc, vpc_subnet, vpc_route, vpc_igw, vpc_natgw, vpc_endpoints,
                                                      vpc_peercon, vpc_egress_gw, vpn_gw, vpc_transit_gw, vpc_tags])
 
 
