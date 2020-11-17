@@ -6,10 +6,11 @@ cst_redshift_cluster = CloudServiceTypeResource()
 cst_redshift_cluster.name = 'Cluster'
 cst_redshift_cluster.provider = 'aws'
 cst_redshift_cluster.group = 'RedShift'
+cst_redshift_cluster.is_primary = True
+cst_redshift_cluster.is_major = True
 cst_redshift_cluster.labels = ['Database', 'Analytics']
 cst_redshift_cluster.tags = {
-    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-Redshift.svg',
-    'spaceone:is_major': 'true',
+    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-Redshift.svg'
 }
 
 cst_redshift_cluster._metadata = CloudServiceTypeMeta.set_meta(

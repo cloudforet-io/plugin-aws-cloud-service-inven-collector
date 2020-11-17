@@ -4,11 +4,12 @@ from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, Cl
 cst_ebs = CloudServiceTypeResource()
 cst_ebs.name = 'Volume'
 cst_ebs.provider = 'aws'
-cst_ebs.group = 'EBS'
+cst_ebs.group = 'EC2'
 cst_ebs.labels = ['Compute', 'Storage']
+cst_ebs.is_major = True
 cst_ebs.tags = {
     'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-Elastic-Block-Store-EBS.svg',
-    'spaceone:is_major': 'true',
+    'display_name': 'EBS'
 }
 cst_ebs._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
@@ -21,7 +22,7 @@ cst_ebs._metadata = CloudServiceTypeMeta.set_meta(
             'disable': ['deleted'],
             'alert': ['error']
         }),
-        TextDyField.data_source('Size (GB)', 'data.size'),
+        TextDyField.data_source('Size (GB)', 'data.size_gb'),
         EnumDyField.data_source('Volume Type', 'data.volume_type',
                                 default_outline_badge=['standard', 'io1', 'gp2', 'sc1', 'st1']),
         TextDyField.data_source('IOPS', 'data.iops'),
@@ -64,11 +65,10 @@ cst_ebs._metadata = CloudServiceTypeMeta.set_meta(
 cst_snapshot = CloudServiceTypeResource()
 cst_snapshot.name = 'Snapshot'
 cst_snapshot.provider = 'aws'
-cst_snapshot.group = 'EBS'
+cst_snapshot.group = 'EC2'
 cst_snapshot.labels = ['Compute', 'Storage']
 cst_snapshot.tags = {
     'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-Elastic-Block-Store-EBS.svg',
-    'spaceone:is_major': 'false',
 }
 cst_snapshot._metadata = CloudServiceTypeMeta.set_meta(
     fields=[

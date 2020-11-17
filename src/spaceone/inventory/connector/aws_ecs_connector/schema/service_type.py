@@ -5,10 +5,11 @@ cst_ecs_cluster = CloudServiceTypeResource()
 cst_ecs_cluster.name = 'Cluster'
 cst_ecs_cluster.provider = 'aws'
 cst_ecs_cluster.group = 'ECS'
-cst_ecs_cluster.labels = ['Container']
+cst_ecs_cluster.labels = ['Container', 'Compute']
+cst_ecs_cluster.is_primary = True
+cst_ecs_cluster.is_major = True
 cst_ecs_cluster.tags = {
     'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-Elastic-Container-Service.svg',
-    'spaceone:is_major': 'true',
 }
 
 cst_ecs_cluster._metadata = CloudServiceTypeMeta.set_meta(

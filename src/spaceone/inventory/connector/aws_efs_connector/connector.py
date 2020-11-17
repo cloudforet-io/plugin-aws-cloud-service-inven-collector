@@ -46,7 +46,9 @@ class EFSConnector(SchematicAWSConnector):
         )
         for data in response_iterator:
             for raw in data.get('FileSystems', []):
+                size = raw.get('SizeInBytes', {})
                 raw.update({
+                    'size': float(size.get('Value', 0.0)),
                     'life_cycle_policies': self.describe_lifecycle_configuration(raw['FileSystemId']),
                     'mount_targets': list(self.describe_mount_targets(raw['FileSystemId'])),
                     'account_id': self.account_id,

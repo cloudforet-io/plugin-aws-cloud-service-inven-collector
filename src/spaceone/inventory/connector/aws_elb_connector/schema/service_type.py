@@ -8,9 +8,10 @@ cst_elb.name = 'LoadBalancer'
 cst_elb.provider = 'aws'
 cst_elb.group = 'ELB'
 cst_elb.labels = ['Networking']
+cst_elb.is_primary = True
+cst_elb.is_major = True
 cst_elb.tags = {
     'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Elastic-Load-Balancing.svg',
-    'spaceone:is_major': 'true',
 }
 
 cst_elb._metadata = CloudServiceTypeMeta.set_meta(
@@ -79,7 +80,6 @@ cst_tg.group = 'ELB'
 cst_tg.labels = ['Networking']
 cst_tg.tags = {
     'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Elastic-Load-Balancing.svg',
-    'spaceone:is_major': 'false',
 }
 
 cst_tg._metadata = CloudServiceTypeMeta.set_meta(

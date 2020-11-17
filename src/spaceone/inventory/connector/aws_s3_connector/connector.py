@@ -2,7 +2,8 @@ import time
 import logging
 from typing import List
 from botocore.exceptions import ClientError
-
+from spaceone.core import utils
+from datetime import datetime, timedelta
 from spaceone.inventory.connector.aws_s3_connector.schema.data import Bucket, Versioning, ServerAccessLogging, \
     WebsiteHosting, ObjectLock, Encryption, Tags, TransferAcceleration, NotificationConfiguration, RequestPayment
 from spaceone.inventory.connector.aws_s3_connector.schema.resource import BucketResource, BucketResponse
@@ -59,14 +60,18 @@ class S3Connector(SchematicAWSConnector):
 
         for raw in response.get('Buckets', []):
             bucket_name = raw.get('Name')
+            region_name = self.get_bucket_location(bucket_name)
 
             raw.update({
-                'arn': self.generate_arn(service=self.service_name, region="", account_id="", resource_type=bucket_name,
+                'arn': self.generate_arn(service=self.service_name,
+                                         region="",
+                                         account_id="",
+                                         resource_type=bucket_name,
                                          resource_id="*"),
                 'account_id': self.account_id
             })
 
-            if region_name := self.get_bucket_location(bucket_name):
+            if region_name:
                 raw.update({'region_name': region_name})
 
             if versioning := self.get_bucket_versioning(bucket_name):
@@ -84,6 +89,9 @@ class S3Connector(SchematicAWSConnector):
             if object_lock := self.get_object_lock(bucket_name):
                 raw.update({'object_lock': object_lock})
 
+            if public_access := self.get_bucket_public_access(bucket_name):
+                raw.update({'public_access': public_access})
+
             if transfer_acceleration := self.get_transfer_acceleration(bucket_name):
                 raw.update({'transfer_acceleration': transfer_acceleration})
 
@@ -96,12 +104,13 @@ class S3Connector(SchematicAWSConnector):
             if tags := self.get_tags(bucket_name):
                 raw.update({'tags': tags})
 
-            # object_count, object_total_size = self.get_object_info(bucket_name)
-            #
-            # raw.update({
-            #     'object_count': object_count,
-            #     'object_total_size': object_total_size
-            # })
+            count, size = self.get_count_and_size(bucket_name, region_name)
+
+            raw.update({
+                'object_count': count,
+                'object_total_size': size,
+                'size': size
+            })
 
             res = Bucket(raw, strict=False)
             yield res
@@ -197,29 +206,92 @@ class S3Connector(SchematicAWSConnector):
         except ClientError as e:
             return None
 
+    def get_bucket_public_access(self, bucket_name):
+        public_access = False
+        try:
+            response = self.client.get_bucket_policy_status(Bucket=bucket_name)
+            policy_status = response.get('PolicyStatus', {})
+            public_access = policy_status.get('IsPublic', False)
+        except ClientError as e:
+            public_access = self.get_bucket_acl_info(bucket_name)
+
+        return "Public" if public_access else "Private"
+
+    def get_bucket_acl_info(self, bucket_name):
+        response = False
+        try:
+            acl = self.client.get_bucket_acl(Bucket=bucket_name)
+            for grants in acl.get('Grants', []):
+                uri = grants.get('Grantee').get('URI')
+                if uri is not None and uri.endswith('AllUsers'):
+                    response = True
+        except ClientError as e:
+            pass
+        return response
+
     def get_bucket_location(self, bucket_name):
         response = self.client.get_bucket_location(Bucket=bucket_name)
         return response.get('LocationConstraint')
 
-    def get_object_info(self, bucket_name):
-        object_count = 0
-        object_total_size = 0
+    def get_count_and_size(self, bucket_name, region_name):
+        self.reset_region(region_name)
+        self.set_client('cloudwatch')
+        count_dimensions = [{"Name": "BucketName", "Value": bucket_name},
+                            {"Name": "StorageType", "Value":"AllStorageTypes"}]
 
-        paginator = self.client.get_paginator('list_objects_v2')
-        response_iterator = paginator.paginate(
-            Bucket=bucket_name,
-            PaginationConfig={
-                'MaxItems': 10000,
-                'PageSize': 50,
-            }
+        size_dimensions = [{"Name": "BucketName", "Value":bucket_name},
+                           {"Name": "StorageType","Value": "StandardStorage"}]
+        count_param = self._get_metric_param('NumberOfObjects', count_dimensions)
+        size_param = self._get_metric_param('BucketSizeBytes', size_dimensions)
+
+        count = int(self.get_metric_data(count_param))
+        size = float(self.get_metric_data(size_param))
+        self.set_client('s3')
+        return count, size
+
+    def get_metric_data(self, params):
+        metric_id = f'metric_{utils.random_string()[:12]}'
+        extra_opts = {}
+
+        if params.get('limit'):
+            extra_opts['MaxDatapoints'] = params.get('limit')
+
+        response = self.client.get_metric_data(
+            MetricDataQueries=[{
+                'Id': metric_id,
+                'MetricStat': {
+                    'Metric': {
+                        'Namespace': params.get('namespace'),
+                        'MetricName': params.get('metric_name'),
+                        'Dimensions': params.get('dimensions')
+                    },
+                    'Period': params.get('period'),
+                    'Stat': params.get('stat')
+                }
+            }],
+            StartTime=params.get('start'),
+            EndTime=params.get('end'),
+            ScanBy='TimestampAscending',
+            **extra_opts
         )
-        for data in response_iterator:
-            object_count = object_count + data.get('KeyCount', 0)
 
-            for raw in data.get('Contents', []):
-                object_total_size = object_total_size + raw.get('Size', 0)
+        results = response.get('MetricDataResults', [])
+        target_value = results[0].get('Values') if len(results) > 0 else []
+        return target_value[len(target_value)-1] if len(target_value) > 0 else 0.0
 
-        return object_count, object_total_size
+
+    @staticmethod
+    def _get_metric_param(metric_name, dimensions):
+        end = datetime.utcnow()
+        return {'id': f'metric_{utils.random_string()[:12]}',
+                'namespace': 'AWS/S3',
+                'dimensions': dimensions,
+                'start': end - timedelta(days=7),
+                'end': datetime.utcnow(),
+                'period': 10800,
+                'metric_name': metric_name,
+                'stat': 'Average'
+        }
 
     @staticmethod
     def set_notification(notification_type, arn_key, confs):
