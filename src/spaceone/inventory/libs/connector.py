@@ -90,6 +90,10 @@ class AWSConnector(BaseConnector):
     def generate_arn(partition=ARN_DEFAULT_PARTITION, service="", region="", account_id="", resource_type="", resource_id=""):
         return f'arn:{partition}:{service}:{region}:{account_id}:{resource_type}/{resource_id}'
 
+    def set_client(self, service_name):
+        self.service_name = service_name
+        self._client = self.session.client(self.service_name)
+        return self._client
 
 class SchematicAWSConnector(AWSConnector):
     region_type = 'aws'
