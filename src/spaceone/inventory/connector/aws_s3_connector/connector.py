@@ -71,8 +71,7 @@ class S3Connector(SchematicAWSConnector):
                 'account_id': self.account_id
             })
 
-            if region_name:
-                raw.update({'region_name': region_name})
+            raw.update({'region_name': 'us-east-1' if region_name is None else region_name})
 
             if versioning := self.get_bucket_versioning(bucket_name):
                 raw.update({'versioning': versioning})
