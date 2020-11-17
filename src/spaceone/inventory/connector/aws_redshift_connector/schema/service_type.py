@@ -5,7 +5,7 @@ from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, Cl
 cst_redshift_cluster = CloudServiceTypeResource()
 cst_redshift_cluster.name = 'Cluster'
 cst_redshift_cluster.provider = 'aws'
-cst_redshift_cluster.group = 'RedShift'
+cst_redshift_cluster.group = 'Redshift'
 cst_redshift_cluster.is_primary = True
 cst_redshift_cluster.is_major = True
 cst_redshift_cluster.labels = ['Database', 'Analytics']
