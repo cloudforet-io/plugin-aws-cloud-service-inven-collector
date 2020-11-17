@@ -16,7 +16,7 @@ cst_bucket._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
         TextDyField.data_source('Name', 'data.name'),
         TextDyField.data_source('Region', 'data.region_name'),
-        EnumDyField.data_source('Public Access', 'data.public_access', default_badge={
+        EnumDyField.data_source('Access', 'data.public_access', default_badge={
             'indigo.500': ['Private'],
             'coral.600': ['Public']
         })
