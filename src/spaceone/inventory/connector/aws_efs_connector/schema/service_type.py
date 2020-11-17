@@ -10,8 +10,7 @@ cst_filesystem.is_primary = True
 cst_filesystem.is_major = True
 cst_filesystem.labels = ['Storage']
 cst_filesystem.tags = {
-    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-Elastic-File-System_EFS.svg',
-    'spaceone:is_major': 'true',
+    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-Elastic-File-System_EFS.svg'
 }
 
 cst_filesystem._metadata = CloudServiceTypeMeta.set_meta(
