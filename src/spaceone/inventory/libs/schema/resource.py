@@ -84,6 +84,7 @@ class CloudServiceTypeResource(Model):
     tags = DictType(StringType, serialize_when_none=False)
     is_primary = BooleanType(default=False)
     is_major = BooleanType(default=False)
+    resource_type = StringType(default='inventory.CloudService')
 
 
 class CloudServiceTypeResponse(BaseResponse):

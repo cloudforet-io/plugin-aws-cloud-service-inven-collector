@@ -29,7 +29,6 @@ class CollectorService(BaseService):
             'AutoScalingConnectorManager',
             # 'ElastiCacheConnectorManager',
             'APIGatewayConnectorManager',
-            'APIGatewayV2ConnectorManager',
             'DirectConnectConnectorManager',
             # 'WorkSpaceConnectorManager',
             'EFSConnectorManager',
