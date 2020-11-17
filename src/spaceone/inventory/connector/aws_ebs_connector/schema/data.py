@@ -1,7 +1,7 @@
 import logging
 
 from schematics import Model
-from schematics.types import ModelType, StringType, IntType, DateTimeType, serializable, ListType, BooleanType
+from schematics.types import ModelType, StringType, IntType, DateTimeType, ListType, BooleanType, FloatType
 from spaceone.inventory.libs.schema.resource import CloudWatchModel, CloudWatchDimensionModel
 
 _LOGGER = logging.getLogger(__name__)
@@ -90,7 +90,8 @@ class Volume(Model):
     kms_key_id = StringType(default="")
     kms_key_arn = StringType(deserialize_from="KmsKeyId")
     outpost_arn = StringType(deserialize_from="OutpostArn")
-    size = IntType(deserialize_from="Size")
+    size = FloatType(default=0)
+    size_gb = IntType(deserialize_from="Size")
     snapshot_id = StringType(deserialize_from="SnapshotId")
     state = StringType(deserialize_from="State", choices=("creating", "available", "in-use",
                                                           "deleting", "deleted", "error"))
