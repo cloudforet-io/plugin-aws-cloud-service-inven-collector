@@ -11,7 +11,6 @@ cst_group.group = 'IAM'
 cst_group.labels = ['Security']
 cst_group.tags = {
     'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/AWS-Identity-and-Access-Management_IAM.svg',
-    'spaceone:is_major': 'true',
 }
 
 cst_group._metadata = CloudServiceTypeMeta.set_meta(
@@ -35,9 +34,9 @@ cst_user.name = 'User'
 cst_user.provider = 'aws'
 cst_user.group = 'IAM'
 cst_user.labels = ['Security']
+cst_user.is_primary = True
 cst_user.tags = {
     'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/AWS-Identity-and-Access-Management_IAM.svg',
-    'spaceone:is_major': 'true',
 }
 
 cst_user._metadata = CloudServiceTypeMeta.set_meta(
@@ -75,7 +74,6 @@ cst_user._metadata = CloudServiceTypeMeta.set_meta(
             'Inactive': {'label': 'Inactive'},
         }),
         SearchField.set(name='SSH Key Upload Time', key='data.ssh_public_key.upload_date', data_type='datetime'),
-        SearchField.set(name='SSH Key Upload Time', key='data.ssh_public_key.upload_date', data_type='datetime'),
         SearchField.set(name='CodeCommit User Name', key='data.code_commit_credential.service_user_name'),
         SearchField.set(name='CodeCommit Status', key='data.code_commit_credential.status', enums={
             'Active': {'label': 'Active'},
@@ -102,7 +100,6 @@ cst_role.group = 'IAM'
 cst_role.labels = ['Security']
 cst_role.tags = {
     'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/AWS-Identity-and-Access-Management_IAM.svg',
-    'spaceone:is_major': 'false',
 }
 
 cst_role._metadata = CloudServiceTypeMeta.set_meta(
@@ -130,7 +127,6 @@ cst_policy.group = 'IAM'
 cst_policy.labels = ['Security']
 cst_policy.tags = {
     'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/AWS-Identity-and-Access-Management_IAM.svg',
-    'spaceone:is_major': 'false',
 }
 
 cst_policy._metadata = CloudServiceTypeMeta.set_meta(
@@ -162,7 +158,6 @@ cst_identity_provider.group = 'IAM'
 cst_identity_provider.labels = ['Security']
 cst_identity_provider.tags = {
     'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/AWS-Identity-and-Access-Management_IAM.svg',
-    'spaceone:is_major': 'false',
 }
 
 cst_identity_provider._metadata = CloudServiceTypeMeta.set_meta(
@@ -173,7 +168,7 @@ cst_identity_provider._metadata = CloudServiceTypeMeta.set_meta(
     search=[
         SearchField.set(name='Identity Provider URL', key='data.url'),
         SearchField.set(name='Identity Provider ARN', key='data.arn'),
-        SearchField.set(name='provider_type', key='data.provider_type'),
+        SearchField.set(name='Provider Type', key='data.provider_type'),
         SearchField.set(name='Creation Time', key='data.create_date', data_type='datetime')
     ]
 )

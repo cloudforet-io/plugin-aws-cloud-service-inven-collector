@@ -6,9 +6,10 @@ cst_que.name = 'Queue'
 cst_que.provider = 'aws'
 cst_que.group = 'SQS'
 cst_que.labels = ['Application Integration']
+cst_que.is_primary = True
+cst_que.is_major = True
 cst_que.tags = {
     'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-SQS.svg',
-    'spaceone:is_major': 'true',
 }
 
 cst_que._metadata = CloudServiceTypeMeta.set_meta(

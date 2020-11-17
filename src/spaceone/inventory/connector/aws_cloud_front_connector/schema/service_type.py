@@ -6,9 +6,10 @@ cst_distribution.name = 'Distribution'
 cst_distribution.provider = 'aws'
 cst_distribution.group = 'CloudFront'
 cst_distribution.labels = ['Networking']
+cst_distribution.is_primary = True
+cst_distribution.is_major = True
 cst_distribution.tags = {
     'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-CloudFront.svg',
-    'spaceone:is_major': 'false',
 }
 
 cst_distribution._metadata = CloudServiceTypeMeta.set_meta(
