@@ -1,4 +1,4 @@
-from spaceone.inventory.libs.schema.dynamic_field import TextDyField, SearchField
+from spaceone.inventory.libs.schema.dynamic_field import TextDyField, SearchField, EnumDyField
 from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, CloudServiceTypeMeta
 
 cst_bucket = CloudServiceTypeResource()
@@ -16,7 +16,10 @@ cst_bucket._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
         TextDyField.data_source('Name', 'data.name'),
         TextDyField.data_source('Region', 'data.region_name'),
-        TextDyField.data_source('Access', 'data.access'),
+        EnumDyField.data_source('Access', 'data.public_access', default_badge={
+            'indigo.500': ['Private'],
+            'coral.600': ['Public']
+        })
     ],
     search=[
         SearchField.set(name='Bucket Name', key='data.name'),
