@@ -173,6 +173,7 @@ class CollectorService(BaseService):
             'sa-east-1': {'name': 'South America (São Paulo)', 'tags': {'latitude': '-23.493549', 'longitude': '-46.809319'}},
             'us-gov-east-1': {'name': 'AWS GovCloud (US-East)'},
             'us-gov-west-1': {'name': 'AWS GovCloud (US)'},
+            'global': {'name': 'Global'}
         }
 
         match_region_info = REGION_INFO.get(region_name, None)
