@@ -146,7 +146,8 @@ class CollectorService(BaseService):
 
         return None
 
-    def match_region_info(self, region_name):
+    @staticmethod
+    def match_region_info(region_name):
         REGION_INFO = {
             'us-east-1': {'name': 'US East (N. Virginia)', 'tags': {'latitude': '39.028760', 'longitude': '-77.458263'}},
             'us-east-2': {'name': 'US East (Ohio)', 'tags': {'latitude': '40.103564', 'longitude': '-83.200092'}},

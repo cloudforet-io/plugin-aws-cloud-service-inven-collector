@@ -43,7 +43,6 @@ class S3Connector(SchematicAWSConnector):
                 if data.get('region_name'):
                     bucket_resource.update({
                         'region_code': data.get('region_name'),
-                        'region_type': 'AWS'
                     })
 
                 resources.append(self.response_schema({'resource': BucketResource(bucket_resource)}))

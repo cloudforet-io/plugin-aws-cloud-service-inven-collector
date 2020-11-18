@@ -85,6 +85,7 @@ class CloudServiceTypeResource(Model):
     is_primary = BooleanType(default=False)
     is_major = BooleanType(default=False)
     resource_type = StringType(default='inventory.CloudService')
+    service_code = StringType(serialize_when_none=False)
 
 
 class CloudServiceTypeResponse(BaseResponse):
@@ -99,7 +100,6 @@ class CloudServiceResource(Model):
     cloud_service_group = StringType()
     data = PolyModelType(Model, default=lambda: {})
     reference = ModelType(ReferenceModel)
-    region_type = StringType(serialize_when_none=False)
     region_code = StringType(serialize_when_none=False)
     _metadata = PolyModelType(CloudServiceMeta, serialize_when_none=False, serialized_name='metadata')
 
@@ -107,7 +107,7 @@ class CloudServiceResource(Model):
 class RegionResource(Model):
     name = StringType(default="")
     region_code = StringType()
-    region_type = StringType(default="AWS")
+    provider = StringType(default='aws')
     tags = DictType(StringType)
 
 
@@ -121,5 +121,5 @@ class CloudServiceResponse(BaseResponse):
 
 class RegionResponse(BaseResponse):
     resource_type = StringType(default='inventory.Region')
-    match_rules = DictType(ListType(StringType), default={'1': ['region_type', 'region_code']})
+    match_rules = DictType(ListType(StringType), default={'1': ['provider', 'region_code']})
     resource = PolyModelType(RegionResource)

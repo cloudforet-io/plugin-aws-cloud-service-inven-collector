@@ -9,6 +9,7 @@ cst_eks_cluster.group = 'EKS'
 cst_eks_cluster.labels = ['Container', 'Compute']
 cst_eks_cluster.is_primary = True
 cst_eks_cluster.is_major = True
+cst_eks_cluster.service_code = 'AmazonEKS'
 cst_eks_cluster.tags = {
     'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-Elastic-Kubernetes-Service.svg',
 }

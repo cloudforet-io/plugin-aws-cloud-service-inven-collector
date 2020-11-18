@@ -96,7 +96,6 @@ class AWSConnector(BaseConnector):
         return self._client
 
 class SchematicAWSConnector(AWSConnector):
-    region_type = 'aws'
     function_response_schema = CloudServiceResponse
 
     def get_resources(self) -> List[CloudServiceResponse]:
@@ -133,7 +132,6 @@ class SchematicAWSConnector(AWSConnector):
                 resources.append(collect_resource_info['response_schema'](
                     {'resource': collect_resource_info['resource'](
                         {'data': data,
-                         'region_type': 'AWS',
                          'region_code': region_name,
                          'reference': ReferenceModel(data.reference(region_name))})}
                 ))

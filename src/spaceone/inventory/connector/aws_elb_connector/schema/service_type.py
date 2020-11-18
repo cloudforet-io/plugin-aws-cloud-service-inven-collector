@@ -10,6 +10,7 @@ cst_elb.group = 'ELB'
 cst_elb.labels = ['Networking']
 cst_elb.is_primary = True
 cst_elb.is_major = True
+cst_elb.service_code = 'AWSELB'
 cst_elb.tags = {
     'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Elastic-Load-Balancing.svg',
 }
@@ -78,6 +79,7 @@ cst_tg.name = 'TargetGroup'
 cst_tg.provider = 'aws'
 cst_tg.group = 'ELB'
 cst_tg.labels = ['Networking']
+cst_tg.service_code = 'AWSELB'
 cst_tg.tags = {
     'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Elastic-Load-Balancing.svg',
 }
