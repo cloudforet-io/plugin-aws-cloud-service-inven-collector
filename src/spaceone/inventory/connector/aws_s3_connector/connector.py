@@ -46,8 +46,7 @@ class S3Connector(SchematicAWSConnector):
                         'region_type': 'AWS'
                     })
 
-                resources.append(self.response_schema(
-                    {'resource': BucketResource(bucket_resource)}))
+                resources.append(self.response_schema({'resource': BucketResource(bucket_resource)}))
 
         except Exception as e:
             print(f'[ERROR {self.service_name}] {e}')

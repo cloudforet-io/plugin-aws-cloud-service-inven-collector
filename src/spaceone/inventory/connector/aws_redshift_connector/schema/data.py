@@ -2,7 +2,7 @@ import logging
 
 from schematics import Model
 from spaceone.inventory.libs.schema.resource import CloudWatchModel, CloudWatchDimensionModel
-from schematics.types import ModelType, StringType, IntType, DateTimeType, serializable, ListType, BooleanType, \
+from schematics.types import ModelType, StringType, IntType, DateTimeType, ListType, BooleanType, \
     FloatType
 
 _LOGGER = logging.getLogger(__name__)
