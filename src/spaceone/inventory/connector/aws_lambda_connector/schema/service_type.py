@@ -9,6 +9,7 @@ cst_function.group = 'Lambda'
 cst_function.labels = ['Compute']
 cst_function.is_primary = True
 cst_function.is_major = True
+cst_function.service_code = 'AWSLambda'
 cst_function.tags = {
     'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/AWS-Lambda.svg',
 }
@@ -49,6 +50,7 @@ cst_layer.name = 'Layer'
 cst_layer.provider = 'aws'
 cst_layer.group = 'Lambda'
 cst_layer.labels = ['Compute']
+cst_layer.service_code = 'AWSLambda'
 cst_layer.tags = {
     'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/AWS-Lambda.svg',
 }

@@ -10,6 +10,7 @@ cst_api.group = 'APIGateway'
 cst_api.labels = ['Networking']
 cst_api.is_primary = True
 cst_api.is_major = True
+cst_api.service_code = 'AmazonApiGateway'
 cst_api.tags = {
     'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-API-Gateway.svg',
 }

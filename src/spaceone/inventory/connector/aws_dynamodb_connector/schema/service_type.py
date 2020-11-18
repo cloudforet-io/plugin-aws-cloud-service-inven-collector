@@ -8,6 +8,7 @@ cst_table.group = 'DynamoDB'
 cst_table.labels = ['Database']
 cst_table.is_primary = True
 cst_table.is_major = True
+cst_table.service_code = 'AmazonDynamoDB'
 cst_table.tags = {
     'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-DynamoDB.svg',
 }

@@ -8,6 +8,7 @@ cst_secret.provider = 'aws'
 cst_secret.group = 'SecretsManager'
 cst_secret.labels = ['Security']
 cst_secret.is_primary = True
+cst_secret.service_code = 'AWSSecretsManager'
 cst_secret.tags = {
     'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/AWS-Secrets-Manager.svg',
 }
