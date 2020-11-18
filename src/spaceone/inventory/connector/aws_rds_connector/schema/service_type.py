@@ -2,33 +2,34 @@ from spaceone.inventory.libs.schema.dynamic_field import TextDyField, DateTimeDy
     BadgeDyField, SearchField
 from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, CloudServiceTypeMeta
 
+
+'''
+Database
+'''
 cst_rds_database = CloudServiceTypeResource()
 cst_rds_database.name = 'Database'
 cst_rds_database.provider = 'aws'
 cst_rds_database.group = 'RDS'
 cst_rds_database.labels = ['Database']
+cst_rds_database.is_primary = True
+cst_rds_database.is_major = True
+cst_rds_database.service_code = 'AmazonRDS'
 cst_rds_database.tags = {
     'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-RDS.svg',
-    'spaceone:is_major': 'true',
 }
 
 cst_rds_database._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
         TextDyField.data_source('DB Identifier', 'data.db_identifier'),
-        EnumDyField.data_source('Role', 'data.role', default_badge={
-            'indigo.500': ['cluster'], 'coral.600': ['instance']
-        }),
-        EnumDyField.data_source('Engine', 'data.engine',
-                                default_outline_badge=['aurora', 'mysql', 'mariadb', 'postgres', 'oracle-ee', 'oracle-se',
-                                                       'oracle-se1', 'oracle-se2','sqlserver-ex', 'sqlserver-web',
-                                                       'sqlserver-se', 'sqlserver-ee']),
-        TextDyField.data_source('Size', 'data.size'),
+        TextDyField.data_source('Role', 'data.role'),
+        TextDyField.data_source('Engine', 'data.engine'),
         EnumDyField.data_source('Status', 'data.status', default_state={
             'safe': ['available'],
             'warning': ['creating', 'deleting', 'maintenance', 'modifying', 'rebooting',
                         'renaming', 'starting', 'stopping', 'upgrading'],
             'alert': ['failed', 'inaccessible-encryption-credentials', 'restore-error', 'stopped', 'storage-full']
         }),
+        TextDyField.data_source('Size', 'data.size_display'),
         TextDyField.data_source('VPC', 'data.vpc_id'),
         TextDyField.data_source('Region & AZ', 'data.availability_zone'),
         EnumDyField.data_source('Multi-AZ', 'data.multi_az', default_badge={
@@ -78,14 +79,93 @@ cst_rds_database._metadata = CloudServiceTypeMeta.set_meta(
     ]
 )
 
+'''
+Instance
+'''
+cst_rds_instance = CloudServiceTypeResource()
+cst_rds_instance.name = 'Instance'
+cst_rds_instance.provider = 'aws'
+cst_rds_instance.group = 'RDS'
+cst_rds_instance.labels = ['Database']
+cst_rds_instance.is_major = True
+cst_rds_instance.service_code = 'AmazonRDS'
+cst_rds_instance.tags = {
+    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-RDS.svg',
+}
+
+cst_rds_instance._metadata = CloudServiceTypeMeta.set_meta(
+    fields=[
+        TextDyField.data_source('DB Identifier', 'data.db_identifier'),
+        TextDyField.data_source('Role', 'data.role'),
+        TextDyField.data_source('Engine', 'data.engine'),
+        EnumDyField.data_source('Status', 'data.status', default_state={
+            'safe': ['available'],
+            'warning': ['creating', 'deleting', 'maintenance', 'modifying', 'rebooting',
+                        'renaming', 'starting', 'stopping', 'upgrading'],
+            'alert': ['failed', 'inaccessible-encryption-credentials', 'restore-error', 'stopped', 'storage-full']
+        }),
+        TextDyField.data_source('Size', 'data.size'),
+        TextDyField.data_source('VPC', 'data.vpc_id'),
+        TextDyField.data_source('Region & AZ', 'data.az_display'),
+        EnumDyField.data_source('Multi-AZ', 'data.multi_az', default_badge={
+            'indigo.500': ['true'], 'coral.600': ['false']
+        }),
+        TextDyField.data_source('Maintenance', 'data.maintenance'),
+    ],
+    search=[
+        SearchField.set(name='DB Identifier', key='data.db_identifier'),
+        SearchField.set(name='ARN', key='data.arn'),
+        SearchField.set(name='Role', key='data.role',
+                        enums={
+                            'cluster': {'label': 'Cluster'},
+                            'instance': {'label': 'Instance'},
+                        }),
+        SearchField.set(name='Status', key='data.status',
+                        enums={
+                            "available": {'label': 'Available', 'icon': {'color': 'green.500'}},
+                            "creating": {'label': 'Creating', 'icon': {'color': 'yellow.400'}},
+                            "deleting": {'label': 'Deleting', 'icon': {'color': 'yellow.400'}},
+                            "maintenance": {'label': 'Maintenance', 'icon': {'color': 'yellow.400'}},
+                            "modifying": {'label': 'Modifying', 'icon': {'color': 'yellow.400'}},
+                            "rebooting": {'label': 'Rebooting', 'icon': {'color': 'yellow.400'}},
+                            "renaming": {'label': 'Renaming', 'icon': {'color': 'yellow.400'}},
+                            "starting": {'label': 'Starting', 'icon': {'color': 'yellow.400'}},
+                            "stopping": {'label': 'Stopping', 'icon': {'color': 'yellow.400'}},
+                            "upgrading": {'label': 'Upgrading', 'icon': {'color': 'yellow.400'}},
+                            "failed": {'label': 'Failed', 'icon': {'color': 'red.500'}},
+                            "inaccessible-encryption-credentials": {'label': 'Inaccessible Encryption Credentials',
+                                                                    'icon': {'color': 'red.500'}},
+                            "restore-error": {'label': 'Restore Error', 'icon': {'color': 'red.500'}},
+                            "stopped": {'label': 'Stopped', 'icon': {'color': 'red.500'}},
+                            "storage-full": {'label': 'Storage Full', 'icon': {'color': 'red.500'}},
+                        }),
+        SearchField.set(name='Engine', key='data.engine'),
+        SearchField.set(name='Size', key='data.size'),
+        SearchField.set(name='Availability Zone', key='data.availability_zone'),
+        SearchField.set(name='Multi AZ', key='data.multi_az', data_type='boolean'),
+        SearchField.set(name='Cluster Endpoint', key='data.cluster.endpoint'),
+        SearchField.set(name='Cluster Reader Endpoint', key='data.cluster.reader_endpoint'),
+        SearchField.set(name='Cluster Custom Endpoint', key='data.cluster.custom_endpoints'),
+        SearchField.set(name='Cluster Port', key='data.cluster.port', data_type='integer'),
+        SearchField.set(name='Instance Endpoint', key='data.instance.endpoint'),
+        SearchField.set(name='Instance Port', key='data.instance.db_instance_port', data_type='integer'),
+        SearchField.set(name='Region', key='data.region_name'),
+        SearchField.set(name='AWS Account ID', key='data.account_id'),
+    ]
+)
+
+
+'''
+Snapshot
+'''
 cst_rds_snapshot = CloudServiceTypeResource()
 cst_rds_snapshot.name = 'Snapshot'
 cst_rds_snapshot.provider = 'aws'
 cst_rds_snapshot.group = 'RDS'
 cst_rds_snapshot.labels = ['Database']
+cst_rds_snapshot.service_code = 'AmazonRDS'
 cst_rds_snapshot.tags = {
     'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-RDS.svg',
-    'spaceone:is_major': 'false',
 }
 cst_rds_snapshot._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
@@ -121,14 +201,17 @@ cst_rds_snapshot._metadata = CloudServiceTypeMeta.set_meta(
     ]
 )
 
+'''
+SubnetGroup
+'''
 cst_rds_subnetgrp = CloudServiceTypeResource()
 cst_rds_subnetgrp.name = 'SubnetGroup'
 cst_rds_subnetgrp.provider = 'aws'
 cst_rds_subnetgrp.group = 'RDS'
 cst_rds_subnetgrp.labels = ['Database']
+cst_rds_subnetgrp.service_code = 'AmazonRDS'
 cst_rds_subnetgrp.tags = {
     'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-RDS.svg',
-    'spaceone:is_major': 'false',
 }
 cst_rds_subnetgrp._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
@@ -155,9 +238,9 @@ cst_rds_paramgrp.name = 'ParameterGroup'
 cst_rds_paramgrp.provider = 'aws'
 cst_rds_paramgrp.group = 'RDS'
 cst_rds_paramgrp.labels = ['Database']
+cst_rds_paramgrp.service_code = 'AmazonRDS'
 cst_rds_paramgrp.tags = {
     'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-RDS.svg',
-    'spaceone:is_major': 'false',
 }
 cst_rds_paramgrp._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
@@ -174,14 +257,17 @@ cst_rds_paramgrp._metadata = CloudServiceTypeMeta.set_meta(
     ]
 )
 
+'''
+OptionGroup
+'''
 cst_rds_optgrp = CloudServiceTypeResource()
 cst_rds_optgrp.name = 'OptionGroup'
 cst_rds_optgrp.provider = 'aws'
 cst_rds_optgrp.group = 'RDS'
 cst_rds_optgrp.labels = ['Database']
+cst_rds_optgrp.service_code = 'AmazonRDS'
 cst_rds_optgrp.tags = {
     'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-RDS.svg',
-    'spaceone:is_major': 'false',
 }
 cst_rds_optgrp._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
@@ -203,6 +289,7 @@ cst_rds_optgrp._metadata = CloudServiceTypeMeta.set_meta(
 
 CLOUD_SERVICE_TYPES = [
     CloudServiceTypeResponse({'resource': cst_rds_database}),
+    CloudServiceTypeResponse({'resource': cst_rds_instance}),
     CloudServiceTypeResponse({'resource': cst_rds_snapshot}),
     CloudServiceTypeResponse({'resource': cst_rds_subnetgrp}),
     CloudServiceTypeResponse({'resource': cst_rds_paramgrp}),

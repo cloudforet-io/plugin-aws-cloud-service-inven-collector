@@ -8,6 +8,7 @@ cst_ecs_cluster.group = 'ECS'
 cst_ecs_cluster.labels = ['Container', 'Compute']
 cst_ecs_cluster.is_primary = True
 cst_ecs_cluster.is_major = True
+cst_ecs_cluster.service_code = 'AmazonECS'
 cst_ecs_cluster.tags = {
     'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-Elastic-Container-Service.svg',
 }

@@ -9,9 +9,7 @@ from spaceone.inventory.libs.schema.dynamic_layout import ItemDynamicLayout, Tab
 
 summary = ItemDynamicLayout.set_fields('Summary', fields=[
     TextDyField.data_source('DB Identifier', 'data.db_identifier'),
-    EnumDyField.data_source('Role', 'data.role', default_badge={
-        'indigo.500': ['cluster'], 'coral.600': ['instance']
-    }),
+    TextDyField.data_source('Role', 'data.role'),
     EnumDyField.data_source('Status', 'data.status', default_state={
         'safe': ['available'],
         'warning': ['creating', 'deleting', 'maintenance', 'modifying', 'rebooting',

@@ -8,6 +8,7 @@ cst_eip.provider = 'aws'
 cst_eip.group = 'EC2'
 cst_eip.labels = ['Networking', 'Compute']
 cst_eip.is_major = True
+cst_eip.service_code = 'AmazonEC2'
 cst_eip.tags = {
     'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-EC2_Elastic-IP-Address_light-bg.svg',
 }
