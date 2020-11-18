@@ -32,7 +32,9 @@ class CFConnector(SchematicAWSConnector):
 
                 resources.append(self.response_schema(
                     {'resource': DistributionResource({'data': data,
-                                                       'reference': ReferenceModel(data.reference())})}))
+                                                       'reference': ReferenceModel(data.reference()),
+                                                       'region_type': 'AWS',
+                                                       'region_code': 'global'})}))
         except Exception as e:
             print(f'[ERROR {self.service_name}] {e}')
 
