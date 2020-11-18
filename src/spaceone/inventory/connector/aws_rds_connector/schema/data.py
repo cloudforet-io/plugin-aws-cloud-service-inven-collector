@@ -344,6 +344,18 @@ class Instance(Model):
     max_allocated_storage = IntType(deserialize_from="MaxAllocatedStorage")
     tags = ListType(ModelType(Tags))
 
+    def reference(self, region_code):
+        return {
+            "resource_id": self.db_instance_arn,
+            "external_link": f"https://console.aws.amazon.com/rds/home?region={region_code}#database:id={self.db_instance_identifier};is-cluster=false"
+        }
+
+    def set_cloudwatch(self, region_code):
+        return {
+            "namespace": "AWS/RDS",
+            "dimensions": [CloudWatchDimensionModel({"Name": "DBInstanceIdentifier", "Value": self.db_instance_identifier})],
+            "region_name": region_code
+        }
 
 '''
 CLUSTER
@@ -444,7 +456,7 @@ class Database(Model):
     arn = StringType()
     db_identifier = StringType()
     status = StringType()
-    role = StringType()
+    role = StringType(choices=('cluster', 'instance'))
     engine = StringType()
     availability_zone = StringType()
     size = StringType()

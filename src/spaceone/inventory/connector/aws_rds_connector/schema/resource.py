@@ -1,7 +1,7 @@
-from schematics.types import ModelType, StringType, PolyModelType, DictType, ListType
+from schematics.types import ModelType, StringType, PolyModelType
 
-from spaceone.inventory.connector.aws_rds_connector.schema.data import Database, Snapshot, SubnetGroup, ParameterGroup, \
-    OptionGroup
+from spaceone.inventory.connector.aws_rds_connector.schema.data import Database, Instance, Snapshot, SubnetGroup, \
+    ParameterGroup, OptionGroup
 from spaceone.inventory.libs.schema.resource import CloudServiceResource, CloudServiceResponse, CloudServiceMeta
 from spaceone.inventory.libs.schema.dynamic_field import TextDyField, ListDyField, BadgeDyField, EnumDyField, \
     DateTimeDyField
@@ -168,7 +168,7 @@ snapshot = ItemDynamicLayout.set_fields('Snapshot', fields=[
     TextDyField.data_source('Cluster/Instance Name', 'data.db_instance_identifier'),
     EnumDyField.data_source('Type', 'data.snapshot_type', default_outline_badge=['manual', 'automated']),
     EnumDyField.data_source('Storage Type', 'data.storage_type',
-                             default_outline_badge=['standard', 'io1', 'gp2', 'st1', 'sc1']),
+                            default_outline_badge=['standard', 'io1', 'gp2', 'st1', 'sc1']),
     TextDyField.data_source('Allocated Size', 'data.allocated_storage'),
     EnumDyField.data_source('DB Engine', 'data.engine',
                             default_outline_badge=['aurora', 'aurora-mysql', 'docdb', 'mysql', 'mariadb', 'postgres', 'oracle-ee', 'oracle-se',
@@ -276,16 +276,26 @@ class DatabaseResource(RDSResource):
     data = ModelType(Database)
 
 
-class DBInstanceResource(DatabaseResource):
-    _metadata = ModelType(CloudServiceMeta, default=instance_metadata, serialized_name='metadata')
-
-
 class DBClusterResource(DatabaseResource):
     _metadata = ModelType(CloudServiceMeta, default=cluster_metadata, serialized_name='metadata')
 
 
+class DBInstanceResource(DatabaseResource):
+    _metadata = ModelType(CloudServiceMeta, default=instance_metadata, serialized_name='metadata')
+
+
+class InstanceResource(RDSResource):
+    cloud_service_type = StringType(default='Instance')
+    data = ModelType(Instance)
+    _metadata = ModelType(CloudServiceMeta, default=instance_metadata, serialized_name='metadata')
+
+
 class DatabaseResponse(CloudServiceResponse):
     resource = PolyModelType([DBInstanceResource, DBClusterResource])
+
+
+class InstanceResponse(CloudServiceResponse):
+    resource = ModelType(InstanceResource)
 
 
 class SnapshotResource(RDSResource):
