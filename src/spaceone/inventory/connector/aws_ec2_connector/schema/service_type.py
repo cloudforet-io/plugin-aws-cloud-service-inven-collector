@@ -2,19 +2,6 @@ from spaceone.inventory.libs.schema.dynamic_field import TextDyField, SearchFiel
 from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, \
     CloudServiceTypeMeta
 
-cst_instance = CloudServiceTypeResource()
-cst_instance.name = 'Instance'
-cst_instance.provider = 'aws'
-cst_instance.group = 'EC2'
-cst_instance.labels = ['Compute']
-cst_instance.is_primary = True
-cst_instance.is_major = True
-cst_instance.resource_type = 'inventory.Server'
-cst_instance.service_code = 'AmazonEC2'
-cst_instance.tags = {
-    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/aws-ec2.svg',
-}
-
 cst_sg = CloudServiceTypeResource()
 cst_sg.name = 'SecurityGroup'
 cst_sg.provider = 'aws'
@@ -95,7 +82,6 @@ cst_ami._metadata = CloudServiceTypeMeta.set_meta(
 
 
 CLOUD_SERVICE_TYPES = [
-    CloudServiceTypeResponse({'resource': cst_instance}),
     CloudServiceTypeResponse({'resource': cst_sg}),
     CloudServiceTypeResponse({'resource': cst_ami}),
 ]
