@@ -10,7 +10,7 @@ cst_ebs.is_major = True
 cst_ebs.service_code = 'AmazonEC2'
 cst_ebs.tags = {
     'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-Elastic-Block-Store-EBS.svg',
-    'display_name': 'EBS'
+    'spaceone:display_name': 'EBS'
 }
 cst_ebs._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
