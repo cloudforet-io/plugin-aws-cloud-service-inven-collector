@@ -96,6 +96,16 @@ class AutoScalingConnector(SchematicAWSConnector):
                                                 self._describe_lifecycle_hooks(raw['AutoScalingGroupName']))),
                     'account_id': self.account_id
                 })
+
+                if raw.get('LaunchConfigurationName'):
+                    raw.update({
+                        'display_launch_configuration_template': raw.get('LaunchConfigurationName')
+                    })
+                elif raw.get('LaunchTemplate'):
+                    raw.update({
+                        'display_launch_configuration_template': raw.get('LaunchTemplate').get('LaunchTemplateName')
+                    })
+
                 res = AutoScalingGroup(raw, strict=False)
                 yield res
 
@@ -137,7 +147,7 @@ class AutoScalingConnector(SchematicAWSConnector):
                     'version_description': match_lt_version.get('VersionDescription'),
                     'default_version': match_lt_version.get('DefaultVersion'),
                     'account_id': self.account_id,
-                    'launch_template_data': match_lt_data,
+                    'launch_template': match_lt_data,
                     'arn': self.generate_arn(service="ec2", region="", account_id="",
                                              resource_type="launch_template",
                                              resource_id=raw['LaunchTemplateId'] + '/v' + str(

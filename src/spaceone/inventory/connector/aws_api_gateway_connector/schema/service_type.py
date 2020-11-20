@@ -19,9 +19,8 @@ cst_api._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
         TextDyField.data_source('ID', 'data.id'),
         TextDyField.data_source('Name', 'data.name'),
-        EnumDyField.data_source('Protocol', 'data.protocol', default_outline_badge=['REST', 'WebSocket', 'HTTP']),
+        EnumDyField.data_source('Protocol', 'data.protocol', default_outline_badge=['REST', 'WEBSOCKET', 'HTTP']),
         TextDyField.data_source('Endpoint Type', 'data.endpoint_type'),
-        TextDyField.data_source('Description', 'data.description'),
         DateTimeDyField.data_source('Creation Time', 'data.created_date')
     ],
     search=[
@@ -30,7 +29,6 @@ cst_api._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='ARN', key='data.arn'),
         SearchField.set(name='Protocol', key='data.protocol'),
         SearchField.set(name='Endpoint Type', key='data.endpoint_type'),
-        SearchField.set(name='Region', key='data.region_name'),
         SearchField.set(name='AWS Account ID', key='data.account_id'),
         SearchField.set(name='Creation Time', key='data.create_date', data_type='datetime'),
     ]
