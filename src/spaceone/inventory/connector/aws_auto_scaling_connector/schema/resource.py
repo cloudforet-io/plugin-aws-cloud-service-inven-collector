@@ -13,18 +13,22 @@ AUTO SCALING GROUP
 # TAB - AutoScaling
 asg_meta_autoscaling = ItemDynamicLayout.set_fields('Auto Scaling', fields=[
     TextDyField.data_source('Name', 'data.auto_scaling_group_name'),
-    TextDyField.data_source('Launch Configuration', 'data.launch_configuration_name'),
+    TextDyField.data_source('Launch Configuration name', 'data.launch_configuration_name'),
+    TextDyField.data_source('Launch Template name', 'data.launch_template.launch_template_name'),
     TextDyField.data_source('ARN', 'data.auto_scaling_group_arn'),
     TextDyField.data_source('Desired Capacity', 'data.desired_capacity'),
     TextDyField.data_source('Min Size', 'data.min_size'),
     TextDyField.data_source('Max Size', 'data.max_size'),
     TextDyField.data_source('Default CoolDown', 'data.default_cooldown'),
-    ListDyField.data_source('Availability Zones', 'data.availability_zones', default_badge={'type': 'outline'}),
+    ListDyField.data_source('Availability Zones', 'data.availability_zones',
+                            default_badge={'type': 'outline', 'delimiter': '<br>'}),
     EnumDyField.data_source('Health Check Type', 'data.health_check_type', default_outline_badge=['EC2', 'ELB']),
     TextDyField.data_source('Health Check Grace Period', 'data.health_check_grace_period'),
     TextDyField.data_source('Service Linked Role ARN', 'data.service_linked_role_arn'),
-    ListDyField.data_source('Target Group ARNs', 'data.target_group_arns'),
-    ListDyField.data_source('Load Balancer Names', 'data.load_balancer_names'),
+    ListDyField.data_source('Target Group ARNs', 'data.target_group_arns',
+                            default_badge={'delimiter': '<br>'}),
+    ListDyField.data_source('Load Balancer Names', 'data.load_balancer_names',
+                            default_badge={'delimiter': '<br>'}),
     BadgeDyField.data_source('Termination Policies', 'data.termination_policies'),
     DateTimeDyField.data_source('Creation Time', 'data.created_time'),
 ])
@@ -41,7 +45,7 @@ asg_meta_lc = ItemDynamicLayout.set_fields('Launch Configuration', fields=[
     TextDyField.data_source('IAM Instance Profile', 'data.launch_configuration.iam_instance_profile'),
     TextDyField.data_source('Kernel ID', 'data.launch_configuration.kernel_id'),
     ListDyField.data_source('Security Groups', 'data.launch_configuration.security_groups',
-                            default_badge={'type': 'outline'}),
+                            default_badge={'delimiter': '<br>'}),
     TextDyField.data_source('Spot Price', 'data.launch_configuration.kernel_id'),
     TextDyField.data_source('RAM Disk ID', 'data.launch_configuration.ramdisk_id'),
     EnumDyField.data_source('EBS Optimized', 'data.launch_configuration.ebs_optimized', default_badge={
@@ -186,16 +190,16 @@ lt_meta_base_lt = ItemDynamicLayout.set_fields('Launch Template', fields=[
         'indigo.500': ['true'], 'coral.600': ['false']
     }),
     TextDyField.data_source('Version Description', 'data.version_description'),
-    TextDyField.data_source('AMI ID', 'data.launch_template_data.image_id'),
-    TextDyField.data_source('Instance Type', 'data.launch_template_data.instance_type'),
-    TextDyField.data_source('Key Name', 'data.launch_template_data.key_name'),
-    ListDyField.data_source('Security Groups', 'data.launch_template_data.security_group_ids', default_badge={'type': 'outline'}),
+    TextDyField.data_source('AMI ID', 'data.launch_template.image_id'),
+    TextDyField.data_source('Instance Type', 'data.launch_template.instance_type'),
+    TextDyField.data_source('Key Name', 'data.launch_template.key_name'),
+    ListDyField.data_source('Security Groups', 'data.launch_template.security_group_ids', default_badge={'type': 'outline'}),
     DateTimeDyField.data_source('Creation Time', 'data.create_time'),
     TextDyField.data_source('Created By', 'data.created_by')
 
 ])
 
-lt_meta_base_storage = TableDynamicLayout.set_fields('Storage', 'data.launch_template_data.block_device_mappings', fields=[
+lt_meta_base_storage = TableDynamicLayout.set_fields('Storage', 'data.launch_template.block_device_mappings', fields=[
     TextDyField.data_source('Device Name', 'device_name'),
     EnumDyField.data_source('Type', 'ebs.volume_type', default_outline_badge=['standard', 'io1', 'gp2', 'st1', 'sc1']),
     TextDyField.data_source('Snapshot', 'ebs.snapshot_id'),
@@ -209,7 +213,7 @@ lt_meta_base_storage = TableDynamicLayout.set_fields('Storage', 'data.launch_tem
     })
 ])
 
-lt_meta_base_ni = TableDynamicLayout.set_fields('Network Interface', 'data.launch_template_data.network_interfaces', fields=[
+lt_meta_base_ni = TableDynamicLayout.set_fields('Network Interface', 'data.launch_template.network_interfaces', fields=[
     TextDyField.data_source('Device Index', 'device_index'),
     TextDyField.data_source('Description', 'description'),
     TextDyField.data_source('Subnet Id', 'subnet_id'),
@@ -229,7 +233,7 @@ lt_meta_base_ni = TableDynamicLayout.set_fields('Network Interface', 'data.launc
 
 ])
 
-lt_meta_base_detail = ItemDynamicLayout.set_fields('Advanced Details', 'data.launch_template_data', fields=[
+lt_meta_base_detail = ItemDynamicLayout.set_fields('Advanced Details', 'data.launch_template', fields=[
     TextDyField.data_source('IAM Instance Profile', 'iam_instance_profile.name'),
     EnumDyField.data_source('Monitoring', 'monitoring.enabled', default_badge={
         'indigo.500': ['true'], 'coral.600': ['false']
@@ -250,7 +254,7 @@ lt_meta_base_detail = ItemDynamicLayout.set_fields('Advanced Details', 'data.lau
     TextDyField.data_source('User Data', 'user_data')
 ])
 
-lt_meta_base_tag = SimpleTableDynamicLayout.set_fields('Tags', 'data.launch_template_data.tag_specifications', fields=[
+lt_meta_base_tag = SimpleTableDynamicLayout.set_fields('Tags', 'data.launch_template.tag_specifications', fields=[
     TextDyField.data_source('Resource Type', 'resource_type'),
     ListDyField.data_source('Tag Keys', 'tags', default_badge={
         'type': 'outline',
