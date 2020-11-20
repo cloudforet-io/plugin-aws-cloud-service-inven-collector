@@ -16,10 +16,10 @@ bucket = ItemDynamicLayout.set_fields('Buckets', fields=[
     }),
 ])
 
-# object_info = ItemDynamicLayout.set_fields('Objects', fields=[
-#     TextDyField.data_source('Object Count', 'data.object_count'),
-#     TextDyField.data_source('Object Total Size (Bytes)', 'data.object_total_size'),
-# ])
+object_info = ItemDynamicLayout.set_fields('Objects', fields=[
+    TextDyField.data_source('Object Counts', 'data.object_count'),
+    TextDyField.data_source('Object Total Size (Bytes)', 'data.object_total_size'),
+])
 
 versioning = ItemDynamicLayout.set_fields('Versioning', fields=[
     EnumDyField.data_source('Status', 'data.versioning.status', default_state={
@@ -93,7 +93,7 @@ topic_conf = TableDynamicLayout.set_fields('Events', 'data.notification_configur
     ListDyField.data_source('Events', 'events'),
 ])
 
-metadata = CloudServiceMeta.set_layouts(layouts=[bucket, versioning, website_hosting, server_access_log,
+metadata = CloudServiceMeta.set_layouts(layouts=[bucket, object_info, versioning, website_hosting, server_access_log,
                                                  encryption, object_lock, transfer_acc, requester_pays, topic_conf,
                                                  tags])
 

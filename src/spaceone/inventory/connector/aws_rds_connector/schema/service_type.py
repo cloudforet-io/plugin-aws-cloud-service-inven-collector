@@ -32,10 +32,7 @@ cst_rds_database._metadata = CloudServiceTypeMeta.set_meta(
         TextDyField.data_source('Size', 'data.size_display'),
         TextDyField.data_source('VPC', 'data.vpc_id'),
         TextDyField.data_source('Region & AZ', 'data.availability_zone'),
-        EnumDyField.data_source('Multi-AZ', 'data.multi_az', default_badge={
-            'indigo.500': ['true'], 'coral.600': ['false']
-        }),
-        TextDyField.data_source('Maintenance', 'data.maintenance'),
+        TextDyField.data_source('Multi-AZ', 'data.multi_az'),
     ],
     search=[
         SearchField.set(name='DB Identifier', key='data.db_identifier'),
@@ -65,16 +62,17 @@ cst_rds_database._metadata = CloudServiceTypeMeta.set_meta(
                             "storage-full": {'label': 'Storage Full', 'icon': {'color': 'red.500'}},
                         }),
         SearchField.set(name='Engine', key='data.engine'),
-        SearchField.set(name='Size', key='data.size'),
+        SearchField.set(name='Cluster member counts', key='data.cluster.db_cluster_member_counts'),
+        SearchField.set(name='Instance Class', key='data.instance.db_instance_class'),
         SearchField.set(name='Availability Zone', key='data.availability_zone'),
         SearchField.set(name='Multi AZ', key='data.multi_az', data_type='boolean'),
         SearchField.set(name='Cluster Endpoint', key='data.cluster.endpoint'),
         SearchField.set(name='Cluster Reader Endpoint', key='data.cluster.reader_endpoint'),
         SearchField.set(name='Cluster Custom Endpoint', key='data.cluster.custom_endpoints'),
         SearchField.set(name='Cluster Port', key='data.cluster.port', data_type='integer'),
-        SearchField.set(name='Instance Endpoint', key='data.instance.endpoint'),
-        SearchField.set(name='Instance Port', key='data.instance.db_instance_port', data_type='integer'),
-        SearchField.set(name='Region', key='data.region_name'),
+        SearchField.set(name='Instance Endpoint', key='data.instance.endpoint.address'),
+        SearchField.set(name='Instance Port', key='data.instance.endpoint.port', data_type='integer'),
+        SearchField.set(name='Region', key='region_code'),
         SearchField.set(name='AWS Account ID', key='data.account_id'),
     ]
 )
@@ -87,7 +85,6 @@ cst_rds_instance.name = 'Instance'
 cst_rds_instance.provider = 'aws'
 cst_rds_instance.group = 'RDS'
 cst_rds_instance.labels = ['Database']
-cst_rds_instance.is_major = True
 cst_rds_instance.service_code = 'AmazonRDS'
 cst_rds_instance.tags = {
     'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-RDS.svg',
@@ -95,32 +92,23 @@ cst_rds_instance.tags = {
 
 cst_rds_instance._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('DB Identifier', 'data.db_identifier'),
-        TextDyField.data_source('Role', 'data.role'),
+        TextDyField.data_source('DB Identifier', 'data.db_instance_identifier'),
         TextDyField.data_source('Engine', 'data.engine'),
-        EnumDyField.data_source('Status', 'data.status', default_state={
+        EnumDyField.data_source('Status', 'data.db_instance_status', default_state={
             'safe': ['available'],
             'warning': ['creating', 'deleting', 'maintenance', 'modifying', 'rebooting',
                         'renaming', 'starting', 'stopping', 'upgrading'],
             'alert': ['failed', 'inaccessible-encryption-credentials', 'restore-error', 'stopped', 'storage-full']
         }),
-        TextDyField.data_source('Size', 'data.size'),
-        TextDyField.data_source('VPC', 'data.vpc_id'),
-        TextDyField.data_source('Region & AZ', 'data.az_display'),
-        EnumDyField.data_source('Multi-AZ', 'data.multi_az', default_badge={
-            'indigo.500': ['true'], 'coral.600': ['false']
-        }),
-        TextDyField.data_source('Maintenance', 'data.maintenance'),
+        TextDyField.data_source('Instance Class', 'data.db_instance_class'),
+        TextDyField.data_source('VPC ID', 'data.db_subnet_group.vpc_id'),
+        TextDyField.data_source('Availability Zone', 'data.availability_zone'),
+        TextDyField.data_source('Multi-AZ', 'data.multi_az'),
     ],
     search=[
-        SearchField.set(name='DB Identifier', key='data.db_identifier'),
-        SearchField.set(name='ARN', key='data.arn'),
-        SearchField.set(name='Role', key='data.role',
-                        enums={
-                            'cluster': {'label': 'Cluster'},
-                            'instance': {'label': 'Instance'},
-                        }),
-        SearchField.set(name='Status', key='data.status',
+        SearchField.set(name='DB Identifier', key='data.db_instance_identifier'),
+        SearchField.set(name='ARN', key='data.db_instance_arn'),
+        SearchField.set(name='Status', key='data.db_instance_status',
                         enums={
                             "available": {'label': 'Available', 'icon': {'color': 'green.500'}},
                             "creating": {'label': 'Creating', 'icon': {'color': 'yellow.400'}},
@@ -140,16 +128,12 @@ cst_rds_instance._metadata = CloudServiceTypeMeta.set_meta(
                             "storage-full": {'label': 'Storage Full', 'icon': {'color': 'red.500'}},
                         }),
         SearchField.set(name='Engine', key='data.engine'),
-        SearchField.set(name='Size', key='data.size'),
+        SearchField.set(name='Instance Class', key='data.db_instance_class'),
         SearchField.set(name='Availability Zone', key='data.availability_zone'),
         SearchField.set(name='Multi AZ', key='data.multi_az', data_type='boolean'),
-        SearchField.set(name='Cluster Endpoint', key='data.cluster.endpoint'),
-        SearchField.set(name='Cluster Reader Endpoint', key='data.cluster.reader_endpoint'),
-        SearchField.set(name='Cluster Custom Endpoint', key='data.cluster.custom_endpoints'),
-        SearchField.set(name='Cluster Port', key='data.cluster.port', data_type='integer'),
-        SearchField.set(name='Instance Endpoint', key='data.instance.endpoint'),
-        SearchField.set(name='Instance Port', key='data.instance.db_instance_port', data_type='integer'),
-        SearchField.set(name='Region', key='data.region_name'),
+        SearchField.set(name='Endpoint Address', key='data.endpoint.address'),
+        SearchField.set(name='Endpoint Port', key='data.endpoint.port', data_type='integer'),
+        SearchField.set(name='Region', key='region_code'),
         SearchField.set(name='AWS Account ID', key='data.account_id'),
     ]
 )
@@ -174,7 +158,6 @@ cst_rds_snapshot._metadata = CloudServiceTypeMeta.set_meta(
         EnumDyField.data_source('Status', 'data.status', default_state={
             'safe': ['available'],
         }),
-        TextDyField.data_source('Progress (%)', 'data.percent_progress'),
         EnumDyField.data_source('Type', 'data.snapshot_type', default_outline_badge=['manual', 'automated']),
         EnumDyField.data_source('Engine', 'data.engine',
                                 default_outline_badge=['aurora', 'mysql', 'mariadb', 'postgres', 'oracle-ee', 'oracle-se',
