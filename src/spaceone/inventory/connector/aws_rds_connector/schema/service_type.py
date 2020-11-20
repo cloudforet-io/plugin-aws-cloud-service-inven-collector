@@ -35,7 +35,6 @@ cst_rds_database._metadata = CloudServiceTypeMeta.set_meta(
         EnumDyField.data_source('Multi-AZ', 'data.multi_az', default_badge={
             'indigo.500': ['true'], 'coral.600': ['false']
         }),
-        TextDyField.data_source('Maintenance', 'data.maintenance'),
     ],
     search=[
         SearchField.set(name='DB Identifier', key='data.db_identifier'),
@@ -87,7 +86,6 @@ cst_rds_instance.name = 'Instance'
 cst_rds_instance.provider = 'aws'
 cst_rds_instance.group = 'RDS'
 cst_rds_instance.labels = ['Database']
-cst_rds_instance.is_major = True
 cst_rds_instance.service_code = 'AmazonRDS'
 cst_rds_instance.tags = {
     'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-RDS.svg',
