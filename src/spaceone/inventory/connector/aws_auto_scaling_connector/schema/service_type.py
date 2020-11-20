@@ -18,8 +18,9 @@ cst_asg._metadata = CloudServiceTypeMeta.set_meta(
         TextDyField.data_source('Desired', 'data.desired_capacity'),
         TextDyField.data_source('Min', 'data.min_size'),
         TextDyField.data_source('Max', 'data.max_size'),
-        TextDyField.data_source('Launch Configuration', 'data.launch_configuration_name'),
-        ListDyField.data_source('AZ', 'data.availability_zones', default_badge={'type': 'outline'})
+        TextDyField.data_source('Launch Template / Configuration', 'data.display_launch_configuration_template'),
+        ListDyField.data_source('AZ', 'data.availability_zones',
+                                default_badge={'delimiter': '<br>'})
     ],
     search=[
         SearchField.set(name='Name', key='data.auto_scaling_group_name'),
@@ -28,7 +29,7 @@ cst_asg._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Availability Zone', key='data.availability_zones'),
         SearchField.set(name='Creation Time', key='data.created_time', data_type='datetime'),
         SearchField.set(name='Instance ID', key='data.instances.instance_id'),
-        SearchField.set(name='Region', key='data.region_name'),
+        SearchField.set(name='Region', key='region_code'),
         SearchField.set(name='AWS Account ID', key='data.account_id'),
     ]
 )
@@ -59,7 +60,7 @@ launch_configuration._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Monitoring', key='data.instance_monitoring.enabled', data_type='boolean'),
         SearchField.set(name='Security Group ID', key='data.security_groups'),
         SearchField.set(name='Created Time', key='data.created_time', data_type='datetime'),
-        SearchField.set(name='Region', key='data.region_name'),
+        SearchField.set(name='Region', key='region_code'),
         SearchField.set(name='AWS Account ID', key='data.account_id'),
     ]
 )
@@ -97,7 +98,6 @@ launch_template._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Monitoring', key='data.launch_template_data.monitoring.enabled', data_type='boolean'),
         SearchField.set(name='Security Group ID', key='data.launch_template_data.security_group_ids'),
         SearchField.set(name='Created Time', key='data.create_time', data_type='datetime'),
-        SearchField.set(name='Region', key='data.region_name'),
         SearchField.set(name='AWS Account ID', key='data.account_id'),
     ]
 )
