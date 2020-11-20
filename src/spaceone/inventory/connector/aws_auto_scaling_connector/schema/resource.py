@@ -268,7 +268,7 @@ lt_meta = CloudServiceMeta.set_layouts([lt_meta_base_lt, lt_meta_base_storage, l
 
 
 class AutoScalingResource(CloudServiceResource):
-    cloud_service_group = StringType(default='AutoScaling')
+    cloud_service_group = StringType(default='EC2')
 
 
 class AutoScalingGroupResource(AutoScalingResource):
