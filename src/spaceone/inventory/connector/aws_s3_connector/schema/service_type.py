@@ -8,6 +8,7 @@ cst_bucket.group = 'S3'
 cst_bucket.labels = ['Storage']
 cst_bucket.is_primary = True
 cst_bucket.is_major = True
+cst_bucket.service_code = 'AmazonS3'
 cst_bucket.tags = {
     'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-S3.svg',
 }
@@ -15,16 +16,20 @@ cst_bucket.tags = {
 cst_bucket._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
         TextDyField.data_source('Name', 'data.name'),
-        TextDyField.data_source('Region', 'data.region_name'),
+        TextDyField.data_source('Region', 'region_code'),
         EnumDyField.data_source('Access', 'data.public_access', default_badge={
             'indigo.500': ['Private'],
             'coral.600': ['Public']
-        })
+        }),
+        TextDyField.data_source('Object Total Counts', 'data.object_count'),
+        TextDyField.data_source('Object Size (Bytes)', 'data.object_total_size'),
     ],
     search=[
         SearchField.set(name='Bucket Name', key='data.name'),
         SearchField.set(name='ARN', key='data.arn'),
-        SearchField.set(name='Region', key='data.region_name'),
+        SearchField.set(name='Region', key='region_code'),
+        SearchField.set(name='Object Counts', key='data.object_count', data_type='integer'),
+        SearchField.set(name='Object Total Size', key='data.object_total_size', data_type='integer'),
         SearchField.set(name='AWS Account ID', key='data.account_id'),
     ]
 )

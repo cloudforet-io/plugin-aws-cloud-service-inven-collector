@@ -344,6 +344,18 @@ class Instance(Model):
     max_allocated_storage = IntType(deserialize_from="MaxAllocatedStorage")
     tags = ListType(ModelType(Tags))
 
+    def reference(self, region_code):
+        return {
+            "resource_id": self.db_instance_arn,
+            "external_link": f"https://console.aws.amazon.com/rds/home?region={region_code}#database:id={self.db_instance_identifier};is-cluster=false"
+        }
+
+    def set_cloudwatch(self, region_code):
+        return {
+            "namespace": "AWS/RDS",
+            "dimensions": [CloudWatchDimensionModel({"Name": "DBInstanceIdentifier", "Value": self.db_instance_identifier})],
+            "region_name": region_code
+        }
 
 '''
 CLUSTER
@@ -409,6 +421,7 @@ class Cluster(Model):
     replication_source_identifier = StringType(deserialize_from="ReplicationSourceIdentifier")
     read_replica_identifiers = ListType(StringType, deserialize_from="ReadReplicaIdentifiers")
     db_cluster_members = ListType(ModelType(ClusterDBClusterMembers), deserialize_from="DBClusterMembers")
+    db_cluster_member_counts = IntType(default=0)
     vpc_security_groups = ListType(ModelType(VpcSecurityGroups), deserialize_from="VpcSecurityGroups")
     hosted_zone_id = StringType(deserialize_from="HostedZoneId")
     storage_encrypted = BooleanType(deserialize_from="StorageEncrypted")
@@ -444,10 +457,11 @@ class Database(Model):
     arn = StringType()
     db_identifier = StringType()
     status = StringType()
-    role = StringType()
+    role = StringType(choices=('cluster', 'instance'))
     engine = StringType()
     availability_zone = StringType()
     size = StringType()
+    vpc_id = StringType()
     multi_az = BooleanType()
     cluster = ModelType(Cluster, serialize_when_none=False)
     instance = ModelType(Instance, serialize_when_none=False)

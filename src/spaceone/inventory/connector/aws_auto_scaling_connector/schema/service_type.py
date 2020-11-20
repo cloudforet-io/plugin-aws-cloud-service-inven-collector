@@ -7,6 +7,7 @@ cst_asg.name = 'AutoScalingGroup'
 cst_asg.provider = 'aws'
 cst_asg.group = 'EC2'
 cst_asg.labels = ['Compute']
+cst_asg.service_code = 'AmazonEC2'
 cst_asg.tags = {
     'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-EC2-Auto-Scaling.svg',
 }
@@ -37,6 +38,7 @@ launch_configuration.name = 'LaunchConfiguration'
 launch_configuration.provider = 'aws'
 launch_configuration.group = 'EC2'
 launch_configuration.labels = ['Compute']
+launch_configuration.service_code = 'AmazonEC2'
 launch_configuration.tags = {
     'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-EC2-Auto-Scaling.svg',
 }
@@ -68,6 +70,7 @@ launch_template.name = 'LaunchTemplate'
 launch_template.provider = 'aws'
 launch_template.group = 'EC2'
 launch_template.labels = ['Compute']
+launch_template.service_code = 'AmazonEC2'
 launch_template.tags = {
     'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-EC2-Auto-Scaling.svg',
 }

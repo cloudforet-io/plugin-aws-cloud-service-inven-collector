@@ -7,9 +7,10 @@ from spaceone.inventory.connector.aws_rds_connector.schema.data import Database,
 from spaceone.inventory.connector.aws_rds_connector.schema.resource import DatabaseResource, DatabaseResponse, \
     SnapshotResource, SnapshotResponse, SubnetGroupResource, SubnetGroupResponse, \
     ParameterGroupResource, ParameterGroupResponse, DBClusterResource, DBInstanceResource, OptionGroupResource, \
-    OptionGroupResponse
+    OptionGroupResponse, InstanceResource, InstanceResponse
 from spaceone.inventory.connector.aws_rds_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
+from spaceone.inventory.libs.schema.resource import ReferenceModel, CloudWatchModel
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -28,14 +29,9 @@ class RDSConnector(SchematicAWSConnector):
 
         collect_resources = [
             {
-                'request_method': self.db_cluster_data,
-                'resource': DBClusterResource,
-                'response_schema': DatabaseResponse
-            },
-            {
-                'request_method': self.db_instance_data,
-                'resource': DBInstanceResource,
-                'response_schema': DatabaseResponse
+                'request_method': self.instance_data,
+                'resource': InstanceResource,
+                'response_schema': InstanceResponse
             },
             {
                 'request_method': self.snapshot_request_data,
@@ -67,30 +63,27 @@ class RDSConnector(SchematicAWSConnector):
             # print(f'[ {region_name} ]')
             self.reset_region(region_name)
 
+            # For Database
+            for database_vo, resource in self.db_cluster_data(region_name):
+                if getattr(database_vo, 'set_cloudwatch', None):
+                    database_vo.cloudwatch = CloudWatchModel(database_vo.set_cloudwatch(region_name))
+
+                resources.append(DatabaseResponse(
+                    {'resource': resource(
+                        {'data': database_vo,
+                         'region_code': region_name,
+                         'reference': ReferenceModel(database_vo.reference(region_name))})}
+                ))
+
+            # For All except Database
             for collect_resource in collect_resources:
                 resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
 
         print(f' RDS Finished {time.time() - start_time} Seconds')
         return resources
 
-    def db_instance_data(self, region_name) -> List[Database]:
-        for instance in self.describe_instances():
-            db = {
-                'arn': instance.db_instance_arn,
-                'db_identifier': instance.db_instance_identifier,
-                'status': instance.db_instance_status,
-                'role': 'instance',
-                'engine': instance.engine,
-                'region_name': region_name,
-                'availability_zone': instance.availability_zone,
-                'size': instance.db_instance_class,
-                'multi_az': instance.multi_az,
-                'account_id': self.account_id,
-                'instance': Instance(instance, strict=False),
-            }
-            yield Database(db, strict=False)
-
     def db_cluster_data(self, region_name) -> List[Database]:
+        # Cluster
         for cluster in self.describe_clusters():
             db = {
                 'arn': cluster.db_cluster_arn,
@@ -98,14 +91,30 @@ class RDSConnector(SchematicAWSConnector):
                 'status': cluster.status,
                 'role': 'cluster',
                 'engine': cluster.engine,
-                'region_name': region_name,
                 'availability_zone': self.get_region(cluster.availability_zones),
                 'size': f'{len(cluster.db_cluster_members)} instances',
                 'multi_az': cluster.multi_az,
                 'account_id': self.account_id,
-                'cluster': Cluster(cluster, strict=False),
+                'cluster': cluster,
             }
-            yield Database(db, strict=False)
+            yield Database(db, strict=False), DBClusterResource
+
+        # Instance Only
+        for instance in self.describe_instances():
+            if not instance.db_cluster_identifier:
+                db = {
+                    'arn': instance.db_instance_arn,
+                    'db_identifier': instance.db_instance_identifier,
+                    'status': instance.db_instance_status,
+                    'role': 'instance',
+                    'engine': instance.engine,
+                    'availability_zone': instance.availability_zone,
+                    'size': instance.db_instance_class,
+                    'multi_az': instance.multi_az,
+                    'account_id': self.account_id,
+                    'instance': instance,
+                }
+                yield Database(db, strict=False), DBInstanceResource
 
     def describe_clusters(self) -> List[Cluster]:
         paginator = self.client.get_paginator('describe_db_clusters')
@@ -129,6 +138,10 @@ class RDSConnector(SchematicAWSConnector):
                 })
                 res = Cluster(raw, strict=False)
                 yield res
+
+    def instance_data(self, region_name) -> List[Instance]:
+        for instance in self.describe_instances():
+            yield instance
 
     def describe_instances(self) -> List[Instance]:
         paginator = self.client.get_paginator('describe_db_instances')
@@ -246,7 +259,7 @@ class RDSConnector(SchematicAWSConnector):
 
     @staticmethod
     def get_region(azs):
-        if len(azs) > 0:
+        if azs:
             return azs[0][:-1]
 
         return None

@@ -27,7 +27,7 @@ metadata = CloudServiceMeta.set_layouts(layouts=[base, eip_tags])
 
 
 class EC2Resource(CloudServiceResource):
-    cloud_service_group = StringType(default='EIP')
+    cloud_service_group = StringType(default='EC2')
 
 
 class EIPResource(EC2Resource):
