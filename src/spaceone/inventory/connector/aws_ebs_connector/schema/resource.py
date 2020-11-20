@@ -69,7 +69,7 @@ ss_metadata = CloudServiceMeta.set_layouts(layouts=[ss_base, ss_tags])
 
 
 class EC2Resource(CloudServiceResource):
-    cloud_service_group = StringType(default='EBS')
+    cloud_service_group = StringType(default='EC2')
 
 
 class VolumeResource(EC2Resource):
