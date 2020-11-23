@@ -20,7 +20,9 @@ base = ItemDynamicLayout.set_fields('Repositories', fields=[
 ])
 
 images = TableDynamicLayout.set_fields('Images', 'data.images', fields=[
-    ListDyField.data_source('Image Tag', 'image_tags', default_badge={'type': 'outline'}),
+    ListDyField.data_source('Image Tag', 'image_tags_display', options={
+        'delimiter': ', '
+    }),
     TextDyField.data_source('Image URI', 'image_uri'),
     TextDyField.data_source('Size(MB)', 'image_size_in_megabytes'),
     TextDyField.data_source('Digest', 'image_digest'),

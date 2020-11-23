@@ -33,6 +33,7 @@ class Image(Model):
     repository_name = StringType(deserialize_from="repositoryName")
     image_digest = StringType(deserialize_from="imageDigest")
     image_tags = ListType(StringType, deserialize_from="imageTags")
+    image_tags_display = ListType(StringType)
     image_uri = StringType(default='')
     image_size_in_bytes = IntType(deserialize_from="imageSizeInBytes")
     image_size_in_megabytes = FloatType()
