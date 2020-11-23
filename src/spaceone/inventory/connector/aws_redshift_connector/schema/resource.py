@@ -26,10 +26,12 @@ base = ItemDynamicLayout.set_fields('Clusters', fields=[
         'alert': ['Failed']
     }),
     TextDyField.data_source('Node Count', 'data.number_of_nodes'),
-    BadgeDyField.data_source('Node Type', 'data.node_type'),
+    TextDyField.data_source('Node Type', 'data.node_type'),
     TextDyField.data_source('Automated Snapshot Retention Period', 'data.automated_snapshot_retention_period'),
     TextDyField.data_source('Manual Snapshot Retention Period', 'data.manual_snapshot_retention_period'),
-    TextDyField.data_source('Allow Version Upgrade', 'data.allow_version_upgrade'),
+    EnumDyField.data_source('Allow Version Upgrade', 'data.allow_version_upgrade', default_badge={
+        'indigo.500': ['true'], 'coral.600': ['false']
+    }),
     TextDyField.data_source('Cluster Revision Number', 'data.cluster_revision_number'),
 ])
 
@@ -44,16 +46,17 @@ db_conf = ItemDynamicLayout.set_fields('Database configurations', fields=[
 
 net_sec = ItemDynamicLayout.set_fields('Network and Security', fields=[
     TextDyField.data_source('VPC ID', 'data.vpc_id'),
-    TextDyField.data_source('Availability Zone', 'availability_zone'),
+    TextDyField.data_source('Availability Zone', 'data.availability_zone'),
     TextDyField.data_source('Subnet Group', 'data.cluster_subnet_group_name'),
-    ListDyField.data_source('Security Groups', 'data.vpc_security_groups', default_badge={
-        'type': 'outline',
+    ListDyField.data_source('Security Groups', 'data.vpc_security_groups', options={
         'sub_key': 'vpc_security_group_id',
+        'delimiter': '<br>'
     }),
-    TextDyField.data_source('Enhanced VPC Routing', 'enhanced_vpc_routing'),
-    EnumDyField.data_source('Publicly Accessible', 'publicly_accessible', default_badge={
-        'type': 'outline',
-        'sub_key': 'vpc_security_group_id',
+    EnumDyField.data_source('Enhanced VPC Routing', 'data.enhanced_vpc_routing', default_badge={
+        'indigo.500': ['true'], 'coral.600': ['false']
+    }),
+    EnumDyField.data_source('Publicly Accessible', 'data.publicly_accessible', default_badge={
+        'indigo.500': ['true'], 'coral.600': ['false']
     })
 ])
 
@@ -72,7 +75,7 @@ nodes = TableDynamicLayout.set_fields('Nodes', 'data.cluster_nodes', fields=[
 
 snapshots = TableDynamicLayout.set_fields('Snapshots', 'data.snapshots', fields=[
     TextDyField.data_source('Snapshot Identifier', 'snapshot_identifier'),
-    BadgeDyField.data_source('Snapshot Type', 'snapshot_type'),
+    TextDyField.data_source('Snapshot Type', 'snapshot_type'),
     EnumDyField.data_source('Status', 'status', default_state={
         'safe': ['active']
     }),
