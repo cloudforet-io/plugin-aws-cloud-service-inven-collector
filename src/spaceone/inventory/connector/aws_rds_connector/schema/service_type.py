@@ -29,7 +29,7 @@ cst_rds_database._metadata = CloudServiceTypeMeta.set_meta(
                         'renaming', 'starting', 'stopping', 'upgrading'],
             'alert': ['failed', 'inaccessible-encryption-credentials', 'restore-error', 'stopped', 'storage-full']
         }),
-        TextDyField.data_source('Size', 'data.size_display'),
+        TextDyField.data_source('Size', 'data.size'),
         TextDyField.data_source('VPC', 'data.vpc_id'),
         TextDyField.data_source('Region & AZ', 'data.availability_zone'),
         TextDyField.data_source('Multi-AZ', 'data.multi_az'),
