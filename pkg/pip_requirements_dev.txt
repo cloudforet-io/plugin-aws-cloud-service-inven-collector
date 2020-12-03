@@ -1,3 +1,0 @@
--r ./pip_requirements.txt
-moto
-
