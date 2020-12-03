@@ -24,7 +24,7 @@ class ElasticIPAddress(Model):
     network_interface_id = StringType(deserialize_from="NetworkInterfaceId")
     network_interface_owner_id = StringType(deserialize_from="NetworkInterfaceOwnerId")
     private_ip_address = StringType(deserialize_from="PrivateIpAddress")
-    tags = ListType(ModelType(ElasticIPAddressTags), deserialize_from="Tags")
+    tags = ListType(ModelType(ElasticIPAddressTags), deserialize_from="Tags", default=[])
     public_ipv4_pool = StringType(deserialize_from="PublicIpv4Pool")
     network_border_group = StringType(deserialize_from="NetworkBorderGroup")
     customer_owned_ip = StringType(deserialize_from="CustomerOwnedIp")

@@ -11,8 +11,8 @@ _LOGGER = logging.getLogger(__name__)
 TAG
 '''
 class Tag(Model):
-    key = StringType(deserialize_from="key")
-    value = StringType(deserialize_from="value")
+    key = StringType(deserialize_from="Key")
+    value = StringType(deserialize_from="Value")
 
 '''
 IMAGE
@@ -58,7 +58,7 @@ class Repository(Model):
     image_scanning_configuration = ModelType(imageScanningConfiguration, deserialize_from="imageScanningConfiguration")
     images = ListType(ModelType(Image))
     account_id = StringType(default="")
-    tags = ListType(ModelType(Tag))
+    tags = ListType(ModelType(Tag), default=[])
 
     def reference(self, region_code):
         return {

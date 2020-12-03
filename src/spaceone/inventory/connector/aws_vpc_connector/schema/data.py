@@ -100,7 +100,7 @@ class VPNConnection(Model):
     transit_gateway_id = StringType(deserialize_from="TransitGatewayId")
     options = ModelType(Options, deserialize_from="Options")
     routes = ListType(ModelType(VPNConnectionRoutes), deserialize_from="Routes")
-    tags = ListType(ModelType(Tags), deserialize_from="Tags")
+    tags = ListType(ModelType(Tags), deserialize_from="Tags", default=[])
     vgw_telemetry = ListType(ModelType(VPNConnectionVgwTelemetry), deserialize_from="VgwTelemetry")
     account_id = StringType(default="")
 
@@ -127,7 +127,7 @@ class VPNGateway(Model):
     vpc_attachments = ListType(ModelType(VPNGatewayVpcAttachments), deserialize_from="VpcAttachments")
     vpn_gateway_id = StringType(deserialize_from="VpnGatewayId")
     amazon_side_asn = IntType(deserialize_from="AmazonSideAsn")
-    tags = ListType(ModelType(Tags), deserialize_from="Tags")
+    tags = ListType(ModelType(Tags), deserialize_from="Tags", default=[])
     vpn_connection = ModelType(VPNConnection)
     account_id = StringType(default="")
 
@@ -150,7 +150,7 @@ class CustomerGateway(Model):
     state = StringType(deserialize_from="State", choices=("pending", "available", "deleting", "deleted"))
     type = StringType(deserialize_from="Type")
     device_name = StringType(deserialize_from="DeviceName")
-    tags = ListType(ModelType(Tags), deserialize_from="Tags")
+    tags = ListType(ModelType(Tags), deserialize_from="Tags", default=[])
     vpn_connection = ModelType(VPNConnection)
     region_name = StringType(default="")
     account_id = StringType(default="")
@@ -183,7 +183,7 @@ class TransitGatewayAttachment(Model):
                                                           "rejected", "rejecting", "failing"))
     association = ModelType(Association, deserialize_from="Association")
     creation_time = DateTimeType(deserialize_from="CreationTime")
-    tags = ListType(ModelType(Tags), deserialize_from="Tags")
+    tags = ListType(ModelType(Tags), deserialize_from="Tags", default=[])
 
 
 '''
@@ -196,7 +196,7 @@ class TransitGatewayRouteTables(Model):
     default_association_route_table = BooleanType(deserialize_from="DefaultAssociationRouteTable")
     default_propagation_route_table = BooleanType(deserialize_from="DefaultPropagationRouteTable")
     creation_time = DateTimeType(deserialize_from="CreationTime")
-    tags = ListType(ModelType(Tags), deserialize_from="Tags")
+    tags = ListType(ModelType(Tags), deserialize_from="Tags", default=[])
 
 
 '''
@@ -227,7 +227,7 @@ class TransitGateway(Model):
     creation_time = DateTimeType(deserialize_from="CreationTime")
     options = ModelType(Options, deserialize_from="Options")
     transit_gateway_route_table = ModelType(TransitGatewayRouteTables)
-    tags = ListType(ModelType(Tags), deserialize_from="Tags")
+    tags = ListType(ModelType(Tags), deserialize_from="Tags", default=[])
     vpn_connections = ListType(ModelType(VPNConnection))
     account_id = StringType(default="")
     cloudwatch = ModelType(CloudWatchModel, serialize_when_none=False)
@@ -291,7 +291,7 @@ class NetworkACL(Model):
     entries = ListType(ModelType(NetworkACLTotalEntries))
     is_default = BooleanType(deserialize_from="IsDefault")
     network_acl_id = StringType(deserialize_from="NetworkAclId")
-    tags = ListType(ModelType(Tags), deserialize_from="Tags")
+    tags = ListType(ModelType(Tags), deserialize_from="Tags", default=[])
     vpc_id = StringType(deserialize_from="VpcId")
     owner_id = StringType(deserialize_from="OwnerId")
     account_id = StringType(default="")
@@ -344,7 +344,7 @@ class PeeringConnection(Model):
     expiration_time = DateTimeType(deserialize_from="ExpirationTime")
     requester_vpc_info = ModelType(RequesterVpcInfo, deserialize_from="RequesterVpcInfo")
     status = ModelType(Status, deserialize_from="Status")
-    tags = ListType(ModelType(Tags), deserialize_from="Tags")
+    tags = ListType(ModelType(Tags), deserialize_from="Tags", default=[])
     vpc_peering_connection_id = StringType(deserialize_from="VpcPeeringConnectionId")
     account_id = StringType(default="")
 
@@ -385,7 +385,7 @@ class NATGateway(Model):
     state = StringType(deserialize_from="State", choices=("pending", "failed", "available", "deleting", "deleted"))
     subnet_id = StringType(deserialize_from="SubnetId")
     vpc_id = StringType(deserialize_from="VpcId")
-    tags = ListType(ModelType(Tags), deserialize_from="Tags")
+    tags = ListType(ModelType(Tags), deserialize_from="Tags", default=[])
     account_id = StringType(default="")
     cloudwatch = ModelType(CloudWatchModel, serialize_when_none=False)
 
@@ -439,7 +439,7 @@ class Endpoint(Model):
     network_interface_ids = ListType(StringType, deserialize_from="NetworkInterfaceIds")
     dns_entries = ListType(ModelType(EndpointsDnsEntries), deserialize_from="DnsEntries")
     creation_timestamp = DateTimeType(deserialize_from="CreationTimestamp")
-    tags = ListType(ModelType(Tags), deserialize_from="Tags")
+    tags = ListType(ModelType(Tags), deserialize_from="Tags", default=[])
     owner_id = StringType(deserialize_from="OwnerId")
     last_error = ModelType(LastError, deserialize_from="LastError")
     account_id = StringType(default="")
@@ -464,7 +464,7 @@ class EgressOnlyInternetGateway(Model):
     name = StringType(default="")
     attachments = ListType(ModelType(EgressOnlyInternetGatewayAttachments), deserialize_from="Attachments")
     egress_only_internet_gateway_id = StringType(deserialize_from="EgressOnlyInternetGatewayId")
-    tags = ListType(ModelType(Tags), deserialize_from="Tags")
+    tags = ListType(ModelType(Tags), deserialize_from="Tags", default=[])
     account_id = StringType(default="")
 
     def reference(self, region_code):
@@ -489,7 +489,7 @@ class InternetGateway(Model):
     attachments = ListType(ModelType(InternetGatewayAttachments), deserialize_from="Attachments")
     internet_gateway_id = StringType(deserialize_from="InternetGatewayId")
     owner_id = StringType(deserialize_from="OwnerId")
-    tags = ListType(ModelType(Tags), deserialize_from="Tags")
+    tags = ListType(ModelType(Tags), deserialize_from="Tags", default=[])
     region_name = StringType(default="")
     account_id = StringType(default="")
 
@@ -551,7 +551,7 @@ class RouteTable(Model):
     propagating_vgws = ListType(ModelType(RouteTablePropagatingVgws), deserialize_from="PropagatingVgws", default=[])
     route_table_id = StringType(deserialize_from="RouteTableId", serialize_when_none=False)
     routes = ListType(ModelType(RouteTableRoutes), deserialize_from="Routes", default=[])
-    tags = ListType(ModelType(Tags), deserialize_from="Tags")
+    tags = ListType(ModelType(Tags), deserialize_from="Tags", default=[])
     vpc_id = StringType(deserialize_from="VpcId")
     owner_id = StringType(deserialize_from="OwnerId")
     main = StringType(default="")
@@ -579,7 +579,7 @@ class DHCPOptions(Model):
     dhcp_configurations = ListType(ModelType(DHCPOptionsDhcpConfigurations), deserialize_from="DhcpConfigurations")
     dhcp_options_id = StringType(deserialize_from="DhcpOptionsId")
     owner_id = StringType(deserialize_from="OwnerId")
-    tags = ListType(ModelType(Tags), deserialize_from="Tags")
+    tags = ListType(ModelType(Tags), deserialize_from="Tags", default=[])
     account_id = StringType(default="")
 
     def reference(self, region_code):
@@ -618,7 +618,7 @@ class Subnet(Model):
     assign_ipv6_address_on_creation = BooleanType(deserialize_from="AssignIpv6AddressOnCreation")
     ipv6_cidr_block_association_set = ListType(ModelType(SubnetIpv6CidrBlockAssociationSet),
                                                deserialize_from="Ipv6CidrBlockAssociationSet")
-    tags = ListType(ModelType(Tags), deserialize_from="Tags")
+    tags = ListType(ModelType(Tags), deserialize_from="Tags", default=[])
     subnet_arn = StringType(deserialize_from="SubnetArn")
     outpost_arn = StringType(deserialize_from="OutpostArn")
     nat_gateways = ListType(ModelType(NATGateway))
@@ -672,7 +672,7 @@ class VPC(Model):
     cidr_block_association_set = ListType(ModelType(VPCCidrBlockAssociationSet),
                                           deserialize_from="CidrBlockAssociationSet")
     is_default = BooleanType(deserialize_from="IsDefault")
-    tags = ListType(ModelType(Tags), deserialize_from="Tags")
+    tags = ListType(ModelType(Tags), deserialize_from="Tags", default=[])
     subnets = ListType(ModelType(Subnet))
     route_tables = ListType(ModelType(RouteTable))
     main_route_table_id = StringType()

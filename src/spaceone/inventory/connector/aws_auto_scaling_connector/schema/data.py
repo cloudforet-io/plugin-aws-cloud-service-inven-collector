@@ -7,6 +7,12 @@ from spaceone.inventory.libs.schema.resource import CloudWatchModel, CloudWatchD
 
 _LOGGER = logging.getLogger(__name__)
 
+
+class Tags(Model):
+    key = StringType()
+    value = StringType()
+
+
 '''
 NOTIFICATION CONFIGURATION
 '''
@@ -183,11 +189,6 @@ class LicenseSpecification(Model):
 class ElasticInferenceAccelerators(Model):
     type = StringType(deserialize_from="Type", serialize_when_none=False)
     count = IntType(deserialize_from="Count", serialize_when_none=False)
-
-
-class Tags(Model):
-    key = StringType(deserialize_from="Key", serialize_when_none=False)
-    value = StringType(deserialize_from="Value", serialize_when_none=False)
 
 
 class TagSpecifications(Model):
@@ -418,7 +419,8 @@ class AutoScalingGroup(Model):
                                deserialize_from="EnabledMetrics",
                                serialize_when_none=False)
     status = StringType(deserialize_from="Status", serialize_when_none=False)
-    tags = ListType(ModelType(AutoScalingGroupTags), deserialize_from="Tags")
+    autoscaling_tags = ListType(ModelType(AutoScalingGroupTags))
+    tags = ListType(ModelType(Tags), default=[])
     termination_policies = ListType(StringType, deserialize_from="TerminationPolicies", serialize_when_none=False)
     new_instances_protected_from_scale_in = BooleanType(deserialize_from="NewInstancesProtectedFromScaleIn",
                                                         serialize_when_none=False)

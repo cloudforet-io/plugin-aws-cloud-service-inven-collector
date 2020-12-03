@@ -2,7 +2,7 @@ import time
 import logging
 from typing import List
 
-from spaceone.inventory.connector.aws_api_gateway_connector.schema.data import RestAPI, Resource, HTTPWebsocket
+from spaceone.inventory.connector.aws_api_gateway_connector.schema.data import RestAPI, Resource, HTTPWebsocket, Tags
 from spaceone.inventory.connector.aws_api_gateway_connector.schema.resource import RestAPIResource, \
     HTTPWebsocketResource, RestAPIResponse, HTTPWebsocketResponse
 from spaceone.inventory.connector.aws_api_gateway_connector.schema.service_type import CLOUD_SERVICE_TYPES
@@ -74,7 +74,9 @@ class APIGatewayConnector(SchematicAWSConnector):
                     'account_id': self.account_id,
                     'arn': self.generate_arn(service=self.rest_service_name, region=region_name,
                                              account_id="", resource_type='restapis',
-                                             resource_id=f"{raw.get('id')}/*")
+                                             resource_id=f"{raw.get('id')}/*"),
+                    'tags': list(map(lambda tag: Tags(tag, strict=False),
+                                     self.convert_tags(raw.get('tags', {}))))
                 })
 
                 yield RestAPI(raw, strict=False)
@@ -99,7 +101,8 @@ class APIGatewayConnector(SchematicAWSConnector):
                     'account_id': self.account_id,
                     'arn': self.generate_arn(service=self.websocket_service_name, region=region_name,
                                              account_id="", resource_type='api',
-                                             resource_id=raw.get('ApiId'))
+                                             resource_id=raw.get('ApiId')),
+                    'tags': self.convert_tags(raw.get('tags', {}))
                 })
 
                 yield HTTPWebsocket(raw, strict=False)

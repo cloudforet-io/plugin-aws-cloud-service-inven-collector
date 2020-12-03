@@ -145,7 +145,7 @@ class TargetGroup(Model):
     load_balancer_arns = ListType(StringType, deserialize_from="LoadBalancerArns")
     target_type = StringType(deserialize_from="TargetType", choices=("instance", "ip", "lambda"))
     account_id = StringType(default="")
-    tags = ListType(ModelType(Tags))
+    tags = ListType(ModelType(Tags), default=[])
     attributes = ModelType(TargetGroupAttributes)
 
     def reference(self, region_code):
@@ -198,7 +198,7 @@ class LoadBalancer(Model):
     security_group = ListType(StringType, deserialize_from="SecurityGroup")
     ip_address_type = StringType(deserialize_from="IpAddressType", choices=("ipv4", "dualstack"))
     account_id = StringType(default="")
-    tags = ListType(ModelType(Tags))
+    tags = ListType(ModelType(Tags), default=[])
     listeners = ListType(ModelType(Listener))
     attributes = ModelType(LoadBalancerAttributes)
     cloudwatch = ModelType(CloudWatchModel, serialize_when_none=False)

@@ -1,6 +1,5 @@
 spaceone-core
 spaceone-api
-docker
 boto3
 schematics
 moto

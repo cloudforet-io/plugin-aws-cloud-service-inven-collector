@@ -140,3 +140,7 @@ class SchematicAWSConnector(AWSConnector):
             print(f'[ERROR {service_name}] REGION : {region_name} {e}')
 
         return resources
+
+    @staticmethod
+    def convert_tags(tags):
+        return [{'key': tag, 'value': tags[tag]} for tag in tags]

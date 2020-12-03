@@ -132,7 +132,7 @@ class User(Model):
     last_activity = StringType(default="")
     mfa_device = StringType(default="Not enabled")
     policies = ListType(ModelType(Policy))
-    tags = ListType(ModelType(Tags), deserialize_from="Tags")
+    tags = ListType(ModelType(Tags), deserialize_from="Tags", default=[])
 
     def reference(self):
         return {
@@ -203,7 +203,7 @@ class Role(Model):
     trusted_entities = ListType(StringType())
     trust_relationship = ListType(ModelType(TrustRelationShip))
     policies = ListType(ModelType(Policy))
-    tags = ListType(ModelType(Tags), default=[])
+    tags = ListType(ModelType(Tags), deserialize_from="Tags", default=[])
 
     def reference(self):
         return {
