@@ -32,7 +32,7 @@ class Snapshot(Model):
     volume_id = StringType(deserialize_from="VolumeId")
     volume_size = IntType(deserialize_from="VolumeSize")
     owner_alias = StringType(deserialize_from="OwnerAlias")
-    tags = ListType(ModelType(Tags), deserialize_from="Tags")
+    tags = ListType(ModelType(Tags), deserialize_from="Tags", default=[])
     cloudwatch = ModelType(CloudWatchModel, serialize_when_none=False)
 
     def reference(self, region_code):
@@ -97,7 +97,7 @@ class Volume(Model):
                                                           "deleting", "deleted", "error"))
     volume_id = StringType(deserialize_from="VolumeId")
     iops = IntType(deserialize_from="Iops")
-    tags = ListType(ModelType(Tags), deserialize_from="Tags")
+    tags = ListType(ModelType(Tags), deserialize_from="Tags", default=[])
     volume_type = StringType(deserialize_from="VolumeType", choices=("standard", "io1", "gp2", "sc1", "st1"))
     fast_restored = BooleanType(deserialize_from="FastRestored")
     multi_attach_enabled = BooleanType(deserialize_from="MultiAttachEnabled")

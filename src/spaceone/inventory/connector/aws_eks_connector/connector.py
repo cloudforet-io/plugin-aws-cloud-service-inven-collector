@@ -61,7 +61,7 @@ class EKSConnector(SchematicAWSConnector):
                         'node_groups': list(self.list_node_groups(_cluster_name)),
                         'account_id': self.account_id,
                         'tags': list(map(lambda tag: Tags(tag, strict=False),
-                                         self._convert_tag_format(cluster.get('tags'))))
+                                         self.convert_tags(cluster.get('tags', {}))))
                     })
                     yield Cluster(cluster, strict=False)
 

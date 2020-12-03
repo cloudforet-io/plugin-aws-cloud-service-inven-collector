@@ -9,8 +9,8 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class Tags(Model):
-    key = StringType(deserialize_from="key")
-    value = StringType(deserialize_from="value")
+    key = StringType()
+    value = StringType()
 
 
 class AttachmentsDetails(Model):
@@ -79,7 +79,7 @@ class ContainerInstance(Model):
     attributes = ListType(ModelType(Attributes), deserialize_from="attributes")
     registered_at = DateTimeType(deserialize_from="registeredAt")
     attachments = ListType(ModelType(Attachments), deserialize_from="attachments")
-    tags = ListType(ModelType(Tags), deserialize_from="tags")
+    tags = ListType(ModelType(Tags), default=[])
 
 
 '''
@@ -190,7 +190,7 @@ class Task(Model):
     stopped_at = DateTimeType(deserialize_from="stoppedAt")
     stopped_reason = StringType(deserialize_from="stoppedReason")
     stopping_at = DateTimeType(deserialize_from="stoppingAt")
-    tags = ListType(ModelType(Tags), deserialize_from="tags")
+    tags = ListType(ModelType(Tags), default=[])
     task_arn = StringType(deserialize_from="taskArn")
     task = StringType(default="")
     task_definition_arn = StringType(deserialize_from="taskDefinitionArn")
@@ -268,7 +268,7 @@ class ServiceTaskSets(Model):
     scale = ModelType(Scale, deserialize_from="scale")
     stability_status = StringType(deserialize_from="stabilityStatus", choices=("STEADY_STATE", "STABILIZING"))
     stability_status_at = DateTimeType(deserialize_from="stabilityStatusAt")
-    tags = ListType(ModelType(Tags))
+    tags = ListType(ModelType(Tags), default=[])
 
 
 class ServiceDeployments(Model):
@@ -330,7 +330,7 @@ class Service(Model):
     health_check_grace_period_seconds = IntType(deserialize_from="healthCheckGracePeriodSeconds")
     scheduling_strategy = StringType(deserialize_from="schedulingStrategy", choices=("REPLICA", "DAEMON"))
     deployment_controller = ModelType(DeploymentController, deserialize_from="deploymentController")
-    tags = ListType(ModelType(Tags), deserialize_from="tags")
+    tags = ListType(ModelType(Tags), default=[])
     created_by = StringType(deserialize_from="createdBy")
     enable_ecs_managed_tags = BooleanType(deserialize_from="enableECSManagedTags")
     propagate_tags = StringType(deserialize_from="propagateTags", choices=("TASK_DEFINITION", "SERVICE"))
@@ -358,7 +358,7 @@ class Cluster(Model):
     pending_tasks_count = IntType(deserialize_from="pendingTasksCount")
     active_services_count = IntType(deserialize_from="activeServicesCount")
     statistics = ListType(ModelType(ClusterStatistics), deserialize_from="statistics")
-    tags = ListType(ModelType(Tags), deserialize_from="tags")
+    tags = ListType(ModelType(Tags), default=[])
     settings = ListType(ModelType(ClusterSettings), deserialize_from="settings")
     capacity_providers = ListType(StringType, deserialize_from="capacityProviders")
     default_capacity_provider_strategy = ListType(ModelType(CapacityProviderStrategy),

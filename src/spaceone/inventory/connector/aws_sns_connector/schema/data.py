@@ -41,7 +41,7 @@ class Topic(Model):
     subscriptions_pending = BooleanType(deserialize_from="SubscriptionsPending")
     topic_arn = StringType(deserialize_from="TopicArn")
     subscriptions = ListType(ModelType(Subscription))
-    tags = ListType(ModelType(Tags))
+    tags = ListType(ModelType(Tags), default=[])
     region_name = StringType(default="")
     account_id = StringType(default="")
     cloudwatch = ModelType(CloudWatchModel, serialize_when_none=False)

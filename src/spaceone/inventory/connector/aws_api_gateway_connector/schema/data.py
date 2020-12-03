@@ -5,8 +5,12 @@ from schematics.types import ModelType, StringType, IntType, DateTimeType, seria
     DictType
 from spaceone.inventory.libs.schema.resource import CloudWatchModel, CloudWatchDimensionModel
 
-
 _LOGGER = logging.getLogger(__name__)
+
+
+class Tags(Model):
+    key = StringType()
+    value = StringType()
 
 '''
 HTTP WEBSOCKET
@@ -35,7 +39,7 @@ class HTTPWebsocket(Model):
     import_info = ListType(StringType,deserialize_from="ImportInfo", serialize_when_none=False)
     protocol_type = StringType(deserialize_from="ProtocolType", choices=("WEBSOCKET", "HTTP"))
     route_selection_expression = StringType(deserialize_from="RouteSelectionExpression", serialize_when_none=False)
-    tags = DictType(StringType, deserialize_from="Tags", serialize_when_none=False)
+    tags = ListType(ModelType(Tags), default=[])
     version = StringType(deserialize_from="Version", serialize_when_none=False)
     warnings = ListType(StringType, deserialize_from="Warnings", serialize_when_none=False)
     account_id = StringType(default="")
@@ -143,7 +147,7 @@ class RestAPI(Model):
                                        serialize_when_none=False)
     policy = StringType(deserialize_from="policy", serialize_when_none=False)
     resources = ListType(ModelType(Resource), default=[])
-    tags = DictType(StringType, deserialize_from="tags", serialize_when_none=False)
+    tags = ListType(ModelType(Tags), default=[])
     account_id = StringType(default="")
     cloudwatch = ModelType(CloudWatchModel, serialize_when_none=False)
 

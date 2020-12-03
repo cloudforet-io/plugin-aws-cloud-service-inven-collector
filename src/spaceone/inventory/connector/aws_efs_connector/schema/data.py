@@ -67,7 +67,7 @@ class FileSystem(Model):
     kms_key_id = StringType(deserialize_from="KmsKeyId")
     throughput_mode = StringType(deserialize_from="ThroughputMode", choices=("bursting", "provisioned"))
     provisioned_throughput_in_mibps = FloatType(deserialize_from="ProvisionedThroughputInMibps")
-    tags = ListType(ModelType(FileSystemTags), deserialize_from="Tags")
+    tags = ListType(ModelType(FileSystemTags), deserialize_from="Tags", default=[])
     account_id = StringType(default="")
     life_cycle_policies = ListType(ModelType(LifecyclePolicy))
     mount_targets = ListType(ModelType(MountTarget))

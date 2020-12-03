@@ -280,7 +280,7 @@ class DistributionData(Model):
     distribution_config = ModelType(DistributionConfig, deserialize_from="DistributionConfig")
     alias_icp_recordals = ListType(ModelType(AliasICPRecordals), deserialize_from="AliasICPRecordals")
     account_id = StringType()
-    tags = ListType(ModelType(Tags))
+    tags = ListType(ModelType(Tags), default=[])
     cloudwatch = ModelType(CloudWatchModel, serialize_when_none=False)
 
     def reference(self):

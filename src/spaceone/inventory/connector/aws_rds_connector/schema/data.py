@@ -93,7 +93,7 @@ class ParameterGroup(Model):
     db_parameter_group_arn = StringType(deserialize_from="DBParameterGroupArn")
     account_id = StringType()
     parameters = ListType(ModelType(Parameter), default=[])
-    tags = ListType(ModelType(Tags))
+    tags = ListType(ModelType(Tags), default=[])
     db_parameter_group_type = StringType()
 
     def reference(self, region_code):
@@ -124,7 +124,7 @@ class SubnetGroup(Model):
     subnets = ListType(ModelType(SubnetGroupSubnets), deserialize_from="Subnets")
     db_subnet_group_arn = StringType(deserialize_from="DBSubnetGroupArn")
     account_id = StringType()
-    tags = ListType(ModelType(Tags))
+    tags = ListType(ModelType(Tags), default=[])
 
     def reference(self, region_code):
         return {
@@ -170,7 +170,7 @@ class Snapshot(Model):
     processor_features = ListType(ModelType(Features), deserialize_from="ProcessorFeatures")
     dbi_resource_id = StringType(deserialize_from="DbiResourceId")
     account_id = StringType()
-    tags = ListType(ModelType(Tags))
+    tags = ListType(ModelType(Tags), default=[])
 
     def reference(self, region_code):
         return {
@@ -342,7 +342,7 @@ class Instance(Model):
     associated_roles = ListType(ModelType(InstanceAssociatedRoles), deserialize_from="AssociatedRoles")
     listener_endpoint = ModelType(ListenerEndpoint, deserialize_from="ListenerEndpoint")
     max_allocated_storage = IntType(deserialize_from="MaxAllocatedStorage")
-    tags = ListType(ModelType(Tags))
+    tags = ListType(ModelType(Tags), default=[])
 
     def reference(self, region_code):
         return {
@@ -450,7 +450,7 @@ class Cluster(Model):
     cross_account_clone = BooleanType(deserialize_from="CrossAccountClone")
     domain_memberships = ListType(ModelType(ClusterDomainMemberships), deserialize_from="DomainMemberships")
     db_cluster_role = StringType()
-    tags = ListType(ModelType(Tags))
+    tags = ListType(ModelType(Tags), default=[])
 
 
 class Database(Model):

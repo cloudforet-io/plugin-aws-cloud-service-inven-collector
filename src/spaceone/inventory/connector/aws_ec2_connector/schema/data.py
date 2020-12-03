@@ -71,7 +71,7 @@ class Image(Model):
     root_device_type = StringType(deserialize_from="RootDeviceType", choices=("ebs", "instance-store"))
     sriov_net_support = StringType(deserialize_from="SriovNetSupport")
     state_reason = ModelType(ImageStateReason, deserialize_from="StateReason")
-    tags = ListType(ModelType(Tags), deserialize_from="Tags")
+    tags = ListType(ModelType(Tags), deserialize_from="Tags", default=[])
     virtualization_type = StringType(deserialize_from="VirtualizationType", choices=("hvm", "paravirtual"))
     launch_permissions = ListType(ModelType(LaunchPermission))
 
@@ -132,7 +132,7 @@ class SecurityGroup(Model):
     owner_id = StringType(deserialize_from="OwnerId")
     group_id = StringType(deserialize_from="GroupId")
     ip_permissions_egress = ListType(ModelType(SecurityGroupIpPermission))
-    tags = ListType(ModelType(Tags, deserialize_from="Tags"))
+    tags = ListType(ModelType(Tags), deserialize_from="Tags", default=[])
     vpc_id = StringType(deserialize_from="VpcId")
     account_id = StringType(default="")
 

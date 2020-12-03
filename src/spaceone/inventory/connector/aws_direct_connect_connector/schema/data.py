@@ -10,8 +10,8 @@ _LOGGER = logging.getLogger(__name__)
 LAGS
 '''
 class Tags(Model):
-    key = StringType(deserialize_from="key")
-    value = StringType(deserialize_from="value")
+    key = StringType()
+    value = StringType()
 
 
 class LAGConnections(Model):
@@ -31,7 +31,7 @@ class LAGConnections(Model):
     aws_device = StringType(deserialize_from="awsDevice")
     jumbo_frame_capable = BooleanType(deserialize_from="jumboFrameCapable")
     aws_device_v2 = StringType(deserialize_from="awsDeviceV2")
-    has_logical_redundancy = StringType(deserialize_from="hasLogicalRedundancy", choices=("unknown","yes","no"))
+    has_logical_redundancy = StringType(deserialize_from="hasLogicalRedundancy", choices=("unknown", "yes", "no"))
     tags = ListType(ModelType(Tags))
     provider_name = StringType(deserialize_from="providerName")
 
@@ -53,7 +53,7 @@ class LAG(Model):
     allows_hosted_connections = BooleanType(deserialize_from="allowsHostedConnections")
     jumbo_frame_capable = BooleanType(deserialize_from="jumboFrameCapable")
     has_logical_redundancy = StringType(deserialize_from="hasLogicalRedundancy", choices=("unknown", "yes", "no"))
-    tags = ListType(ModelType(Tags, deserialize_from="tags"))
+    tags = ListType(ModelType(Tags), default=[])
     provider_name = StringType(deserialize_from="providerName")
     account_id = StringType()
 
@@ -157,7 +157,7 @@ class VirtualInterface(Model):
                                    deserialize_from="bgpPeers"))
     region = StringType(deserialize_from="region")
     aws_device_v2 = StringType(deserialize_from="awsDeviceV2")
-    tags = ListType(ModelType(Tags, deserialize_from="tags"))
+    tags = ListType(ModelType(Tags), default=[])
     account_id = StringType()
     cloudwatch = ModelType(CloudWatchModel, serialize_when_none=False)
 
@@ -197,7 +197,7 @@ class Connection(Model):
     jumbo_frame_capable = BooleanType(deserialize_from="jumboFrameCapable")
     aws_device_v2 = StringType(deserialize_from="awsDeviceV2")
     has_logical_redundancy = StringType(deserialize_from="hasLogicalRedundancy", choices=("unknown", "yes", "no"))
-    tags = ListType(ModelType(Tags, deserialize_from="tags"))
+    tags = ListType(ModelType(Tags), default=[])
     provider_name = StringType(deserialize_from="providerName")
     virtual_interfaces = ListType(ModelType(VirtualInterface))
     account_id = StringType()

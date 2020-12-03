@@ -34,7 +34,7 @@ class Snapshot(Model):
     kms_key_id = StringType(deserialize_from="KmsKeyId")
     db_cluster_snapshot_arn = StringType(deserialize_from="DBClusterSnapshotArn")
     source_db_cluster_snapshot_arn = StringType(deserialize_from="SourceDBClusterSnapshotArn")
-    tags = ListType(ModelType(Tag))
+    tags = ListType(ModelType(Tag), default=[])
 
     def reference(self, region_code):
         return {
@@ -69,7 +69,7 @@ class ParameterGroup(Model):
     db_cluster_parameter_group_arn = StringType(deserialize_from="DBClusterParameterGroupArn")
     parameters = ListType(ModelType(Parameter))
     account_id = StringType(default="")
-    tags = ListType(ModelType(Tag))
+    tags = ListType(ModelType(Tag), default=[])
 
     def reference(self, region_code):
         return {
@@ -99,7 +99,7 @@ class SubnetGroup(Model):
     subnets = ListType(ModelType(SubnetGroupSubnets), deserialize_from="Subnets")
     db_subnet_group_arn = StringType(deserialize_from="DBSubnetGroupArn")
     account_id = StringType(default='')
-    tags = ListType(ModelType(Tag))
+    tags = ListType(ModelType(Tag), default=[])
 
     def reference(self, region_code):
         return {
@@ -196,7 +196,7 @@ class Instance(Model):
     promotion_tier = IntType(deserialize_from="PromotionTier")
     db_instance_arn = StringType(deserialize_from="DBInstanceArn")
     enabled_cloudwatch_logs_exports = ListType(StringType, deserialize_from="EnabledCloudwatchLogsExports")
-    tags = ListType(ModelType(Tag))
+    tags = ListType(ModelType(Tag), default=[])
     cloudwatch = ModelType(CloudWatchModel, serialize_when_none=False)
 
     def reference(self, region_code):
@@ -269,7 +269,7 @@ class Cluster(Model):
     instances = ListType(ModelType(Instance))
     snapshots = ListType(ModelType(Snapshot))
     account_id = StringType(default='')
-    tags = ListType(ModelType(Tag))
+    tags = ListType(ModelType(Tag), default=[])
     cloudwatch = ModelType(CloudWatchModel, serialize_when_none=False)
 
     def reference(self, region_code):

@@ -55,7 +55,7 @@ class Trail(Model):
     is_organization_trail = BooleanType(deserialize_from="IsOrganizationTrail")
     event_selectors = ListType(ModelType(EventSelector))
     insight_selectors = ModelType(InsightSelector)
-    tags = ListType(ModelType(CloudTrailTags))
+    tags = ListType(ModelType(CloudTrailTags), default=[])
     account_id = StringType(default="")
 
     def reference(self, region_name=None):
