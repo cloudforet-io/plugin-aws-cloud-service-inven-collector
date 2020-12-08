@@ -19,7 +19,8 @@ class ImageBlockDeviceMappingsEBS(Model):
     iops = IntType(deserialize_from="Iops")
     snapshot_id = StringType(deserialize_from="SnapshotId")
     volume_size = IntType(deserialize_from="VolumeSize")
-    volume_type = StringType(deserialize_from="VolumeType", choices=("standard", "io1", "io2", "gp2", "sc1", "st1"))
+    volume_type = StringType(deserialize_from="VolumeType",
+                             choices=("standard", "io1", "io2", "gp2", "gp3", "sc1", "st1"))
     kms_key_id = StringType(deserialize_from="KmsKeyId")
     encrypted = BooleanType(deserialize_from="Encrypted")
 

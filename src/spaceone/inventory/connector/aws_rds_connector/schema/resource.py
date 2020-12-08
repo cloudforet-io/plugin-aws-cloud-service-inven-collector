@@ -81,7 +81,7 @@ instance_storage = ItemDynamicLayout.set_fields('Storage', fields=[
         'indigo.500': ['true'], 'coral.600': ['false']
     }),
     EnumDyField.data_source('Storage Type', 'data.instance.storage_type',
-                            default_outline_badge=['standard', 'io1', 'gp2', 'st1', 'sc1']),
+                            default_outline_badge=['standard', 'io1', 'gp2', 'gp3', 'st1', 'sc1']),
     TextDyField.data_source('IOPS', 'data.instance.iops'),
     TextDyField.data_source('Storage (GB)', 'data.instance.allocated_storage'),
     TextDyField.data_source('Maximum Storage Threshold (GB)', 'data.instance.max_allocated_storage'),
@@ -168,7 +168,7 @@ snapshot = ItemDynamicLayout.set_fields('Snapshot', fields=[
     TextDyField.data_source('Cluster/Instance Name', 'data.db_instance_identifier'),
     EnumDyField.data_source('Type', 'data.snapshot_type', default_outline_badge=['manual', 'automated']),
     EnumDyField.data_source('Storage Type', 'data.storage_type',
-                            default_outline_badge=['standard', 'io1', 'gp2', 'st1', 'sc1']),
+                            default_outline_badge=['standard', 'io1', 'gp2', 'gp3', 'st1', 'sc1']),
     TextDyField.data_source('Allocated Size', 'data.allocated_storage'),
     EnumDyField.data_source('DB Engine', 'data.engine',
                             default_outline_badge=['aurora', 'aurora-mysql', 'docdb', 'mysql', 'mariadb', 'postgres', 'oracle-ee', 'oracle-se',
