@@ -25,7 +25,7 @@ cst_ebs._metadata = CloudServiceTypeMeta.set_meta(
         }),
         TextDyField.data_source('Size (GB)', 'data.size_gb'),
         EnumDyField.data_source('Volume Type', 'data.volume_type',
-                                default_outline_badge=['standard', 'io1', 'gp2', 'sc1', 'st1']),
+                                default_outline_badge=['standard', 'io1', 'gp2', 'gp3', 'sc1', 'st1']),
         TextDyField.data_source('IOPS', 'data.iops'),
         TextDyField.data_source('From Snapshot', 'data.snapshot_id'),
         TextDyField.data_source('Availablity Zone', 'data.availability_zone'),
@@ -48,6 +48,7 @@ cst_ebs._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Volume Type', key='data.volume_type',
                         enums={
                             'gp2': {'label': 'General Purpose SSD (gp2)'},
+                            'gp3': {'label': 'General Purpose SSD (gp3)'},
                             'io1': {'label': 'Provisioned IOPS SSD (io1)'},
                             'sc1': {'label': 'Cold HDD (sc1)'},
                             'st1': {'label': 'Throughput Optimized HDD (st1)'},

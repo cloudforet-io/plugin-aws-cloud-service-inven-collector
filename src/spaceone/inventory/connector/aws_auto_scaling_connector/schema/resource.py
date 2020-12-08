@@ -164,7 +164,8 @@ lc_meta_base_lc = ItemDynamicLayout.set_fields('Launch Configuration', fields=[
 # TAB - BASE - Block Devices
 lc_meta_base_bd = SimpleTableDynamicLayout.set_fields('Block Devices', 'data.block_device_mappings', fields=[
     TextDyField.data_source('Device Name', 'device_name'),
-    EnumDyField.data_source('Type', 'ebs.volume_type', default_outline_badge=['standard', 'io1', 'gp2', 'st1', 'sc1']),
+    EnumDyField.data_source('Type', 'ebs.volume_type',
+                            default_outline_badge=['standard', 'io1', 'gp2', 'gp3', 'st1', 'sc1']),
     TextDyField.data_source('Size(GB)', 'ebs.volume_size'),
     TextDyField.data_source('IOPS', 'ebs.iops'),
     EnumDyField.data_source('Delete on Termination', 'data.delete_on_termination', default_badge={
@@ -201,7 +202,8 @@ lt_meta_base_lt = ItemDynamicLayout.set_fields('Launch Template', fields=[
 
 lt_meta_base_storage = TableDynamicLayout.set_fields('Storage', 'data.launch_template.block_device_mappings', fields=[
     TextDyField.data_source('Device Name', 'device_name'),
-    EnumDyField.data_source('Type', 'ebs.volume_type', default_outline_badge=['standard', 'io1', 'gp2', 'st1', 'sc1']),
+    EnumDyField.data_source('Type', 'ebs.volume_type',
+                            default_outline_badge=['standard', 'io1', 'gp2', 'gp3', 'st1', 'sc1']),
     TextDyField.data_source('Snapshot', 'ebs.snapshot_id'),
     TextDyField.data_source('Size(GiB)', 'ebs.volume_size'),
     TextDyField.data_source('IOPS', 'ebs.iops'),

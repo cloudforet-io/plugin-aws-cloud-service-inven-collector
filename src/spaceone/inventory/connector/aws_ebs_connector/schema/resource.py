@@ -19,7 +19,7 @@ vol_base = ItemDynamicLayout.set_fields('Volumes', fields=[
     TextDyField.data_source('Outpost ARN', 'data.outpost_arn'),
     TextDyField.data_source('Size (GB)', 'data.size_gb'),
     EnumDyField.data_source('Volume Type', 'data.volume_type',
-                            default_outline_badge=['standard', 'io1', 'gp2', 'sc1', 'st1']),
+                            default_outline_badge=['standard', 'io1', 'gp2', 'gp3', 'sc1', 'st1']),
     TextDyField.data_source('Snapshot', 'data.snapshot_id'),
     TextDyField.data_source('Availability Zone', 'data.availability_zone'),
     EnumDyField.data_source('Encryption', 'data.encrypted', default_badge={
