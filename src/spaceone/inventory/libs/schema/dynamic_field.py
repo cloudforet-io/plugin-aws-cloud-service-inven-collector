@@ -88,8 +88,8 @@ class ProgressFieldOptions(FieldViewOption):
 
 
 class SizeFieldOptions(FieldViewOption):
-    display_unit = StringType(serialize_when_none=False, choice=('BYTES', 'KB', 'MB', 'GB', 'TB', 'PB'))
-    source_unit = StringType(serialize_when_none=False, choice=('BYTES', 'KB', 'MB', 'GB', 'TB', 'PB'))
+    display_unit = StringType(serialize_when_none=False, choices=('BYTES', 'KB', 'MB', 'GB', 'TB', 'PB'))
+    source_unit = StringType(serialize_when_none=False, choices=('BYTES', 'KB', 'MB', 'GB', 'TB', 'PB'))
 
 
 class TextDyField(BaseDynamicField):
