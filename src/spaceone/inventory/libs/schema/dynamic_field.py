@@ -31,7 +31,8 @@ class Icon(Model):
 
 
 class BaseField(Model):
-    type = StringType(choices=["text", "state", "badge", "list", "dict", "datetime", "image", "enum"],
+    type = StringType(choices=["text", "state", "badge", "list", "dict",
+                               "datetime", "image", "enum", "progress", "size"],
                       serialize_when_none=False)
     options = PolyModelType([Model, DictType(PolyModelType(Model))], serialize_when_none=False)
 
@@ -80,6 +81,15 @@ class DateTimeDyFieldOptions(FieldViewOption):
     source_type = StringType(default='timestamp', choices=['iso8601', 'timestamp'])
     source_format = StringType(serialize_when_none=False)
     display_format = StringType(serialize_when_none=False)
+
+
+class ProgressFieldOptions(FieldViewOption):
+    unit = StringType(serialize_when_none=False)
+
+
+class SizeFieldOptions(FieldViewOption):
+    display_unit = StringType(serialize_when_none=False, choice=('BYTES', 'KB', 'MB', 'GB', 'TB', 'PB'))
+    source_unit = StringType(serialize_when_none=False, choice=('BYTES', 'KB', 'MB', 'GB', 'TB', 'PB'))
 
 
 class TextDyField(BaseDynamicField):
@@ -305,6 +315,16 @@ class EnumDyField(BaseDynamicField):
             _data_source.update({'reference': kwargs.get('reference')})
 
         return cls(_data_source)
+
+
+class ProgressField(BaseDynamicField):
+    type = StringType(default="progress")
+    options = PolyModelType(ProgressFieldOptions, serialize_when_none=False, )
+
+
+class SizeField(BaseDynamicField):
+    type = StringType(default="size")
+    options = PolyModelType(SizeFieldOptions, serialize_when_none=False)
 
 
 class SearchEnumField(Model):
