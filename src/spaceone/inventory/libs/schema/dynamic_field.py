@@ -321,11 +321,28 @@ class ProgressField(BaseDynamicField):
     type = StringType(default="progress")
     options = PolyModelType(ProgressFieldOptions, serialize_when_none=False, )
 
+    @classmethod
+    def data_source(cls, name, key, **kwargs):
+        _data_source = {'key': key, 'name': name}
+
+        if 'options' in kwargs:
+            _data_source.update({'options': kwargs.get('options')})
+
+        return cls(_data_source)
+
 
 class SizeField(BaseDynamicField):
     type = StringType(default="size")
     options = PolyModelType(SizeFieldOptions, serialize_when_none=False)
 
+    @classmethod
+    def data_source(cls, name, key, **kwargs):
+        _data_source = {'key': key, 'name': name}
+
+        if 'options' in kwargs:
+            _data_source.update({'options': kwargs.get('options')})
+
+        return cls(_data_source)
 
 class SearchEnumField(Model):
     label = StringType(serialize_when_none=False)
