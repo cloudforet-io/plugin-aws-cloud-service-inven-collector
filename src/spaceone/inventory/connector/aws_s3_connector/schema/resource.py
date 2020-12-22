@@ -18,7 +18,7 @@ bucket = ItemDynamicLayout.set_fields('Buckets', fields=[
 
 object_info = ItemDynamicLayout.set_fields('Objects', fields=[
     TextDyField.data_source('Object Counts', 'data.object_count'),
-    TextDyField.data_source('Object Total Size (Bytes)', 'data.object_total_size'),
+    SizeField.data_source('Object Total Size', 'data.object_total_size'),
 ])
 
 versioning = ItemDynamicLayout.set_fields('Versioning', fields=[
