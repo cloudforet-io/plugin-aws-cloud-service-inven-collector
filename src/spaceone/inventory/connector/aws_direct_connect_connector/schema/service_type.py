@@ -19,7 +19,7 @@ cst_connection.tags = {
 
 cst_connection_meta = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Id', 'data.connection_id'),
+        TextDyField.data_source('ID', 'data.connection_id'),
         TextDyField.data_source('Name', 'data.connection_name'),
         EnumDyField.data_source('State', 'data.connection_state', default_state={
             'safe': ['available'],
@@ -35,7 +35,6 @@ cst_connection_meta = CloudServiceTypeMeta.set_meta(
     search=[
         SearchField.set(name='Connection ID', key='data.connection_id'),
         SearchField.set(name='Name', key='data.connection_name'),
-        SearchField.set(name='ARN', key='data.arn'),
         SearchField.set(name='State', key='data.connection_state',
                         enums={'available': {'label': 'Available', 'icon': {'color': 'green.500'}},
                                'requested': {'label': 'Requested', 'icon': {'color': 'blue.400'}},
