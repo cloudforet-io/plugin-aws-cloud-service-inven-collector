@@ -1,7 +1,7 @@
 from schematics.types import DictType, ListType, ModelType, PolyModelType, StringType
 from spaceone.inventory.connector.aws_sqs_connector.schema.data import QueData
 from spaceone.inventory.libs.schema.resource import CloudServiceMeta, CloudServiceResource, CloudServiceResponse
-from spaceone.inventory.libs.schema.dynamic_field import TextDyField, DateTimeDyField, EnumDyField
+from spaceone.inventory.libs.schema.dynamic_field import TextDyField, DateTimeDyField, EnumDyField, SizeField
 from spaceone.inventory.libs.schema.dynamic_layout import ItemDynamicLayout, TableDynamicLayout
 
 sqs = ItemDynamicLayout.set_fields('Queue', fields=[
@@ -18,7 +18,7 @@ sqs = ItemDynamicLayout.set_fields('Queue', fields=[
     TextDyField.data_source('Approximate Number Of Messages Delayed', 'data.approximate_number_of_messages_delayed'),
     TextDyField.data_source('Approximate Number Of Messages Not Visible', 'data.approximate_number_of_messages_not_visible'),
     TextDyField.data_source('Delay Seconds', 'data.delay_seconds'),
-    TextDyField.data_source('Maximum Message Size', 'data.maximum_message_size'),
+    SizeField.data_source('Maximum Message Size', 'data.maximum_message_size'),
     TextDyField.data_source('Message Retention Period', 'data.message_retention_period'),
     TextDyField.data_source('Receive Message Wait Time Seconds', 'data.receive_message_wait_time_seconds'),
     TextDyField.data_source('Visibility Timeout', 'data.visibility_timeout'),

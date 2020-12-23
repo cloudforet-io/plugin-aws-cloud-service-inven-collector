@@ -1,4 +1,4 @@
-from spaceone.inventory.libs.schema.dynamic_field import TextDyField, BadgeDyField, ListDyField, SearchField
+from spaceone.inventory.libs.schema.dynamic_field import TextDyField, BadgeDyField, ListDyField, SearchField, SizeField
 from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, \
     CloudServiceTypeMeta
 
@@ -18,7 +18,10 @@ cst_function._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
         TextDyField.data_source('Name', 'data.name'),
         BadgeDyField.data_source('Runtime', 'data.runtime'),
-        TextDyField.data_source('Memory Size', 'data.memory_size'),
+        SizeField.data_source('Code Size', 'data.code_size'),
+        SizeField.data_source('Memory Size', 'data.memory_size', options={
+            'source_unit': 'MB'
+        }),
         TextDyField.data_source('Description', 'data.description'),
     ],
     search=[

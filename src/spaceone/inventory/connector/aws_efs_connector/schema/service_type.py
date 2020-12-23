@@ -1,4 +1,5 @@
-from spaceone.inventory.libs.schema.dynamic_field import TextDyField, DateTimeDyField, EnumDyField, SearchField
+from spaceone.inventory.libs.schema.dynamic_field import TextDyField, DateTimeDyField, EnumDyField, SearchField, \
+    SizeField
 from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, \
     CloudServiceTypeMeta
 
@@ -23,7 +24,7 @@ cst_filesystem._metadata = CloudServiceTypeMeta.set_meta(
             'warning': ['creating', 'updating', 'deleting'],
             'disable': ['deleted']
         }),
-        TextDyField.data_source('Metered Sizes (Bytes)', 'data.size_in_bytes.value'),
+        SizeField.data_source('Metered Sizes', 'data.size_in_bytes.value'),
         TextDyField.data_source('Mount Targets', 'data.number_of_mount_targets'),
         DateTimeDyField.data_source('Creation date', 'data.creation_time'),
     ],
