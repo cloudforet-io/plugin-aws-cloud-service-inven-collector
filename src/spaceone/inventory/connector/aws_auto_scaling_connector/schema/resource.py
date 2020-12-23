@@ -2,7 +2,7 @@ from schematics.types import ModelType, StringType, PolyModelType, DictType, Lis
 
 from spaceone.inventory.connector.aws_auto_scaling_connector.schema.data import AutoScalingGroup, LaunchConfiguration, LaunchTemplateDetail
 from spaceone.inventory.libs.schema.dynamic_field import TextDyField, ListDyField, BadgeDyField, DateTimeDyField, \
-    EnumDyField
+    EnumDyField, SizeField
 from spaceone.inventory.libs.schema.dynamic_layout import ItemDynamicLayout, TableDynamicLayout, ListDynamicLayout, \
     SimpleTableDynamicLayout
 from spaceone.inventory.libs.schema.resource import CloudServiceResource, CloudServiceResponse, CloudServiceMeta
@@ -166,7 +166,10 @@ lc_meta_base_bd = SimpleTableDynamicLayout.set_fields('Block Devices', 'data.blo
     TextDyField.data_source('Device Name', 'device_name'),
     EnumDyField.data_source('Type', 'ebs.volume_type',
                             default_outline_badge=['standard', 'io1', 'gp2', 'gp3', 'st1', 'sc1']),
-    TextDyField.data_source('Size(GB)', 'ebs.volume_size'),
+    SizeField.data_source('Size', 'ebs.volume_size', options={
+        'source_unit': 'GB',
+        'display_unit': 'GB'
+    }),
     TextDyField.data_source('IOPS', 'ebs.iops'),
     EnumDyField.data_source('Delete on Termination', 'data.delete_on_termination', default_badge={
         'indigo.500': ['true'], 'coral.600': ['false']
@@ -205,7 +208,10 @@ lt_meta_base_storage = TableDynamicLayout.set_fields('Storage', 'data.launch_tem
     EnumDyField.data_source('Type', 'ebs.volume_type',
                             default_outline_badge=['standard', 'io1', 'gp2', 'gp3', 'st1', 'sc1']),
     TextDyField.data_source('Snapshot', 'ebs.snapshot_id'),
-    TextDyField.data_source('Size(GiB)', 'ebs.volume_size'),
+    SizeField.data_source('Size', 'ebs.volume_size', options={
+        'source_unit': 'GB',
+        'display_unit': 'GB'
+    }),
     TextDyField.data_source('IOPS', 'ebs.iops'),
     EnumDyField.data_source('Delete On Termination', 'ebs.delete_on_termination', default_badge={
         'indigo.500': ['true'], 'coral.600': ['false']

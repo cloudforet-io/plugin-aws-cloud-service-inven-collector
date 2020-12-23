@@ -75,7 +75,7 @@ class ECRConnector(SchematicAWSConnector):
         for data in response_iterator:
             for raw in data.get('imageDetails', []):
                 raw.update({
-                    'image_size_in_megabytes': f'{float(raw["imageSizeInBytes"] / 1000000):.2f}',
+                    # 'image_size_in_megabytes': f'{float(raw["imageSizeInBytes"] / 1000000):.2f}',
                     'image_tags_display': self._generate_image_tags_display(raw.get('imageTags', [])),
                     'image_uri': self._generate_image_uri(repo.get("repositoryUri", ''), raw.get("imageTags", []))
                 })
