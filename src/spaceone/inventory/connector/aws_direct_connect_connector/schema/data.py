@@ -179,7 +179,6 @@ class VirtualInterface(Model):
 CONNECTION
 '''
 class Connection(Model):
-    arn = StringType()
     owner_account = StringType(deserialize_from="ownerAccount")
     connection_id = StringType(deserialize_from="connectionId")
     connection_name = StringType(deserialize_from="connectionName")
@@ -205,7 +204,7 @@ class Connection(Model):
 
     def reference(self, region_code):
         return {
-            "resource_id": self.arn,
+            "resource_id": self.connection_id,
             "external_link": f"https://console.aws.amazon.com/directconnect/v2/home?region={region_code}#/connections/arn:aws:directconnect:{region_code}:{self.owner_account}:{self.connection_id}"
         }
 
