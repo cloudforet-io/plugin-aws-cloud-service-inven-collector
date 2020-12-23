@@ -344,6 +344,7 @@ class SizeField(BaseDynamicField):
 
         return cls(_data_source)
 
+
 class SearchEnumField(Model):
     label = StringType(serialize_when_none=False)
     icon = ModelType(Icon, serialize_when_none=False)
