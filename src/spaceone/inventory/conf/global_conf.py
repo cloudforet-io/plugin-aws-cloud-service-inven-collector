@@ -1,7 +1,17 @@
 CONNECTORS = {
 }
 
-LOG = {}
+LOG = {
+    'filters': {
+        'masking': {
+            'rules': {
+                'Collector.collect': [
+                    'secret_data'
+                ]
+            }
+        }
+    }
+}
 
 HANDLERS = {
 }
