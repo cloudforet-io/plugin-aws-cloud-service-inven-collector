@@ -27,7 +27,7 @@ cst_redshift_cluster._metadata = CloudServiceTypeMeta.set_meta(
         }),
         TextDyField.data_source('Cluster Version', 'data.cluster_version'),
         TextDyField.data_source('Nodes', 'data.number_of_nodes'),
-        BadgeDyField.data_source('Node Type', 'data.node_type'),
+        TextDyField.data_source('Node Type', 'data.node_type'),
     ],
     search=[
         SearchField.set(name='Cluster Identifier', key='data.cluster_identifier'),

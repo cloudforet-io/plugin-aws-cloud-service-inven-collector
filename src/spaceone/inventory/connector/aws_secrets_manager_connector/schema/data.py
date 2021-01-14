@@ -31,7 +31,7 @@ class Secret(Model):
     last_changed_date = DateTimeType(deserialize_from="LastChangedDate")
     last_accessed_date = DateTimeType(deserialize_from="LastAccessedDate")
     deleted_date = DateTimeType(deserialize_from="DeletedDate")
-    tags = ListType(ModelType(SecretTags), deserialize_from="Tags")
+    tags = ListType(ModelType(SecretTags), deserialize_from="Tags", default=[])
     secret_versions_to_stages = ModelType(SecretVersionsToStages, deserialize_from="SecretVersionsToStages")
     owning_service = StringType(deserialize_from="OwningService")
     account_id = StringType(default='')

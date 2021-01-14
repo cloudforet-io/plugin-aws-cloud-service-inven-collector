@@ -3,7 +3,8 @@ import logging
 from typing import List
 
 from spaceone.inventory.connector.aws_auto_scaling_connector.schema.data import AutoScalingGroup, LaunchConfiguration, \
-    AutoScalingPolicy, LifecycleHook, NotificationConfiguration, ScheduledAction, LaunchTemplateDetail
+    AutoScalingPolicy, LifecycleHook, NotificationConfiguration, ScheduledAction, LaunchTemplateDetail, Tags, \
+    AutoScalingGroupTags
 from spaceone.inventory.connector.aws_auto_scaling_connector.schema.resource import AutoScalingGroupResource, \
     LaunchConfigurationResource, LaunchTemplateResource, AutoScalingGroupResponse, LaunchConfigurationResponse, \
     LaunchTemplateResponse
@@ -94,8 +95,22 @@ class AutoScalingConnector(SchematicAWSConnector):
                                                   self._describe_scheduled_actions(raw['AutoScalingGroupName']))),
                     'lifecycle_hooks': list(map(lambda lifecycle_hook: LifecycleHook(lifecycle_hook, strict=False),
                                                 self._describe_lifecycle_hooks(raw['AutoScalingGroupName']))),
+                    'autoscaliing_tags': list(map(lambda tag: Tags(tag, strict=False),
+                                                  raw.get('Tags', []))),
+                    'tags': list(map(lambda tag: Tags(tag, strict=False),
+                                     self.get_general_tags(raw.get('Tags', [])))),
                     'account_id': self.account_id
                 })
+
+                if raw.get('LaunchConfigurationName'):
+                    raw.update({
+                        'display_launch_configuration_template': raw.get('LaunchConfigurationName')
+                    })
+                elif raw.get('LaunchTemplate'):
+                    raw.update({
+                        'display_launch_configuration_template': raw.get('LaunchTemplate').get('LaunchTemplateName')
+                    })
+
                 res = AutoScalingGroup(raw, strict=False)
                 yield res
 
@@ -137,7 +152,7 @@ class AutoScalingConnector(SchematicAWSConnector):
                     'version_description': match_lt_version.get('VersionDescription'),
                     'default_version': match_lt_version.get('DefaultVersion'),
                     'account_id': self.account_id,
-                    'launch_template_data': match_lt_data,
+                    'launch_template': match_lt_data,
                     'arn': self.generate_arn(service="ec2", region="", account_id="",
                                              resource_type="launch_template",
                                              resource_id=raw['LaunchTemplateId'] + '/v' + str(
@@ -211,3 +226,7 @@ class AutoScalingConnector(SchematicAWSConnector):
     def _describe_scheduled_actions(self, auto_scaling_group_name):
         res = self.client.describe_scheduled_actions(AutoScalingGroupName=auto_scaling_group_name)
         return res.get('ScheduledUpdateGroupActions', [])
+
+    @staticmethod
+    def get_general_tags(tags):
+        return [{'key': tag.get('Key', ''), 'value': tag.get('Value', '')} for tag in tags]

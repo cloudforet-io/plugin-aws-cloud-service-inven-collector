@@ -11,8 +11,8 @@ _LOGGER = logging.getLogger(__name__)
 TAG
 '''
 class Tag(Model):
-    key = StringType(deserialize_from="key")
-    value = StringType(deserialize_from="value")
+    key = StringType(deserialize_from="Key")
+    value = StringType(deserialize_from="Value")
 
 '''
 IMAGE
@@ -33,9 +33,10 @@ class Image(Model):
     repository_name = StringType(deserialize_from="repositoryName")
     image_digest = StringType(deserialize_from="imageDigest")
     image_tags = ListType(StringType, deserialize_from="imageTags")
+    image_tags_display = ListType(StringType)
     image_uri = StringType(default='')
     image_size_in_bytes = IntType(deserialize_from="imageSizeInBytes")
-    image_size_in_megabytes = FloatType()
+    # image_size_in_megabytes = FloatType()
     image_pushed_at = DateTimeType(deserialize_from="imagePushedAt")
     image_scan_status = ModelType(imageScanStatus, deserialize_from="imageScanStatus")
     image_scan_findings_summary = ModelType(imageScanFindingsSummary, deserialize_from="imageScanFindingsSummary")
@@ -57,7 +58,7 @@ class Repository(Model):
     image_scanning_configuration = ModelType(imageScanningConfiguration, deserialize_from="imageScanningConfiguration")
     images = ListType(ModelType(Image))
     account_id = StringType(default="")
-    tags = ListType(ModelType(Tag))
+    tags = ListType(ModelType(Tag), default=[])
 
     def reference(self, region_code):
         return {

@@ -198,7 +198,7 @@ class Table(Model):
     time_to_live = ModelType(TimeToLive)
     continuous_backup = ModelType(ContinuousBackup)
     contributor_insight = ModelType(ContributorInsight)
-    tags = ListType(ModelType(Tag))
+    tags = ListType(ModelType(Tag), default=[])
     cloudwatch = ModelType(CloudWatchModel, serialize_when_none=False)
 
     def reference(self, region_code):

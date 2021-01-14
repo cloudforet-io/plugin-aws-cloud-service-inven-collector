@@ -2,7 +2,7 @@ from schematics.types import DictType, ListType, ModelType, PolyModelType, Strin
 from spaceone.inventory.connector.aws_ebs_connector.schema.data import Volume, Snapshot
 from spaceone.inventory.libs.schema.resource import CloudServiceMeta, CloudServiceResource, CloudServiceResponse
 from spaceone.inventory.libs.schema.dynamic_field import TextDyField, ListDyField, BadgeDyField, DateTimeDyField, \
-    EnumDyField
+    EnumDyField, SizeField
 from spaceone.inventory.libs.schema.dynamic_layout import ItemDynamicLayout, SimpleTableDynamicLayout
 
 # VOLUME
@@ -17,9 +17,9 @@ vol_base = ItemDynamicLayout.set_fields('Volumes', fields=[
         'alert': ['error']
     }),
     TextDyField.data_source('Outpost ARN', 'data.outpost_arn'),
-    TextDyField.data_source('Size (GB)', 'data.size_gb'),
+    SizeField.data_source('Size', 'data.size'),
     EnumDyField.data_source('Volume Type', 'data.volume_type',
-                            default_outline_badge=['standard', 'io1', 'gp2', 'sc1', 'st1']),
+                            default_outline_badge=['standard', 'io1', 'gp2', 'gp3', 'sc1', 'st1']),
     TextDyField.data_source('Snapshot', 'data.snapshot_id'),
     TextDyField.data_source('Availability Zone', 'data.availability_zone'),
     EnumDyField.data_source('Encryption', 'data.encrypted', default_badge={
@@ -53,7 +53,10 @@ ss_base = ItemDynamicLayout.set_fields('Snapshots', fields=[
     }),
     TextDyField.data_source('Description', 'data.description'),
     TextDyField.data_source('Progress', 'data.progress'),
-    TextDyField.data_source('Capacity', 'data.volume_size'),
+    SizeField.data_source('Size', 'data.volume_size', options={
+        'source_unit': 'GB',
+        'display_unit': 'GB'
+    }),
     TextDyField.data_source('Volume', 'data.volume_id'),
     EnumDyField.data_source('Encryption', 'data.encrypted', default_badge={
         'indigo.500': ['true'], 'coral.600': ['false']

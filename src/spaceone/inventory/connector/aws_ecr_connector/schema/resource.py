@@ -2,7 +2,8 @@ from schematics.types import ModelType, StringType, PolyModelType, DictType, Lis
 
 from spaceone.inventory.connector.aws_ecr_connector.schema.data import Repository
 from spaceone.inventory.libs.schema.resource import CloudServiceResource, CloudServiceResponse, CloudServiceMeta
-from spaceone.inventory.libs.schema.dynamic_field import TextDyField, ListDyField, EnumDyField, DateTimeDyField
+from spaceone.inventory.libs.schema.dynamic_field import TextDyField, ListDyField, EnumDyField, DateTimeDyField, \
+    SizeField
 from spaceone.inventory.libs.schema.dynamic_layout import ItemDynamicLayout, TableDynamicLayout
 
 base = ItemDynamicLayout.set_fields('Repositories', fields=[
@@ -20,9 +21,11 @@ base = ItemDynamicLayout.set_fields('Repositories', fields=[
 ])
 
 images = TableDynamicLayout.set_fields('Images', 'data.images', fields=[
-    ListDyField.data_source('Image Tag', 'image_tags', default_badge={'type': 'outline'}),
+    ListDyField.data_source('Image Tag', 'image_tags_display', options={
+        'delimiter': ', '
+    }),
     TextDyField.data_source('Image URI', 'image_uri'),
-    TextDyField.data_source('Size(MB)', 'image_size_in_megabytes'),
+    SizeField.data_source('Image Size', 'image_size_in_bytes'),
     TextDyField.data_source('Digest', 'image_digest'),
     EnumDyField.data_source('Scan status', 'image_scan_status.status', default_state={
         'safe': ['COMPLETE'],

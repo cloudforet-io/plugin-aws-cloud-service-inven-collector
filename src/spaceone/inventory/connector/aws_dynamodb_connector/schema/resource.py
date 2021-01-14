@@ -3,7 +3,7 @@ from schematics.types import ModelType, StringType, PolyModelType, DictType, Lis
 from spaceone.inventory.connector.aws_dynamodb_connector.schema.data import Table
 from spaceone.inventory.libs.schema.resource import CloudServiceResource, CloudServiceResponse, CloudServiceMeta
 from spaceone.inventory.libs.schema.dynamic_field import TextDyField, ListDyField, BadgeDyField, DateTimeDyField, \
-    EnumDyField
+    EnumDyField, SizeField
 from spaceone.inventory.libs.schema.dynamic_layout import ItemDynamicLayout
 
 tables = ItemDynamicLayout.set_fields('Tables', fields=[
@@ -28,7 +28,7 @@ tables = ItemDynamicLayout.set_fields('Tables', fields=[
                                 'alert': ['FAILED'],
                                 'disable': ['DISABLED']
                             }),
-    TextDyField.data_source('Storage Size (in bytes)', 'data.table_size_bytes'),
+    SizeField.data_source('Storage Size', 'data.table_size_bytes'),
     TextDyField.data_source('Item count', 'data.item_count'),
     TextDyField.data_source('Region', 'data.region_name'),
     DateTimeDyField.data_source('Creation date', 'data.creation_date_time'),

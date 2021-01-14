@@ -93,7 +93,7 @@ class ParameterGroup(Model):
     db_parameter_group_arn = StringType(deserialize_from="DBParameterGroupArn")
     account_id = StringType()
     parameters = ListType(ModelType(Parameter), default=[])
-    tags = ListType(ModelType(Tags))
+    tags = ListType(ModelType(Tags), default=[])
     db_parameter_group_type = StringType()
 
     def reference(self, region_code):
@@ -124,7 +124,7 @@ class SubnetGroup(Model):
     subnets = ListType(ModelType(SubnetGroupSubnets), deserialize_from="Subnets")
     db_subnet_group_arn = StringType(deserialize_from="DBSubnetGroupArn")
     account_id = StringType()
-    tags = ListType(ModelType(Tags))
+    tags = ListType(ModelType(Tags), default=[])
 
     def reference(self, region_code):
         return {
@@ -170,7 +170,7 @@ class Snapshot(Model):
     processor_features = ListType(ModelType(Features), deserialize_from="ProcessorFeatures")
     dbi_resource_id = StringType(deserialize_from="DbiResourceId")
     account_id = StringType()
-    tags = ListType(ModelType(Tags))
+    tags = ListType(ModelType(Tags), default=[])
 
     def reference(self, region_code):
         return {
@@ -283,66 +283,84 @@ class InstanceAssociatedRoles(Model):
 
 
 class Instance(Model):
-    db_instance_identifier = StringType(deserialize_from="DBInstanceIdentifier")
-    db_instance_class = StringType(deserialize_from="DBInstanceClass")
-    engine = StringType(deserialize_from="Engine")
-    db_instance_status = StringType(deserialize_from="DBInstanceStatus")
-    master_username = StringType(deserialize_from="MasterUsername")
-    db_name = StringType(deserialize_from="DBName")
-    endpoint = ModelType(Endpoint, deserialize_from="Endpoint")
-    allocated_storage = IntType(deserialize_from="AllocatedStorage")
-    instance_create_time = DateTimeType(deserialize_from="InstanceCreateTime")
-    preferred_backup_window = StringType(deserialize_from="PreferredBackupWindow")
-    backup_retention_period = IntType(deserialize_from="BackupRetentionPeriod")
-    db_security_groups = ListType(ModelType(InstanceDBSecurityGroups), deserialize_from="DBSecurityGroups")
-    vpc_security_groups = ListType(ModelType(VpcSecurityGroups), deserialize_from="VpcSecurityGroups")
-    db_parameter_groups = ListType(ModelType(InstanceDBParameterGroups), deserialize_from="DBParameterGroups")
-    availability_zone = StringType(deserialize_from="AvailabilityZone")
-    db_subnet_group = ModelType(DBSubnetGroup,deserialize_from="DBSubnetGroup")
-    preferred_maintenance_window = StringType(deserialize_from="PreferredMaintenanceWindow")
-    pending_modified_values = ModelType(PendingModifiedValues, deserialize_from="PendingModifiedValues")
-    latest_restorable_time = DateTimeType(deserialize_from="LatestRestorableTime")
-    multi_az = BooleanType(deserialize_from="MultiAZ")
-    engine_version = StringType(deserialize_from="EngineVersion")
-    auto_minor_version_upgrade = BooleanType(deserialize_from="AutoMinorVersionUpgrade")
-    read_replica_source_db_instance_identifier = StringType(deserialize_from="ReadReplicaSourceDBInstanceIdentifier")
-    read_replica_db_instance_identifiers = ListType(StringType, deserialize_from="ReadReplicaDBInstanceIdentifiers")
-    read_replica_db_cluster_identifiers = ListType(StringType, deserialize_from="ReadReplicaDBClusterIdentifiers")
-    license_model = StringType(deserialize_from="LicenseModel")
-    iops = IntType(deserialize_from="Iops")
+    db_instance_identifier = StringType(deserialize_from="DBInstanceIdentifier", serialize_when_none=False)
+    db_instance_class = StringType(deserialize_from="DBInstanceClass", serialize_when_none=False)
+    engine = StringType(deserialize_from="Engine", serialize_when_none=False)
+    db_instance_status = StringType(deserialize_from="DBInstanceStatus", serialize_when_none=False)
+    master_username = StringType(deserialize_from="MasterUsername", serialize_when_none=False)
+    db_name = StringType(deserialize_from="DBName", serialize_when_none=False)
+    endpoint = ModelType(Endpoint, deserialize_from="Endpoint", serialize_when_none=False)
+    allocated_storage = IntType(deserialize_from="AllocatedStorage", serialize_when_none=False)
+    instance_create_time = DateTimeType(deserialize_from="InstanceCreateTime", serialize_when_none=False)
+    preferred_backup_window = StringType(deserialize_from="PreferredBackupWindow", serialize_when_none=False)
+    backup_retention_period = IntType(deserialize_from="BackupRetentionPeriod", serialize_when_none=False)
+    db_security_groups = ListType(ModelType(InstanceDBSecurityGroups), deserialize_from="DBSecurityGroups",
+                                  serialize_when_none=False)
+    vpc_security_groups = ListType(ModelType(VpcSecurityGroups), deserialize_from="VpcSecurityGroups",
+                                   serialize_when_none=False)
+    db_parameter_groups = ListType(ModelType(InstanceDBParameterGroups), deserialize_from="DBParameterGroups",
+                                   serialize_when_none=False)
+    availability_zone = StringType(deserialize_from="AvailabilityZone", serialize_when_none=False)
+    db_subnet_group = ModelType(DBSubnetGroup, deserialize_from="DBSubnetGroup", serialize_when_none=False)
+    preferred_maintenance_window = StringType(deserialize_from="PreferredMaintenanceWindow", serialize_when_none=False)
+    pending_modified_values = ModelType(PendingModifiedValues, deserialize_from="PendingModifiedValues",
+                                        serialize_when_none=False)
+    latest_restorable_time = DateTimeType(deserialize_from="LatestRestorableTime", serialize_when_none=False)
+    multi_az = BooleanType(deserialize_from="MultiAZ", serialize_when_none=False)
+    engine_version = StringType(deserialize_from="EngineVersion", serialize_when_none=False)
+    auto_minor_version_upgrade = BooleanType(deserialize_from="AutoMinorVersionUpgrade", serialize_when_none=False)
+    read_replica_source_db_instance_identifier = StringType(deserialize_from="ReadReplicaSourceDBInstanceIdentifier",
+                                                            serialize_when_none=False)
+    read_replica_db_instance_identifiers = ListType(StringType, deserialize_from="ReadReplicaDBInstanceIdentifiers",
+                                                    serialize_when_none=False)
+    read_replica_db_cluster_identifiers = ListType(StringType, deserialize_from="ReadReplicaDBClusterIdentifiers",
+                                                   serialize_when_none=False)
+    license_model = StringType(deserialize_from="LicenseModel", serialize_when_none=False)
+    iops = IntType(deserialize_from="Iops", serialize_when_none=False)
     option_group_memberships = ListType(ModelType(InstanceOptionGroupMemberships),
-                                        deserialize_from="OptionGroupMemberships")
-    character_set_name = StringType(deserialize_from="CharacterSetName")
-    secondary_availability_zone = StringType(deserialize_from="SecondaryAvailabilityZone")
-    publicly_accessible = BooleanType(deserialize_from="PubliclyAccessible")
-    status_infos = ListType(ModelType(InstanceStatusInfos), deserialize_from="StatusInfos")
-    storage_type = StringType(deserialize_from="StorageType")
-    tde_credential_arn = StringType(deserialize_from="TdeCredentialArn")
-    db_instance_port = IntType(deserialize_from="DbInstancePort")
-    db_cluster_identifier = StringType(deserialize_from="DBClusterIdentifier")
-    storage_encrypted = BooleanType(deserialize_from="StorageEncrypted")
-    kms_key_id = StringType(deserialize_from="KmsKeyId")
-    dbi_resource_id = StringType(deserialize_from="DbiResourceId")
-    ca_certificate_identifier = StringType(deserialize_from="CACertificateIdentifier")
-    domain_memberships = ListType(ModelType(InstanceDomainMemberships), deserialize_from="DomainMemberships")
-    copy_tags_to_snapshot = BooleanType(deserialize_from="CopyTagsToSnapshot")
-    monitoring_interval = IntType(deserialize_from="MonitoringInterval")
-    enhanced_monitoring_resource_arn = StringType(deserialize_from="EnhancedMonitoringResourceArn")
-    monitoring_role_arn = StringType(deserialize_from="MonitoringRoleArn")
-    promotion_tier = IntType(deserialize_from="PromotionTier")
-    db_instance_arn = StringType(deserialize_from="DBInstanceArn")
-    timezone = StringType(deserialize_from="Timezone")
-    iam_database_authentication_enabled = BooleanType(deserialize_from="IAMDatabaseAuthenticationEnabled")
-    performance_insights_enabled = BooleanType(deserialize_from="PerformanceInsightsEnabled")
-    performance_insights_kms_key_id = StringType(deserialize_from="PerformanceInsightsKMSKeyId")
-    performance_insights_retention_period = IntType(deserialize_from="PerformanceInsightsRetentionPeriod")
-    enabled_cloudwatch_logs_exports = ListType(StringType, deserialize_from="EnabledCloudwatchLogsExports")
-    processor_features = ListType(ModelType(InstanceProcessorFeatures), deserialize_from="ProcessorFeatures")
-    deletion_protection = BooleanType(deserialize_from="DeletionProtection")
-    associated_roles = ListType(ModelType(InstanceAssociatedRoles), deserialize_from="AssociatedRoles")
-    listener_endpoint = ModelType(ListenerEndpoint, deserialize_from="ListenerEndpoint")
-    max_allocated_storage = IntType(deserialize_from="MaxAllocatedStorage")
-    tags = ListType(ModelType(Tags))
+                                        deserialize_from="OptionGroupMemberships", serialize_when_none=False)
+    character_set_name = StringType(deserialize_from="CharacterSetName", serialize_when_none=False)
+    secondary_availability_zone = StringType(deserialize_from="SecondaryAvailabilityZone", serialize_when_none=False)
+    publicly_accessible = BooleanType(deserialize_from="PubliclyAccessible", serialize_when_none=False)
+    status_infos = ListType(ModelType(InstanceStatusInfos), deserialize_from="StatusInfos", serialize_when_none=False)
+    storage_type = StringType(deserialize_from="StorageType", serialize_when_none=False)
+    tde_credential_arn = StringType(deserialize_from="TdeCredentialArn", serialize_when_none=False)
+    db_instance_port = IntType(deserialize_from="DbInstancePort", serialize_when_none=False)
+    db_cluster_identifier = StringType(deserialize_from="DBClusterIdentifier", serialize_when_none=False)
+    storage_encrypted = BooleanType(deserialize_from="StorageEncrypted", serialize_when_none=False)
+    kms_key_id = StringType(deserialize_from="KmsKeyId", serialize_when_none=False)
+    dbi_resource_id = StringType(deserialize_from="DbiResourceId", serialize_when_none=False)
+    ca_certificate_identifier = StringType(deserialize_from="CACertificateIdentifier",
+                                           serialize_when_none=False)
+    domain_memberships = ListType(ModelType(InstanceDomainMemberships), deserialize_from="DomainMemberships",
+                                  serialize_when_none=False)
+    copy_tags_to_snapshot = BooleanType(deserialize_from="CopyTagsToSnapshot", serialize_when_none=False)
+    monitoring_interval = IntType(deserialize_from="MonitoringInterval", serialize_when_none=False)
+    enhanced_monitoring_resource_arn = StringType(deserialize_from="EnhancedMonitoringResourceArn",
+                                                  serialize_when_none=False)
+    monitoring_role_arn = StringType(deserialize_from="MonitoringRoleArn", serialize_when_none=False)
+    promotion_tier = IntType(deserialize_from="PromotionTier", serialize_when_none=False)
+    db_instance_arn = StringType(deserialize_from="DBInstanceArn", serialize_when_none=False)
+    timezone = StringType(deserialize_from="Timezone", serialize_when_none=False)
+    iam_database_authentication_enabled = BooleanType(deserialize_from="IAMDatabaseAuthenticationEnabled",
+                                                      serialize_when_none=False)
+    performance_insights_enabled = BooleanType(deserialize_from="PerformanceInsightsEnabled",
+                                               serialize_when_none=False)
+    performance_insights_kms_key_id = StringType(deserialize_from="PerformanceInsightsKMSKeyId",
+                                                 serialize_when_none=False)
+    performance_insights_retention_period = IntType(deserialize_from="PerformanceInsightsRetentionPeriod",
+                                                    serialize_when_none=False)
+    enabled_cloudwatch_logs_exports = ListType(StringType, deserialize_from="EnabledCloudwatchLogsExports",
+                                               serialize_when_none=False)
+    processor_features = ListType(ModelType(InstanceProcessorFeatures), deserialize_from="ProcessorFeatures",
+                                  serialize_when_none=False)
+    deletion_protection = BooleanType(deserialize_from="DeletionProtection", serialize_when_none=False)
+    associated_roles = ListType(ModelType(InstanceAssociatedRoles), deserialize_from="AssociatedRoles",
+                                serialize_when_none=False)
+    listener_endpoint = ModelType(ListenerEndpoint, deserialize_from="ListenerEndpoint",
+                                  serialize_when_none=False)
+    max_allocated_storage = IntType(deserialize_from="MaxAllocatedStorage", serialize_when_none=False)
+    tags = ListType(ModelType(Tags), default=[])
 
     def reference(self, region_code):
         return {
@@ -394,63 +412,83 @@ class ClusterDomainMemberships(Model):
 
 
 class Cluster(Model):
-    allocated_storage = IntType(deserialize_from="AllocatedStorage")
-    availability_zones = ListType(StringType, deserialize_from="AvailabilityZones")
-    backup_retention_period = IntType(deserialize_from="BackupRetentionPeriod")
-    character_set_name = StringType(deserialize_from="CharacterSetName")
-    database_name = StringType(deserialize_from="DatabaseName")
-    db_cluster_identifier = StringType(deserialize_from="DBClusterIdentifier")
-    db_cluster_parameter_group = StringType(deserialize_from="DBClusterParameterGroup")
-    db_subnet_group = StringType(deserialize_from="DBSubnetGroup")
-    status = StringType(deserialize_from="Status")
-    percent_progress = StringType(deserialize_from="PercentProgress")
-    earliest_restorable_time = DateTimeType(deserialize_from="EarliestRestorableTime")
-    endpoint = StringType(deserialize_from="Endpoint")
-    reader_endpoint = StringType(deserialize_from="ReaderEndpoint")
-    custom_endpoints = ListType(StringType, deserialize_from="CustomEndpoints")
-    multi_az = BooleanType(deserialize_from="MultiAZ")
-    engine = StringType(deserialize_from="Engine")
-    engine_version = StringType(deserialize_from="EngineVersion")
-    latest_restorable_time = DateTimeType(deserialize_from="LatestRestorableTime")
-    port = IntType(deserialize_from="Port")
-    master_username = StringType(deserialize_from="MasterUsername")
+    allocated_storage = IntType(deserialize_from="AllocatedStorage", serialize_when_none=False)
+    availability_zones = ListType(StringType, deserialize_from="AvailabilityZones", serialize_when_none=False)
+    backup_retention_period = IntType(deserialize_from="BackupRetentionPeriod", serialize_when_none=False)
+    character_set_name = StringType(deserialize_from="CharacterSetName", serialize_when_none=False)
+    database_name = StringType(deserialize_from="DatabaseName", serialize_when_none=False)
+    db_cluster_identifier = StringType(deserialize_from="DBClusterIdentifier", serialize_when_none=False)
+    db_cluster_parameter_group = StringType(deserialize_from="DBClusterParameterGroup", serialize_when_none=False)
+    db_subnet_group = StringType(deserialize_from="DBSubnetGroup", serialize_when_none=False)
+    status = StringType(deserialize_from="Status", serialize_when_none=False)
+    percent_progress = StringType(deserialize_from="PercentProgress", serialize_when_none=False)
+    earliest_restorable_time = DateTimeType(deserialize_from="EarliestRestorableTime", serialize_when_none=False)
+    endpoint = StringType(deserialize_from="Endpoint", serialize_when_none=False)
+    reader_endpoint = StringType(deserialize_from="ReaderEndpoint", serialize_when_none=False)
+    custom_endpoints = ListType(StringType, deserialize_from="CustomEndpoints", serialize_when_none=False)
+    multi_az = BooleanType(deserialize_from="MultiAZ", serialize_when_none=False)
+    engine = StringType(deserialize_from="Engine", serialize_when_none=False)
+    engine_version = StringType(deserialize_from="EngineVersion", serialize_when_none=False)
+    latest_restorable_time = DateTimeType(deserialize_from="LatestRestorableTime", serialize_when_none=False)
+    port = IntType(deserialize_from="Port", serialize_when_none=False)
+    master_username = StringType(deserialize_from="MasterUsername", serialize_when_none=False)
     db_cluster_option_group_memberships = ListType(ModelType(ClusterDBClusterOptionGroupMemberships),
-                                                   deserialize_from="DBClusterOptionGroupMemberships")
-    preferred_backup_window = StringType(deserialize_from="PreferredBackupWindow")
-    preferred_maintenance_window = StringType(deserialize_from="PreferredMaintenanceWindow")
-    replication_source_identifier = StringType(deserialize_from="ReplicationSourceIdentifier")
-    read_replica_identifiers = ListType(StringType, deserialize_from="ReadReplicaIdentifiers")
-    db_cluster_members = ListType(ModelType(ClusterDBClusterMembers), deserialize_from="DBClusterMembers")
-    db_cluster_member_counts = IntType(default=0)
-    vpc_security_groups = ListType(ModelType(VpcSecurityGroups), deserialize_from="VpcSecurityGroups")
-    hosted_zone_id = StringType(deserialize_from="HostedZoneId")
-    storage_encrypted = BooleanType(deserialize_from="StorageEncrypted")
-    kms_key_id = StringType(deserialize_from="KmsKeyId")
-    db_cluster_resource_id = StringType(deserialize_from="DbClusterResourceId")
-    db_cluster_arn = StringType(deserialize_from="DBClusterArn")
-    associated_roles = ListType(ModelType(ClusterAssociatedRoles), deserialize_from="AssociatedRoles")
-    iam_database_authentication_enabled = BooleanType(deserialize_from="IAMDatabaseAuthenticationEnabled")
-    clone_group_id = StringType(deserialize_from="CloneGroupId")
-    cluster_create_time = DateTimeType(deserialize_from="ClusterCreateTime")
-    earliest_backtrack_time = DateTimeType(deserialize_from="EarliestBacktrackTime")
-    backtrack_window = IntType(deserialize_from="BacktrackWindow")
-    backtrack_consumed_change_records = IntType(deserialize_from="BacktrackConsumedChangeRecords")
-    enabled_cloudwatch_logs_exports = ListType(StringType, deserialize_from="EnabledCloudwatchLogsExports")
-    capacity = IntType(deserialize_from="Capacity")
-    engine_mode = StringType(deserialize_from="EngineMode")
-    scaling_configuration_info = ModelType(ScalingConfigurationInfo, deserialize_from="ScalingConfigurationInfo")
-    deletion_protection = BooleanType(deserialize_from="DeletionProtection")
-    http_endpoint_enabled = BooleanType(deserialize_from="HttpEndpointEnabled")
-    activity_stream_mode = StringType(deserialize_from="ActivityStreamMode", choices=("sync", "async"))
-    activity_stream_status = StringType(deserialize_from="ActivityStreamStatus", choices=("stopped", "starting",
-                                                                                          "started", "stopping"))
-    activity_stream_kms_key_id = StringType(deserialize_from="ActivityStreamKmsKeyId")
-    activity_stream_kinesis_stream_name = StringType(deserialize_from="ActivityStreamKinesisStreamName")
-    copy_tags_to_snapshot = BooleanType(deserialize_from="CopyTagsToSnapshot")
-    cross_account_clone = BooleanType(deserialize_from="CrossAccountClone")
-    domain_memberships = ListType(ModelType(ClusterDomainMemberships), deserialize_from="DomainMemberships")
+                                                   deserialize_from="DBClusterOptionGroupMemberships",
+                                                   serialize_when_none=False)
+    preferred_backup_window = StringType(deserialize_from="PreferredBackupWindow", serialize_when_none=False)
+    preferred_maintenance_window = StringType(deserialize_from="PreferredMaintenanceWindow",
+                                              serialize_when_none=False)
+    replication_source_identifier = StringType(deserialize_from="ReplicationSourceIdentifier",
+                                               serialize_when_none=False)
+    read_replica_identifiers = ListType(StringType, deserialize_from="ReadReplicaIdentifiers",
+                                        serialize_when_none=False)
+    db_cluster_members = ListType(ModelType(ClusterDBClusterMembers),
+                                  deserialize_from="DBClusterMembers",
+                                  serialize_when_none=False)
+    db_cluster_member_counts = IntType(default=0, serialize_when_none=False)
+    vpc_security_groups = ListType(ModelType(VpcSecurityGroups), deserialize_from="VpcSecurityGroups",
+                                   serialize_when_none=False)
+    hosted_zone_id = StringType(deserialize_from="HostedZoneId", serialize_when_none=False)
+    storage_encrypted = BooleanType(deserialize_from="StorageEncrypted", serialize_when_none=False)
+    kms_key_id = StringType(deserialize_from="KmsKeyId", serialize_when_none=False)
+    db_cluster_resource_id = StringType(deserialize_from="DbClusterResourceId", serialize_when_none=False)
+    db_cluster_arn = StringType(deserialize_from="DBClusterArn", serialize_when_none=False)
+    associated_roles = ListType(ModelType(ClusterAssociatedRoles), deserialize_from="AssociatedRoles",
+                                serialize_when_none=False)
+    iam_database_authentication_enabled = BooleanType(deserialize_from="IAMDatabaseAuthenticationEnabled",
+                                                      serialize_when_none=False)
+    clone_group_id = StringType(deserialize_from="CloneGroupId", serialize_when_none=False)
+    cluster_create_time = DateTimeType(deserialize_from="ClusterCreateTime", serialize_when_none=False)
+    earliest_backtrack_time = DateTimeType(deserialize_from="EarliestBacktrackTime", serialize_when_none=False)
+    backtrack_window = IntType(deserialize_from="BacktrackWindow", serialize_when_none=False)
+    backtrack_consumed_change_records = IntType(deserialize_from="BacktrackConsumedChangeRecords",
+                                                serialize_when_none=False)
+    enabled_cloudwatch_logs_exports = ListType(StringType, deserialize_from="EnabledCloudwatchLogsExports",
+                                               serialize_when_none=False)
+    capacity = IntType(deserialize_from="Capacity", serialize_when_none=False)
+    engine_mode = StringType(deserialize_from="EngineMode", serialize_when_none=False)
+    scaling_configuration_info = ModelType(ScalingConfigurationInfo, deserialize_from="ScalingConfigurationInfo",
+                                           serialize_when_none=False)
+    deletion_protection = BooleanType(deserialize_from="DeletionProtection", serialize_when_none=False)
+    http_endpoint_enabled = BooleanType(deserialize_from="HttpEndpointEnabled", serialize_when_none=False)
+    activity_stream_mode = StringType(deserialize_from="ActivityStreamMode", choices=("sync", "async"),
+                                      serialize_when_none=False)
+    activity_stream_status = StringType(deserialize_from="ActivityStreamStatus",
+                                        serialize_when_none=False,
+                                        choices=("stopped", "starting", "started", "stopping"))
+    activity_stream_kms_key_id = StringType(deserialize_from="ActivityStreamKmsKeyId",
+                                            serialize_when_none=False)
+    activity_stream_kinesis_stream_name = StringType(deserialize_from="ActivityStreamKinesisStreamName",
+                                                     serialize_when_none=False)
+    copy_tags_to_snapshot = BooleanType(deserialize_from="CopyTagsToSnapshot",
+                                        serialize_when_none=False)
+    cross_account_clone = BooleanType(deserialize_from="CrossAccountClone",
+                                      serialize_when_none=False)
+    domain_memberships = ListType(ModelType(ClusterDomainMemberships),
+                                  deserialize_from="DomainMemberships",
+                                  serialize_when_none=False)
     db_cluster_role = StringType()
-    tags = ListType(ModelType(Tags))
+    tags = ListType(ModelType(Tags), default=[])
 
 
 class Database(Model):
@@ -461,7 +499,6 @@ class Database(Model):
     engine = StringType()
     availability_zone = StringType()
     size = StringType()
-    vpc_id = StringType()
     multi_az = BooleanType()
     cluster = ModelType(Cluster, serialize_when_none=False)
     instance = ModelType(Instance, serialize_when_none=False)

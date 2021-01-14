@@ -1,4 +1,4 @@
-from spaceone.inventory.libs.schema.dynamic_field import TextDyField, SearchField, EnumDyField
+from spaceone.inventory.libs.schema.dynamic_field import TextDyField, SearchField, EnumDyField, SizeField
 from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, CloudServiceTypeMeta
 
 cst_bucket = CloudServiceTypeResource()
@@ -22,14 +22,14 @@ cst_bucket._metadata = CloudServiceTypeMeta.set_meta(
             'coral.600': ['Public']
         }),
         TextDyField.data_source('Object Total Counts', 'data.object_count'),
-        TextDyField.data_source('Object Size (Bytes)', 'data.object_total_size'),
+        SizeField.data_source('Object Total Size', 'data.object_total_size'),
     ],
     search=[
         SearchField.set(name='Bucket Name', key='data.name'),
         SearchField.set(name='ARN', key='data.arn'),
         SearchField.set(name='Region', key='region_code'),
         SearchField.set(name='Object Counts', key='data.object_count', data_type='integer'),
-        SearchField.set(name='Object Total Size', key='data.object_total_size', data_type='integer'),
+        SearchField.set(name='Object Total Size (Bytes)', key='data.object_total_size', data_type='integer'),
         SearchField.set(name='AWS Account ID', key='data.account_id'),
     ]
 )

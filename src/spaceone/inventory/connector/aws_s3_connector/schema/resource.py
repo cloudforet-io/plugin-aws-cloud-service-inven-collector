@@ -2,7 +2,7 @@ from schematics.types import ModelType, StringType, PolyModelType, DictType, Lis
 
 from spaceone.inventory.connector.aws_s3_connector.schema.data import Bucket
 from spaceone.inventory.libs.schema.resource import CloudServiceResource, CloudServiceResponse, CloudServiceMeta
-from spaceone.inventory.libs.schema.dynamic_field import TextDyField, ListDyField, BadgeDyField, EnumDyField
+from spaceone.inventory.libs.schema.dynamic_field import TextDyField, ListDyField, BadgeDyField, EnumDyField, SizeField
 from spaceone.inventory.libs.schema.dynamic_layout import ItemDynamicLayout, TableDynamicLayout, SimpleTableDynamicLayout
 
 
@@ -18,7 +18,7 @@ bucket = ItemDynamicLayout.set_fields('Buckets', fields=[
 
 object_info = ItemDynamicLayout.set_fields('Objects', fields=[
     TextDyField.data_source('Object Counts', 'data.object_count'),
-    TextDyField.data_source('Object Total Size (Bytes)', 'data.object_total_size'),
+    SizeField.data_source('Object Total Size', 'data.object_total_size'),
 ])
 
 versioning = ItemDynamicLayout.set_fields('Versioning', fields=[

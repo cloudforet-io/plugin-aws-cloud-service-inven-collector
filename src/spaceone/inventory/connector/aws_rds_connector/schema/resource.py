@@ -4,7 +4,7 @@ from spaceone.inventory.connector.aws_rds_connector.schema.data import Database,
     ParameterGroup, OptionGroup
 from spaceone.inventory.libs.schema.resource import CloudServiceResource, CloudServiceResponse, CloudServiceMeta
 from spaceone.inventory.libs.schema.dynamic_field import TextDyField, ListDyField, BadgeDyField, EnumDyField, \
-    DateTimeDyField
+    DateTimeDyField, SizeField
 from spaceone.inventory.libs.schema.dynamic_layout import ItemDynamicLayout, TableDynamicLayout, SimpleTableDynamicLayout
 
 summary = ItemDynamicLayout.set_fields('Summary', fields=[
@@ -81,7 +81,7 @@ instance_storage = ItemDynamicLayout.set_fields('Storage', fields=[
         'indigo.500': ['true'], 'coral.600': ['false']
     }),
     EnumDyField.data_source('Storage Type', 'data.instance.storage_type',
-                            default_outline_badge=['standard', 'io1', 'gp2', 'st1', 'sc1']),
+                            default_outline_badge=['standard', 'io1', 'gp2', 'gp3', 'st1', 'sc1']),
     TextDyField.data_source('IOPS', 'data.instance.iops'),
     TextDyField.data_source('Storage (GB)', 'data.instance.allocated_storage'),
     TextDyField.data_source('Maximum Storage Threshold (GB)', 'data.instance.max_allocated_storage'),
@@ -168,8 +168,11 @@ snapshot = ItemDynamicLayout.set_fields('Snapshot', fields=[
     TextDyField.data_source('Cluster/Instance Name', 'data.db_instance_identifier'),
     EnumDyField.data_source('Type', 'data.snapshot_type', default_outline_badge=['manual', 'automated']),
     EnumDyField.data_source('Storage Type', 'data.storage_type',
-                            default_outline_badge=['standard', 'io1', 'gp2', 'st1', 'sc1']),
-    TextDyField.data_source('Allocated Size', 'data.allocated_storage'),
+                            default_outline_badge=['standard', 'io1', 'gp2', 'gp3', 'st1', 'sc1']),
+    SizeField.data_source('Size', 'data.allocated_storage', options={
+        'display_unit': 'GB',
+        'source_unit': 'GB'
+    }),
     EnumDyField.data_source('DB Engine', 'data.engine',
                             default_outline_badge=['aurora', 'aurora-mysql', 'docdb', 'mysql', 'mariadb', 'postgres', 'oracle-ee', 'oracle-se',
                                                    'oracle-se1', 'oracle-se2', 'sqlserver-ex', 'sqlserver-web',

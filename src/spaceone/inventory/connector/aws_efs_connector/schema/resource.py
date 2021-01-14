@@ -2,7 +2,8 @@ from schematics.types import ModelType, StringType, PolyModelType, DictType, Lis
 
 from spaceone.inventory.connector.aws_efs_connector.schema.data import FileSystem
 from spaceone.inventory.libs.schema.resource import CloudServiceResource, CloudServiceResponse, CloudServiceMeta
-from spaceone.inventory.libs.schema.dynamic_field import TextDyField, ListDyField, DateTimeDyField, EnumDyField
+from spaceone.inventory.libs.schema.dynamic_field import TextDyField, ListDyField, DateTimeDyField, EnumDyField, \
+    SizeField
 from spaceone.inventory.libs.schema.dynamic_layout import ItemDynamicLayout, TableDynamicLayout, SimpleTableDynamicLayout
 
 
@@ -15,7 +16,7 @@ base = ItemDynamicLayout.set_fields('File Systems', fields=[
         'disable': ['deleted']
     }),
     TextDyField.data_source('Owner ID', 'data.owner_id'),
-    TextDyField.data_source('Metered Size', 'data.size_in_bytes.value'),
+    SizeField.data_source('Metered Size', 'data.size_in_bytes.value'),
     TextDyField.data_source('Number of mount targets', 'data.number_of_mount_targets'),
     EnumDyField.data_source('Performance mode', 'data.performance_mode',
                             default_outline_badge=['generalPurpose', 'maxIO']),

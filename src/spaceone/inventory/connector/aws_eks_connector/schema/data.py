@@ -27,7 +27,7 @@ class UpdateErrors(Model):
                                                                    "NodeCreationFailure", "PodEvictionFailure",
                                                                    "InsufficientFreeAddresses"))
     error_message = StringType(deserialize_from="errorMessage")
-    resource_ids = ListType(StringType,deserialize_from="resourceIds")
+    resource_ids = ListType(StringType, deserialize_from="resourceIds")
 
 
 class Update(Model):
@@ -170,7 +170,7 @@ class Cluster(Model):
     certificate_authority = ModelType(certificateAuthority, deserialize_from="certificateAuthority")
     client_request_token = StringType(deserialize_from="clientRequestToken")
     platform_version = StringType(deserialize_from="platformVersion")
-    tags = ListType(ModelType(Tags), deserialize_from="tags")
+    tags = ListType(ModelType(Tags), deserialize_from="tags", default=[])
     encryption_config = ListType(ModelType(ClusterencryptionConfig), deserialize_from="encryptionConfig")
     node_groups = ListType(ModelType(NodeGroup))
     account_id = StringType(default="")

@@ -74,11 +74,11 @@ class ECRConnector(SchematicAWSConnector):
 
         for data in response_iterator:
             for raw in data.get('imageDetails', []):
-                raw['image_size_in_megabytes'] = f'{float(raw["imageSizeInBytes"] / 1000000):.2f}'
-
-                image_uri = self._generate_image_uri(repo.get("repositoryUri"), raw.get("imageTags", []))
-                if image_uri is not None:
-                    raw['image_uri'] = image_uri
+                raw.update({
+                    # 'image_size_in_megabytes': f'{float(raw["imageSizeInBytes"] / 1000000):.2f}',
+                    'image_tags_display': self._generate_image_tags_display(raw.get('imageTags', [])),
+                    'image_uri': self._generate_image_uri(repo.get("repositoryUri", ''), raw.get("imageTags", []))
+                })
 
                 res = Image(raw, strict=False)
                 yield res
@@ -89,7 +89,14 @@ class ECRConnector(SchematicAWSConnector):
 
     @staticmethod
     def _generate_image_uri(repo_uri, image_tags):
-        if repo_uri is None or len(image_tags) == 0:
-            return None
+        if image_tags:
+            return f'{repo_uri}:{image_tags[0]}'
+        else:
+            return repo_uri
 
-        return f'{repo_uri}:{image_tags[0]}'
+    @staticmethod
+    def _generate_image_tags_display(image_tags):
+        if image_tags:
+            return image_tags
+        else:
+            return ['<untagged>']

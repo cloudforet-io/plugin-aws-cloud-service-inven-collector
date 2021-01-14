@@ -1,5 +1,7 @@
-from spaceone.inventory.libs.schema.dynamic_field import TextDyField, EnumDyField, SearchField, DateTimeDyField
-from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, CloudServiceTypeMeta
+from spaceone.inventory.libs.schema.dynamic_field import TextDyField, EnumDyField, SearchField, DateTimeDyField, \
+    SizeField
+from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, \
+    CloudServiceTypeMeta
 
 cst_ebs = CloudServiceTypeResource()
 cst_ebs.name = 'Volume'
@@ -23,9 +25,9 @@ cst_ebs._metadata = CloudServiceTypeMeta.set_meta(
             'disable': ['deleted'],
             'alert': ['error']
         }),
-        TextDyField.data_source('Size (GB)', 'data.size_gb'),
+        SizeField.data_source('Size', 'data.size'),
         EnumDyField.data_source('Volume Type', 'data.volume_type',
-                                default_outline_badge=['standard', 'io1', 'gp2', 'sc1', 'st1']),
+                                default_outline_badge=['standard', 'io1', 'gp2', 'gp3', 'sc1', 'st1']),
         TextDyField.data_source('IOPS', 'data.iops'),
         TextDyField.data_source('From Snapshot', 'data.snapshot_id'),
         TextDyField.data_source('Availablity Zone', 'data.availability_zone'),
@@ -48,6 +50,7 @@ cst_ebs._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Volume Type', key='data.volume_type',
                         enums={
                             'gp2': {'label': 'General Purpose SSD (gp2)'},
+                            'gp3': {'label': 'General Purpose SSD (gp3)'},
                             'io1': {'label': 'Provisioned IOPS SSD (io1)'},
                             'sc1': {'label': 'Cold HDD (sc1)'},
                             'st1': {'label': 'Throughput Optimized HDD (st1)'},
@@ -76,7 +79,10 @@ cst_snapshot._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
         TextDyField.data_source('Name', 'data.name'),
         TextDyField.data_source('Snapshot ID', 'data.snapshot_id'),
-        TextDyField.data_source('Size (GB)', 'data.volume_size'),
+        SizeField.data_source('Size', 'data.volume_size', options={
+            'source_unit': 'GB',
+            'display_unit': 'GB'
+        }),
         EnumDyField.data_source('Status', 'data.state', default_state={
             'safe': ['completed'],
             'warning': ['pending'],
