@@ -30,7 +30,7 @@ function = ItemDynamicLayout.set_fields('Functions', fields=[
     TextDyField.data_source('Handler', 'data.handler'),
     TextDyField.data_source('Code Size', 'data.code_size'),
     TextDyField.data_source('Description', 'data.description'),
-    TextDyField.data_source('Timeout', 'data.timeout'),
+    TextDyField.data_source('Timeout', 'data.time_out'),
     TextDyField.data_source('Memory Size', 'data.memory_size'),
     TextDyField.data_source('Code SHA 256', 'data.code_sha256'),
     TextDyField.data_source('KMS Key ARN', 'data.kms_key_arn'),
