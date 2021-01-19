@@ -1,7 +1,7 @@
 import logging
 
 from schematics import Model
-from schematics.types import ModelType, StringType, IntType, DateTimeType, serializable, ListType, BooleanType
+from schematics.types import ModelType, StringType, IntType, DateTimeType, ListType, BooleanType, PolyModelType
 
 DEFAULT_REGION = 'us-east-1'
 
@@ -19,6 +19,12 @@ class Condition(Model):
     value = StringType()
 
 
+class _Condition(Model):
+    condition = StringType(serialized_name='condition')
+    key = StringType()
+    value = BooleanType()
+
+
 class PermissionsBoundary(Model):
     permissions_boundary_type = StringType(deserialize_from="PermissionsBoundaryType")
     permissions_boundary_arn = StringType(deserialize_from="PermissionsBoundaryArn")
@@ -28,7 +34,7 @@ class Permission(Model):
     action = ListType(StringType(), default=[])
     resource = ListType(StringType(), default=[])
     effect = StringType(deserialize_from="Effect")
-    condition = ListType(ModelType(Condition), serialize_when_none=False)
+    condition = ListType(PolyModelType([Condition, _Condition]), serialize_when_none=False)
     sid = StringType(deserialize_from="Sid", serialize_when_none=False)
 
 
@@ -165,7 +171,7 @@ class PrincipalMeta(Model):
 
 class RolePolicyDocument(Model):
     action = ListType(StringType(), deserialize_from="Action")
-    condition = ListType(ModelType(Condition), serialize_when_none=False)
+    condition = ListType(PolyModelType([Condition, _Condition]), serialize_when_none=False)
     effect = ListType(StringType(), deserialize_from="Effect")
     principal = ListType(ModelType(PrincipalMeta), deserialize_from="Principal")
     sid = ListType(StringType(), serialize_when_none=False)
