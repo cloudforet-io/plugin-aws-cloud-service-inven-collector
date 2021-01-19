@@ -32,6 +32,9 @@ lb_base = ItemDynamicLayout.set_fields('Load Balancers', fields=[
         'type': 'outline',
         'sub_key': 'zone_name',
     }),
+    ListDyField.data_source('Security Groups', 'data.security_group', default_badge={
+        'delimiter': '<br>'
+    }),
     TextDyField.data_source('Hosted Zone', 'data.canonical_hosted_zone_id'),
     DateTimeDyField.data_source('Creation time', 'data.created_time'),
 ])
