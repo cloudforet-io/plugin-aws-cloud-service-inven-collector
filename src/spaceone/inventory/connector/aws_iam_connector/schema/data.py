@@ -92,7 +92,7 @@ class AccessKeyLastUsed(Model):
 
 class AccessKeyInfo(Model):
     key_id = StringType()
-    status = StringType(deserialize_from="Status", choices=("Active", "Inactive")),
+    status = StringType(choices=("Active", "Inactive")),
     access_key_last_used = ModelType(AccessKeyLastUsed, serialize_when_none=False)
     last_update_date_display = StringType(default='N/A')
     create_date = DateTimeType(deserialize_from="CreateDate")
