@@ -90,14 +90,6 @@ class AccessKeyLastUsed(Model):
     region = StringType(deserialize_from="Region")
 
 
-class AccessKeyInfo(Model):
-    key_id = StringType()
-    status = StringType(choices=("Active", "Inactive")),
-    access_key_last_used = ModelType(AccessKeyLastUsed, serialize_when_none=False)
-    last_update_date_display = StringType(default='N/A')
-    create_date = DateTimeType(deserialize_from="CreateDate")
-
-
 class SSHKeyInfo(Model):
     key_id = StringType()
     status = StringType(deserialize_from="Status", choices=("Active", "Inactive"))
@@ -111,12 +103,17 @@ class ServiceSpecificCredentialInfo(Model):
     status = StringType(deserialize_from="Status")
     create_date = DateTimeType(deserialize_from="CreateDate")
 
-
 class GroupForUser(Model):
     group_name = StringType()
     attached_policy_name = ListType(StringType())
     create_date = DateTimeType(deserialize_from="CreateDate")
 
+class AccessKeyInfo(Model):
+    key_id = StringType()
+    status = StringType(choices=("Active", "Inactive"))
+    access_key_last_used = ModelType(AccessKeyLastUsed, serialize_when_none=False)
+    last_update_date_display = StringType(default='N/A')
+    create_date = DateTimeType(deserialize_from='CreateDate')
 
 class User(Model):
     path = StringType(deserialize_from="Path")
