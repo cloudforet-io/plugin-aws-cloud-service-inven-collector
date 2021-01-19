@@ -7,6 +7,7 @@ from datetime import date, datetime, timezone
 
 from spaceone.inventory.connector.aws_iam_connector.schema.data import Policy, AccessKeyLastUsed, User, Group, Role, \
     IdentityProvider
+
 from spaceone.inventory.connector.aws_iam_connector.schema.resource import GroupResource, GroupResponse, \
     UserResource, UserResponse, RoleResource, RoleResponse, PolicyResource, PolicyResponse, IdentityProviderResource, \
     IdentityProviderResponse
@@ -274,14 +275,14 @@ class IAMConnector(SchematicAWSConnector):
             for access_key_meta in data.get('AccessKeyMetadata', []):
                 key_id = access_key_meta.get('AccessKeyId')
                 access_key_last_used_vo = AccessKeyLastUsed(self.get_access_key_last_used(key_id), strict=False)
-
-                access_keys.append({
+                access_key_vo = {
                     'key_id': key_id,
-                    'status': access_key_meta.get('Status', ''),
                     'create_date': access_key_meta.get('CreateDate'),
                     'access_key_last_used': access_key_last_used_vo,
-                    'last_update_date_display': self.get_last_update_date_display(access_key_last_used_vo)
-                })
+                    'last_update_date_display': self.get_last_update_date_display(access_key_last_used_vo),
+                    'status': str(access_key_meta.get('Status', ''))
+                }
+                access_keys.append(access_key_vo)
 
         return access_keys
 

@@ -69,4 +69,5 @@ class TestCloudServiceAPIs(TestCase):
 
         for res in res_stream:
             self.assertIsNotNone(res)
+            print_json(res)
             # self.assertEqual('CLOUD_SERVICE', res.resource_type)
