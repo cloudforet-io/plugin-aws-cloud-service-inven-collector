@@ -20,8 +20,8 @@ cst_distribution._metadata = CloudServiceTypeMeta.set_meta(
         EnumDyField.data_source('Status', 'data.status', default_state={
             'safe': ['Deployed']
         }),
-        ListDyField.data_source('CNAME', 'data.alias_icp_recordals', default_badge={
-            'type': 'outline', 'sub_key': 'cname',
+        ListDyField.data_source('CNAME', 'data.alias_icp_recordals', options={
+            'sub_key': 'cname', 'delimiter': '<br>'
         }),
     ],
     search=[
