@@ -18,6 +18,11 @@ class KeyPairIds(Model):
     items = ListType(StringType, deserialize_from="Items")
 
 
+class ActiveTrustedKeyGroupItems(Model):
+    key_group_id = StringType(deserialize_from="KeyGroupId")
+    key_pair_ids = ModelType(KeyPairIds, deserialize_from="KeyPairIds")
+
+
 class ActiveTrustedSignersItems(Model):
     aws_account_number = StringType(deserialize_from="AwsAccountNumber")
     key_pair_ids = ModelType(KeyPairIds, deserialize_from="KeyPairIds")
@@ -27,6 +32,12 @@ class ActiveTrustedSigners(Model):
     enabled = BooleanType(deserialize_from="Enabled")
     quantity = IntType(deserialize_from="Quantity")
     items = ListType(ModelType(ActiveTrustedSignersItems), deserialize_from="Items")
+
+
+class ActiveTrustedKeyGroups(Model):
+    enabled = BooleanType(deserialize_from="Enabled")
+    quantity = IntType(deserialize_from="Quantity")
+    items = ListType(ModelType(ActiveTrustedKeyGroupItems), deserialize_from="Items")
 
 
 class Aliases(Model):
@@ -63,6 +74,11 @@ class CustomOriginConfig(Model):
     origin_keepalive_timeout = IntType(deserialize_from="OriginKeepaliveTimeout")
 
 
+class OriginShield(Model):
+    enabled = BooleanType(deserialize_from="Enabled")
+    origin_shield_region = StringType(deserialize_from="OriginShieldRegion")
+
+
 class OriginsItems(Model):
     id = StringType(deserialize_from="Id")
     domain_name = StringType(deserialize_from="DomainName")
@@ -70,6 +86,9 @@ class OriginsItems(Model):
     custom_headers = ModelType(CustomHeaders, deserialize_from="CustomHeaders")
     s3_origin_config = ModelType(S3OriginConfig, deserialize_from="S3OriginConfig")
     custom_origin_config = ModelType(CustomOriginConfig, deserialize_from="CustomOriginConfig")
+    connection_attempts = IntType(deserialize_from="ConnectionAttempts")
+    connection_timeout = IntType(deserialize_from="ConnectionTimeout")
+    origin_shield = ModelType(OriginShield, deserialize_from="OriginShield")
 
 
 class Origins(Model):
@@ -139,6 +158,12 @@ class TrustedSigners(Model):
     items = ListType(StringType, deserialize_from="Items")
 
 
+class TrustedKeyGroups(Model):
+    enabled = BooleanType(deserialize_from="Enabled")
+    quantity = IntType(deserialize_from="Quantity")
+    items = ListType(StringType, deserialize_from="Items")
+
+
 class CachedMethods(Model):
     quantity = IntType(deserialize_from="Quantity")
     items = ListType(StringType, deserialize_from="Items")
@@ -164,18 +189,21 @@ class LambdaFunctionAssociations(Model):
 
 class DefaultCacheBehavior(Model):
     target_origin_id = StringType(deserialize_from="TargetOriginId")
-    forwarded_values = ModelType(ForwardedValues, deserialize_from="ForwardedValues")
     trusted_signers = ModelType(TrustedSigners, deserialize_from="TrustedSigners")
+    trusted_key_groups = ModelType(TrustedKeyGroups, deserialize_from="TrustedKeyGroups")
     viewer_protocol_policy = StringType(deserialize_from="ViewerProtocolPolicy",
                                         choices=("allow-all", "https-only", "redirect-to-https"))
-    min_ttl = IntType(deserialize_from="MinTTL")
     allowed_methods = ModelType(AllowedMethods, deserialize_from="AllowedMethods")
     smooth_streaming = BooleanType(deserialize_from="SmoothStreaming")
-    default_ttl = IntType(deserialize_from="DefaultTTL")
-    max_ttl = IntType(deserialize_from="MaxTTL")
     compress = BooleanType(deserialize_from="Compress")
     lambda_function_associations = ModelType(LambdaFunctionAssociations, deserialize_from="LambdaFunctionAssociations")
     field_level_encryption_id = StringType(deserialize_from="FieldLevelEncryptionId")
+    cache_policy_id = StringType(deserialize_from="CachePolicyId")
+    origin_request_policy_id = StringType(deserialize_from="OriginRequestPolicyId")
+    forwarded_values = ModelType(ForwardedValues, deserialize_from="ForwardedValues")
+    min_ttl = IntType(deserialize_from="MinTTL")
+    default_ttl = IntType(deserialize_from="DefaultTTL")
+    max_ttl = IntType(deserialize_from="MaxTTL")
 
 
 class CacheBehaviorsItems(Model):
@@ -240,6 +268,16 @@ class Restrictions(Model):
     geo_restriction = ModelType(GeoRestriction, deserialize_from="GeoRestriction")
 
 
+class OriginCustomHeaderItem(Model):
+    header_name = StringType(deserialize_from="HeaderName")
+    header_value = StringType(deserialize_from="HeaderValue")
+
+
+class OriginCustomHeader(Model):
+    quantity = IntType(deserialize_from="Quantity")
+    Items = ListType(StringType, deserialize_from="Items", default=[])
+
+
 class DistributionConfig(Model):
     caller_reference = StringType(deserialize_from="CallerReference")
     aliases = ModelType(Aliases, deserialize_from="Aliases")
@@ -261,15 +299,68 @@ class DistributionConfig(Model):
     is_ipv6_enabled = BooleanType(deserialize_from="IsIPV6Enabled")
 
 
+class OriginItem(Model):
+    id = StringType(deserialize_from="Id")
+    domain_name = StringType(deserialize_from="DomainName")
+    origin_path = StringType(deserialize_from="OriginPath")
+    custom_headers = ModelType(OriginCustomHeader, deserialize_from="CustomHeaders")
+
+
 class AliasICPRecordals(Model):
     cname = StringType(deserialize_from="CNAME")
     icp_recordal_status = StringType(deserialize_from="ICPRecordalStatus", choices=("APPROVED", "SUSPENDED", "PENDING"))
 
 
-class DistributionData(Model):
-    class Option:
-        serialize_when_none = False
+class Aliases(Model):
+    quantity = IntType(deserialize_from="Quantity")
+    Items = ListType(StringType, deserialize_from="Items", default=[])
 
+
+class OriginGroup(Model):
+    quantity = IntType(deserialize_from="Quantity")
+    Items = ListType(StringType, deserialize_from="Items", default=[])
+
+
+class Origin(Model):
+    quantity = IntType(deserialize_from="Quantity")
+    Items = ListType(StringType, deserialize_from="Items", default=[])
+
+
+class CustomErrorResponseItem(Model):
+    error_code = IntType(deserialize_from="ErrorCode")
+    response_page_path = StringType(deserialize_from="ResponsePagePath")
+    response_code = StringType(deserialize_from="ResponseCode")
+    error_caching_min_ttl = IntType(deserialize_from="ErrorCachingMinTTL")
+
+
+class CustomErrorResponse(Model):
+    quantity = IntType(deserialize_from="Quantity")
+    Items = ListType(ModelType(CustomErrorResponseItem), deserialize_from="Items")
+
+
+class ViewerCertificate(Model):
+    cloud_front_default_certificate = BooleanType(deserialize_from="CloudFrontDefaultCertificate")
+    iam_certificate_id = StringType(deserialize_from="IAMCertificateId")
+    acm_certificate_arn = StringType(deserialize_from="ACMCertificateArn")
+    ssl_support_method = StringType(deserialize_from="SSLSupportMethod", choices=('sni-only', 'vip', 'static-ip'))
+    minimum_protocol_version = StringType(deserialize_from="MinimumProtocolVersion",
+                                          choices=('SSLv3', 'TLSv1', 'TLSv1_2016', 'TLSv1.1_2016', 'TLSv1.2_2018',
+                                                   'TLSv1.2_2019'))
+    certificate = StringType(deserialize_from="Certificate")
+    certificate_source = StringType(deserialize_from="CertificateSource", choices=('cloudfront', 'iam', 'acm'))
+
+
+class GeoRestriction(Model):
+    restriction_type = StringType(deserialize_from="RestrictionType", choices=('blacklist', 'whitelist', 'none'))
+    quantity = IntType(deserialize_from="Quantity")
+    items = ListType(StringType, deserialize_from="Items")
+
+
+class Restriction(Model):
+    geo_restriction = ModelType(GeoRestriction, deserialize_from="GeoRestriction")
+
+
+class DistributionData(Model):
     id = StringType(deserialize_from="Id")
     arn = StringType(deserialize_from="ARN")
     status = StringType(deserialize_from="Status")
@@ -277,6 +368,7 @@ class DistributionData(Model):
     in_progress_invalidation_batches = IntType(deserialize_from="InProgressInvalidationBatches")
     domain_name = StringType(deserialize_from="DomainName")
     active_trusted_signers = ModelType(ActiveTrustedSigners, deserialize_from="ActiveTrustedSigners")
+    active_trusted_key_groups = ModelType(ActiveTrustedKeyGroups, deserialize_from="ActiveTrustedKeyGroups")
     distribution_config = ModelType(DistributionConfig, deserialize_from="DistributionConfig")
     alias_icp_recordals = ListType(ModelType(AliasICPRecordals), deserialize_from="AliasICPRecordals")
     account_id = StringType()
