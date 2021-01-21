@@ -23,6 +23,10 @@ cst_distribution._metadata = CloudServiceTypeMeta.set_meta(
         ListDyField.data_source('CNAME', 'data.alias_icp_recordals', options={
             'sub_key': 'cname', 'delimiter': '<br>'
         }),
+        EnumDyField.data_source('Status', 'data.status', default_state={
+            'safe': ['Enabled'],
+            'alert': ['Disabled'],
+        }),
     ],
     search=[
         SearchField.set(name='Distribution ID', key='data.id'),
