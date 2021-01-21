@@ -81,7 +81,3 @@ class ACMConnector(SchematicAWSConnector):
             return 'Yes'
         else:
             return 'No'
-
-    @staticmethod
-    def get_general_tags(tags):
-        return [{'key': tag.get('Key', ''), 'value': tag.get('Value', '')} for tag in tags]
