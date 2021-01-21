@@ -19,7 +19,11 @@ cst_certi._metadata = CloudServiceTypeMeta.set_meta(
         ListDyField.data_source('Additional Names', 'data.additional_names_display', options={
             "delimiter": ", "
         }),
-        TextDyField.data_source('Status', 'data.status'),
+        EnumDyField.data_source('Status', 'data.status', default_state={
+            'safe': ['ISSUED'],
+            'warning': ['PENDING_VALIDATION', 'INACTIVE', 'VALIDATION_TIMED_OUT', 'REVOKED'],
+            'alert': ['EXPIRED', 'FAILED']
+        }),
         TextDyField.data_source('Type', 'data.type'),
         TextDyField.data_source('In use?', 'data.in_use_display'),
         TextDyField.data_source('Renewal Eligibility', 'data.renewal_eligibility'),

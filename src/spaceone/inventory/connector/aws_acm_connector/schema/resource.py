@@ -12,7 +12,11 @@ Certificate
 '''
 # TAB - Status
 acm_meta_status = ItemDynamicLayout.set_fields('Status', fields=[
-    TextDyField.data_source('Status', 'data.status'),
+    EnumDyField.data_source('Status', 'data.status', default_state={
+        'safe': ['ISSUED'],
+        'warning': ['PENDING_VALIDATION', 'INACTIVE', 'VALIDATION_TIMED_OUT', 'REVOKED'],
+        'alert': ['EXPIRED', 'FAILED']
+    }),
     DateTimeDyField.data_source('Issue Date', 'data.issued_at'),
 ])
 
@@ -20,7 +24,11 @@ acm_meta_domain_validation_table = \
     TableDynamicLayout.set_fields('Domain Validation Status','data.domain_validation_options',
                                   fields=[
                                       TextDyField.data_source('Domain', 'domain_name'),
-                                      TextDyField.data_source('Validation status', 'validation_status')
+                                      EnumDyField.data_source('Validation status', 'validation_status',
+                                                              default_state={
+                                                                  'safe': ['SUCCESS'],
+                                                                  'warning': ['PENDING_VALIDATION'],
+                                                                  'alert': ['FAILED']}),
                                   ])
 
 certificate_status = ListDynamicLayout.set_layouts('Status', layouts=[acm_meta_status, acm_meta_domain_validation_table])
