@@ -25,3 +25,4 @@ from spaceone.inventory.connector.aws_dynamodb_connector.connector import Dynamo
 from spaceone.inventory.connector.aws_vpc_connector.connector import VPCConnector
 from spaceone.inventory.connector.aws_ec2_connector.connector import EC2Connector
 from spaceone.inventory.connector.aws_iam_connector.connector import IAMConnector
+from spaceone.inventory.connector.aws_acm_connector.connector import ACMConnector

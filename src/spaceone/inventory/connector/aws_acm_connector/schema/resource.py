@@ -1,0 +1,72 @@
+from schematics.types import ModelType, StringType, PolyModelType, DictType, ListType
+
+from spaceone.inventory.connector.aws_acm_connector.schema.data import Certificate
+from spaceone.inventory.libs.schema.dynamic_field import TextDyField, ListDyField, BadgeDyField, DateTimeDyField, \
+    EnumDyField, SizeField
+from spaceone.inventory.libs.schema.dynamic_layout import ItemDynamicLayout, TableDynamicLayout, ListDynamicLayout, \
+    SimpleTableDynamicLayout
+from spaceone.inventory.libs.schema.resource import CloudServiceResource, CloudServiceResponse, CloudServiceMeta
+
+'''
+Certificate
+'''
+# TAB - Status
+acm_meta_status = ItemDynamicLayout.set_fields('Status', fields=[
+    TextDyField.data_source('Status', 'data.status'),
+    DateTimeDyField.data_source('Issue Date', 'data.issued_at'),
+])
+
+acm_meta_domain_validation_table = \
+    TableDynamicLayout.set_fields('Domain Validation Status','data.domain_validation_options',
+                                  fields=[
+                                      TextDyField.data_source('Domain', 'domain_name'),
+                                      TextDyField.data_source('Validation status', 'validation_status')
+                                  ])
+
+certificate_status = ListDynamicLayout.set_layouts('Status', layouts=[acm_meta_status, acm_meta_domain_validation_table])
+
+
+# TAB - Detail
+acm_meta_detail = ItemDynamicLayout.set_fields('Details', fields=[
+    TextDyField.data_source('Type', 'data.type'),
+    TextDyField.data_source('In use?"', 'data.in_use_display'),
+    TextDyField.data_source('Domain Name', 'data.domain_name'),
+    ListDyField.data_source('Additional names', 'data.additional_names_display', options={
+        'delimiter': '<br>'
+    }),
+    TextDyField.data_source('Identifier', 'data.identifier'),
+    TextDyField.data_source('Serial Number', 'data.serial'),
+    ListDyField.data_source('Associated Resource', 'data.in_use_by', options={
+        'delimiter': '<br>'
+    }),
+    DateTimeDyField.data_source('Requested At', 'data.created_at'),
+    DateTimeDyField.data_source('Issued At', 'data.issued_at'),
+    DateTimeDyField.data_source('Not Before', 'data.not_before'),
+    DateTimeDyField.data_source('Not After', 'data.not_after'),
+    TextDyField.data_source('Public Key Info', 'data.key_algorithm'),
+    TextDyField.data_source('Signature Algorithm', 'data.signature_algorithm'),
+    TextDyField.data_source('ARN', 'data.certificate_arn'),
+    # TextDyField.data_source('Validation State', 'data.'),
+])
+
+# TAB - Tags
+acm_meta_tags = TableDynamicLayout.set_fields('Tags', 'data.tags', fields=[
+    TextDyField.data_source('Key', 'key'),
+    TextDyField.data_source('Value', 'value'),
+])
+
+acm_meta = CloudServiceMeta.set_layouts([certificate_status, acm_meta_detail, acm_meta_tags])
+
+
+class ACMResource(CloudServiceResource):
+    cloud_service_group = StringType(default='CertificateManager')
+
+
+class CertificateResource(ACMResource):
+    cloud_service_type = StringType(default='Certificate')
+    data = ModelType(Certificate)
+    _metadata = ModelType(CloudServiceMeta, default=acm_meta, serialized_name='metadata')
+
+
+class ACMResponse(CloudServiceResponse):
+    resource = PolyModelType(CertificateResource)
