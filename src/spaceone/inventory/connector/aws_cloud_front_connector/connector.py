@@ -51,7 +51,7 @@ class CFConnector(SchematicAWSConnector):
         for data in response_iterator:
             for raw in data.get('DistributionList', {}).get('Items', []):
                 raw.update({
-                    'state_display': self.get_state_display(raw.get('enabled')),
+                    'state_display': self.get_state_display(raw.get('Enabled')),
                     'account_id': self.account_id,
                     'tags': list(self.list_tags_for_resource(raw.get('ARN')))
                 })
