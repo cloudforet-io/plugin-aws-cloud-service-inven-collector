@@ -307,6 +307,7 @@ class DistributionData(Model):
     price_class = StringType(deserialize_from="PriceClass",
                              choices=("PriceClass_100", "PriceClass_200", "PriceClass_All"))
     enabled = BooleanType(deserialize_from="Enabled", serialize_when_none=False)
+    state_display = StringType(choices=('Enabled', 'Disabled'))
     viewer_certificate = ModelType(ViewerCertificate, deserialize_from="ViewerCertificate", serialize_when_none=False)
     restrictions = ModelType(Restrictions, deserialize_from="Restrictions", serialize_when_none=False)
     web_acl_id = StringType(deserialize_from="WebACLId", serialize_when_none=False)
