@@ -100,11 +100,13 @@ class Certificate(Model):
                                          'PCA_RESOURCE_NOT_FOUND', 'PCA_INVALID_ARGS', 'PCA_INVALID_DURATION',
                                          'PCA_ACCESS_DENIED', 'SLR_NOT_FOUND', 'OTHER'))
     type = StringType(deserialize_from="Type", choices=('IMPORTED', 'AMAZON_ISSUED', 'PRIVATE'))
+    type_display = StringType()
     renewal_summary = ModelType(RenewalSummary, deserialize_from="RenewalSummary")
     key_usages = ListType(ModelType(KeyUsagesName), deserialize_from="KeyUsages")
     extended_key_usages = ListType(ModelType(ExtendedKeyUsagesName), deserialize_from="ExtendedKeyUsages")
     certificate_authority_arn = StringType(deserialize_from="CertificateAuthorityArn")
     renewal_eligibility = StringType(deserialize_from="RenewalEligibility", choices=("ELIGIBLE", "INELIGIBLE"))
+    renewal_eligibility_display = StringType()
     options = ModelType(Options, deserialize_from="Options")
     tags = ListType(ModelType(Tags), default=[])
     account_id = StringType(default='')

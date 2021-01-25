@@ -24,9 +24,9 @@ cst_certi._metadata = CloudServiceTypeMeta.set_meta(
             'warning': ['PENDING_VALIDATION', 'INACTIVE', 'VALIDATION_TIMED_OUT', 'REVOKED'],
             'alert': ['EXPIRED', 'FAILED']
         }),
-        TextDyField.data_source('Type', 'data.type'),
+        TextDyField.data_source('Type', 'data.type_display'),
         TextDyField.data_source('In use?', 'data.in_use_display'),
-        TextDyField.data_source('Renewal Eligibility', 'data.renewal_eligibility'),
+        TextDyField.data_source('Renewal Eligibility', 'data.renewal_eligibility_display'),
     ],
     search=[
         SearchField.set(name='Domain Name', key='data.domain_name'),
