@@ -3,7 +3,7 @@ from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, Cl
     CloudServiceTypeMeta
 
 cst_certi = CloudServiceTypeResource()
-cst_certi.name = 'Certicate'
+cst_certi.name = 'Certificate'
 cst_certi.provider = 'aws'
 cst_certi.group = 'CertificateManager'
 cst_certi.labels = ['Security']
