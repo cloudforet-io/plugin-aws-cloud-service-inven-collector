@@ -14,8 +14,7 @@ cst_topic.tags = {
 
 cst_topic._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'data.name'),
-        TextDyField.data_source('ARN', 'data.arn'),
+        TextDyField.data_source('Name', 'data.name')
     ],
     search=[
         SearchField.set(name='Topic Name', key='data.name'),

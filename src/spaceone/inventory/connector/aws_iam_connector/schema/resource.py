@@ -90,6 +90,8 @@ access_key = SimpleTableDynamicLayout.set_fields('Access Keys', root_path='data.
     TextDyField.data_source('Access Key ID', 'key_id'),
     DateTimeDyField.data_source('Created At', 'create_date'),
     TextDyField.data_source('Last Used', 'last_update_date_display'),
+    EnumDyField.data_source('Status', 'status',
+                                default_badge={'indigo.500': ['Active'], 'coral.600': ['Inactive']}),
 ])
 
 ssh_codecommit = SimpleTableDynamicLayout.set_fields('SSH Keys for AWS CodeCommit', root_path='data.ssh_public_key'
