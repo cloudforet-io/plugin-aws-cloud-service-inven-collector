@@ -1,7 +1,7 @@
 import logging
 
 from schematics import Model
-from schematics.types import ModelType, StringType, IntType, DateTimeType, serializable, ListType, BooleanType
+from schematics.types import ModelType, StringType, IntType, DateTimeType, ListType, BooleanType, PolyModelType
 
 DEFAULT_REGION = 'us-east-1'
 
@@ -19,6 +19,12 @@ class Condition(Model):
     value = StringType()
 
 
+class _Condition(Model):
+    condition = StringType(serialized_name='condition')
+    key = StringType()
+    value = BooleanType()
+
+
 class PermissionsBoundary(Model):
     permissions_boundary_type = StringType(deserialize_from="PermissionsBoundaryType")
     permissions_boundary_arn = StringType(deserialize_from="PermissionsBoundaryArn")
@@ -28,7 +34,7 @@ class Permission(Model):
     action = ListType(StringType(), default=[])
     resource = ListType(StringType(), default=[])
     effect = StringType(deserialize_from="Effect")
-    condition = ListType(ModelType(Condition), serialize_when_none=False)
+    condition = ListType(PolyModelType([Condition, _Condition]), serialize_when_none=False)
     sid = StringType(deserialize_from="Sid", serialize_when_none=False)
 
 
@@ -84,14 +90,6 @@ class AccessKeyLastUsed(Model):
     region = StringType(deserialize_from="Region")
 
 
-class AccessKeyInfo(Model):
-    key_id = StringType()
-    status = StringType(deserialize_from="Status", choices=("Active", "Inactive")),
-    access_key_last_used = ModelType(AccessKeyLastUsed, serialize_when_none=False)
-    last_update_date_display = StringType(default='N/A')
-    create_date = DateTimeType(deserialize_from="CreateDate")
-
-
 class SSHKeyInfo(Model):
     key_id = StringType()
     status = StringType(deserialize_from="Status", choices=("Active", "Inactive"))
@@ -105,12 +103,17 @@ class ServiceSpecificCredentialInfo(Model):
     status = StringType(deserialize_from="Status")
     create_date = DateTimeType(deserialize_from="CreateDate")
 
-
 class GroupForUser(Model):
     group_name = StringType()
     attached_policy_name = ListType(StringType())
     create_date = DateTimeType(deserialize_from="CreateDate")
 
+class AccessKeyInfo(Model):
+    key_id = StringType()
+    status = StringType(choices=("Active", "Inactive"))
+    access_key_last_used = ModelType(AccessKeyLastUsed, serialize_when_none=False)
+    last_update_date_display = StringType(default='N/A')
+    create_date = DateTimeType(deserialize_from='CreateDate')
 
 class User(Model):
     path = StringType(deserialize_from="Path")
@@ -165,7 +168,7 @@ class PrincipalMeta(Model):
 
 class RolePolicyDocument(Model):
     action = ListType(StringType(), deserialize_from="Action")
-    condition = ListType(ModelType(Condition), serialize_when_none=False)
+    condition = ListType(PolyModelType([Condition, _Condition]), serialize_when_none=False)
     effect = ListType(StringType(), deserialize_from="Effect")
     principal = ListType(ModelType(PrincipalMeta), deserialize_from="Principal")
     sid = ListType(StringType(), serialize_when_none=False)
