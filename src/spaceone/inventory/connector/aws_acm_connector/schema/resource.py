@@ -37,7 +37,7 @@ certificate_status = ListDynamicLayout.set_layouts('Status', layouts=[acm_meta_s
 # TAB - Detail
 acm_meta_detail = ItemDynamicLayout.set_fields('Details', fields=[
     TextDyField.data_source('Type', 'data.type'),
-    TextDyField.data_source('In use?"', 'data.in_use_display'),
+    TextDyField.data_source('In use?', 'data.in_use_display'),
     TextDyField.data_source('Domain Name', 'data.domain_name'),
     ListDyField.data_source('Additional names', 'data.additional_names_display', options={
         'delimiter': '<br>'

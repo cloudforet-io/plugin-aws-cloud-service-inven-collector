@@ -53,6 +53,8 @@ class ACMConnector(SchematicAWSConnector):
                 certificate_info = certificate_response.get('Certificate', {})
 
                 certificate_info.update({
+                    'type_display': self.get_string_title(certificate_info.get('Type')),
+                    'renewal_eligibility_display': self.get_string_title(certificate_info.get('RenewalEligibility')),
                     'identifier': self.get_identifier(certificate_info.get('CertificateArn')),
                     'additional_names_display': self.get_additional_names_display(certificate_info.get('SubjectAlternativeNames')),
                     'in_use_display': self.get_in_use_display(certificate_info.get('InUseBy')),
@@ -81,3 +83,12 @@ class ACMConnector(SchematicAWSConnector):
             return 'Yes'
         else:
             return 'No'
+
+    @staticmethod
+    def get_string_title(str):
+        try:
+            display_title = str.replace('_', ' ').title()
+        except Exception as e:
+            display_title = str
+
+        return display_title
