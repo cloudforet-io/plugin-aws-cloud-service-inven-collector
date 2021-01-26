@@ -51,6 +51,11 @@ class CloudWatchModel(Model):
     dimensions = ListType(ModelType(CloudWatchDimensionModel))
 
 
+class CloudServiceResourceTags(Model):
+    key = StringType()
+    value = StringType()
+
+
 class CloudServiceTypeMeta(BaseMetaData):
     @classmethod
     def set_fields(cls, name='', fields=[]):
@@ -99,6 +104,7 @@ class CloudServiceResource(Model):
     cloud_service_type = StringType()
     cloud_service_group = StringType()
     data = PolyModelType(Model, default=lambda: {})
+    tags = ListType(ModelType(CloudServiceResourceTags), default=[])
     reference = ModelType(ReferenceModel)
     region_code = StringType(serialize_when_none=False)
     _metadata = PolyModelType(CloudServiceMeta, serialize_when_none=False, serialized_name='metadata')
