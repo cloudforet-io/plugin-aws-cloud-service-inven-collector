@@ -21,6 +21,7 @@ class CollectorService(BaseService):
         super().__init__(metadata)
 
         self.execute_managers = [
+            'IAMConnectorManager',
             'DynamoDBConnectorManager',
             'LambdaConnectorManager',
             'CloudFrontConnectorManager',
@@ -48,7 +49,7 @@ class CollectorService(BaseService):
             'EBSConnectorManager',
             'VPCConnectorManager',
             'EC2ConnectorManager',
-            'IAMConnectorManager'
+            'ACMConnectorManager'
         ]
 
     @check_required(['options'])

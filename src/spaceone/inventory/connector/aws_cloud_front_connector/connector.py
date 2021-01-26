@@ -51,6 +51,7 @@ class CFConnector(SchematicAWSConnector):
         for data in response_iterator:
             for raw in data.get('DistributionList', {}).get('Items', []):
                 raw.update({
+                    'state_display': self.get_state_display(raw.get('Enabled')),
                     'account_id': self.account_id,
                     'tags': list(self.list_tags_for_resource(raw.get('ARN')))
                 })
@@ -63,3 +64,9 @@ class CFConnector(SchematicAWSConnector):
         for _tag in tags.get('Items', []):
             yield Tags(_tag, strict=False)
 
+    @staticmethod
+    def get_state_display(enabled):
+        if enabled:
+            return 'Enabled'
+        else:
+            return 'Disabled'
