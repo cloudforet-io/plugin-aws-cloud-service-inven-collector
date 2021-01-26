@@ -111,7 +111,6 @@ class Certificate(Model):
     tags = ListType(ModelType(Tags), default=[])
     account_id = StringType(default='')
 
-
     def reference(self, region_code):
         return {
             "resource_id": self.certificate_arn,

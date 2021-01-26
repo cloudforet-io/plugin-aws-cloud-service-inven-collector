@@ -3,7 +3,8 @@ from typing import List
 from boto3.session import Session
 from spaceone.core import utils
 from spaceone.core.connector import BaseConnector
-from spaceone.inventory.libs.schema.resource import CloudServiceResponse, ReferenceModel, CloudWatchModel
+from spaceone.inventory.libs.schema.resource import CloudServiceResponse, ReferenceModel, CloudWatchModel, \
+    CloudServiceResourceTags
 
 
 DEFAULT_REGION = 'us-east-1'
@@ -132,6 +133,7 @@ class SchematicAWSConnector(AWSConnector):
                 resources.append(collect_resource_info['response_schema'](
                     {'resource': collect_resource_info['resource'](
                         {'data': data,
+                         'tags': self.get_resource_tags(getattr(data, 'tags', [])),
                          'region_code': region_name,
                          'reference': ReferenceModel(data.reference(region_name))})}
                 ))
@@ -144,3 +146,6 @@ class SchematicAWSConnector(AWSConnector):
     @staticmethod
     def convert_tags(tags):
         return [{'key': tag, 'value': tags[tag]} for tag in tags]
+
+    def get_resource_tags(self, tags_obj):
+        return [CloudServiceResourceTags({'key': tag.key, 'value': tag.value}, strict=False) for tag in tags_obj]
