@@ -236,9 +236,9 @@ class ListDyField(BaseDynamicField):
             _list_options = {'delimiter': '  '}
 
             if 'type' in _default_badge and _default_badge.get('type') == 'outline':
-                _list_options.update({'item': BadgeItemDyField.set({'outline_color': 'primary.500'})})
+                _list_options.update({'item': BadgeItemDyField.set({'outline_color': 'violet.500'})})
             elif 'type' in _default_badge and _default_badge.get('type') == 'inline':
-                _list_options.update({'item': BadgeItemDyField.set({'background_color': 'primary.500'})})
+                _list_options.update({'item': BadgeItemDyField.set({'background_color': 'violet.500'})})
 
             if 'sub_key' in _default_badge:
                 _list_options.update({'sub_key': _default_badge.get('sub_key')})

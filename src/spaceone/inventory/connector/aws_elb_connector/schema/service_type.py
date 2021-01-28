@@ -27,9 +27,9 @@ cst_elb._metadata = CloudServiceTypeMeta.set_meta(
         EnumDyField.data_source('Type', 'data.type', default_badge={
             'indigo.500': ['network'], 'coral.600': ['application']
         }),
-        ListDyField.data_source('Availability Zones', 'data.availability_zones', default_badge={
-            'type': 'outline',
+        ListDyField.data_source('Availability Zones', 'data.availability_zones', options={
             'sub_key': 'zone_name',
+            'delimiter': '<br>'
         }),
         DateTimeDyField.data_source('Created At', 'data.created_time'),
     ],
