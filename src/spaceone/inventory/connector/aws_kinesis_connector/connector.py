@@ -81,6 +81,8 @@ class KinesisConnector(SchematicAWSConnector):
                         "encryption_display": self.get_encryption_display(
                             stream_info.get("EncryptionType")
                         ),
+                        'shard_level_metrics_display': self.get_shard_level_metrics_display(
+                            stream_info.get("EnhancedMonitoring")),
                         "open_shards_num": self.get_open_shards_num(
                             stream_info.get("Shards")
                         ),
@@ -95,7 +97,6 @@ class KinesisConnector(SchematicAWSConnector):
                         "account_id": self.account_id,
                     }
                 )
-
                 res = StreamDescription(stream_info, strict=False)
                 yield res
 
@@ -145,6 +146,11 @@ class KinesisConnector(SchematicAWSConnector):
     @staticmethod
     def get_encryption_display(raw_encryption):
         return "Disabled" if raw_encryption == "NONE" else "Enabled"
+
+    @staticmethod
+    def get_shard_level_metrics_display(enhanced_monitoring):
+        return "Disabled" if not enhanced_monitoring[0]["ShardLevelMetrics"] else enhanced_monitoring[0][
+            "ShardLevelMetrics"]
 
     @staticmethod
     def get_open_shards_num(shards_list):
