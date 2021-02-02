@@ -93,6 +93,7 @@ class StreamDescription(Model):
     enhanced_monitoring = ListType(
         ModelType(EnhancedMonitoring), deserialize_from="EnhancedMonitoring"
     )
+    shard_level_metrics_display = ListType(StringType())
     encryption_type = StringType(
         deserialize_from="EncryptionType", choices=("NONE", "KMS")
     )
