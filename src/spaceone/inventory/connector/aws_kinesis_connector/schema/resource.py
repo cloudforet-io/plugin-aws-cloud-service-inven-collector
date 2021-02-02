@@ -71,10 +71,10 @@ kds_enhanced_metrics = ItemDynamicLayout.set_fields(
     fields=[
         ListDyField.data_source(
             "Enhanced (shard-level) metrics",
-            "data.enhanced_monitoring.shard_level_metrics",
-            options={"delimiter": "<br>"},
+            "data.enhanced_monitoring.shard_level_metrics_display",
+            default_badge={"delimiter": "<br>"}
         )
-    ],
+    ]
 )
 
 kds_meta_configuration = ListDynamicLayout.set_layouts(
@@ -93,7 +93,7 @@ kds_meta_consumers_using_enhanced_fan_out = TableDynamicLayout.set_fields(
     "Consumers using enhanced fan-out",
     "data.consumers",
     fields=[
-        TextDyField.data_source("Consumer name", "consumer_name"),
+        TextDyField.data_source("Consumer name", "data.consumers_vo.consumer_name"),
         EnumDyField.data_source(
             "Registration status",
             "data.consumers_vo.consumer_status_display",
