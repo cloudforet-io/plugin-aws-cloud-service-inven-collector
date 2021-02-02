@@ -65,6 +65,7 @@ class KinesisConnector(SchematicAWSConnector):
                 )
 
                 stream_info = stream_response.get("StreamDescription", {})
+                num_of_con, consumers = self.get_consumers(stream_info.get("StreamARN"))
                 stream_info.update(
                     {
                         "stream_status_display": self.get_stream_status_display(
@@ -86,11 +87,15 @@ class KinesisConnector(SchematicAWSConnector):
                         "closed_shards_num": self.get_closed_shards_num(
                             stream_info.get("Shards")
                         ),
-                        "consumers": self.get_consumers(stream_info.get("StreamARN")),
+                        "consumers_vo": {
+                            'num_of_consumers': num_of_con,
+                            'consumers': consumers
+                        },
                         "tags": self.get_tags(stream_info.get("StreamName")),
                         "account_id": self.account_id,
                     }
                 )
+
                 res = StreamDescription(stream_info, strict=False)
                 yield res
 
@@ -101,16 +106,16 @@ class KinesisConnector(SchematicAWSConnector):
     def get_consumers(self, arn):
         consumer_response = self.client.list_stream_consumers(StreamARN=arn)
         consumers_info = consumer_response.get("Consumers", [])
+        consumers_num = len(consumers_info)
 
         consumers = []
         for consumer_info in consumers_info:
             consumer_info.update({
                 "consumer_status_display": self.get_consumers_status_display(consumer_info.get("ConsumerStatus")),
-                "consumers_num": self.get_consumers_num(consumer_info.get("Consumers", []))
             })
             consumers.append(Consumers(consumer_info, strict=False))
 
-        return consumers
+        return consumers_num, consumers
 
     @staticmethod
     def get_consumers_num(consumers):
@@ -132,22 +137,10 @@ class KinesisConnector(SchematicAWSConnector):
     def get_retention_period_display(retention_period_hours):
         day = int(retention_period_hours / 24)
         hour = int(retention_period_hours % 24)
-        if not day:
-            return f"{hour} hours"
-        else:
-            if not hour:
-                return day + "day" if not day else "days"
-            else:
-                return f"{hour} hours {day}" + "day" if not day else "days"
 
-    @staticmethod
-    def get_retention_period_display_details(retention_period_hours):
-        return (
-            f"{retention_period_hours} hours"
-            + f"({retention_period_hours.get_retention_period_days})"
-            if retention_period_hours < 24
-            else retention_period_hours.get_retention_period_days
-        )
+        day_postfix = f"{day} day" if day == 1 else ("" if not day else f"{day} days")
+        hour_postfix = f" {hour} hour" if hour == 1 else ("" if not hour else f" {hour} hours")
+        return day_postfix + hour_postfix
 
     @staticmethod
     def get_encryption_display(raw_encryption):

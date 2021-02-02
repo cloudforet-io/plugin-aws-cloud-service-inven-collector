@@ -22,11 +22,13 @@ class Tags(Model):
 
 # list_stream_consumers
 class Consumers(Model):
+    consumers_num = IntType()
     consumer_name = StringType(deserialize_from="ConsumerName")
     consumer_arn = StringType(deserialize_from="ConsumerARN")
     consumer_status = StringType(
         deserialize_from="ConsumerStatus", choices=("CREATING", "DELETING", "ACTIVE")
     )
+    consumer_status_display = StringType(choices=("Creating", "Deleting", "Active"))
     consumer_creation_timestamp = DateTimeType(
         deserialize_from="ConsumerCreationTimestamp"
     )
@@ -66,6 +68,11 @@ class EnhancedMonitoring(Model):
     )), deserialize_from="ShardLevelMetrics")
 
 
+class ConsumersVO(Model):
+    num_of_consumers = IntType()
+    consumers = ListType(ModelType(Consumers), default=[])
+
+
 class StreamDescription(Model):
     stream_name = StringType(deserialize_from="StreamName")
     stream_arn = StringType(deserialize_from="StreamARN")
@@ -73,9 +80,15 @@ class StreamDescription(Model):
         deserialize_from="StreamStatus",
         choices=("CREATING", "DELETING", "ACTIVE", "UPDATING"),
     )
+    stream_status_display = StringType(choices=("Creating", "Deleting", "Active", "Updating"))
     shards = ListType(ModelType(Shards), deserialize_from="Shards")
+    open_shards_num = IntType()
+    closed_shards_num = IntType()
     has_more_shards = BooleanType(deserialize_from="HasMoreShards")
     retention_period_hours = IntType(deserialize_from="RetentionPeriodHours")
+    retention_period_days = IntType()
+    retention_period_display = StringType()
+    retention_period_display_hours = StringType()
     stream_creation_timestamp = DateTimeType(deserialize_from="StreamCreationTimestamp")
     enhanced_monitoring = ListType(
         ModelType(EnhancedMonitoring), deserialize_from="EnhancedMonitoring"
@@ -83,8 +96,9 @@ class StreamDescription(Model):
     encryption_type = StringType(
         deserialize_from="EncryptionType", choices=("NONE", "KMS")
     )
+    encryption_display = StringType(choices=("Disabled", "Enabled"))
     key_id = StringType(deserialize_from="KeyId")
-    consumers = ListType(ModelType(Consumers), default=[])
+    consumers_vo = ModelType(ConsumersVO)
     tags = ListType(ModelType(Tags), default=[])
 
     def reference(self, region_code):
