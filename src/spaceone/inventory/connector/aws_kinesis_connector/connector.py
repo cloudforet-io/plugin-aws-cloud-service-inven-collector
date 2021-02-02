@@ -149,7 +149,7 @@ class KinesisConnector(SchematicAWSConnector):
 
     @staticmethod
     def get_shard_level_metrics_display(enhanced_monitoring):
-        return "Disabled" if not enhanced_monitoring[0]["ShardLevelMetrics"] else enhanced_monitoring[0][
+        return ["Disabled"] if not enhanced_monitoring[0]["ShardLevelMetrics"] else enhanced_monitoring[0][
             "ShardLevelMetrics"]
 
     @staticmethod
