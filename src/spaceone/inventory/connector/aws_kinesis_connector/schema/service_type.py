@@ -38,15 +38,15 @@ cst_kds._metadata = CloudServiceTypeMeta.set_meta(
         ),
         TextDyField.data_source("Encryption", "data.encryption_display"),
         TextDyField.data_source(
-            "Consumers with enhanced fan-out", "data.consumers_num"
+            "Consumers with enhanced fan-out", "data.consumers_vo.num_of_consumers"
         ),
     ],
     search=[
         SearchField.set(name="Stream Name", key="data.stream_name"),
         SearchField.set(name="Stream ARN", key="data.stream_arn"),
         SearchField.set(name="Stream Status", key="data.stream_status"),
-        SearchField.set(name="Consumer Name", key="data.consumer_name"),
-        SearchField.set(name="Consumer ARN", key="data.consumer_arn"),
+        SearchField.set(name="Consumer Name", key="data.consumers_vo.consumer_name"),
+        SearchField.set(name="Consumer ARN", key="data.consumers_vo.consumer_arn"),
         SearchField.set(name="Shard ID", key="data.shards.shard_id"),
         SearchField.set(name="Parent Shard Id", key="data.shards.parent_shard_id"),
         SearchField.set(
