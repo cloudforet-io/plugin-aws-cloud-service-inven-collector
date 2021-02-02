@@ -273,7 +273,7 @@ class CommonAttributes(Model):
 
 
 class RequestConfiguration(Model):
-    content_encoding = StringType(deserialize_from='ContentEncoding', choices=('NONE' | 'GZIP'))
+    content_encoding = StringType(deserialize_from='ContentEncoding', choices=('NONE', 'GZIP'))
     common_attributes = ModelType(CommonAttributes, deserialize_from='CommonAttributes')
 
 

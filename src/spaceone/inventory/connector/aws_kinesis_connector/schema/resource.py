@@ -96,11 +96,11 @@ kds_meta_consumers_using_enhanced_fan_out = TableDynamicLayout.set_fields(
         TextDyField.data_source("Consumer name", "consumer_name"),
         EnumDyField.data_source(
             "Registration status",
-            "data.consumer_status",
+            "data.consumers_vo.consumer_status_display",
             default_state={"safe": ["Active"], "warning": ["Creating", "Deleting"]},
         ),
         EnumDyField.data_source(
-            "Registration date", "data.consumer_creation_timestamp"
+            "Registration date", "data.consumers_vo.consumer_creation_timestamp"
         ),
     ],
 )

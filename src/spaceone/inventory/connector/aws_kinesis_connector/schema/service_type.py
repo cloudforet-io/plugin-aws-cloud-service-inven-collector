@@ -38,7 +38,7 @@ cst_kds._metadata = CloudServiceTypeMeta.set_meta(
         ),
         TextDyField.data_source("Encryption", "data.encryption_display"),
         TextDyField.data_source(
-            "Consumers with enhanced fan-out", "data.consumers_num"
+            "Consumers with enhanced fan-out", "data.consumers_vo.num_of_consumers"
         ),
     ],
     search=[
