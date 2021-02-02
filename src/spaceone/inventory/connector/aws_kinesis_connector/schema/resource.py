@@ -6,7 +6,7 @@ from spaceone.inventory.connector.aws_kinesis_connector.schema.data import (
 from spaceone.inventory.libs.schema.dynamic_field import (
     TextDyField,
     ListDyField,
-    EnumDyField,
+    EnumDyField, DateTimeDyField,
 )
 from spaceone.inventory.libs.schema.dynamic_layout import (
     ItemDynamicLayout,
@@ -91,7 +91,7 @@ kds_meta_configuration = ListDynamicLayout.set_layouts(
 # TAB - Enhanced fan-out
 kds_meta_consumers_using_enhanced_fan_out = TableDynamicLayout.set_fields(
     "Consumers using enhanced fan-out",
-    "data.consumers_vo",
+    "data.consumers_vo.consumers",
     fields=[
         TextDyField.data_source("Consumer name", "consumer_name"),
         EnumDyField.data_source(
@@ -99,7 +99,7 @@ kds_meta_consumers_using_enhanced_fan_out = TableDynamicLayout.set_fields(
             "consumer_status_display",
             default_state={"safe": ["Active"], "warning": ["Creating", "Deleting"]},
         ),
-        EnumDyField.data_source(
+        DateTimeDyField.data_source(
             "Registration date", "consumer_creation_timestamp"
         ),
     ],
