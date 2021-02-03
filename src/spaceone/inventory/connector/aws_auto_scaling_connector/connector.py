@@ -95,7 +95,7 @@ class AutoScalingConnector(SchematicAWSConnector):
                                                   self._describe_scheduled_actions(raw['AutoScalingGroupName']))),
                     'lifecycle_hooks': list(map(lambda lifecycle_hook: LifecycleHook(lifecycle_hook, strict=False),
                                                 self._describe_lifecycle_hooks(raw['AutoScalingGroupName']))),
-                    'autoscaliing_tags': list(map(lambda tag: Tags(tag, strict=False),
+                    'autoscaling_tags': list(map(lambda tag: AutoScalingGroupTags(tag, strict=False),
                                                   raw.get('Tags', []))),
                     'tags': list(map(lambda tag: Tags(tag, strict=False),
                                      self.get_general_tags(raw.get('Tags', [])))),
@@ -110,6 +110,19 @@ class AutoScalingConnector(SchematicAWSConnector):
                     raw.update({
                         'display_launch_configuration_template': raw.get('LaunchTemplate').get('LaunchTemplateName')
                     })
+                else:
+                    for instance in raw.get('Instances', []):
+                        if instance.get('LaunchTemplate'):
+                            raw.update({
+                                'LaunchTemplate': instance.get('LaunchTemplate'),
+                                'display_launch_configuration_template': instance.get('LaunchTemplate').get(
+                                    'LaunchTemplateName')
+                            })
+                        elif instance.get('LaunchConfigurationName'):
+                            raw.update({
+                                'LaunchConfigurationName': instance.get('LaunchConfigurationName'),
+                                'display_launch_configuration_template': instance.get('LaunchConfigurationName')
+                            })
 
                 res = AutoScalingGroup(raw, strict=False)
                 yield res
