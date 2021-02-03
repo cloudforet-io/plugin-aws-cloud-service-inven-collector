@@ -6,7 +6,8 @@ from spaceone.inventory.connector.aws_kinesis_data_streams_connector.schema.data
 from spaceone.inventory.libs.schema.dynamic_field import (
     TextDyField,
     ListDyField,
-    EnumDyField, DateTimeDyField,
+    EnumDyField,
+    DateTimeDyField,
 )
 from spaceone.inventory.libs.schema.dynamic_layout import (
     ItemDynamicLayout,
@@ -37,8 +38,10 @@ kds_meta_detail = ItemDynamicLayout.set_fields(
 # TAB - Configuration
 kds_meta_stream_capacity = ItemDynamicLayout.set_fields(
     "Stream capacity",
-    fields=[TextDyField.data_source("Number of open shards", "data.open_shards_num"),
-            TextDyField.data_source("Number of closed shards", "data.closed_shards_num")],
+    fields=[
+        TextDyField.data_source("Number of open shards", "data.open_shards_num"),
+        TextDyField.data_source("Number of closed shards", "data.closed_shards_num"),
+    ],
 )
 
 kds_meta_encryption = ItemDynamicLayout.set_fields(
@@ -63,9 +66,9 @@ kds_enhanced_metrics = ItemDynamicLayout.set_fields(
         ListDyField.data_source(
             "Enhanced (shard-level) metrics",
             "data.shard_level_metrics_display",
-            default_badge={"delimiter": "<br>"}
+            default_badge={"delimiter": "<br>"},
         )
-    ]
+    ],
 )
 
 kds_meta_configuration = ListDynamicLayout.set_layouts(
@@ -89,9 +92,7 @@ kds_meta_consumers_using_enhanced_fan_out = TableDynamicLayout.set_fields(
             "consumer_status_display",
             default_state={"safe": ["Active"], "warning": ["Creating", "Deleting"]},
         ),
-        DateTimeDyField.data_source(
-            "Registration date", "consumer_creation_timestamp"
-        ),
+        DateTimeDyField.data_source("Registration date", "consumer_creation_timestamp"),
     ],
 )
 

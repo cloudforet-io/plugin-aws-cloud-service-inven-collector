@@ -60,9 +60,7 @@ class KinesisDataStreamsConnector(SchematicAWSConnector):
         )
         for data in response_iterator:
             for stream_name in data.get("StreamNames", []):
-                stream_response = self.client.describe_stream(
-                    StreamName=stream_name
-                )
+                stream_response = self.client.describe_stream(StreamName=stream_name)
 
                 stream_info = stream_response.get("StreamDescription", {})
                 num_of_con, consumers = self.get_consumers(stream_info.get("StreamARN"))
@@ -81,8 +79,9 @@ class KinesisDataStreamsConnector(SchematicAWSConnector):
                         "encryption_display": self.get_encryption_display(
                             stream_info.get("EncryptionType")
                         ),
-                        'shard_level_metrics_display': self.get_shard_level_metrics_display(
-                            stream_info.get("EnhancedMonitoring")),
+                        "shard_level_metrics_display": self.get_shard_level_metrics_display(
+                            stream_info.get("EnhancedMonitoring")
+                        ),
                         "open_shards_num": self.get_open_shards_num(
                             stream_info.get("Shards")
                         ),
@@ -90,8 +89,8 @@ class KinesisDataStreamsConnector(SchematicAWSConnector):
                             stream_info.get("Shards")
                         ),
                         "consumers_vo": {
-                            'num_of_consumers': num_of_con,
-                            'consumers': consumers
+                            "num_of_consumers": num_of_con,
+                            "consumers": consumers,
                         },
                         "tags": self.get_tags(stream_info.get("StreamName")),
                         "account_id": self.account_id,
@@ -111,9 +110,13 @@ class KinesisDataStreamsConnector(SchematicAWSConnector):
 
         consumers = []
         for consumer_info in consumers_info:
-            consumer_info.update({
-                "consumer_status_display": self.get_consumers_status_display(consumer_info.get("ConsumerStatus")),
-            })
+            consumer_info.update(
+                {
+                    "consumer_status_display": self.get_consumers_status_display(
+                        consumer_info.get("ConsumerStatus")
+                    ),
+                }
+            )
             consumers.append(Consumers(consumer_info, strict=False))
 
         return consumers_num, consumers
@@ -140,7 +143,9 @@ class KinesisDataStreamsConnector(SchematicAWSConnector):
         hour = int(retention_period_hours % 24)
 
         day_postfix = f"{day} day" if day == 1 else ("" if not day else f"{day} days")
-        hour_postfix = f" {hour} hour" if hour == 1 else ("" if not hour else f" {hour} hours")
+        hour_postfix = (
+            f" {hour} hour" if hour == 1 else ("" if not hour else f" {hour} hours")
+        )
         return day_postfix + hour_postfix
 
     @staticmethod
@@ -149,18 +154,30 @@ class KinesisDataStreamsConnector(SchematicAWSConnector):
 
     @staticmethod
     def get_shard_level_metrics_display(enhanced_monitoring):
-        return ["Disabled"] if not enhanced_monitoring[0]["ShardLevelMetrics"] else enhanced_monitoring[0][
-            "ShardLevelMetrics"]
+        return (
+            ["Disabled"]
+            if not enhanced_monitoring[0]["ShardLevelMetrics"]
+            else enhanced_monitoring[0]["ShardLevelMetrics"]
+        )
 
     @staticmethod
     def get_open_shards_num(shards_list):
         return len(
-            [shard for shard in shards_list if shard.get("SequenceNumberRange", {}).get("EndingSequenceNumber") is None]
+            [
+                shard
+                for shard in shards_list
+                if shard.get("SequenceNumberRange", {}).get("EndingSequenceNumber")
+                is None
+            ]
         )
 
     @staticmethod
     def get_closed_shards_num(shards_list):
         return len(
-            [shard for shard in shards_list if
-             shard.get("SequenceNumberRange", {}).get("EndingSequenceNumber") is not None]
+            [
+                shard
+                for shard in shards_list
+                if shard.get("SequenceNumberRange", {}).get("EndingSequenceNumber")
+                is not None
+            ]
         )
