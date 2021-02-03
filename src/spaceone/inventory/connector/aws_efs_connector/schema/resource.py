@@ -18,16 +18,14 @@ base = ItemDynamicLayout.set_fields('File Systems', fields=[
     TextDyField.data_source('Owner ID', 'data.owner_id'),
     SizeField.data_source('Metered Size', 'data.size_in_bytes.value'),
     TextDyField.data_source('Number of mount targets', 'data.number_of_mount_targets'),
-    EnumDyField.data_source('Performance mode', 'data.performance_mode',
-                            default_outline_badge=['generalPurpose', 'maxIO']),
-    EnumDyField.data_source('Throughput mode', 'data.throughput_mode',
-                            default_outline_badge=['bursting', 'provisioned']),
+    TextDyField.data_source('Performance mode', 'data.performance_mode'),
+    TextDyField.data_source('Throughput mode', 'data.throughput_mode'),
     EnumDyField.data_source('Encrypted', 'data.encrypted', default_badge={
         'indigo.500': ['true'], 'coral.600': ['false']
     }),
-    ListDyField.data_source('Lifecycle policy', 'data.lifecycle_policies', default_badge={
-        'type': 'outline',
-        'sub_key': 'transition_to_ia',
+    ListDyField.data_source('Lifecycle policy', 'data.life_cycle_policies', options={
+        'sub_key': 'transition_to_ia_display',
+        'delimiter': '<br>'
     }),
     DateTimeDyField.data_source('Creation date', 'data.creation_time')
 ])

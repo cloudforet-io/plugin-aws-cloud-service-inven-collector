@@ -44,6 +44,7 @@ class EFSConnector(SchematicAWSConnector):
                 'PageSize': 50,
             }
         )
+
         for data in response_iterator:
             for raw in data.get('FileSystems', []):
                 size = raw.get('SizeInBytes', {})
@@ -61,8 +62,16 @@ class EFSConnector(SchematicAWSConnector):
 
     def describe_lifecycle_configuration(self, file_system_id):
         response = self.client.describe_lifecycle_configuration(FileSystemId=file_system_id)
-        return list(map(lambda _lcpolicy: LifecyclePolicy(_lcpolicy, strict=False),
-                        response.get('LifecyclePolicies', [])))
+        lifecycle_policies = response.get('LifecyclePolicies', [])
+
+        for lifecycle_policy in lifecycle_policies:
+            if lifecycle_policy.get('TransitionToIA'):
+                lifecycle_policy.update({
+                    'transition_to_ia_display':
+                        f'{lifecycle_policy.get("TransitionToIA").split("_")[1]} days since last access'
+                })
+
+        return lifecycle_policies
 
     def describe_mount_targets(self, file_system_id):
         paginator = self.client.get_paginator('describe_mount_targets')
