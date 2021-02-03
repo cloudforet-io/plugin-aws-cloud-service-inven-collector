@@ -137,7 +137,7 @@ class ELBConnector(SchematicAWSConnector):
         attribute_info = {}
 
         response = self.client.describe_load_balancer_attributes(LoadBalancerArn=lb_arn)
-        attrs = response.get('Attributes')
+        attrs = response.get('Attributes', [])
 
         for attr in attrs:
             if attr.get('Key') == 'access_logs.s3.enabled':
@@ -145,27 +145,39 @@ class ELBConnector(SchematicAWSConnector):
                     attribute_info['access_logs_s3_enabled'] = 'Enabled'
                 elif attr.get('Value') == 'false':
                     attribute_info['access_logs_s3_enabled'] = 'Disabled'
-
             elif attr.get('Key') == 'access_logs.s3.prefix':
                 attribute_info['access_logs_s3_prefix'] = attr.get('Value', '')
-
             elif attr.get('Key') == 'access_logs.s3.bucket':
                 attribute_info['access_logs_s3_bucket'] = attr.get('Value', '')
-
             elif attr.get('Key') == 'idle_timeout.timeout_seconds':
                 attribute_info['idle_timeout_seconds'] = attr.get('Value', '')
-
             elif attr.get('Key') == 'load_balancing.cross_zone.enabled':
                 if attr.get('Value') == 'true':
                     attribute_info['load_balancing_cross_zone_enabled'] = 'Enabled'
                 elif attr.get('Value') == 'false':
                     attribute_info['load_balancing_cross_zone_enabled'] = 'Disabled'
-
             elif attr.get('Key') == 'deletion_protection.enabled':
                 if attr.get('Value') == 'true':
                     attribute_info['deletion_protection_enabled'] = 'Enabled'
                 elif attr.get('Value') == 'false':
                     attribute_info['deletion_protection_enabled'] = 'Disabled'
+            elif attr.get('Key') == 'routing.http2.enabled':
+                if attr.get('Value') == 'true':
+                    attribute_info['routing_http2_enabled'] = 'Enabled'
+                elif attr.get('Value') == 'false':
+                    attribute_info['routing_http2_enabled'] = 'Disabled'
+            elif attr.get('Key') == 'routing.http.drop_invalid_header_fields.enabled':
+                if attr.get('Value') == 'true':
+                    attribute_info['routing_http_drop_invalid_header_fields_enabled'] = 'Enabled'
+                elif attr.get('Value') == 'false':
+                    attribute_info['routing_http_drop_invalid_header_fields_enabled'] = 'Disabled'
+            elif attr.get('Key') == 'routing.http.desync_mitigation_mode':
+                attribute_info['routing_http_desync_mitigation_mode'] = attr.get('Value', '')
+            elif attr.get('Key') == 'waf.fail_open.enabled':
+                if attr.get('Value') == 'true':
+                    attribute_info['waf_fail_open_enabled'] = 'Enabled'
+                elif attr.get('Value') == 'false':
+                    attribute_info['waf_fail_open_enabled'] = 'Disabled'
 
         return LoadBalancerAttributes(attribute_info, strict=False)
 

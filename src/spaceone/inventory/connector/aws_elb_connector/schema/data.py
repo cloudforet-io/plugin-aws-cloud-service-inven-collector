@@ -158,12 +158,16 @@ class TargetGroup(Model):
 Load Balancer
 '''
 class LoadBalancerAttributes(Model):
-    access_logs_s3_enabled = StringType(default="")
-    idle_timeout_seconds = StringType(default="")
-    access_logs_s3_prefix = StringType(default="")
-    deletion_protection_enabled = StringType(default="")
-    access_logs_s3_bucket = StringType(default="")
-    load_balancing_cross_zone_enabled = StringType(default="")
+    access_logs_s3_enabled = StringType(serialize_when_none=False)
+    access_logs_s3_prefix = StringType(serialize_when_none=False)
+    access_logs_s3_bucket = StringType(serialize_when_none=False)
+    idle_timeout_seconds = StringType(serialize_when_none=False)
+    deletion_protection_enabled = StringType(serialize_when_none=False)
+    load_balancing_cross_zone_enabled = StringType(serialize_when_none=False)
+    routing_http2_enabled = StringType(serialize_when_none=False)
+    routing_http_drop_invalid_header_fields_enabled = StringType(serialize_when_none=False)
+    routing_http_desync_mitigation_mode = StringType(serialize_when_none=False)
+    waf_fail_open_enabled = StringType(serialize_when_none=False)
 
 
 class AvailabilityZonesLoadBalancerAddresses(Model):
