@@ -167,7 +167,7 @@ class KinesisDataStreamsConnector(SchematicAWSConnector):
                 shard
                 for shard in shards_list
                 if shard.get("SequenceNumberRange", {}).get("EndingSequenceNumber")
-                is None
+                   is None
             ]
         )
 
@@ -178,6 +178,6 @@ class KinesisDataStreamsConnector(SchematicAWSConnector):
                 shard
                 for shard in shards_list
                 if shard.get("SequenceNumberRange", {}).get("EndingSequenceNumber")
-                is not None
+                   is not None
             ]
         )
