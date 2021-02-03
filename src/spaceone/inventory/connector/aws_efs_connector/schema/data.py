@@ -34,6 +34,7 @@ class LifecyclePolicy(Model):
                                                                               "AFTER_30_DAYS",
                                                                               "AFTER_60_DAYS",
                                                                               "AFTER_90_DAYS"))
+    transition_to_ia_display = StringType(serialize_when_none=False)
 
 
 '''
@@ -69,7 +70,7 @@ class FileSystem(Model):
     provisioned_throughput_in_mibps = FloatType(deserialize_from="ProvisionedThroughputInMibps")
     tags = ListType(ModelType(FileSystemTags), deserialize_from="Tags", default=[])
     account_id = StringType(default="")
-    life_cycle_policies = ListType(ModelType(LifecyclePolicy))
+    life_cycle_policies = ListType(ModelType(LifecyclePolicy), default=[])
     mount_targets = ListType(ModelType(MountTarget))
     cloudwatch = ModelType(CloudWatchModel, serialize_when_none=False)
     size = FloatType(default=0.0)
