@@ -36,49 +36,21 @@ kds_meta_detail = ItemDynamicLayout.set_fields(
 )
 
 # TAB - Configuration
-kds_meta_stream_capacity = ItemDynamicLayout.set_fields(
-    "Stream capacity",
+kds_meta_configuration = ItemDynamicLayout.set_fields(
+    "Configuration",
     fields=[
         TextDyField.data_source("Number of open shards", "data.open_shards_num"),
         TextDyField.data_source("Number of closed shards", "data.closed_shards_num"),
-    ],
-)
-
-kds_meta_encryption = ItemDynamicLayout.set_fields(
-    "Encryption",
-    fields=[
-        TextDyField.data_source("Server-side encryption", "data.encryption_display")
-    ],
-)
-
-kds_data_retention = ItemDynamicLayout.set_fields(
-    "Data retention",
-    fields=[
+        TextDyField.data_source("Server-side encryption", "data.encryption_display"),
         TextDyField.data_source(
             "Data retention period", "data.retention_period_display_hours"
-        )
-    ],
-)
-
-kds_enhanced_metrics = ItemDynamicLayout.set_fields(
-    "Enhanced (shard-level) metrics",
-    fields=[
+        ),
         ListDyField.data_source(
             "Enhanced (shard-level) metrics",
             "data.shard_level_metrics_display",
             default_badge={"delimiter": "<br>"},
         )
-    ],
-)
-
-kds_meta_configuration = ListDynamicLayout.set_layouts(
-    "Configuration",
-    layouts=[
-        kds_meta_stream_capacity,
-        kds_meta_encryption,
-        kds_data_retention,
-        kds_enhanced_metrics,
-    ],
+    ]
 )
 
 # TAB - Enhanced fan-out
