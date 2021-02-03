@@ -1,8 +1,8 @@
 from schematics.types import ModelType, StringType, PolyModelType
-
-from spaceone.inventory.connector.aws_kinesis_connector.schema.data import (
+from spaceone.inventory.connector.aws_kinesis_data_streams_connector.schema.data import (
     StreamDescription,
 )
+
 from spaceone.inventory.libs.schema.dynamic_field import (
     TextDyField,
     ListDyField,
