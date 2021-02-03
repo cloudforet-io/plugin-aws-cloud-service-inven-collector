@@ -47,7 +47,7 @@ class KinesisDataStreamsConnector(SchematicAWSConnector):
                     )
                 )
 
-        print(f" kinesis Manager Finished {time.time() - start_time} Seconds")
+        print(f" kinesis Data Streams Manager Finished {time.time() - start_time} Seconds")
         return resources
 
     def request_data(self, region_name) -> List[StreamDescription]:
