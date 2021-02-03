@@ -1,12 +1,13 @@
 from schematics.types import ModelType, StringType, PolyModelType
 
-from spaceone.inventory.connector.aws_kinesis_connector.schema.data import (
+from spaceone.inventory.connector.aws_kinesis_data_streams_connector.schema.data import (
     StreamDescription,
 )
 from spaceone.inventory.libs.schema.dynamic_field import (
     TextDyField,
     ListDyField,
-    EnumDyField, DateTimeDyField,
+    EnumDyField,
+    DateTimeDyField,
 )
 from spaceone.inventory.libs.schema.dynamic_layout import (
     ItemDynamicLayout,
@@ -24,7 +25,7 @@ kinesis
 """
 # TAB - Detail
 kds_meta_detail = ItemDynamicLayout.set_fields(
-    "Details",
+    "Stream Details",
     fields=[
         TextDyField.data_source("Status", "data.stream_status_display"),
         TextDyField.data_source("ARN", "data.stream_arn"),
@@ -37,16 +38,9 @@ kds_meta_detail = ItemDynamicLayout.set_fields(
 # TAB - Configuration
 kds_meta_stream_capacity = ItemDynamicLayout.set_fields(
     "Stream capacity",
-    fields=[TextDyField.data_source("Number of open shards", "data.open_shards_num"),
-            TextDyField.data_source("Number of closed shards", "data.closed_shards_num")],
-)
-
-kds_meta_tags = TableDynamicLayout.set_fields(
-    "Tags",
-    "data.tags",
     fields=[
-        TextDyField.data_source("Key", "key"),
-        TextDyField.data_source("Value", "value"),
+        TextDyField.data_source("Number of open shards", "data.open_shards_num"),
+        TextDyField.data_source("Number of closed shards", "data.closed_shards_num"),
     ],
 )
 
@@ -72,16 +66,15 @@ kds_enhanced_metrics = ItemDynamicLayout.set_fields(
         ListDyField.data_source(
             "Enhanced (shard-level) metrics",
             "data.shard_level_metrics_display",
-            default_badge={"delimiter": "<br>"}
+            default_badge={"delimiter": "<br>"},
         )
-    ]
+    ],
 )
 
 kds_meta_configuration = ListDynamicLayout.set_layouts(
     "Configuration",
     layouts=[
         kds_meta_stream_capacity,
-        kds_meta_tags,
         kds_meta_encryption,
         kds_data_retention,
         kds_enhanced_metrics,
@@ -99,9 +92,7 @@ kds_meta_consumers_using_enhanced_fan_out = TableDynamicLayout.set_fields(
             "consumer_status_display",
             default_state={"safe": ["Active"], "warning": ["Creating", "Deleting"]},
         ),
-        DateTimeDyField.data_source(
-            "Registration date", "consumer_creation_timestamp"
-        ),
+        DateTimeDyField.data_source("Registration date", "consumer_creation_timestamp"),
     ],
 )
 
@@ -109,9 +100,19 @@ kds_meta_enhanced_fan_out = ListDynamicLayout.set_layouts(
     "Enhanced fan-out", layouts=[kds_meta_consumers_using_enhanced_fan_out]
 )
 
+# TAB - Tags
+kds_meta_tags = TableDynamicLayout.set_fields(
+    "Tags",
+    "data.tags",
+    fields=[
+        TextDyField.data_source("Key", "key"),
+        TextDyField.data_source("Value", "value"),
+    ],
+)
+
 # Overall
 kds_meta = CloudServiceMeta.set_layouts(
-    [kds_meta_detail, kds_meta_configuration, kds_meta_enhanced_fan_out]
+    [kds_meta_detail, kds_meta_configuration, kds_meta_enhanced_fan_out, kds_meta_tags]
 )
 
 

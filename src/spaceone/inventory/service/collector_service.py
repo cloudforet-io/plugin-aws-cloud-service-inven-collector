@@ -50,7 +50,7 @@ class CollectorService(BaseService):
             'VPCConnectorManager',
             'EC2ConnectorManager',
             'ACMConnectorManager',
-            'KinesisConnectorManager'
+            'KinesisDataStreamsConnectorManager'
         ]
 
     @check_required(['options'])

@@ -17,7 +17,9 @@ _LOGGER = logging.getLogger(__name__)
 class Tags(Model):
     key = StringType(deserialize_from="Key")
     value = StringType(deserialize_from="Value")
-    has_more_tags = BooleanType(deserialize_from="HasMoreTags", serialize_when_none=False)
+    has_more_tags = BooleanType(
+        deserialize_from="HasMoreTags", serialize_when_none=False
+    )
 
 
 # list_stream_consumers
@@ -56,16 +58,21 @@ class Shards(Model):
 
 
 class EnhancedMonitoring(Model):
-    shard_level_metrics = ListType(StringType(choices=(
-        "IncomingBytes",
-        "IncomingRecords",
-        "OutgoingBytes",
-        "OutgoingRecords",
-        "WriteProvisionedThroughputExceeded",
-        "ReadProvisionedThroughputExceeded",
-        "IteratorAgeMilliseconds",
-        "ALL"
-    )), deserialize_from="ShardLevelMetrics")
+    shard_level_metrics = ListType(
+        StringType(
+            choices=(
+                "IncomingBytes",
+                "IncomingRecords",
+                "OutgoingBytes",
+                "OutgoingRecords",
+                "WriteProvisionedThroughputExceeded",
+                "ReadProvisionedThroughputExceeded",
+                "IteratorAgeMilliseconds",
+                "ALL",
+            )
+        ),
+        deserialize_from="ShardLevelMetrics",
+    )
 
 
 class ConsumersVO(Model):
@@ -80,7 +87,9 @@ class StreamDescription(Model):
         deserialize_from="StreamStatus",
         choices=("CREATING", "DELETING", "ACTIVE", "UPDATING"),
     )
-    stream_status_display = StringType(choices=("Creating", "Deleting", "Active", "Updating"))
+    stream_status_display = StringType(
+        choices=("Creating", "Deleting", "Active", "Updating")
+    )
     shards = ListType(ModelType(Shards), deserialize_from="Shards")
     open_shards_num = IntType()
     closed_shards_num = IntType()

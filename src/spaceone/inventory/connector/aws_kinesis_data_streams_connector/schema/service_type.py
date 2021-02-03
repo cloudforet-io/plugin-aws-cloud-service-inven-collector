@@ -66,7 +66,7 @@ cst_kds._metadata = CloudServiceTypeMeta.set_meta(
             name="Number of Closed Shards",
             key="data.closed_shards_num",
             data_type="Integer",
-        )
+        ),
     ],
 )
 
