@@ -297,9 +297,7 @@ class LaunchTemplateDetail(Model):
     create_time = DateTimeType(deserialize_from="CreateTime", serialize_when_none=False)
     created_by = StringType(deserialize_from="CreatedBy", serialize_when_none=False)
     default_version = BooleanType(deserialize_from="DefaultVersion", serialize_when_none=False)
-    launch_template_data = ModelType(LaunchTemplateData,
-                                     deserialize_from="LaunchTemplateData",
-                                     serialize_when_none=False)
+    launch_template_data = ModelType(LaunchTemplateData, serialize_when_none=False)
     account_id = StringType(default='')
     arn = StringType()
 
