@@ -55,15 +55,16 @@ lb_listener = TableDynamicLayout.set_fields('Listeners', 'data.listeners', field
 ])
 
 lb_attr = ItemDynamicLayout.set_fields('Attributes', fields=[
-    EnumDyField.data_source('Deletion protection', 'data.attributes.deletion_protection_enabled', default_badge={
-        'indigo.500': ['Enabled'], 'coral.600': ['Disabled']
-    }),
-    EnumDyField.data_source('Cross-Zone Load Balancing', 'data.attributes.load_balancing_cross_zone_enabled', default_badge={
-        'indigo.500': ['Enabled'], 'coral.600': ['Disabled']
-    }),
-    EnumDyField.data_source('Access logs', 'data.attributes.access_logs_s3_enabled', default_badge={
-        'indigo.500': ['Enabled'], 'coral.600': ['Disabled']
-    }),
+    TextDyField.data_source('Deletion protection', 'data.attributes.deletion_protection_enabled'),
+    TextDyField.data_source('Cross-Zone Load Balancing', 'data.attributes.load_balancing_cross_zone_enabled'),
+    TextDyField.data_source('Idel Timeout Seconds', 'data.attributes.idle_timeout_seconds'),
+    TextDyField.data_source('Routing HTTP2 Enabled', 'data.attributes.routing_http2_enabled'),
+    TextDyField.data_source('Routing HTTP Drop Invalid Header Fields Enabled',
+                            'data.attributes.routing_http_drop_invalid_header_fields_enabled'),
+    TextDyField.data_source('Routing HTTP Desync Mitigation Mode',
+                            'data.attributes.routing_http_desync_mitigation_mode'),
+    TextDyField.data_source('WAF Fail Open Enabled', 'data.attributes.waf_fail_open_enabled'),
+    TextDyField.data_source('Access logs', 'data.attributes.access_logs_s3_enabled'),
     TextDyField.data_source('Access logs S3 Prefix', 'data.attributes.access_logs_s3_prefix'),
     TextDyField.data_source('Access logs S3 Bucket', 'data.attributes.access_logs_s3_bucket'),
 ])
