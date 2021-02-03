@@ -24,7 +24,7 @@ kinesis
 """
 # TAB - Detail
 kds_meta_detail = ItemDynamicLayout.set_fields(
-    "Details",
+    "Stream Details",
     fields=[
         TextDyField.data_source("Status", "data.stream_status_display"),
         TextDyField.data_source("ARN", "data.stream_arn"),
@@ -39,15 +39,6 @@ kds_meta_stream_capacity = ItemDynamicLayout.set_fields(
     "Stream capacity",
     fields=[TextDyField.data_source("Number of open shards", "data.open_shards_num"),
             TextDyField.data_source("Number of closed shards", "data.closed_shards_num")],
-)
-
-kds_meta_tags = TableDynamicLayout.set_fields(
-    "Tags",
-    "data.tags",
-    fields=[
-        TextDyField.data_source("Key", "key"),
-        TextDyField.data_source("Value", "value"),
-    ],
 )
 
 kds_meta_encryption = ItemDynamicLayout.set_fields(
@@ -81,7 +72,6 @@ kds_meta_configuration = ListDynamicLayout.set_layouts(
     "Configuration",
     layouts=[
         kds_meta_stream_capacity,
-        kds_meta_tags,
         kds_meta_encryption,
         kds_data_retention,
         kds_enhanced_metrics,
@@ -109,9 +99,19 @@ kds_meta_enhanced_fan_out = ListDynamicLayout.set_layouts(
     "Enhanced fan-out", layouts=[kds_meta_consumers_using_enhanced_fan_out]
 )
 
+# TAB - Tags
+kds_meta_tags = TableDynamicLayout.set_fields(
+    "Tags",
+    "data.tags",
+    fields=[
+        TextDyField.data_source("Key", "key"),
+        TextDyField.data_source("Value", "value"),
+    ],
+)
+
 # Overall
 kds_meta = CloudServiceMeta.set_layouts(
-    [kds_meta_detail, kds_meta_configuration, kds_meta_enhanced_fan_out]
+    [kds_meta_detail, kds_meta_configuration, kds_meta_enhanced_fan_out, kds_meta_tags]
 )
 
 
