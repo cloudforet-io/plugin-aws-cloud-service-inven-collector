@@ -15,7 +15,7 @@ base = ItemDynamicLayout.set_fields('Clusters', fields=[
         'alert': ['FAILED']
     }),
     TextDyField.data_source('Active Service', 'data.active_services_count'),
-    TextDyField.data_source('Running Tasks', 'data.active_services_count'),
+    TextDyField.data_source('Running Tasks', 'data.running_tasks_count'),
     TextDyField.data_source('Pending Tasks', 'data.pending_tasks_count'),
     TextDyField.data_source('Registered Instances', 'data.registered_container_instances_count'),
 ])
