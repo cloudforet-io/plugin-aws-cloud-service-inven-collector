@@ -25,9 +25,9 @@ base = ItemDynamicLayout.set_fields('File Systems', fields=[
     EnumDyField.data_source('Encrypted', 'data.encrypted', default_badge={
         'indigo.500': ['true'], 'coral.600': ['false']
     }),
-    ListDyField.data_source('Lifecycle policy', 'data.lifecycle_policies', default_badge={
-        'type': 'outline',
-        'sub_key': 'transition_to_ia',
+    ListDyField.data_source('Lifecycle policy', 'data.lifecycle_policies', options={
+        'sub_key': 'transition_to_ia_display',
+        'delimiter': '<br>'
     }),
     DateTimeDyField.data_source('Creation date', 'data.creation_time')
 ])
