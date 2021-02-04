@@ -1,8 +1,7 @@
 import logging
 
 from schematics import Model
-from schematics.types import ModelType, StringType, IntType, FloatType, DateTimeType, serializable, ListType, \
-    BooleanType
+from schematics.types import ModelType, StringType, IntType, FloatType, DateTimeType, ListType, BooleanType
 from spaceone.inventory.libs.schema.resource import CloudWatchModel, CloudWatchDimensionModel
 
 _LOGGER = logging.getLogger(__name__)
@@ -101,7 +100,7 @@ class S3(Model):
     enabled = BooleanType(deserialize_from="Enabled")
     prefix = StringType(deserialize_from="Prefix")
 
-class LoggingInfo(ModelType):
+class LoggingInfo(Model):
     broker_logs = ModelType(BrokerLogs, deserialize_from="BrokerLogs")
     firehose = ModelType(Firehose, deserialize_from="Firehose")
     s3 = ModelType(S3, deserialize_from="S3")
@@ -196,12 +195,12 @@ class GetBootStrapBrokers(Model):
 
 
 class ListConfigurationRevisions(Model):
-    revisions = ListType(LatestRevision, deserialize_from='Revisions')
+    revisions = ListType(ModelType(LatestRevision), deserialize_from='Revisions')
 
 
 class DescribeConfigurationRevision(Model):
     arn = StringType(deserialize_from='Arn')
-    creation_time = StringType(deserialize_from='CreationTime')
+    creation_time = DateTimeType(deserialize_from='CreationTime')
     description = StringType(deserialize_from='Description')
     revision = IntType(deserialize_from='Revision')
     server_properties = ListType(StringType(deserialize_from='ServerProperties'))

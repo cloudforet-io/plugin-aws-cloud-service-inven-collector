@@ -67,18 +67,6 @@ cluster_encryption_info = ItemDynamicLayout.set_fields('Encryption Info', root_p
     TextDyField.data_source('Between Client & Broker',
                             'encryption_in_transit.data_volume_kms_key_id'),
 ])
-'''
-# Broker Node Info
-cluster_broker_node_info = TableDynamicLayout.set_fields('Broker Node Info', root_path='data.node_info_list', fields=[
-                                        TextDyField.data_source('Broker ID', 'broker_node_info.broker_id'),
-                                        ListDyField.data_source('Endpoints', 'broker_node_info.endpoints',
-                                                                default_badge={'type': 'outline',
-                                                                               'delimiter': '<br>'}),
-                                        TextDyField.data_source('Client Subnet', 'broker_node_info.client_subnet'),
-                                        TextDyField.data_source('Client VPC IP','broker_node_info.client_vpc_ip_address'),
-                                        TextDyField.data_source('')
-])
-'''
 
 cluster_client_authentication = \
     ItemDynamicLayout.set_fields('Client Authentication',
@@ -132,8 +120,10 @@ cluster_broker_s3 = \
                                      TextDyField.data_source('Bucket', 'bucket'),
                                      TextDyField.data_source('Prefix', 'prefix'),
                                  ])
-cluster_logging_meta = CloudServiceMeta.set_layouts([cluster_broker_cloudwatchlogs,
+
+cluster_logging_meta = ListDynamicLayout.set_layouts('Cluster Logging', [cluster_broker_cloudwatchlogs,
                                                      cluster_broker_firehose, cluster_broker_s3])
+
 
 cluster_tag = SimpleTableDynamicLayout.set_fields('Tags', root_path='data.tags', fields=[
     TextDyField.data_source('Key', 'key'),
@@ -151,11 +141,15 @@ cluster_operations = \
         DateTimeDyField.data_source('End Time', 'end_time'),
     ])
 
-cluster_operations_meta = CloudServiceMeta.set_layouts([cluster_operations])
 
-cluster_metadata = CloudServiceMeta.set_layouts([cluster_base, broker_info, cluster_encryption_info,
-                                                 cluster_client_authentication, cluster_logging_meta,
-                                                 cluster_operations_meta, cluster_tag])
+cluster_metadata = CloudServiceMeta.set_layouts([ cluster_base,
+                                                  broker_info,
+                                                  cluster_encryption_info,
+                                                  cluster_client_authentication,
+                                                  cluster_logging_meta,
+                                                  cluster_operations,
+                                                  cluster_tag
+                                                 ])
 
 '''
 CONFIGURATION
@@ -174,7 +168,7 @@ configuration_revision = \
                                       TextDyField.data_source('Revision number', 'revision'),
                                       ListDyField.data_source('Server Properties', 'server_properties'),
                                       TextDyField.data_source('Description', 'description'),
-                                      TextDyField.data_source('Creation Time', 'creation_time'),
+                                      DateTimeDyField.data_source('Creation Time', 'creation_time'),
                                   ])
 
 configuration_metadata = CloudServiceMeta.set_layouts([configuration_base, configuration_revision])

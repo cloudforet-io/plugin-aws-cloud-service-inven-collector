@@ -399,7 +399,7 @@ class VPCConnector(SchematicAWSConnector):
             response = self.client.describe_subnets()
         elif len(self.vpc_ids) > 0:
             _filters = [{'Name': 'vpc-id', 'Values': self.vpc_ids}]
-            response = self.client.describe_subnets()
+            response = self.client.describe_subnets(Filters=_filters)
 
         for subnet in response.get('Subnets', []):
             subnet.update({

@@ -1,9 +1,6 @@
 import time
 import logging
 from typing import List
-import base64
-from pprint import pprint
-from datetime import date, datetime, timezone
 from spaceone.inventory.connector.aws_msk_connector.schema.data import Cluster, Configuration
 from spaceone.inventory.connector.aws_msk_connector.schema.resource import MSKResource, ClusterResource, ClusterResponse,\
                                                                             ConfigurationResource, ConfigurationResponse
@@ -18,7 +15,7 @@ PAGINATOR_PAGE_SIZE = 50
 
 
 class MSKConnector(SchematicAWSConnector):
-    service_name = 'msk'
+    service_name = 'kafka'
 
     def get_resources(self):
         print("** Managed Streaming for Apache Kafka Start **")
@@ -27,7 +24,7 @@ class MSKConnector(SchematicAWSConnector):
 
         collect_resources = [
             {
-                'request_method':self.request_cluster_data,
+                'request_method': self.request_cluster_data,
                 'resource': ClusterResource,
                 'response_schema': ClusterResponse
             },
@@ -53,7 +50,7 @@ class MSKConnector(SchematicAWSConnector):
     def request_cluster_data(self, region_name) -> List[Cluster]:
         paginator = self.client.get_paginator('list_clusters')
         response_iterator = paginator.paginate(
-            PagenationConfig={
+            PaginationConfig={
                 'MaxItems': 10000,
                 'PageSize': 50,
             }
@@ -62,6 +59,7 @@ class MSKConnector(SchematicAWSConnector):
         for data in response_iterator:
             for raw in data.get('ClusterInfoList', []):
                 raw.update({
+                    'tags': self.convert_tags(raw.get('Tags',{})),
                     'node_info_list': self.get_nodes(raw.get('ClusterArn')),
                     'cluster_operation_info': self.get_operation_cluster(raw.get('ClusterArn'))
                 })
@@ -71,16 +69,17 @@ class MSKConnector(SchematicAWSConnector):
 
     def request_configuration_data(self, region_name) -> List[Configuration]:
         paginator = self.client.get_paginator('list_configurations')
-        response_iterator = paginator.paginate({
-            'MaxItems': 10000,
-            'PageSize': 50,
-        })
+        response_iterator = paginator.paginate(
+            PaginationConfig={
+                'MaxItems': 10000,
+                'PageSize': 50
+            }
+        )
 
         for data in response_iterator:
             for raw in data.get('Configurations'):
                 raw.update({
-                    'revisions_configurations': self.get_revisions(raw.get('Arn')),
-                    'cluster_operation_info': self.get_operation_cluster(raw.get('Arn'))
+                    'revisions_configurations': self.get_revisions(raw.get('Arn'))
                 })
                 res = Configuration(raw, strict=False)
                 yield res
@@ -92,8 +91,7 @@ class MSKConnector(SchematicAWSConnector):
         return node_info
 
     def get_operation_cluster(self,arn):
-        # 이거 스키마에 맞춰서 가공해야함
-        operation_response = self.client.list_cluster_operations(arn)
+        operation_response = self.client.list_cluster_operations(ClusterArn=arn)
         operation_info = operation_response.get('ClusterOperationInfoList',[])
         return operation_info
 
@@ -117,23 +115,12 @@ class MSKConnector(SchematicAWSConnector):
         properties_list = decode_str.split('\n')
         return properties_list
 
+    @staticmethod
+    def convert_tags(tags):
+        return [{'key': tag, 'value': tags[tag]} for tag in tags]
 
 
-'''
-#### Chamgo ###
 
-s = "......."
-b = s.encode("UTF-8")
-e = base64.b64encode(b)
-
-decoded_str = e.decode("UTF-8")
-_decoded_str = decoded_str.split('\n')
-decoded_str = ClusterOperation_data.get('OperationType')
-ClusterOperation_data.update({
-    operation_type.
-})
-cluster_op = ClusterOperation(ClusterOperation_data, strict=False)
-'''
 
 
 
