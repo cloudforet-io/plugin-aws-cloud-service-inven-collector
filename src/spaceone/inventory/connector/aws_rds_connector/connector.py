@@ -6,7 +6,7 @@ from spaceone.inventory.connector.aws_rds_connector.schema.data import Database,
     ParameterGroup, Parameter, Cluster, Instance, OptionGroup
 from spaceone.inventory.connector.aws_rds_connector.schema.resource import DatabaseResource, DatabaseResponse, \
     SnapshotResource, SnapshotResponse, SubnetGroupResource, SubnetGroupResponse, \
-    ParameterGroupResource, ParameterGroupResponse, DBClusterResource, DBInstanceResource, OptionGroupResource, \
+    ParameterGroupResource, ParameterGroupResponse, OptionGroupResource, \
     OptionGroupResponse, InstanceResource, InstanceResponse
 from spaceone.inventory.connector.aws_rds_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector

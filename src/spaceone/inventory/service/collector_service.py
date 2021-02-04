@@ -25,7 +25,7 @@ class CollectorService(BaseService):
             'DynamoDBConnectorManager',
             'LambdaConnectorManager',
             'CloudFrontConnectorManager',
-            'RDSConnectorManager',
+            # 'RDSConnectorManager',
             'Route53ConnectorManager',
             'S3ConnectorManager',
             'AutoScalingConnectorManager',
@@ -50,7 +50,8 @@ class CollectorService(BaseService):
             'VPCConnectorManager',
             'EC2ConnectorManager',
             'ACMConnectorManager',
-            'KinesisDataStreamsConnectorManager'
+            'KinesisDataStreamsConnectorManager',
+            'MSKConnectorManager'
         ]
 
     @check_required(['options'])

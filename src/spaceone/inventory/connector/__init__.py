@@ -27,3 +27,4 @@ from spaceone.inventory.connector.aws_ec2_connector.connector import EC2Connecto
 from spaceone.inventory.connector.aws_iam_connector.connector import IAMConnector
 from spaceone.inventory.connector.aws_acm_connector.connector import ACMConnector
 from spaceone.inventory.connector.aws_kinesis_data_streams_connector.connector import KinesisDataStreamsConnector
+from spaceone.inventory.connector.aws_msk_connector.connector import MSKConnector
