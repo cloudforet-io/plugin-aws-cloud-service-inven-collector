@@ -7,7 +7,7 @@ from spaceone.inventory.libs.schema.dynamic_field import TextDyField, ListDyFiel
     DateTimeDyField, SizeField
 from spaceone.inventory.libs.schema.dynamic_layout import ItemDynamicLayout, TableDynamicLayout, SimpleTableDynamicLayout
 
-summary = ItemDynamicLayout.set_fields('Summary', fields=[
+cluster_summary = ItemDynamicLayout.set_fields('Summary', fields=[
     TextDyField.data_source('DB Identifier', 'data.db_identifier'),
     TextDyField.data_source('Role', 'data.role'),
     EnumDyField.data_source('Status', 'data.status', default_state={
@@ -21,90 +21,104 @@ summary = ItemDynamicLayout.set_fields('Summary', fields=[
     TextDyField.data_source('Region & AZ', 'data.availability_zone'),
 ])
 
+instance_summary = ItemDynamicLayout.set_fields('Summary', fields=[
+    TextDyField.data_source('DB Identifier', 'data.db_instance_identifier'),
+    TextDyField.data_source('Engine', 'data.engine'),
+    EnumDyField.data_source('Status', 'data.db_instance_status', default_state={
+        'safe': ['available'],
+        'warning': ['creating', 'deleting', 'maintenance', 'modifying', 'rebooting',
+                    'renaming', 'starting', 'stopping', 'upgrading'],
+        'alert': ['failed', 'inaccessible-encryption-credentials', 'restore-error', 'stopped', 'storage-full']
+    }),
+    TextDyField.data_source('Instance Class', 'data.db_instance_class'),
+    TextDyField.data_source('VPC ID', 'data.db_subnet_group.vpc_id'),
+    TextDyField.data_source('Availability Zone', 'data.availability_zone'),
+    TextDyField.data_source('Multi-AZ', 'data.multi_az'),
+])
+
 instance_conn = ItemDynamicLayout.set_fields('Connectivity', fields=[
-    TextDyField.data_source('Endpoint', 'data.instance.endpoint.address'),
-    TextDyField.data_source('Port', 'data.instance.endpoint.port'),
-    TextDyField.data_source('Availability Zone', 'data.instance.availability_zone'),
-    TextDyField.data_source('VPC', 'data.instance.db_subnet_group.vpc_id'),
-    TextDyField.data_source('Subnet Group', 'data.instance.db_subnet_group.db_subnet_group_name'),
-    ListDyField.data_source('Subnets', 'data.instance.db_subnet_group.subnets', default_badge={
-        'type': 'outline',
+    TextDyField.data_source('Endpoint', 'data.endpoint.address'),
+    TextDyField.data_source('Port', 'data.endpoint.port'),
+    TextDyField.data_source('Availability Zone', 'data.availability_zone'),
+    TextDyField.data_source('VPC', 'data.db_subnet_group.vpc_id'),
+    TextDyField.data_source('Subnet Group', 'data.db_subnet_group.db_subnet_group_name'),
+    ListDyField.data_source('Subnets', 'data.db_subnet_group.subnets', options={
         'sub_key': 'subnet_identifier',
         'delimiter': '<br>'
     }),
 ])
 
 instance_sec = ItemDynamicLayout.set_fields('Security', fields=[
-    ListDyField.data_source('VPC Security Groups', 'data.instance.vpc_security_groups', default_badge={
-        'type': 'outline',
+    ListDyField.data_source('VPC Security Groups', 'data.vpc_security_groups', options={
         'sub_key': 'vpc_security_group_id',
+        'delimiter': '<br>'
     }),
-    EnumDyField.data_source('Public Accessibility', 'data.instance.publicly_accessible', default_badge={
+    EnumDyField.data_source('Public Accessibility', 'data.publicly_accessible', default_badge={
         'indigo.500': ['true'], 'coral.600': ['false']
     }),
-    TextDyField.data_source('Certificate Authority', 'data.instance.ca_certificate_identifier')
+    TextDyField.data_source('Certificate Authority', 'data.ca_certificate_identifier')
 ])
 
 instance_conf = ItemDynamicLayout.set_fields('Configuraiton', fields=[
-    TextDyField.data_source('DB Instance ID', 'data.instance.db_instance_identifier'),
-    TextDyField.data_source('Engine Version', 'data.instance.engine_version'),
-    TextDyField.data_source('License Model', 'data.instance.license_model'),
-    ListDyField.data_source('Option Groups', 'data.instance.option_group_memberships', default_badge={
-        'type': 'outline',
+    TextDyField.data_source('DB Instance ID', 'data.db_instance_identifier'),
+    TextDyField.data_source('Engine Version', 'data.engine_version'),
+    TextDyField.data_source('License Model', 'data.license_model'),
+    ListDyField.data_source('Option Groups', 'data.option_group_memberships', options={
         'sub_key': 'option_group_name',
+        'delimiter': '<br>'
     }),
-    TextDyField.data_source('ARN', 'data.instance.db_instance_arn'),
-    TextDyField.data_source('Resource ID', 'data.instance.dbi_resource_id'),
-    ListDyField.data_source('Parameter Group', 'data.instance.db_parameter_groups', default_badge={
-        'type': 'outline',
+    TextDyField.data_source('ARN', 'data.db_instance_arn'),
+    TextDyField.data_source('Resource ID', 'data.dbi_resource_id'),
+    ListDyField.data_source('Parameter Group', 'data.db_parameter_groups', options={
         'sub_key': 'db_parameter_group_name',
+        'delimiter': '<br>'
     }),
-    EnumDyField.data_source('Deletion Protection', 'data.instance.deletion_protection', default_badge={
+    EnumDyField.data_source('Deletion Protection', 'data.deletion_protection', default_badge={
         'indigo.500': ['true'], 'coral.600': ['false']
     }),
-    TextDyField.data_source('Instance Class', 'data.instance.db_instance_class'),
-    EnumDyField.data_source('IAM DB Authentication', 'data.instance.iam_database_authentication_enabled', default_badge={
+    TextDyField.data_source('Instance Class', 'data.db_instance_class'),
+    EnumDyField.data_source('IAM DB Authentication', 'data.iam_database_authentication_enabled', default_badge={
         'indigo.500': ['true'], 'coral.600': ['false']
     }),
-    TextDyField.data_source('Master username', 'data.instance.master_username'),
-    EnumDyField.data_source('Multi AZ', 'data.instance.multi_az', default_badge={
+    TextDyField.data_source('Master username', 'data.master_username'),
+    EnumDyField.data_source('Multi AZ', 'data.multi_az', default_badge={
         'indigo.500': ['true'], 'coral.600': ['false']
     }),
-    EnumDyField.data_source('Performance Insights enabled', 'data.instance.performance_insights_enabled', default_badge={
+    EnumDyField.data_source('Performance Insights enabled', 'data.performance_insights_enabled', default_badge={
         'indigo.500': ['true'], 'coral.600': ['false']
     }),
-    DateTimeDyField.data_source('Created Time', 'data.instance.instance_create_time'),
+    DateTimeDyField.data_source('Created Time', 'data.instance_create_time'),
 ])
 
 instance_storage = ItemDynamicLayout.set_fields('Storage', fields=[
-    EnumDyField.data_source('Storage Encryption', 'data.instance.storage_encrypted', default_badge={
+    EnumDyField.data_source('Storage Encryption', 'data.storage_encrypted', default_badge={
         'indigo.500': ['true'], 'coral.600': ['false']
     }),
-    EnumDyField.data_source('Storage Type', 'data.instance.storage_type',
+    EnumDyField.data_source('Storage Type', 'data.storage_type',
                             default_outline_badge=['standard', 'io1', 'gp2', 'gp3', 'st1', 'sc1']),
-    TextDyField.data_source('IOPS', 'data.instance.iops'),
-    TextDyField.data_source('Storage (GB)', 'data.instance.allocated_storage'),
-    TextDyField.data_source('Maximum Storage Threshold (GB)', 'data.instance.max_allocated_storage'),
+    TextDyField.data_source('IOPS', 'data.iops'),
+    TextDyField.data_source('Storage (GB)', 'data.allocated_storage'),
+    TextDyField.data_source('Maximum Storage Threshold (GB)', 'data.max_allocated_storage'),
 ])
 
 instance_maintenance = ItemDynamicLayout.set_fields('Maintenance', fields=[
-    EnumDyField.data_source('Auto Minor Version Upgrade', 'data.instance.auto_minor_version_upgrade', default_badge={
+    EnumDyField.data_source('Auto Minor Version Upgrade', 'data.auto_minor_version_upgrade', default_badge={
         'indigo.500': ['true'], 'coral.600': ['false']
     }),
-    TextDyField.data_source('Maintenance Window', 'data.instance.preferred_maintenance_window'),
+    TextDyField.data_source('Maintenance Window', 'data.preferred_maintenance_window'),
 ])
 
 instance_backup = ItemDynamicLayout.set_fields('Backup', fields=[
-    TextDyField.data_source('Automated Backup (Period Day)', 'data.instance.backup_retention_period'),
-    EnumDyField.data_source('Copy tags to snapshots', 'data.instance.copy_tags_to_snapshot', default_badge={
+    TextDyField.data_source('Automated Backup (Period Day)', 'data.backup_retention_period'),
+    EnumDyField.data_source('Copy tags to snapshots', 'data.copy_tags_to_snapshot', default_badge={
         'indigo.500': ['true'], 'coral.600': ['false']
     }),
-    DateTimeDyField.data_source('Latest Restore Time', 'data.instance.latest_restorable_time'),
-    TextDyField.data_source('Backup Window', 'data.instance.preferred_backup_window'),
+    DateTimeDyField.data_source('Latest Restore Time', 'data.latest_restorable_time'),
+    TextDyField.data_source('Backup Window', 'data.preferred_backup_window'),
 ])
 
 instance_tags = SimpleTableDynamicLayout.set_tags()
-instance_metadata = CloudServiceMeta.set_layouts(layouts=[summary, instance_conn, instance_sec, instance_conf,
+instance_metadata = CloudServiceMeta.set_layouts(layouts=[instance_summary, instance_conn, instance_sec, instance_conf,
                                                           instance_storage, instance_maintenance, instance_backup,
                                                           instance_tags])
 
@@ -154,8 +168,8 @@ cluster_backup = ItemDynamicLayout.set_fields('Backup', fields=[
 ])
 
 cluster_tags = SimpleTableDynamicLayout.set_tags()
-cluster_metadata = CloudServiceMeta.set_layouts(layouts=[summary, cluster_endpoint, cluster_conf, cluster_maintenance,
-                                                         cluster_backup, cluster_tags])
+db_metadata = CloudServiceMeta.set_layouts(layouts=[cluster_summary, cluster_endpoint, cluster_conf, cluster_maintenance,
+                                                    cluster_backup, cluster_tags])
 
 
 snapshot = ItemDynamicLayout.set_fields('Snapshot', fields=[
@@ -277,14 +291,17 @@ class RDSResource(CloudServiceResource):
 class DatabaseResource(RDSResource):
     cloud_service_type = StringType(default='Database')
     data = ModelType(Database)
+    _metadata = ModelType(CloudServiceMeta, default=db_metadata, serialized_name='metadata')
 
 
-class DBClusterResource(DatabaseResource):
-    _metadata = ModelType(CloudServiceMeta, default=cluster_metadata, serialized_name='metadata')
-
-
-class DBInstanceResource(DatabaseResource):
-    _metadata = ModelType(CloudServiceMeta, default=instance_metadata, serialized_name='metadata')
+# class DBClusterResource(DatabaseResource):
+#     _metadata = ModelType(CloudServiceMeta, default=cluster_metadata, serialized_name='metadata')
+#
+#
+# class DBInstanceResource(DatabaseResource):
+#     cloud_service_type = StringType(default='Instance')
+#     data = ModelType(Instance)
+#     _metadata = ModelType(CloudServiceMeta, default=instance_metadata, serialized_name='metadata')
 
 
 class InstanceResource(RDSResource):
@@ -294,7 +311,7 @@ class InstanceResource(RDSResource):
 
 
 class DatabaseResponse(CloudServiceResponse):
-    resource = PolyModelType([DBInstanceResource, DBClusterResource])
+    resource = ModelType(DatabaseResource)
 
 
 class InstanceResponse(CloudServiceResponse):
