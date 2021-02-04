@@ -14,7 +14,7 @@ from spaceone.inventory.libs.schema.resource import ReferenceModel, CloudWatchMo
 
 
 _LOGGER = logging.getLogger(__name__)
-RDS_FILTER = ['aurora', 'aurora-mysql', 'mysql', 'mariadb', 'postgres',
+RDS_FILTER = ['aurora', 'aurora-mysql', 'aurora-postgresql', 'mysql', 'mariadb', 'postgres',
               'oracle-ee', 'oracle-se', 'oracle-se1', 'oracle-se2',
               'sqlserver-ex', 'sqlserver-web', 'sqlserver-se', 'sqlserver-ee']
 
@@ -263,5 +263,3 @@ class RDSConnector(SchematicAWSConnector):
             return azs[0][:-1]
 
         return None
-
-
