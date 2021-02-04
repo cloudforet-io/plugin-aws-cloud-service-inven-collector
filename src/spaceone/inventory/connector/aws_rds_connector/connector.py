@@ -5,9 +5,9 @@ from typing import List
 from spaceone.inventory.connector.aws_rds_connector.schema.data import Database, Snapshot, SubnetGroup, \
     ParameterGroup, Parameter, Cluster, Instance, OptionGroup
 from spaceone.inventory.connector.aws_rds_connector.schema.resource import DatabaseResource, DatabaseResponse, \
-    SnapshotResource, SnapshotResponse, SubnetGroupResource, SubnetGroupResponse, \
-    ParameterGroupResource, ParameterGroupResponse, OptionGroupResource, \
-    OptionGroupResponse, InstanceResource, InstanceResponse
+    SnapshotResource, SnapshotResponse, SubnetGroupResource, SubnetGroupResponse, ParameterGroupResource, \
+    ParameterGroupResponse, OptionGroupResource, OptionGroupResponse, InstanceResource, InstanceResponse, \
+    DBClusterResource, DBInstanceResource
 from spaceone.inventory.connector.aws_rds_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
 from spaceone.inventory.libs.schema.resource import ReferenceModel, CloudWatchModel
