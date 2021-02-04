@@ -7,9 +7,11 @@ from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, Cl
 cst_cluster = CloudServiceTypeResource()
 cst_cluster.name = 'Cluster'
 cst_cluster.provider = 'aws'
-cst_cluster.group = 'msk'
+cst_cluster.group = 'MSK'
 cst_cluster.labels = ['Analytics']
 cst_cluster.service_code = 'AmazonMSK'
+cst_cluster.is_primary = True
+cst_cluster.is_major = True
 cst_cluster.tags = {
     'spaceone:icon': 'https://assets-console-spaceone-stg.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon_MSK.svg',
 }
@@ -39,9 +41,9 @@ cst_cluster._metadata = CloudServiceTypeMeta.set_meta(
 
 # CONFIGURATION
 cst_config = CloudServiceTypeResource()
-cst_config.name = 'Configuration'
+cst_config.name = 'ClusterConfiguration'
 cst_config.provider = 'aws'
-cst_config.group = 'msk'
+cst_config.group = 'MSK'
 cst_config.labels = ['Analytics']
 cst_config.service_code = 'AmazonMSK'
 cst_config.tags = {

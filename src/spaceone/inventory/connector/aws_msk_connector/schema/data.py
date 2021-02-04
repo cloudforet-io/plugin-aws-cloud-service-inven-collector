@@ -221,7 +221,7 @@ class ClusterOperation(Model):
 
 
 class Cluster(Model):
-    active_operation_arn = StringType(deserialize_from="ActiveOperationArn")
+    active_operation_arn = StringType(deserialize_from="ActiveOperationArn", serialize_when_none=False)
     broker_node_group_info = ModelType(BrokerNodeGroupInfo, deserialize_from="BrokerNodeGroupInfo")
     client_authentication = ModelType(ClientAuthentication, deserialize_from="ClientAuthentication")
     cluster_arn = StringType(deserialize_from='ClusterArn')

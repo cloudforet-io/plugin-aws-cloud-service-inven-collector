@@ -59,7 +59,7 @@ class MSKConnector(SchematicAWSConnector):
         for data in response_iterator:
             for raw in data.get('ClusterInfoList', []):
                 raw.update({
-                    'tags': self.convert_tags(raw.get('Tags',{})),
+                    'tags': self.convert_tags(raw.get('Tags', {})),
                     'node_info_list': self.get_nodes(raw.get('ClusterArn')),
                     'cluster_operation_info': self.get_operation_cluster(raw.get('ClusterArn'))
                 })
@@ -84,20 +84,19 @@ class MSKConnector(SchematicAWSConnector):
                 res = Configuration(raw, strict=False)
                 yield res
 
-
-    def get_nodes(self,arn):
+    def get_nodes(self, arn):
         node_response = self.client.list_nodes(ClusterArn=arn)
         node_info = node_response.get('NodeInfoList', [])
         return node_info
 
-    def get_operation_cluster(self,arn):
+    def get_operation_cluster(self, arn):
         operation_response = self.client.list_cluster_operations(ClusterArn=arn)
-        operation_info = operation_response.get('ClusterOperationInfoList',[])
+        operation_info = operation_response.get('ClusterOperationInfoList', [])
         return operation_info
 
     def get_revisions(self, arn):
         revisions_response = self.client.list_configuration_revisions(Arn=arn)
-        revisions_iter = revisions_response.get('Revisions')
+        revisions_iter = revisions_response.get('Revisions', [])
         revision = []
 
         for data in revisions_iter:

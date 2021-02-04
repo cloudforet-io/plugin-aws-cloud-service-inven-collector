@@ -10,15 +10,20 @@ from spaceone.inventory.libs.schema.resource import CloudServiceResource, CloudS
 '''
 CLUSTERS
 '''
-# Base
-cluster_base = ItemDynamicLayout.set_fields('Base', fields=[
+# Cluster
+cluster_base = ItemDynamicLayout.set_fields('Cluster', fields=[
     TextDyField.data_source('ARN', 'data.cluster_arn'),
     TextDyField.data_source('Name', 'data.cluster_name'),
-    DateTimeDyField.data_source('Created Time', 'data.creation_time'),
+    EnumDyField.data_source('Status', 'data.status', default_state={
+                'safe': ['ACTIVE'],
+                'warning': ['CREATING', 'DELETING', 'HEALING', 'MAINTENANCE', 'REBOOTING_BROKER'],
+                'alert': ['FAILED']
+            }),
     TextDyField.data_source('Current Version', 'data.current_version'),
     TextDyField.data_source('Enhanced Monitoring', 'data.enhanced_monitoring'),
     TextDyField.data_source('Number of Broker Nodes', 'data.number_of_broker_nodes'),
     TextDyField.data_source('Zookeeper Connect String', 'data.zookeeper_connect_string'),
+    DateTimeDyField.data_source('Created Time', 'data.creation_time'),
 ])
 
 # Broker  Summary Info
@@ -71,7 +76,7 @@ cluster_encryption_info = ItemDynamicLayout.set_fields('Encryption Info', root_p
 cluster_client_authentication = \
     ItemDynamicLayout.set_fields('Client Authentication',
                                  root_path='data.client_authentication', fields=[
-            EnumDyField.data_source('Sasl scram', 'sasl.scram',
+            EnumDyField.data_source('SASL scram', 'sasl.scram',
                                     default_badge={
                                         'indigo.500': ['true'],
                                         'coral.600': ['false'],
@@ -180,7 +185,7 @@ class MSKResource(CloudServiceResource):
 
 # Cluster
 class ClusterResource(MSKResource):
-    class_service_type = StringType(default='Clusters')
+    cloud_service_type = StringType(default='Cluster')
     data = ModelType(Cluster)
     _metadata = ModelType(CloudServiceMeta, default=cluster_metadata, serialized_name='metadata')
 
@@ -191,7 +196,7 @@ class ClusterResponse(CloudServiceResponse):
 
 # Cluster Configuration
 class ConfigurationResource(MSKResource):
-    class_service_type = StringType(default='Cluster Configurations')
+    cloud_service_type = StringType(default='ClusterConfiguration')
     data = ModelType(Configuration)
     _metadata = ModelType(CloudServiceMeta, default=configuration_metadata, serialized_name='metadata')
 
