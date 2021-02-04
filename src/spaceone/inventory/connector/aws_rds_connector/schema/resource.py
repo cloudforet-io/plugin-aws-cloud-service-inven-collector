@@ -156,14 +156,14 @@ cluster_instance_storage = ItemDynamicLayout.set_fields('Storage', fields=[
     TextDyField.data_source('Maximum Storage Threshold (GB)', 'data.instance.max_allocated_storage'),
 ])
 
-cluster_instance_storage = ItemDynamicLayout.set_fields('Maintenance', fields=[
+cluster_instance_maintenance = ItemDynamicLayout.set_fields('Maintenance', fields=[
     EnumDyField.data_source('Auto Minor Version Upgrade', 'data.instance.auto_minor_version_upgrade', default_badge={
         'indigo.500': ['true'], 'coral.600': ['false']
     }),
     TextDyField.data_source('Maintenance Window', 'data.instance.preferred_maintenance_window'),
 ])
 
-cluster_instance_storage = ItemDynamicLayout.set_fields('Backup', fields=[
+cluster_instance_backup = ItemDynamicLayout.set_fields('Backup', fields=[
     TextDyField.data_source('Automated Backup (Period Day)', 'data.instance.backup_retention_period'),
     EnumDyField.data_source('Copy tags to snapshots', 'data.instance.copy_tags_to_snapshot', default_badge={
         'indigo.500': ['true'], 'coral.600': ['false']
@@ -172,11 +172,11 @@ cluster_instance_storage = ItemDynamicLayout.set_fields('Backup', fields=[
     TextDyField.data_source('Backup Window', 'data.instance.preferred_backup_window'),
 ])
 
-cluster_instance_storage = SimpleTableDynamicLayout.set_tags()
+cluster_instance_tag = SimpleTableDynamicLayout.set_tags()
 cluster_instance_metadata = \
-    CloudServiceMeta.set_layouts(layouts=[cluster_instance_summary, cluster_instance_summary, cluster_instance_summary,
-                                          cluster_instance_summary, cluster_instance_summary, cluster_instance_summary,
-                                          cluster_instance_summary, cluster_instance_summary])
+    CloudServiceMeta.set_layouts(layouts=[cluster_instance_summary, cluster_instance_conn, cluster_instance_sec,
+                                          cluster_instance_conf, cluster_instance_storage, cluster_instance_maintenance,
+                                          cluster_instance_backup, cluster_instance_tag])
 
 '''
 Instance
