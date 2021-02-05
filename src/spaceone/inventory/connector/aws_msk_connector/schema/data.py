@@ -203,7 +203,7 @@ class DescribeConfigurationRevision(Model):
     creation_time = DateTimeType(deserialize_from='CreationTime')
     description = StringType(deserialize_from='Description')
     revision = IntType(deserialize_from='Revision')
-    server_properties = ListType(StringType(deserialize_from='ServerProperties'))
+    server_properties = ListType(StringType())
 
 
 class ErrorInfo(Model):
