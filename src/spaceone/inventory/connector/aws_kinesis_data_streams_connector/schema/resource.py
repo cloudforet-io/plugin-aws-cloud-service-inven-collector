@@ -89,11 +89,11 @@ kds_meta = CloudServiceMeta.set_layouts(
 
 
 class KDSResource(CloudServiceResource):  # service type - group
-    cloud_service_group = StringType(default="KinesisDataStreams")
+    cloud_service_group = StringType(default="KinesisDataStream")
 
 
 class StreamResource(KDSResource):  # service type - name
-    cloud_service_type = StringType(default="DataStreams")
+    cloud_service_type = StringType(default="DataStream")
     data = ModelType(StreamDescription)
     _metadata = ModelType(
         CloudServiceMeta, default=kds_meta, serialized_name="metadata"
