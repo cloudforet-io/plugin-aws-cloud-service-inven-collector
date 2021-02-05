@@ -7,6 +7,9 @@ from spaceone.inventory.libs.schema.dynamic_field import TextDyField, ListDyFiel
     DateTimeDyField, SizeField
 from spaceone.inventory.libs.schema.dynamic_layout import ItemDynamicLayout, TableDynamicLayout, SimpleTableDynamicLayout
 
+'''
+Database (Role: Cluster)
+'''
 cluster_summary = ItemDynamicLayout.set_fields('Summary', fields=[
     TextDyField.data_source('DB Identifier', 'data.db_identifier'),
     TextDyField.data_source('Role', 'data.role'),
@@ -21,6 +24,163 @@ cluster_summary = ItemDynamicLayout.set_fields('Summary', fields=[
     TextDyField.data_source('Region & AZ', 'data.availability_zone'),
 ])
 
+cluster_endpoint = ItemDynamicLayout.set_fields('Endpoints', fields=[
+    TextDyField.data_source('Endpoint', 'data.cluster.endpoint'),
+    TextDyField.data_source('Port', 'data.cluster.port'),
+    TextDyField.data_source('Reader Endpoint', 'data.cluster.reader_endpoint'),
+])
+
+cluster_conf = ItemDynamicLayout.set_fields('Configuration', fields=[
+    TextDyField.data_source('DB Cluster ID', 'data.cluster.db_cluster_identifier'),
+    TextDyField.data_source('ARN', 'data.cluster.db_cluster_arn'),
+    BadgeDyField.data_source('DB Cluster Role', 'data.cluster.db_cluster_role'),
+    TextDyField.data_source('Engine Version', 'data.cluster.engine_version'),
+    TextDyField.data_source('Resource ID', 'data.cluster.db_cluster_resource_id'),
+    BadgeDyField.data_source('Engine Mode', 'data.cluster.engine_mode'),
+    TextDyField.data_source('DB Cluster Parameter Group', 'data.cluster.db_cluster_parameter_group'),
+    EnumDyField.data_source('Deletion Protection', 'data.cluster.deletion_protection', default_badge={
+        'indigo.500': ['true'], 'coral.600': ['false']
+    }),
+    EnumDyField.data_source('IAM DB Authentication', 'data.cluster.iam_database_authentication_enabled', default_badge={
+        'indigo.500': ['true'], 'coral.600': ['false']
+    }),
+    TextDyField.data_source('Master username', 'data.cluster.master_username'),
+    EnumDyField.data_source('Multi AZ', 'data.cluster.multi_az', default_badge={
+        'indigo.500': ['true'], 'coral.600': ['false']
+    }),
+    EnumDyField.data_source('Encrypted', 'data.cluster.encrypted', default_badge={
+        'indigo.500': ['true'], 'coral.600': ['false']
+    }),
+    TextDyField.data_source('KSM Key', 'data.cluster.kms_key_id'),
+    DateTimeDyField.data_source('Created Time', 'data.cluster_create_time')
+])
+
+cluster_maintenance = ItemDynamicLayout.set_fields('Maintenance', fields=[
+    TextDyField.data_source('Maintenance Window', 'data.cluster.preferred_maintenance_window'),
+])
+
+cluster_backup = ItemDynamicLayout.set_fields('Backup', fields=[
+    TextDyField.data_source('Automated Backup (Period Day)', 'data.cluster.backup_retention_period'),
+    EnumDyField.data_source('Copy tags to snapshots', 'data.cluster.copy_tags_to_snapshot', default_badge={
+        'indigo.500': ['true'], 'coral.600': ['false']
+    }),
+    DateTimeDyField.data_source('Earliest Restorable Time', 'data.cluster.earliest_restorable_time'),
+    DateTimeDyField.data_source('Latest Restore Time', 'data.cluster.latest_restorable_time'),
+    TextDyField.data_source('Backup Window', 'data.cluster.preferred_backup_window'),
+])
+
+cluster_tags = SimpleTableDynamicLayout.set_tags()
+db_cluster_metadata = CloudServiceMeta.set_layouts(layouts=[cluster_summary, cluster_endpoint, cluster_conf,
+                                                            cluster_maintenance, cluster_backup, cluster_tags])
+
+'''
+Database (Role: Instance)
+'''
+cluster_instance_summary = ItemDynamicLayout.set_fields('Summary', fields=[
+    TextDyField.data_source('DB Identifier', 'data.instance.db_instance_identifier'),
+    TextDyField.data_source('Engine', 'data.instance.engine'),
+    EnumDyField.data_source('Status', 'data.instance.db_instance_status', default_state={
+        'safe': ['available'],
+        'warning': ['creating', 'deleting', 'maintenance', 'modifying', 'rebooting',
+                    'renaming', 'starting', 'stopping', 'upgrading'],
+        'alert': ['failed', 'inaccessible-encryption-credentials', 'restore-error', 'stopped', 'storage-full']
+    }),
+    TextDyField.data_source('Instance Class', 'data.instance.db_instance_class'),
+    TextDyField.data_source('VPC ID', 'data.instance.db_subnet_group.vpc_id'),
+    TextDyField.data_source('Availability Zone', 'data.instance.availability_zone'),
+    TextDyField.data_source('Multi-AZ', 'data.instance.multi_az'),
+])
+
+cluster_instance_conn = ItemDynamicLayout.set_fields('Connectivity', fields=[
+    TextDyField.data_source('Endpoint', 'data.instance.endpoint.address'),
+    TextDyField.data_source('Port', 'data.instance.endpoint.port'),
+    TextDyField.data_source('Availability Zone', 'data.instance.availability_zone'),
+    TextDyField.data_source('VPC', 'data.instance.db_subnet_group.vpc_id'),
+    TextDyField.data_source('Subnet Group', 'data.instance.db_subnet_group.db_subnet_group_name'),
+    ListDyField.data_source('Subnets', 'data.instance.db_subnet_group.subnets', options={
+        'sub_key': 'subnet_identifier',
+        'delimiter': '<br>'
+    }),
+])
+
+cluster_instance_sec = ItemDynamicLayout.set_fields('Security', fields=[
+    ListDyField.data_source('VPC Security Groups', 'data.instance.vpc_security_groups', options={
+        'sub_key': 'vpc_security_group_id',
+        'delimiter': '<br>'
+    }),
+    EnumDyField.data_source('Public Accessibility', 'data.instance.publicly_accessible', default_badge={
+        'indigo.500': ['true'], 'coral.600': ['false']
+    }),
+    TextDyField.data_source('Certificate Authority', 'data.instance.ca_certificate_identifier')
+])
+
+cluster_instance_conf = ItemDynamicLayout.set_fields('Configuraiton', fields=[
+    TextDyField.data_source('DB Instance ID', 'data.instance.db_instance_identifier'),
+    TextDyField.data_source('Engine Version', 'data.instance.engine_version'),
+    TextDyField.data_source('License Model', 'data.instance.license_model'),
+    ListDyField.data_source('Option Groups', 'data.instance.option_group_memberships', options={
+        'sub_key': 'option_group_name',
+        'delimiter': '<br>'
+    }),
+    TextDyField.data_source('ARN', 'data.instance.db_instance_arn'),
+    TextDyField.data_source('Resource ID', 'data.instance.dbi_resource_id'),
+    ListDyField.data_source('Parameter Group', 'data.instance.db_parameter_groups', options={
+        'sub_key': 'db_parameter_group_name',
+        'delimiter': '<br>'
+    }),
+    EnumDyField.data_source('Deletion Protection', 'data.instance.deletion_protection', default_badge={
+        'indigo.500': ['true'], 'coral.600': ['false']
+    }),
+    TextDyField.data_source('Instance Class', 'data.instance.db_instance_class'),
+    EnumDyField.data_source('IAM DB Authentication', 'data.instance.iam_database_authentication_enabled', default_badge={
+        'indigo.500': ['true'], 'coral.600': ['false']
+    }),
+    TextDyField.data_source('Master username', 'data.instance.master_username'),
+    EnumDyField.data_source('Multi AZ', 'data.instance.multi_az', default_badge={
+        'indigo.500': ['true'], 'coral.600': ['false']
+    }),
+    EnumDyField.data_source('Performance Insights enabled', 'data.instance.performance_insights_enabled', default_badge={
+        'indigo.500': ['true'], 'coral.600': ['false']
+    }),
+    DateTimeDyField.data_source('Created Time', 'data.instance.instance_create_time'),
+])
+
+cluster_instance_storage = ItemDynamicLayout.set_fields('Storage', fields=[
+    EnumDyField.data_source('Storage Encryption', 'data.instance.storage_encrypted', default_badge={
+        'indigo.500': ['true'], 'coral.600': ['false']
+    }),
+    EnumDyField.data_source('Storage Type', 'data.instance.storage_type',
+                            default_outline_badge=['standard', 'io1', 'gp2', 'gp3', 'st1', 'sc1']),
+    TextDyField.data_source('IOPS', 'data.iops'),
+    TextDyField.data_source('Storage (GB)', 'data.instance.allocated_storage'),
+    TextDyField.data_source('Maximum Storage Threshold (GB)', 'data.instance.max_allocated_storage'),
+])
+
+cluster_instance_maintenance = ItemDynamicLayout.set_fields('Maintenance', fields=[
+    EnumDyField.data_source('Auto Minor Version Upgrade', 'data.instance.auto_minor_version_upgrade', default_badge={
+        'indigo.500': ['true'], 'coral.600': ['false']
+    }),
+    TextDyField.data_source('Maintenance Window', 'data.instance.preferred_maintenance_window'),
+])
+
+cluster_instance_backup = ItemDynamicLayout.set_fields('Backup', fields=[
+    TextDyField.data_source('Automated Backup (Period Day)', 'data.instance.backup_retention_period'),
+    EnumDyField.data_source('Copy tags to snapshots', 'data.instance.copy_tags_to_snapshot', default_badge={
+        'indigo.500': ['true'], 'coral.600': ['false']
+    }),
+    DateTimeDyField.data_source('Latest Restore Time', 'data.instance.latest_restorable_time'),
+    TextDyField.data_source('Backup Window', 'data.instance.preferred_backup_window'),
+])
+
+cluster_instance_tag = SimpleTableDynamicLayout.set_tags()
+cluster_instance_metadata = \
+    CloudServiceMeta.set_layouts(layouts=[cluster_instance_summary, cluster_instance_conn, cluster_instance_sec,
+                                          cluster_instance_conf, cluster_instance_storage, cluster_instance_maintenance,
+                                          cluster_instance_backup, cluster_instance_tag])
+
+'''
+Instance
+'''
 instance_summary = ItemDynamicLayout.set_fields('Summary', fields=[
     TextDyField.data_source('DB Identifier', 'data.db_instance_identifier'),
     TextDyField.data_source('Engine', 'data.engine'),
@@ -122,56 +282,10 @@ instance_metadata = CloudServiceMeta.set_layouts(layouts=[instance_summary, inst
                                                           instance_storage, instance_maintenance, instance_backup,
                                                           instance_tags])
 
-cluster_endpoint = ItemDynamicLayout.set_fields('Endpoints', fields=[
-    TextDyField.data_source('Endpoint', 'data.cluster.endpoint'),
-    TextDyField.data_source('Port', 'data.cluster.port'),
-    TextDyField.data_source('Reader Endpoint', 'data.cluster.reader_endpoint'),
-])
 
-cluster_conf = ItemDynamicLayout.set_fields('Configuration', fields=[
-    TextDyField.data_source('DB Cluster ID', 'data.cluster.db_cluster_identifier'),
-    TextDyField.data_source('ARN', 'data.cluster.db_cluster_arn'),
-    BadgeDyField.data_source('DB Cluster Role', 'data.cluster.db_cluster_role'),
-    TextDyField.data_source('Engine Version', 'data.cluster.engine_version'),
-    TextDyField.data_source('Resource ID', 'data.cluster.db_cluster_resource_id'),
-    BadgeDyField.data_source('Engine Mode', 'data.cluster.engine_mode'),
-    TextDyField.data_source('DB Cluster Parameter Group', 'data.cluster.db_cluster_parameter_group'),
-    EnumDyField.data_source('Deletion Protection', 'data.cluster.deletion_protection', default_badge={
-        'indigo.500': ['true'], 'coral.600': ['false']
-    }),
-    EnumDyField.data_source('IAM DB Authentication', 'data.cluster.iam_database_authentication_enabled', default_badge={
-        'indigo.500': ['true'], 'coral.600': ['false']
-    }),
-    TextDyField.data_source('Master username', 'data.cluster.master_username'),
-    EnumDyField.data_source('Multi AZ', 'data.cluster.multi_az', default_badge={
-        'indigo.500': ['true'], 'coral.600': ['false']
-    }),
-    EnumDyField.data_source('Encrypted', 'data.cluster.encrypted', default_badge={
-        'indigo.500': ['true'], 'coral.600': ['false']
-    }),
-    TextDyField.data_source('KSM Key', 'data.cluster.kms_key_id'),
-    DateTimeDyField.data_source('Created Time', 'data.cluster_create_time')
-])
-
-cluster_maintenance = ItemDynamicLayout.set_fields('Maintenance', fields=[
-    TextDyField.data_source('Maintenance Window', 'data.cluster.preferred_maintenance_window'),
-])
-
-cluster_backup = ItemDynamicLayout.set_fields('Backup', fields=[
-    TextDyField.data_source('Automated Backup (Period Day)', 'data.cluster.backup_retention_period'),
-    EnumDyField.data_source('Copy tags to snapshots', 'data.cluster.copy_tags_to_snapshot', default_badge={
-        'indigo.500': ['true'], 'coral.600': ['false']
-    }),
-    DateTimeDyField.data_source('Earliest Restorable Time', 'data.cluster.earliest_restorable_time'),
-    DateTimeDyField.data_source('Latest Restore Time', 'data.cluster.latest_restorable_time'),
-    TextDyField.data_source('Backup Window', 'data.cluster.preferred_backup_window'),
-])
-
-cluster_tags = SimpleTableDynamicLayout.set_tags()
-db_metadata = CloudServiceMeta.set_layouts(layouts=[cluster_summary, cluster_endpoint, cluster_conf, cluster_maintenance,
-                                                    cluster_backup, cluster_tags])
-
-
+'''
+Snapshot
+'''
 snapshot = ItemDynamicLayout.set_fields('Snapshot', fields=[
     TextDyField.data_source('Name', 'data.db_snapshot_identifier'),
     TextDyField.data_source('ARN', 'data.db_snapshot_arn'),
@@ -204,6 +318,10 @@ snapshot = ItemDynamicLayout.set_fields('Snapshot', fields=[
 snapshot_tags = SimpleTableDynamicLayout.set_tags()
 snapshot_metadata = CloudServiceMeta.set_layouts(layouts=[snapshot, snapshot_tags])
 
+
+'''
+Subnet Group
+'''
 subnetgrp = ItemDynamicLayout.set_fields('Subnet Group', fields=[
     TextDyField.data_source('Name', 'data.db_subnet_group_name'),
     TextDyField.data_source('VPC ID', 'data.vpc_id'),
@@ -221,6 +339,9 @@ subnets = TableDynamicLayout.set_fields('Subnets', 'data.subnets', fields=[
 subnetgrp_tags = SimpleTableDynamicLayout.set_tags()
 subnetgrp_metadata = CloudServiceMeta.set_layouts(layouts=[subnetgrp, subnets, subnetgrp_tags])
 
+'''
+Parameter Group
+'''
 paramgrp = ItemDynamicLayout.set_fields('Parameter Group', fields=[
     TextDyField.data_source('Name', 'data.db_parameter_group_name'),
     TextDyField.data_source('ARN', 'data.db_parameter_group_arn'),
@@ -244,7 +365,9 @@ params = TableDynamicLayout.set_fields('Parameters', 'data.parameters', fields=[
 paramgrp_tags = SimpleTableDynamicLayout.set_tags()
 paramgrp_metadata = CloudServiceMeta.set_layouts(layouts=[paramgrp, params, paramgrp_tags])
 
-
+'''
+Option Group
+'''
 optgrp = ItemDynamicLayout.set_fields('Option Groups', fields=[
     TextDyField.data_source('Name', 'data.option_group_name'),
     TextDyField.data_source('ARN', 'data.option_group_arn'),
@@ -291,17 +414,14 @@ class RDSResource(CloudServiceResource):
 class DatabaseResource(RDSResource):
     cloud_service_type = StringType(default='Database')
     data = ModelType(Database)
-    _metadata = ModelType(CloudServiceMeta, default=db_metadata, serialized_name='metadata')
 
 
-# class DBClusterResource(DatabaseResource):
-#     _metadata = ModelType(CloudServiceMeta, default=cluster_metadata, serialized_name='metadata')
-#
-#
-# class DBInstanceResource(DatabaseResource):
-#     cloud_service_type = StringType(default='Instance')
-#     data = ModelType(Instance)
-#     _metadata = ModelType(CloudServiceMeta, default=instance_metadata, serialized_name='metadata')
+class DBClusterResource(DatabaseResource):
+    _metadata = ModelType(CloudServiceMeta, default=db_cluster_metadata, serialized_name='metadata')
+
+
+class DBInstanceResource(DatabaseResource):
+    _metadata = ModelType(CloudServiceMeta, default=cluster_instance_metadata, serialized_name='metadata')
 
 
 class InstanceResource(RDSResource):
@@ -311,7 +431,7 @@ class InstanceResource(RDSResource):
 
 
 class DatabaseResponse(CloudServiceResponse):
-    resource = ModelType(DatabaseResource)
+    resource = PolyModelType([DBClusterResource, DBInstanceResource])
 
 
 class InstanceResponse(CloudServiceResponse):

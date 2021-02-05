@@ -25,7 +25,7 @@ class CollectorService(BaseService):
             'DynamoDBConnectorManager',
             'LambdaConnectorManager',
             'CloudFrontConnectorManager',
-            # 'RDSConnectorManager',
+            'RDSConnectorManager',
             'Route53ConnectorManager',
             'S3ConnectorManager',
             'AutoScalingConnectorManager',
