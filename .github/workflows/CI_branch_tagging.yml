@@ -18,30 +18,37 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       NOT_FIRST_TAG: ${{ steps.job1.outputs.not_first_tag }}
-      BRANCH: ${{ steps.set_env.outputs.BRANCH }}
+      BRANCH: ${{ steps.set_branch.outputs.BRANCH }}
       TAG: ${{ steps.set_env.outputs.TAG }}
     steps:
       - name: set TAG env
-        id: set_env
         run: |
           if [ "${{ github.event_name }}" == "workflow_dispatch" ]
             then
               echo "TAG=${{ github.event.inputs.tag }}" >> $GITHUB_ENV
-              echo "::set-output name=TAG::${{ github.event.inputs.tag }}"
-              echo "BRANCH=$(echo ${{ github.event.inputs.tag }} | cut -c 2-4 | awk '{print "release-"$1}')" >> $GITHUB_ENV
-              echo "::set-output name=BRANCH::$(echo ${{ github.event.inputs.tag }} | cut -c 2-4 | awk '{print "release-"$1}')"
           elif [[ "${{ github.event_name }}" == "push" ]]
             then
               echo "TAG=$(echo ${{ github.ref }} | cut -c 11-)" >> $GITHUB_ENV
-              echo "::set-output name=TAG::$(echo ${{ github.ref }} | cut -c 11-)"
-              echo "BRANCH=$(echo ${{ github.ref }} | cut -c 12-14 | awk '{print "release-"$1}')" >> $GITHUB_ENV
-              echo "::set-output name=BRANCH::$(echo ${{ github.ref }} | cut -c 12-14 | awk '{print "release-"$1}')"
             else
               echo "TAG=$(echo ${{ github.event.client_payload.version }})" >> $GITHUB_ENV
-              echo "::set-output name=TAG::$(echo ${{ github.event.client_payload.version }})"
-              echo "BRANCH=$(echo ${{ github.event.client_payload.version }} | cut -c 2-4 | awk '{print "release-"$1}')" >> $GITHUB_ENV
-              echo "::set-output name=BRANCH::$(echo ${{ github.event.client_payload.version }} | cut -c 2-4 | awk '{print "release-"$1}')"
           fi
+      - name: find major & minor version
+        id: set_env
+        run: |
+          echo "::set-output name=TAG::${{env.TAG}}"
+          echo "major=$(echo ${{env.TAG}} | cut -c 2- | cut -d'.' -f1)" >> $GITHUB_ENV
+          echo "minor=$(echo ${{env.TAG}} | cut -c 2- | cut -d'.' -f2 | cut -d'-' -f1)" >> $GITHUB_ENV
+      - name: set BRANCH
+        id: set_branch
+        run: |
+          echo "BRANCH=release-${{env.major}}.${{env.minor}}" >> $GITHUB_ENV
+          echo "::set-output name=BRANCH::release-${{env.major}}.${{env.minor}}"
+      - name: debugging
+        run: |
+          echo ${{env.TAG}}
+          echo ${{env.major}}
+          echo ${{env.minor}}
+          echo ${{env.BRANCH}}
       - uses: actions/checkout@v2
         with:
           ref: ${{env.BRANCH}}
@@ -116,7 +123,7 @@ jobs:
           echo "VERSION=$(echo ${{ env.VERSION }} | cut -c 2- | sed -e 's/-//g')" >> $GITHUB_ENV
       - name: get service name
         run: |
-          echo "SERVICE=$(echo ${{ github.repository }} | cut -c 21-)" >> $GITHUB_ENV
+          echo "SERVICE=$(echo ${{ github.repository }} | cut -d '/' -f2)" >> $GITHUB_ENV
       - name: Upload docker, only version tag
         uses: docker/build-push-action@v1
         with:
