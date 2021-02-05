@@ -40,6 +40,8 @@ class KinesisStreamSourceDescription(Model):
 
 
 class Source(Model):
+    source_name = StringType()
+    source_details = StringType()
     kinesis_stream_source_description = ModelType(KinesisStreamSourceDescription,
                                                   deserialize_from="KinesisStreamSourceDescription")
 
@@ -74,7 +76,7 @@ class S3DestinationDescription(Model):
     compression_format = StringType(deserialize_from='CompressionFormat',
                                     choices=('UNCOMPRESSED', 'GZIP', 'ZIP', 'Snappy', 'HADOOP_SNAPPY'))
     encryption_configuration = ModelType(EncryptionConfiguration, deserialize_from='EncryptionConfiguration')
-    cloud_watch_logging_options = ModelType(CloudWatchLoggingOptions, deserialize_from='CloudWatchLoggingOptions')
+    CloudWatchLoggingOptions = ModelType(CloudWatchLoggingOptions, deserialize_from='CloudWatchLoggingOptions')
 
 
 class Parameters(Model):
@@ -298,12 +300,11 @@ class Destinations(Model):
     http_endpoint_destination_description = ModelType(HttpEndpointDestinationDescription,
                                                       deserialize_from='HttpEndpointDestinationDescription')
 
-
 class DeliveryStreamDescription(Model):
     delivery_stream_name = StringType(deserialize_from='DeliveryStreamName')
     delivery_stream_arn = StringType(deserialize_from='DeliveryStreamARN')
     delivery_stream_status = StringType(deserialize_from='DeliveryStreamStatus', choices=(
-        'CREATING', 'CREATING_FAILED', 'DELETING', 'DELETING_FAILED', 'ACTIVE'))
+        'CREATING', 'CREATING_FAILED', 'DELETING', 'DELETING_FAILED', 'ACTIVE', 'SUSPENDED'))
     failure_description = ModelType(FailureDescription, deserialize_from='FailureDescription')
     delivery_stream_encryption_configuration = ModelType(DeliveryStreamEncryptionConfiguration,
                                                          deserialize_from='DeliveryStreamEncryptionConfiguration')
@@ -312,7 +313,7 @@ class DeliveryStreamDescription(Model):
     version_id = StringType(deserialize_from='VersionId')
     create_timestamp = DateTimeType(deserialize_from='CreateTimestamp')
     last_update_timestamp = DateTimeType(deserialize_from='LastUpdateTimestamp')
-    source = ModelType(Source, deserialize_from="Source")
+    source = ModelType(Source, default={}) #Source, deserialize_from="Source"
     destinations = ListType(ModelType(Destinations), deserialize_from='Destinations')
     HasMoreDestinations = BooleanType(deserialize_from='has_more_destinations')
 
