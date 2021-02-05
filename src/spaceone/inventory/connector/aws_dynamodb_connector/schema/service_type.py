@@ -41,7 +41,7 @@ cst_table._metadata = CloudServiceTypeMeta.set_meta(
                                                                     'icon': {'color': 'red.500'}},
                             'ARCHIVED': {'label': 'ARCHIVED', 'icon': {'color': 'red.500'}}
                         }),
-        SearchField.set(name='Storage Size', key='data.table_size_bytes', data_type='integer'),
+        SearchField.set(name='Storage Size (Bytes)', key='data.table_size_bytes', data_type='integer'),
         SearchField.set(name='Item Count', key='data.item_count', data_type='integer'),
         SearchField.set(name='Region', key='data.region_name'),
         SearchField.set(name='AWS Account ID', key='data.account_id'),

@@ -71,7 +71,6 @@ cst_rds_database._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Cluster Port', key='data.cluster.port', data_type='integer'),
         SearchField.set(name='Instance Endpoint', key='data.instance.endpoint.address'),
         SearchField.set(name='Instance Port', key='data.instance.endpoint.port', data_type='integer'),
-        SearchField.set(name='Region', key='region_code'),
         SearchField.set(name='AWS Account ID', key='data.account_id'),
     ]
 )
@@ -132,7 +131,6 @@ cst_rds_instance._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Multi AZ', key='data.multi_az', data_type='boolean'),
         SearchField.set(name='Endpoint Address', key='data.endpoint.address'),
         SearchField.set(name='Endpoint Port', key='data.endpoint.port', data_type='integer'),
-        SearchField.set(name='Region', key='region_code'),
         SearchField.set(name='AWS Account ID', key='data.account_id'),
     ]
 )

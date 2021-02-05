@@ -36,7 +36,6 @@ cst_certi._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='In use?', key='data.in_use_display'),
         SearchField.set(name='Renewal Eligibility', key='data.renewal_eligibility'),
         SearchField.set(name='Associated Resources', key='data.in_use_by'),
-        SearchField.set(name='Region', key='region_code'),
         SearchField.set(name='AWS Account ID', key='data.account_id'),
     ]
 )

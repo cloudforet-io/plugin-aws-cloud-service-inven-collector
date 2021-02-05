@@ -14,7 +14,7 @@ CLUSTERS
 cluster_base = ItemDynamicLayout.set_fields('Cluster', fields=[
     TextDyField.data_source('ARN', 'data.cluster_arn'),
     TextDyField.data_source('Name', 'data.cluster_name'),
-    EnumDyField.data_source('Status', 'data.status', default_state={
+    EnumDyField.data_source('Status', 'data.state', default_state={
                 'safe': ['ACTIVE'],
                 'warning': ['CREATING', 'DELETING', 'HEALING',
                             'MAINTENANCE', 'REBOOTING_BROKER'],
