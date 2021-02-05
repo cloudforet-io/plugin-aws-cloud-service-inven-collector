@@ -1,73 +1,156 @@
-# from schematics.types import ModelType, StringType, PolyModelType
+from schematics.types import ModelType, StringType, PolyModelType
+
+from spaceone.inventory.connector.aws_kinesis_data_streams_connector.schema.data import (
+    StreamDescription,
+)
+from spaceone.inventory.libs.schema.dynamic_field import (
+    TextDyField,
+    ListDyField,
+    EnumDyField,
+    DateTimeDyField,
+)
+from spaceone.inventory.libs.schema.dynamic_layout import (
+    ItemDynamicLayout,
+    TableDynamicLayout,
+    ListDynamicLayout,
+)
+from spaceone.inventory.libs.schema.resource import (
+    CloudServiceResource,
+    CloudServiceResponse,
+    CloudServiceMeta,
+)
+
+"""
+kinesis
+"""
+# TAB - Detail
+firehose_meta_detail = ItemDynamicLayout.set_fields(
+    "Stream Details",
+    fields=[
+        TextDyField.data_source("ARN", "data.delivery_stream_arn"),
+        TextDyField.data_source("Status", "data.delivery_stream_status_display"),
+        DateTimeDyField.data_source(
+            "Data retention period", "data.create_timestamp"
+        ),
+        # TextDyField.data_source("Permissions (IAM role)", "data.iam_role")
+    ],
+)
+
+# TAB - Tags
+firehose_meta_tags = TableDynamicLayout.set_fields(
+    "Tags",
+    "data.tags",
+    fields=[
+        TextDyField.data_source("Key", "key"),
+        TextDyField.data_source("Value", "value"),
+    ],
+)
+
+# TAB - Source
+firehose_meta_source_details = ItemDynamicLayout.set_fields(
+    "Details",
+    fields=[
+        TextDyField.data_source("Source", "data.source.source_details"),
+        TextDyField.data_source("Server-side encryption for source records",
+                                "data.delivery_stream_encryption_configuration.status"),
+        TextDyField.data_source("Encryption type", "data.delivery_stream_encryption_configuration.key_type"),
+
+    ]
+)
 #
-# from spaceone.inventory.connector.aws_kinesis_data_streams_connector.schema.data import StreamDescription
-# from spaceone.inventory.libs.schema.dynamic_field import TextDyField, ListDyField, EnumDyField
-# from spaceone.inventory.libs.schema.dynamic_layout import ItemDynamicLayout, TableDynamicLayout, ListDynamicLayout
-# from spaceone.inventory.libs.schema.resource import CloudServiceResource, CloudServiceResponse, CloudServiceMeta
+# firehose_meta_source_lambda = ItemDynamicLayout.set_fields(
+#     "Transform source records with AWS Lambda",
+#     fields=[
+#         TextDyField.data_source("Source record transformation", "data.has_lambda"),
+#         TextDyField.data_source("Lambda function", "data.lambda_func"),
+#         TextDyField.data_source("Lambda function version", "data.lambda_func_ver"),
+#         TextDyField.data_source(
+#             "Timeout", "data.timeout"
+#         ),
+#         TextDyField.data_source("Buffer conditions", "data.buffer_conditions"),  # 또 api call..?
+#         TextDyField.data_source("Lambda function", "data.lambda_func"),
+#         TextDyField.data_source("Lambda function version", "data.lambda_func_ver"),
+#         ListDyField.data_source(
+#             "Enhanced (shard-level) metrics",
+#             "data.shard_level_metrics_display",
+#             default_badge={"delimiter": "<br>"},
+#         )
+#     ]
+# )
 #
-# '''
-# KinesisDataStreams
-# '''
-# # TAB - Detail
-# kds_meta_detail = ItemDynamicLayout.set_fields('Details', fields=[
-#     TextDyField.data_source('Status', 'data.stream_status_display'),
-#     TextDyField.data_source('ARN', 'data.stream_arn'),
-#     TextDyField.data_source('Data retention period', 'data.stream_creation_timestamp')
-# ])
+# firehose_meta_source_glue = ItemDynamicLayout.set_fields(
+#     "Convert record format",
+#     fields=[
+#         TextDyField.data_source("Record format conversion", "data.has_glue"),
+#         TextDyField.data_source("Output format", "data.output_format"),
+#         TextDyField.data_source("Input format", "data.input_format"),
+#         TextDyField.data_source("AWS Glue region",
+#                                 "data.destinations.extended_s3_destination_description"
+#                                 ".data_format_conversion_configuration.schema_configuration.region"),
+#         TextDyField.data_source("AWS Glue database",
+#                                 "data.destinations.extended_s3_destination_description"
+#                                 ".data_format_conversion_configuration.schema_configuration.database_name"),
+#         TextDyField.data_source("AWS Glue table",
+#                                 "data.destinations.extended_s3_destination_description"
+#                                 ".data_format_conversion_configuration.schema_configuration.table_name"),
+#         TextDyField.data_source("AWS Glue table version",
+#                                 "data.destinations.extended_s3_destination_description"
+#                                 ".data_format_conversion_configuration.schema_configuration.version_id")
+#     ]
+# )
+
+firehose_meta_source = ListDynamicLayout.set_layouts(
+    "Source",
+    layouts=[
+        firehose_meta_source_details,
+        # firehose_meta_source_glue,
+        # firehose_meta_source_lambda
+    ],
+)
+
+
+# TAB - Destination
+# firehose_meta_destination_details = ItemDynamicLayout.set_fields(
+#     "Details",
+#     fields=[
+#         TextDyField.data_source("CloudWatch error logging", "data.cloud_watch_logging_options_display"),
+#         TextDyField.data_destination("Type", "data.destination_type"),
+#         TextDyField.data_destination("Name", "data.destination_name"),
+#         TextDyField.data_destination("Server-side encryption for destination records",
+#                                 "data.delivery_stream_encryption_configuration.status"),
+#         TextDyField.data_destination("Encryption type", "data.delivery_stream_encryption_configuration.key_type"),
 #
-# # TAB - Configuration
-# kds_meta_stream_capacity = ItemDynamicLayout.set_fields('Stream capacity', fields=[
-#     TextDyField.data_source('Number of open shards', 'data.open_shards_num')
-# ])
+#     ]
+# )
 #
-# kds_meta_tags = TableDynamicLayout.set_fields('Tags', 'data.tags', fields=[
-#     TextDyField.data_source('Key', 'key'),
-#     TextDyField.data_source('Value', 'value'),
-# ])
+# firehose_meta_destination = ListDynamicLayout.set_layouts(
+#     "Destination",
+#     layouts=[
+#         firehose_meta_destination_details,
+#     ],
+# )
 #
-# kds_meta_encryption = ItemDynamicLayout.set_fields('Encryption', fields=[
-#     TextDyField.data_source('Server-side encryption', 'data.encryption_display')
-# ])
-#
-# kds_data_retention = ItemDynamicLayout.set_fields('Data retention', fields=[
-#     TextDyField.data_source('Data retention period', 'data.retention_period_display_details')
-# ])
-#
-# kds_enhanced_metrics = ItemDynamicLayout.set_fields('Enhanced (shard-level) metrics', fields=[
-#     ListDyField.data_source('Enhanced (shard-level) metrics', 'data.shard_level_metrics', options={
-#         'delimiter': '<br>'
-#     })
-# ])
-#
-# kds_meta_configuration = ListDynamicLayout.set_layouts('Configuration',
-#                                                        layouts=[kds_meta_stream_capacity, kds_meta_tags,
-#                                                                 kds_meta_encryption, kds_data_retention,
-#                                                                 kds_enhanced_metrics])
-# # TAB - Enhanced fan-out
-# kds_meta_consumers_using_enhanced_fan_out = \
-#     TableDynamicLayout.set_fields('Consumers using enhanced fan-out', 'data.consumers',
-#                                   fields=[
-#                                       TextDyField.data_source('Consumer name', 'consumer_name'),
-#                                       EnumDyField.data_source('Registration status', 'data.consumer_status',
-#                                                               default_state={'safe': ['Active'],
-#                                                                              'warning': ['Creating', 'Deleting']}),
-#                                       EnumDyField.data_source('Registration date', 'data.consumer_creation_timestamp')
-#                                   ])
-# kds_meta_enhanced_fan_out = ListDynamicLayout.set_layouts('Enhanced fan-out',
-#                                                           layouts=[kds_meta_consumers_using_enhanced_fan_out])
-# # Overall
-# kds_meta = CloudServiceMeta.set_layouts([kds_meta_detail, kds_meta_configuration, kds_meta_enhanced_fan_out])
-#
-#
-# class KDSResource(CloudServiceResource):
-#     cloud_service_group = StringType(default='KinesisDataStreamsManager')
-#
-#
-# class StreamResource(KDSResource):
-#     cloud_service_type = StringType(default='StreamDescription')
-#     data = ModelType(StreamDescription)
-#     _metadata = ModelType(CloudServiceMeta, default=kds_meta, serialized_name='metadata')
-#
-#
-# class KDSResponse(CloudServiceResponse):
-#     resource = PolyModelType(StreamResource)
+
+# Overall
+firehose_meta = CloudServiceMeta.set_layouts(
+    [firehose_meta_detail,
+     firehose_meta_source,
+     # firehose_meta_destination,
+     firehose_meta_tags]
+)
+
+
+class FirehoseResource(CloudServiceResource):  # service type - group
+    cloud_service_group = StringType(default="KinesisDataFirehose")
+
+
+class DeliveryStreamResource(FirehoseResource):  # service type - name
+    cloud_service_type = StringType(default="DeliveryStreams")
+    data = ModelType(StreamDescription)
+    _metadata = ModelType(
+        CloudServiceMeta, default=firehose_meta, serialized_name="metadata"
+    )
+
+
+class FirehoseResponse(CloudServiceResponse):
+    resource = PolyModelType(DeliveryStreamResource)
