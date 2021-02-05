@@ -111,7 +111,7 @@ class MSKConnector(SchematicAWSConnector):
     @staticmethod
     def byte_to_list(properties):
         decode_str = properties.decode("UTF-8")
-        properties_list = decode_str.split('\n')
+        properties_list = decode_str.splitlines()
         return properties_list
 
     @staticmethod
