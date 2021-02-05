@@ -22,7 +22,7 @@ cst_que._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Name', key='data.name'),
         SearchField.set(name='ARN', key='data.arn'),
         SearchField.set(name='URL', key='data.url'),
-        SearchField.set(name='Maximum Message Size', key='data.maximum_message_size', data_type='integer'),
+        SearchField.set(name='Maximum Message Size (Bytes)', key='data.maximum_message_size', data_type='integer'),
         SearchField.set(name='Approximate Number of Messages', key='data.approximate_number_of_messages',
                         data_type='integer'),
         SearchField.set(name='Created Time', key='data.created_timestamp', data_type='datetime'),
