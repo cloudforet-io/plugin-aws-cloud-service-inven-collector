@@ -10,7 +10,7 @@ from spaceone.inventory.libs.schema.resource import (
 )
 
 cst_kds = CloudServiceTypeResource()
-cst_kds.name = "DataStreams"
+cst_kds.name = "DataStream"
 cst_kds.provider = "aws"
 cst_kds.group = "KinesisDataStreams"
 cst_kds.labels = ["Analytics"]
