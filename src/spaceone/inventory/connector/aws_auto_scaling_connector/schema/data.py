@@ -169,8 +169,8 @@ class LaunchConfiguration(Model):
     ebs_optimized = BooleanType(deserialize_from="EbsOptimized", serialize_when_none=False)
     associate_public_ip_address = BooleanType(deserialize_from="AssociatePublicIpAddress", serialize_when_none=False)
     placement_tenancy = StringType(deserialize_from="PlacementTenancy", serialize_when_none=False)
-    region_name = StringType(default='')
-    account_id = StringType(default='')
+    region_name = StringType(default='', serialize_when_none=False)
+    account_id = StringType(default='', serialize_when_none=False)
 
     def reference(self, region_code):
         return {
@@ -417,7 +417,7 @@ class AutoScalingGroup(Model):
                                deserialize_from="EnabledMetrics",
                                serialize_when_none=False)
     status = StringType(deserialize_from="Status", serialize_when_none=False)
-    autoscaling_tags = ListType(ModelType(AutoScalingGroupTags))
+    autoscaling_tags = ListType(ModelType(AutoScalingGroupTags), default=[])
     tags = ListType(ModelType(Tags), default=[])
     termination_policies = ListType(StringType, deserialize_from="TerminationPolicies", serialize_when_none=False)
     new_instances_protected_from_scale_in = BooleanType(deserialize_from="NewInstancesProtectedFromScaleIn",

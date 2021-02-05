@@ -51,6 +51,7 @@ class CollectorService(BaseService):
             'EC2ConnectorManager',
             'ACMConnectorManager',
             'KinesisDataStreamsConnectorManager',
+            'MSKConnectorManager',
             # 'KinesisFirehoseConnectorManager'
         ]
 

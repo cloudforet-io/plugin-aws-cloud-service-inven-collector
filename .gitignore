@@ -9,9 +9,3 @@ build
 __pycache__
 venv
 local-conf.yml
-
-
-.venv/
-.venv.nosync/
-
-.DS_Store

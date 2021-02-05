@@ -46,7 +46,8 @@ cst_ebs._metadata = CloudServiceTypeMeta.set_meta(
                             'deleted': {'label': 'deleted', 'icon': {'color': 'gray.400'}},
                             'error': {'label': 'error', 'icon': {'color': 'red.500'}},
                         }),
-        SearchField.set(name='Size (GB)', key='data.size', data_type='integer'),
+        SearchField.set(name='Size (Bytes)', key='data.size', data_type='integer'),
+        SearchField.set(name='Size (GB)', key='data.size_gb', data_type='integer'),
         SearchField.set(name='Volume Type', key='data.volume_type',
                         enums={
                             'gp2': {'label': 'General Purpose SSD (gp2)'},
