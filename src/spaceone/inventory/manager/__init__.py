@@ -26,5 +26,8 @@ from spaceone.inventory.manager.vpc_manager import VPCConnectorManager
 from spaceone.inventory.manager.ec2_manager import EC2ConnectorManager
 from spaceone.inventory.manager.iam_manager import IAMConnectorManager
 from spaceone.inventory.manager.acm_manager import ACMConnectorManager
+from spaceone.inventory.manager.kinesis_data_streams_manager import KinesisDataStreamsConnectorManager
+from spaceone.inventory.manager.kinesis_firehose_manager import KinesisFirehoseConnectorManager
+from spaceone.inventory.manager.msk_manager import MSKConnectorManager
 
 # from spaceone.inventory.manager.workspace_manager import WorkspaceCollectorManager

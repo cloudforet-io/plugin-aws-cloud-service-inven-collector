@@ -1,0 +1,1 @@
+from spaceone.inventory.connector.aws_kinesis_firehose_connector.connector import KinesisFirehoseConnector

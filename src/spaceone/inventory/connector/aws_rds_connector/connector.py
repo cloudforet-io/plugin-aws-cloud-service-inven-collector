@@ -5,16 +5,16 @@ from typing import List
 from spaceone.inventory.connector.aws_rds_connector.schema.data import Database, Snapshot, SubnetGroup, \
     ParameterGroup, Parameter, Cluster, Instance, OptionGroup
 from spaceone.inventory.connector.aws_rds_connector.schema.resource import DatabaseResource, DatabaseResponse, \
-    SnapshotResource, SnapshotResponse, SubnetGroupResource, SubnetGroupResponse, \
-    ParameterGroupResource, ParameterGroupResponse, DBClusterResource, DBInstanceResource, OptionGroupResource, \
-    OptionGroupResponse, InstanceResource, InstanceResponse
+    SnapshotResource, SnapshotResponse, SubnetGroupResource, SubnetGroupResponse, ParameterGroupResource, \
+    ParameterGroupResponse, OptionGroupResource, OptionGroupResponse, InstanceResource, InstanceResponse, \
+    DBClusterResource, DBInstanceResource
 from spaceone.inventory.connector.aws_rds_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
 from spaceone.inventory.libs.schema.resource import ReferenceModel, CloudWatchModel
 
 
 _LOGGER = logging.getLogger(__name__)
-RDS_FILTER = ['aurora', 'aurora-mysql', 'mysql', 'mariadb', 'postgres',
+RDS_FILTER = ['aurora', 'aurora-mysql', 'aurora-postgresql', 'mysql', 'mariadb', 'postgres',
               'oracle-ee', 'oracle-se', 'oracle-se1', 'oracle-se2',
               'sqlserver-ex', 'sqlserver-web', 'sqlserver-se', 'sqlserver-ee']
 
@@ -263,5 +263,3 @@ class RDSConnector(SchematicAWSConnector):
             return azs[0][:-1]
 
         return None
-
-

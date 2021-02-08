@@ -194,10 +194,10 @@ lt_meta_base_lt = ItemDynamicLayout.set_fields('Launch Template', fields=[
         'indigo.500': ['true'], 'coral.600': ['false']
     }),
     TextDyField.data_source('Version Description', 'data.version_description'),
-    TextDyField.data_source('AMI ID', 'data.launch_template.image_id'),
-    TextDyField.data_source('Instance Type', 'data.launch_template.instance_type'),
-    TextDyField.data_source('Key Name', 'data.launch_template.key_name'),
-    ListDyField.data_source('Security Groups', 'data.launch_template.security_group_ids', default_badge={'type': 'outline'}),
+    TextDyField.data_source('AMI ID', 'data.launch_template_data.image_id'),
+    TextDyField.data_source('Instance Type', 'data.launch_template_data.instance_type'),
+    TextDyField.data_source('Key Name', 'data.launch_template_data.key_name'),
+    ListDyField.data_source('Security Groups', 'data.launch_template_data.security_group_ids', default_badge={'type': 'outline'}),
     DateTimeDyField.data_source('Creation Time', 'data.create_time'),
     TextDyField.data_source('Created By', 'data.created_by')
 
