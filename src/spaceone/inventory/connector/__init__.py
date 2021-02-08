@@ -26,5 +26,6 @@ from spaceone.inventory.connector.aws_vpc_connector.connector import VPCConnecto
 from spaceone.inventory.connector.aws_ec2_connector.connector import EC2Connector
 from spaceone.inventory.connector.aws_iam_connector.connector import IAMConnector
 from spaceone.inventory.connector.aws_acm_connector.connector import ACMConnector
-from spaceone.inventory.connector.aws_kinesis_data_streams_connector.connector import KinesisDataStreamsConnector
+from spaceone.inventory.connector.aws_kinesis_data_stream_connector.connector import KinesisDataStreamConnector
 from spaceone.inventory.connector.aws_msk_connector.connector import MSKConnector
+from spaceone.inventory.connector.aws_kinesis_firehose_connector.connector import KinesisFirehoseConnector
