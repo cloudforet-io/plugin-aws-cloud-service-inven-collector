@@ -145,7 +145,7 @@ class FirehoseResource(CloudServiceResource):  # service type - group
 
 
 class DeliveryStreamResource(FirehoseResource):  # service type - name
-    cloud_service_type = StringType(default="DeliveryStreams")
+    cloud_service_type = StringType(default="DeliveryStream")
     data = ModelType(StreamDescription)
     _metadata = ModelType(
         CloudServiceMeta, default=firehose_meta, serialized_name="metadata"
