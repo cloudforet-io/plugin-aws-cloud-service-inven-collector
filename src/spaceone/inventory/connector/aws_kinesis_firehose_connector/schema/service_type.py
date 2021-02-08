@@ -31,10 +31,10 @@ cst_firehose._metadata = CloudServiceTypeMeta.set_meta(
             "Creation time", "data.create_timestamp"
         ),
         TextDyField.data_source("Source", "data.source.source_name"),
-        # TextDyField.data_source("Data transformation", "data.data_transformation"),
-        # TextDyField.data_source(
-        #     "Destination", "data.destination_display"
-        # ),
+        TextDyField.data_source("Data transformation", "data.lambda_info.data_transformation"),
+        TextDyField.data_source(
+            "Destination", "data.destination_display"
+        ),
     ],
     search=[
         # SearchField.set(name="Stream Name", key="data.stream_name"),

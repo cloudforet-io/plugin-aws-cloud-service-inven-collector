@@ -5,8 +5,6 @@ from spaceone.inventory.connector.aws_kinesis_data_stream_connector.schema.data 
 )
 from spaceone.inventory.libs.schema.dynamic_field import (
     TextDyField,
-    ListDyField,
-    EnumDyField,
     DateTimeDyField,
 )
 from spaceone.inventory.libs.schema.dynamic_layout import (
@@ -32,17 +30,7 @@ firehose_meta_detail = ItemDynamicLayout.set_fields(
         DateTimeDyField.data_source(
             "Data retention period", "data.create_timestamp"
         ),
-        # TextDyField.data_source("Permissions (IAM role)", "data.iam_role")
-    ],
-)
-
-# TAB - Tags
-firehose_meta_tags = TableDynamicLayout.set_fields(
-    "Tags",
-    "data.tags",
-    fields=[
-        TextDyField.data_source("Key", "key"),
-        TextDyField.data_source("Value", "value"),
+        TextDyField.data_source("Permissions (IAM role)", "data.iam_role")
     ],
 )
 
@@ -57,27 +45,21 @@ firehose_meta_source_details = ItemDynamicLayout.set_fields(
 
     ]
 )
-#
-# firehose_meta_source_lambda = ItemDynamicLayout.set_fields(
-#     "Transform source records with AWS Lambda",
-#     fields=[
-#         TextDyField.data_source("Source record transformation", "data.has_lambda"),
-#         TextDyField.data_source("Lambda function", "data.lambda_func"),
-#         TextDyField.data_source("Lambda function version", "data.lambda_func_ver"),
-#         TextDyField.data_source(
-#             "Timeout", "data.timeout"
-#         ),
-#         TextDyField.data_source("Buffer conditions", "data.buffer_conditions"),  # 또 api call..?
-#         TextDyField.data_source("Lambda function", "data.lambda_func"),
-#         TextDyField.data_source("Lambda function version", "data.lambda_func_ver"),
-#         ListDyField.data_source(
-#             "Enhanced (shard-level) metrics",
-#             "data.shard_level_metrics_display",
-#             default_badge={"delimiter": "<br>"},
-#         )
-#     ]
-# )
-#
+
+firehose_meta_source_lambda = ItemDynamicLayout.set_fields(
+    "Transform source records with AWS Lambda",
+    "data.lambda",
+    fields=[
+        TextDyField.data_source("Source record transformation", "source_record_transformation"),
+        TextDyField.data_source("Lambda function", "lambda_func"),
+        TextDyField.data_source("Lambda function version", "lambda_func_ver"),
+        TextDyField.data_source(
+            "Timeout", "timeout"
+        ),
+        TextDyField.data_source("Buffer conditions", "buffer_conditions")
+    ]
+)
+
 # firehose_meta_source_glue = ItemDynamicLayout.set_fields(
 #     "Convert record format",
 #     fields=[
@@ -99,6 +81,7 @@ firehose_meta_source_details = ItemDynamicLayout.set_fields(
 #     ]
 # )
 
+
 firehose_meta_source = ListDynamicLayout.set_layouts(
     "Source",
     layouts=[
@@ -107,7 +90,6 @@ firehose_meta_source = ListDynamicLayout.set_layouts(
         # firehose_meta_source_lambda
     ],
 )
-
 
 # TAB - Destination
 # firehose_meta_destination_details = ItemDynamicLayout.set_fields(
@@ -130,6 +112,16 @@ firehose_meta_source = ListDynamicLayout.set_layouts(
 #     ],
 # )
 #
+
+# TAB - Tags
+firehose_meta_tags = TableDynamicLayout.set_fields(
+    "Tags",
+    "data.tags",
+    fields=[
+        TextDyField.data_source("Key", "key"),
+        TextDyField.data_source("Value", "value"),
+    ],
+)
 
 # Overall
 firehose_meta = CloudServiceMeta.set_layouts(
