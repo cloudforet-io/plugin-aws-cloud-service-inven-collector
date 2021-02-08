@@ -31,5 +31,3 @@ jobs:
           git push && git push origin ${{ env.VERSION }}
           git checkout -b ${{ env.BRANCH }}
           git push --set-upstream origin ${{ env.BRANCH }}
-      - name: delete CI workflow
-        run: rm -rf .github
