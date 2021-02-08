@@ -50,7 +50,7 @@ class CollectorService(BaseService):
             'VPCConnectorManager',
             'EC2ConnectorManager',
             'ACMConnectorManager',
-            'KinesisDataStreamsConnectorManager',
+            'KinesisDataStreamConnectorManager',
             'MSKConnectorManager',
             # 'KinesisFirehoseConnectorManager'
         ]

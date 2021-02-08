@@ -19,6 +19,8 @@ jobs:
     steps:
       - name: task
         uses: actions/checkout@v2
+      - name: delete CI workflow
+        run: rm -rf .github
       - run: |
           echo ${{ env.VERSION }} > src/VERSION
           git config user.name github-actions
@@ -29,3 +31,5 @@ jobs:
           git push && git push origin ${{ env.VERSION }}
           git checkout -b ${{ env.BRANCH }}
           git push --set-upstream origin ${{ env.BRANCH }}
+      - name: delete CI workflow
+        run: rm -rf .github

@@ -5,5 +5,5 @@ from spaceone.inventory.libs.manager import AWSManager
 # 지금은 로케이터에서 글로벌에서 값을 가져오는 로직 때문에 별도 파일이 없으면 에러 발생
 
 
-class KinesisDataStreamsConnectorManager(AWSManager):
-    connector_name = "KinesisDataStreamsConnector"
+class KinesisDataStreamConnectorManager(AWSManager):
+    connector_name = "KinesisDataStreamConnector"
