@@ -2,11 +2,11 @@ import logging
 import time
 from typing import List
 
-from spaceone.inventory.connector.aws_kinesis_data_streams_connector.schema.data import (
+from spaceone.inventory.connector.aws_kinesis_data_stream_connector.schema.data import (
     StreamDescription,
     Consumers,
 )
-from spaceone.inventory.connector.aws_kinesis_data_streams_connector.schema.service_type import (
+from spaceone.inventory.connector.aws_kinesis_data_stream_connector.schema.service_type import (
     CLOUD_SERVICE_TYPES,
 )
 from spaceone.inventory.connector.aws_kinesis_firehose_connector.schema.resource import DeliveryStreamResource, \
@@ -49,6 +49,9 @@ class KinesisFirehoseConnector(SchematicAWSConnector):
         return resources
 
     def request_data(self, region_name) -> List[StreamDescription]:
+        if not self.client.can_paginate("list_delivery_streams"):
+            print(region_name, self.client.can_paginate("list_delivery_streams"))
+            return
         paginator = self.client.get_paginator("list_delivery_streams")
         response_iterator = paginator.paginate(
             PaginationConfig={
