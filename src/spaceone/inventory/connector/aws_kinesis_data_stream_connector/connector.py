@@ -2,15 +2,15 @@ import logging
 import time
 from typing import List
 
-from spaceone.inventory.connector.aws_kinesis_data_streams_connector.schema.data import (
+from spaceone.inventory.connector.aws_kinesis_data_stream_connector.schema.data import (
     StreamDescription,
     Consumers,
 )
-from spaceone.inventory.connector.aws_kinesis_data_streams_connector.schema.resource import (
+from spaceone.inventory.connector.aws_kinesis_data_stream_connector.schema.resource import (
     StreamResource,
     KDSResponse,
 )
-from spaceone.inventory.connector.aws_kinesis_data_streams_connector.schema.service_type import (
+from spaceone.inventory.connector.aws_kinesis_data_stream_connector.schema.service_type import (
     CLOUD_SERVICE_TYPES,
 )
 from spaceone.inventory.libs.connector import SchematicAWSConnector
@@ -18,7 +18,7 @@ from spaceone.inventory.libs.connector import SchematicAWSConnector
 _LOGGER = logging.getLogger(__name__)
 
 
-class KinesisDataStreamsConnector(SchematicAWSConnector):
+class KinesisDataStreamConnector(SchematicAWSConnector):
     service_name = "kinesis"
 
     def get_resources(self):
