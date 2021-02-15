@@ -3,12 +3,12 @@ import re
 import time
 from typing import List
 
-from spaceone.inventory.connector.aws_kinesis_data_stream_connector.schema.service_type import (
-    CLOUD_SERVICE_TYPES,
-)
 from spaceone.inventory.connector.aws_kinesis_firehose_connector.schema.data import DeliveryStreamDescription
 from spaceone.inventory.connector.aws_kinesis_firehose_connector.schema.resource import DeliveryStreamResource, \
     FirehoseResponse
+from spaceone.inventory.connector.aws_kinesis_firehose_connector.schema.service_type import (
+    CLOUD_SERVICE_TYPES,
+)
 from spaceone.inventory.libs.connector import SchematicAWSConnector
 
 _LOGGER = logging.getLogger(__name__)
@@ -18,7 +18,7 @@ class KinesisFirehoseConnector(SchematicAWSConnector):
     service_name = "firehose"
 
     def get_resources(self):
-        print("** kinesis Firehose Manager Start **")
+        print("** Kinesis Firehose Manager Start **")
         resources = []
         start_time = time.time()
 
@@ -44,7 +44,7 @@ class KinesisFirehoseConnector(SchematicAWSConnector):
                     )
                 )
 
-        print(f" kinesis Firehose Manager Finished {time.time() - start_time} Seconds")
+        print(f" Kinesis Firehose Manager Finished {time.time() - start_time} Seconds")
         return resources
 
     def list_delivery_streams(self):
@@ -76,9 +76,21 @@ class KinesisFirehoseConnector(SchematicAWSConnector):
         destination_types = ["RedshiftDestinationDescription", "HttpEndpointDestinationDescription",
                              "ExtendedS3DestinationDescription", "ElasticsearchDestinationDescription",
                              "SplunkDestinationDescription"]
+
+        destination_types = {
+            "RedshiftDestinationDescription": self.update_redshift_destination_description,
+            "HttpEndpointDestinationDescription": self.update_http_endpoint_destination_description,
+            "ExtendedS3DestinationDescription": self.update_extended_s3_destination_description,
+            "RedshiftDestinationDescElasticsearchDestinationDescription": self.update_redshift_destination_description,
+            "ElasticsearchDestinationDescription": self.update_elasticsearch_destination_description,
+            "SplunkDestinationDescription": self.update_splunk_destination_description
+        }
+
         for destination in destinations:
             for key, value in destination.items():
                 if key in destination_types:
+                    # TODO
+                    # destination_name, refined_destination_description = destination_types.get(key)
                     destination_name, refined_destination_description = eval(
                         f"self.update_" + self.camel_to_snake(key) + "(value)")
                     value.update(refined_destination_description)
@@ -91,6 +103,22 @@ class KinesisFirehoseConnector(SchematicAWSConnector):
                                                                   value.get("S3DestinationDescription", {}))
                     }
         return destinations, additional_tabs
+
+    @staticmethod
+    def update_splunk_destination_description(splunk_destination_description):
+        refined_destination_description = {
+            "hec_endpoint_details": f"{splunk_destination_description['HECEndpoint']} ({splunk_destination_description['HECEndpointType']} type)"
+        }
+        destination_name = splunk_destination_description["HECEndpoint"]
+        return destination_name, refined_destination_description
+
+    def update_elasticsearch_destination_description(self, elasticsearch_destination_description):
+        refined_destination_description = {
+            "domain_name": elasticsearch_destination_description["DomainARN"].split(":::")[1],
+            "buffer_conditions": self.get_buffer_conditions(elasticsearch_destination_description["BufferingHints"])
+        }
+        destination_name = elasticsearch_destination_description["ClusterEndpoint"]
+        return destination_name, refined_destination_description
 
     def update_extended_s3_destination_description(self, extended_s3_destination_description):
         refined_destination_description = {
@@ -125,10 +153,10 @@ class KinesisFirehoseConnector(SchematicAWSConnector):
             if data_format_conversion_configuration["Enabled"]:
                 data_format_conversion_configuration.update({
                     "record_format_conversion": "Enabled",
-                    "input_format": next(
-                        iter(data_format_conversion_configuration["InputFormatConfiguration"]["Deserializer"])),
-                    "output_format": next(
-                        iter(data_format_conversion_configuration["OutputFormatConfiguration"]["Serializer"])),
+                    "input_format": list(data_format_conversion_configuration["InputFormatConfiguration"]
+                                         .get("Deserializer", {}).keys()),
+                    "output_format": list(data_format_conversion_configuration["OutputFormatConfiguration"]
+                                          .get("Serializer", {}).keys()),
                 })
             else:
                 data_format_conversion_configuration.update({
@@ -136,7 +164,6 @@ class KinesisFirehoseConnector(SchematicAWSConnector):
         except:
             data_format_conversion_configuration.update({
                 "record_format_conversion": "Disabled"})
-
         return data_format_conversion_configuration
 
     @staticmethod
@@ -212,6 +239,7 @@ class KinesisFirehoseConnector(SchematicAWSConnector):
             info = source.get("KinesisStreamSourceDescription", [])
             source_name = info.get("KinesisStreamARN").split('/')[1]
             source_details = f"Kinesis Data Stream : {source_name}"
+
         source.update({
             "source_details": source_details,
             "source_name": source_name

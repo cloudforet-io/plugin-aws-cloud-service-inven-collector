@@ -168,8 +168,8 @@ class DataFormatConversionConfiguration(Model):
     schema_configuration = ModelType(SchemaConfiguration, deserialize_from="SchemaConfiguration")
     input_format_configuration = ModelType(InputFormatConfiguration, deserialize_from='InputFormatConfiguration')
     output_format_configuration = ModelType(OutputFormatConfiguration, deserialize_from='OutputFormatConfiguration')
-    input_format = StringType(serialize_when_none=False)
-    output_format = StringType(serialize_when_none=False)
+    input_format = ListType(StringType())
+    output_format = ListType(StringType())
     record_format_conversion = StringType(choices=('Enabled', 'Disabled'))
 
 
@@ -339,6 +339,7 @@ class Destination(Model):
     username = StringType(deserialize_from='Username', serialize_when_none=False)
 
     # ElasticsearchDestinationDescription
+    domain_name = StringType(serialize_when_none=False)
     domain_arn = StringType(deserialize_from='DomainARN', serialize_when_none=False)
     cluster_endpoint = StringType(deserialize_from='ClusterEndpoint', serialize_when_none=False)
     index_name = StringType(deserialize_from='IndexName', serialize_when_none=False)
