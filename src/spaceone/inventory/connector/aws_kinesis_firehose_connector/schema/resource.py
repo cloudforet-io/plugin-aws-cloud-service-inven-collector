@@ -77,23 +77,21 @@ firehose_meta_s3_backup = ItemDynamicLayout.set_fields(
     ]
 )
 
-
 # TAB - S3 Destination
 firehose_meta_s3_destination_details = ItemDynamicLayout.set_fields(
     "S3 Destination Details",
-    root_path="data.destinations.extended_s3_destination_description",
+    root_path="data.destinations",
     fields=[
-        TextDyField.data_source("S3 bucket", "bucket_name"),
-        TextDyField.data_source("Prefix", "prefix"),
-        TextDyField.data_source("Error prefix","error_output_prefix"),
+        TextDyField.data_source("S3 bucket", "extended_s3_destination_description.bucket_name"),
+        TextDyField.data_source("Prefix", "extended_s3_destination_description.prefix"),
+        TextDyField.data_source("Error prefix", "extended_s3_destination_description.error_output_prefix"),
         TextDyField.data_source("Buffer conditions",
-                                "buffer_conditions"),
-        TextDyField.data_source("Compression", "compression"),
+                                "extended_s3_destination_description.buffer_conditions"),
+        TextDyField.data_source("Compression", "extended_s3_destination_description.compression"),
         TextDyField.data_source("Encryption",
-                                "encryption_configuration.no_encryption")
+                                "extended_s3_destination_description.encryption_configuration.no_encryption")
     ]
 )
-
 
 firehose_meta_s3_destination_glue = ItemDynamicLayout.set_fields(
     "Convert record format",
