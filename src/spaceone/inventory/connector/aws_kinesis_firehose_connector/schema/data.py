@@ -450,5 +450,5 @@ class DeliveryStreamDescription(Model):
     def reference(self, region_code):
         return {
             'resource_id': self.delivery_stream_arn,
-            'external_link': f'https://console.aws.amazon.com/kinesis/home?region={region_code}#/streams/details/{self.delivery_stream_name}'
+            'external_link': f'https://console.aws.amazon.com/firehose/home?region={region_code}#/details/{self.delivery_stream_name}'
         }
