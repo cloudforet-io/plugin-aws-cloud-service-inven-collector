@@ -52,7 +52,7 @@ class CollectorService(BaseService):
             'ACMConnectorManager',
             'KinesisDataStreamConnectorManager',
             'MSKConnectorManager',
-            # 'KinesisFirehoseConnectorManager'
+            'KinesisFirehoseConnectorManager'
         ]
 
     @check_required(['options'])
