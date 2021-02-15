@@ -16,25 +16,25 @@ cst_firehose.tags = {
 
 cst_firehose._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source("Name", "data.delivery_stream_name"),
+        # TextDyField.data_source("Name", "data.delivery_stream_name"),
         EnumDyField.data_source(
             "Status",
-            "data.delivery_stream_status_display",
+            "data.delivery_stream_status",
             default_state={
-                "safe": ["Active"],
-                'warning': ["Deleting", "Updating"],
-                "alert": ["Deleting_failed"],
-                "disable": ["Creating_failed", "Suspended"]
+                "safe": ["ACTIVE"],
+                'warning': ["CREATING", "DELETING"],
+                "alert": ["DELETING_FAILED"],
+                "disable": ["CREATING_FAILED", "SUSPENDED"]
             },
         ),
         TextDyField.data_source(
             "Creation time", "data.create_timestamp"
         ),
         TextDyField.data_source("Source", "data.source.source_name"),
-        # TextDyField.data_source("Data transformation", "data.data_transformation"),
-        # TextDyField.data_source(
-        #     "Destination", "data.destination_display"
-        # ),
+        TextDyField.data_source("Data transformation", "data.additional_tabs.lambda_tab.data_transformation"),
+        TextDyField.data_source(
+            "Destination", "data.additional_tabs.destination_name"
+        ),
     ],
     search=[
         # SearchField.set(name="Stream Name", key="data.stream_name"),
