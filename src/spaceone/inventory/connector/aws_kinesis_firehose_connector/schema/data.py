@@ -443,7 +443,6 @@ class DeliveryStreamDescription(Model):
     create_timestamp = DateTimeType(deserialize_from='CreateTimestamp')
     last_update_timestamp = DateTimeType(deserialize_from='LastUpdateTimestamp')
     source = ModelType(Source)  # Source, deserialize_from="Source"
-    # destinations = ListType(ModelType(Destinations), deserialize_from='Destinations')
     destinations = ListType(ModelType(Destinations))
     additional_tabs = ModelType(AdditionalTabs)
     HasMoreDestinations = BooleanType(deserialize_from='has_more_destinations')
