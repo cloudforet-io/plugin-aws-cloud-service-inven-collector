@@ -77,14 +77,14 @@ class KinesisFirehoseConnector(SchematicAWSConnector):
                              "ExtendedS3DestinationDescription", "ElasticsearchDestinationDescription",
                              "SplunkDestinationDescription"]
 
-        destination_types = {
-            "RedshiftDestinationDescription": self.update_redshift_destination_description,
-            "HttpEndpointDestinationDescription": self.update_http_endpoint_destination_description,
-            "ExtendedS3DestinationDescription": self.update_extended_s3_destination_description,
-            "RedshiftDestinationDescElasticsearchDestinationDescription": self.update_redshift_destination_description,
-            "ElasticsearchDestinationDescription": self.update_elasticsearch_destination_description,
-            "SplunkDestinationDescription": self.update_splunk_destination_description
-        }
+        # destination_types = {
+        #     "RedshiftDestinationDescription": self.update_redshift_destination_description,
+        #     "HttpEndpointDestinationDescription": self.update_http_endpoint_destination_description,
+        #     "ExtendedS3DestinationDescription": self.update_extended_s3_destination_description,
+        #     "RedshiftDestinationDescElasticsearchDestinationDescription": self.update_redshift_destination_description,
+        #     "ElasticsearchDestinationDescription": self.update_elasticsearch_destination_description,
+        #     "SplunkDestinationDescription": self.update_splunk_destination_description
+        # }
 
         for destination in destinations:
             for key, value in destination.items():
@@ -127,7 +127,7 @@ class KinesisFirehoseConnector(SchematicAWSConnector):
             "bucket_name": extended_s3_destination_description["BucketARN"].split(":::")[1],
             "buffer_conditions": self.get_buffer_conditions(extended_s3_destination_description["BufferingHints"])
         }
-        destination_name = extended_s3_destination_description["BucketARN"].split("::")[1]
+        destination_name = extended_s3_destination_description["BucketARN"].split(":::")[1]
         return destination_name, refined_destination_description
 
     def update_http_endpoint_destination_description(self, http_endpoint_destination_description):
