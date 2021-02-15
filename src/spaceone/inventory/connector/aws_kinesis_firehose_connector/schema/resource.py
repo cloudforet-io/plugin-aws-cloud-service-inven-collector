@@ -77,46 +77,48 @@ firehose_meta_s3_backup = ItemDynamicLayout.set_fields(
     ]
 )
 
+
 # TAB - S3 Destination
 firehose_meta_s3_destination_details = ItemDynamicLayout.set_fields(
-    "Amazon S3 Destination",
+    "S3 Destination Details",
+    root_path="data.destinations.extended_s3_destination_description",
     fields=[
-        TextDyField.data_source("S3 bucket", "data.destinations.elasticsearch_destination_description.bucket_name"),
-        TextDyField.data_source("Prefix", "data.destinations.elasticsearch_destination_description.prefix"),
-        TextDyField.data_source("Error prefix",
-                                "data.destinations.elasticsearch_destination_description.error_output_prefix"),
+        TextDyField.data_source("S3 bucket", "bucket_name"),
+        TextDyField.data_source("Prefix", "prefix"),
+        TextDyField.data_source("Error prefix","error_output_prefix"),
         TextDyField.data_source("Buffer conditions",
-                                "data.destinations.elasticsearch_destination_description.buffer_conditions"),
-        TextDyField.data_source("Compression", "data.destinations.elasticsearch_destination_description.compression"),
+                                "buffer_conditions"),
+        TextDyField.data_source("Compression", "compression"),
         TextDyField.data_source("Encryption",
-                                "data.destinations.elasticsearch_destination_description.encryption_configuration.no_encryption")
+                                "encryption_configuration.no_encryption")
     ]
 )
+
 
 firehose_meta_s3_destination_glue = ItemDynamicLayout.set_fields(
     "Convert record format",
     fields=[
         TextDyField.data_source("Record format conversion",
-                                "data.destinations.elasticsearch_destination_description.data_format_conversion_configuration.record_format_conversion"),
+                                "data.destinations.extended_s3_destination_description.data_format_conversion_configuration.record_format_conversion"),
         ListDyField.data_source("Input format",
-                                "data.destinations.elasticsearch_destination_description.data_format_conversion_configuration.input_format",
+                                "data.destinations.extended_s3_destination_description.data_format_conversion_configuration.input_format",
                                 options={"delimiter": ", "}),
         ListDyField.data_source("Output format",
-                                "data.destinations.elasticsearch_destination_description.data_format_conversion_configuration.output_format",
+                                "data.destinations.extended_s3_destination_description.data_format_conversion_configuration.output_format",
                                 options={"delimiter": ", "}),
         TextDyField.data_source("AWS Glue region",
-                                "data.destinations.elasticsearch_destination_description.data_format_conversion_configuration.schema_configuration.region"),
+                                "data.destinations.extended_s3_destination_description.data_format_conversion_configuration.schema_configuration.region"),
         TextDyField.data_source("AWS Glue database",
-                                "data.destinations.elasticsearch_destination_description.data_format_conversion_configuration.schema_configuration.database_name"),
+                                "data.destinations.extended_s3_destination_description.data_format_conversion_configuration.schema_configuration.database_name"),
         TextDyField.data_source("AWS Glue table",
-                                "data.destinations.elasticsearch_destination_description.data_format_conversion_configuration.schema_configuration.table_name"),
+                                "data.destinations.extended_s3_destination_description.data_format_conversion_configuration.schema_configuration.table_name"),
         TextDyField.data_source("AWS Glue table version",
-                                "data.destinations.elasticsearch_destination_description.data_format_conversion_configuration.schema_configuration.version_id")
+                                "data.destinations.extended_s3_destination_description.data_format_conversion_configuration.schema_configuration.version_id")
     ]
 )
 
 firehose_meta_s3_destination = ListDynamicLayout.set_layouts(
-    "S3 Destination",
+    "Amazon S3 Destination",
     layouts=[
         firehose_meta_s3_destination_details,
         firehose_meta_s3_destination_glue
@@ -139,6 +141,7 @@ firehose_meta_http_endpoint_destination_details = ItemDynamicLayout.set_fields(
                                 "data.destinations.http_endpoint_destination_description.buffer_conditions")
     ]
 )
+
 # TAB - Elastic Search Destination
 firehose_meta_elasticsearch_destination_description = ItemDynamicLayout.set_fields(
     "Amazon Elastic Search Destination",
