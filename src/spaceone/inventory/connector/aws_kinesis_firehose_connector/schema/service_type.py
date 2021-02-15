@@ -23,7 +23,7 @@ cst_firehose._metadata = CloudServiceTypeMeta.set_meta(
             default_state={
                 "safe": ["ACTIVE"],
                 'warning': ["CREATING", "DELETING"],
-                "alert": ["DELETING_FAILED", "CREATING_FAILED"]
+                "alert": ["DELETING_FAILED", "CREATING_FAILED", "SUSPENDED"]
             },
         ),
         TextDyField.data_source("Source", "data.source.source_name"),
