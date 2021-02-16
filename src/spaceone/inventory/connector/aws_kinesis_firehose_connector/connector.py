@@ -1,4 +1,5 @@
 import logging
+import pprint
 import re
 import time
 from typing import List
@@ -109,7 +110,9 @@ class KinesisFirehoseConnector(SchematicAWSConnector):
                 "s3_backup_info": self.get_s3_backup_info(value["S3BackupMode"],
                                                           value.get("S3DestinationDescription", {}))
             }
+
         return values, additional_tabs
+
 
     @staticmethod
     def update_splunk_destination_description(splunk_destination_description):
