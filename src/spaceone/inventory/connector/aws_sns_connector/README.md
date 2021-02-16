@@ -34,10 +34,12 @@ Please contact us if you need any further information. (<support@spaceone.dev>)
     "Statement": [
         {
             "Action": [
-              
+                "sns:Get*",
+                "sns:List*",
+                "kms:Describe*"
             ],
             "Effect": "Allow",
-            "Resource": "arn:aws:*:{REGION_NAME}:*:*"
+            "Resource": "*"
         }
     ]
 }

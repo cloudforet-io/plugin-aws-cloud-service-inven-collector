@@ -29,7 +29,6 @@ Please contact us if you need any further information. (<support@spaceone.dev>)
         {
             "Action": [
                 "acm:Describe*",
-                "acm:Get*",
                 "acm:List*"
             ],
             "Effect": "Allow",

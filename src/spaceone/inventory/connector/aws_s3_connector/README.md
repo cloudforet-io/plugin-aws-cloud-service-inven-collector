@@ -39,10 +39,11 @@ Please contact us if you need any further information. (<support@spaceone.dev>)
     "Statement": [
         {
             "Action": [
-              
+                "s3:Get*",
+                "s3:List*"
             ],
             "Effect": "Allow",
-            "Resource": "arn:aws:*:{REGION_NAME}:*:*"
+            "Resource": "*"
         }
     ]
 }

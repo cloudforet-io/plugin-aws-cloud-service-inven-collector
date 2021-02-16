@@ -27,7 +27,7 @@ Please contact us if you need any further information. (<support@spaceone.dev>)
   
 
 - Boto3 info
-  - Client : vpc
+  - Client : ec2
   - API used
     - [EC2.Paginator.DescribeVpcs](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ec2.html#EC2.Paginator.DescribeVpcs)
     - [describe_dhcp_options()](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ec2.html#EC2.Client.describe_dhcp_options)
@@ -56,10 +56,10 @@ Please contact us if you need any further information. (<support@spaceone.dev>)
     "Statement": [
         {
             "Action": [
-              
+                "ec2:Describe*"
             ],
             "Effect": "Allow",
-            "Resource": "arn:aws:*:{REGION_NAME}:*:*"
+            "Resource": "*"
         }
     ]
 }

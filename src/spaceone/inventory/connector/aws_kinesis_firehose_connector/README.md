@@ -16,10 +16,9 @@ Please contact us if you need any further information. (<support@spaceone.dev>)
 - Boto3 info
   - Client : firehose
   - API used
-    - []()
-    - []()
-    - []()
-    - []()
+    - [list_delivery_streams()](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/firehose.html#Firehose.Client.list_delivery_streams)
+    - [describe_delivery_stream()](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/firehose.html#Firehose.Client.describe_delivery_stream)
+    - [list_tags_for_delivery_stream()](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/firehose.html#Firehose.Client.list_tags_for_delivery_stream)
   
       
 
@@ -32,10 +31,11 @@ Please contact us if you need any further information. (<support@spaceone.dev>)
     "Statement": [
         {
             "Action": [
-              
+                "firehose:Describe*",
+                "firehose:List*"
             ],
             "Effect": "Allow",
-            "Resource": "arn:aws:*:{REGION_NAME}:*:*"
+            "Resource": "*"
         }
     ]
 }
