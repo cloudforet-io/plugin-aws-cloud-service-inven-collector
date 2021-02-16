@@ -99,6 +99,8 @@ class KinesisFirehoseConnector(SchematicAWSConnector):
         return destinations_ref
 
     def refine_destinations_ref(self, key, values):
+        additional_tabs = dict()
+
         for value in values:
             destn_name, refined_destn_des = eval(f"self.update_" + self.camel_to_snake(key) + "(value)")
             value.update(refined_destn_des)
