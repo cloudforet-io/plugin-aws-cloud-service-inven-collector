@@ -13,7 +13,7 @@ on:
     types: [branch_tagging]
 
 jobs:
-  
+
   condition_check:
     runs-on: ubuntu-latest
     outputs:
@@ -67,7 +67,6 @@ jobs:
             then echo "::set-output name=not_first_tag::true"
             else echo "::set-output name=not_first_tag::false"
           fi
-
   update_master_branch_version_file:
     needs: condition_check
     runs-on: ubuntu-latest
@@ -103,14 +102,13 @@ jobs:
       - name: task
         if: needs.condition_check.outputs.NOT_FIRST_TAG == 'false' && (github.event_name == 'workflow_dispatch' || github.event_name == 'repository_dispatch')
         run: |
-          git tag ${{ env.VERSION }} 
+          git tag ${{ env.VERSION }}
           git push --atomic origin ${{ env.BRANCH }} ${{ env.VERSION }}
       - name: task
         if: needs.condition_check.outputs.NOT_FIRST_TAG == 'false' && (github.event_name == 'push')
         run: |
-          \git tag -f ${{ env.VERSION }} 
+          \git tag -f ${{ env.VERSION }}
           git push && \git push -f origin "${{ env.VERSION }}"
-
   docker:
     needs: [condition_check, update_local_version_file]
     if: github.repository_owner == 'spaceone-dev'
