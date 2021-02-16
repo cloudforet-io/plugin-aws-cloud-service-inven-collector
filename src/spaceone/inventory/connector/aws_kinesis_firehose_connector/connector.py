@@ -1,5 +1,4 @@
 import logging
-import pprint
 import re
 import time
 from typing import List
@@ -79,6 +78,7 @@ class KinesisFirehoseConnector(SchematicAWSConnector):
                        "SplunkDestinationDescription"]
 
         destinations_ref = self.initiate_destinations_ref(destn_types, destinations)
+        additional_tabs = dict()
 
         for key, values in destinations_ref.items():
             if values:
@@ -112,7 +112,6 @@ class KinesisFirehoseConnector(SchematicAWSConnector):
             }
 
         return values, additional_tabs
-
 
     @staticmethod
     def update_splunk_destination_description(splunk_destination_description):
