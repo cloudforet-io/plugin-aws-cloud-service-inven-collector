@@ -36,10 +36,11 @@ Please contact us if you need any further information. (<support@spaceone.dev>)
     "Statement": [
         {
             "Action": [
-              
+                "autoscaling:Describe*",
+                "ec2:DescribeLaunchConfigurations",
             ],
             "Effect": "Allow",
-            "Resource": "arn:aws:*:{REGION_NAME}:*:*"
+            "Resource": "*"
         }
     ]
 }
