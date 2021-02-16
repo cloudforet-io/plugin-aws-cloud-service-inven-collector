@@ -17,9 +17,9 @@ Please contact us if you need any further information. (<support@spaceone.dev>)
 - Boto3 info
   - Client : apigateway, apigatewayv2
   - API used
-    - Paginator.GetRestApis : https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/apigateway.html#APIGateway.Paginator.GetRestApis
-    - get_resources(): https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/apigateway.html#APIGateway.Client.get_resources
-    - Paginator.GetApis: https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/apigatewayv2.html#ApiGatewayV2.Paginator.GetApis
+    - [APIGateway.Paginator.GetRestApis](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/apigateway.html#APIGateway.Paginator.GetRestApis)
+    - [get_resources()](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/apigateway.html#APIGateway.Client.get_resources)
+    - [APIGatewayV2.Paginator.GetApis](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/apigatewayv2.html#ApiGatewayV2.Paginator.GetApis)
   
 ### Required Policy
   
