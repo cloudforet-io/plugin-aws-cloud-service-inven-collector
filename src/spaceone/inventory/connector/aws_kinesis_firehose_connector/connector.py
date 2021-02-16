@@ -1,4 +1,5 @@
 import logging
+import pprint
 import re
 import time
 from typing import List
@@ -55,13 +56,13 @@ class KinesisFirehoseConnector(SchematicAWSConnector):
         for stream_name in self.list_delivery_streams():
             stream_response = self.client.describe_delivery_stream(DeliveryStreamName=stream_name)
             delivery_stream_info = stream_response.get("DeliveryStreamDescription", {})
-            destinations, additional_tabs = self.get_destinations(delivery_stream_info["Destinations"])
+            destinations_ref, additional_tabs = self.get_destinations_ref(delivery_stream_info["Destinations"])
             delivery_stream_info.update(
                 {
                     "source": self.get_source(delivery_stream_info.get("Source", {})),
                     "delivery_stream_status_display": self.get_delivery_stream_status_display(
                         (delivery_stream_info["DeliveryStreamStatus"])),
-                    "destinations": destinations,
+                    "destinations_ref": destinations_ref,
                     "additional_tabs": additional_tabs
                 }
             )
@@ -72,80 +73,89 @@ class KinesisFirehoseConnector(SchematicAWSConnector):
         tag_response = self.client.list_tags_for_delivery_stream(DeliveryStreamName=name)
         return tag_response.get("Tags", [])
 
-    def get_destinations(self, destinations):
-        destination_types = ["RedshiftDestinationDescription", "HttpEndpointDestinationDescription",
-                             "ExtendedS3DestinationDescription", "ElasticsearchDestinationDescription",
-                             "SplunkDestinationDescription"]
+    def get_destinations_ref(self, destinations):
+        destn_types = ["RedshiftDestinationDescription", "HttpEndpointDestinationDescription",
+                       "ExtendedS3DestinationDescription", "ElasticsearchDestinationDescription",
+                       "SplunkDestinationDescription"]
 
-        # destination_types = {
-        #     "RedshiftDestinationDescription": self.update_redshift_destination_description,
-        #     "HttpEndpointDestinationDescription": self.update_http_endpoint_destination_description,
-        #     "ExtendedS3DestinationDescription": self.update_extended_s3_destination_description,
-        #     "RedshiftDestinationDescElasticsearchDestinationDescription": self.update_redshift_destination_description,
-        #     "ElasticsearchDestinationDescription": self.update_elasticsearch_destination_description,
-        #     "SplunkDestinationDescription": self.update_splunk_destination_description
-        # }
+        destinations_ref = self.initiate_destinations_ref(destn_types, destinations)
+
+        for key, values in destinations_ref.items():
+            if values:
+                values, additional_tabs = self.refine_destinations_ref(key, values)
+
+        return destinations_ref, additional_tabs
+
+    @staticmethod
+    def initiate_destinations_ref(destn_types, destinations):
+        destinations_ref = dict()
+        for destn_type in destn_types:
+            destinations_ref[destn_type] = list()
 
         for destination in destinations:
             for key, value in destination.items():
-                if key in destination_types:
-                    # TODO
-                    # destination_name, refined_destination_description = destination_types.get(key)
-                    destination_name, refined_destination_description = eval(
-                        f"self.update_" + self.camel_to_snake(key) + "(value)")
-                    value.update(refined_destination_description)
-                    additional_tabs = {
-                        "destination_name": destination_name,
-                        "cloud_watch_info": self.get_cloud_watch_error_logging(value["CloudWatchLoggingOptions"]),
-                        "lambda_tab": self.get_lambda_tab(value["ProcessingConfiguration"]),
-                        "iam_role": self.get_iam_role(value["RoleARN"]),
-                        "s3_backup_info": self.get_s3_backup_info(value["S3BackupMode"],
-                                                                  value.get("S3DestinationDescription", {}))
-                    }
-        return destinations, additional_tabs
+                if key in destn_types:
+                    destinations_ref[key].append(value)
+        return destinations_ref
+
+    def refine_destinations_ref(self, key, values):
+        for value in values:
+            destn_name, refined_destn_des = eval(f"self.update_" + self.camel_to_snake(key) + "(value)")
+            value.update(refined_destn_des)
+            additional_tabs = {
+                "destination_name": destn_name,
+                "cloud_watch_info": self.get_cloud_watch_error_logging(value["CloudWatchLoggingOptions"]),
+                "lambda_tab": self.get_lambda_tab(value["ProcessingConfiguration"]),
+                "iam_role": self.get_iam_role(value["RoleARN"]),
+                "s3_backup_info": self.get_s3_backup_info(value["S3BackupMode"],
+                                                          value.get("S3DestinationDescription", {}))
+            }
+
+        return values, additional_tabs
+
 
     @staticmethod
     def update_splunk_destination_description(splunk_destination_description):
-        refined_destination_description = {
+        refined_destn_des = {
             "hec_endpoint_details": f"{splunk_destination_description['HECEndpoint']} ({splunk_destination_description['HECEndpointType']} type)"
         }
-        destination_name = splunk_destination_description["HECEndpoint"]
-        return destination_name, refined_destination_description
+        destn_name = splunk_destination_description["HECEndpoint"]
+        return destn_name, refined_destn_des
 
     def update_elasticsearch_destination_description(self, elasticsearch_destination_description):
-        refined_destination_description = {
+        refined_destn_des = {
             "domain_name": elasticsearch_destination_description["DomainARN"].split(":::")[1],
             "buffer_conditions": self.get_buffer_conditions(elasticsearch_destination_description["BufferingHints"])
         }
-        destination_name = elasticsearch_destination_description["ClusterEndpoint"]
-        return destination_name, refined_destination_description
+        destn_name = elasticsearch_destination_description["ClusterEndpoint"]
+        return destn_name, refined_destn_des
 
     def update_extended_s3_destination_description(self, extended_s3_destination_description):
-        refined_destination_description = {
+        refined_destn_des = {
             "data_format_conversion_configuration": self.get_data_format_conversion_configuration(
                 extended_s3_destination_description.get("DataFormatConversionConfiguration", {})),
             "bucket_name": extended_s3_destination_description["BucketARN"].split(":::")[1],
             "buffer_conditions": self.get_buffer_conditions(extended_s3_destination_description["BufferingHints"])
         }
-        destination_name = extended_s3_destination_description["BucketARN"].split(":::")[1]
-        return destination_name, refined_destination_description
+        destn_name = extended_s3_destination_description["BucketARN"].split(":::")[1]
+        return destn_name, refined_destn_des
 
     def update_http_endpoint_destination_description(self, http_endpoint_destination_description):
-        refined_destination_description = {
+        refined_destn_des = {
             "buffer_conditions": self.get_buffer_conditions(http_endpoint_destination_description["BufferingHints"]),
         }
-        destination_name = http_endpoint_destination_description["EndpointConfiguration"]["Url"]
-        return destination_name, refined_destination_description
+        destn_name = http_endpoint_destination_description["EndpointConfiguration"]["Url"]
+        return destn_name, refined_destn_des
 
     @staticmethod
     def update_redshift_destination_description(redshift_destination_description):
-        destination_name = redshift_destination_description["ClusterJDBCURL"].split("://")[1].split('.')[0]
-        refined_destination_description = {
-            "cluster": destination_name,
+        destn_name = redshift_destination_description["ClusterJDBCURL"].split("://")[1].split('.')[0]
+        refined_destn_des = {
+            "cluster": destn_name,
             "db_name": redshift_destination_description["ClusterJDBCURL"].split("/")[-1].split('.')[0]
         }
 
-        return destination_name, refined_destination_description
+        return destn_name, refined_destn_des
 
     @staticmethod
     def get_data_format_conversion_configuration(data_format_conversion_configuration):

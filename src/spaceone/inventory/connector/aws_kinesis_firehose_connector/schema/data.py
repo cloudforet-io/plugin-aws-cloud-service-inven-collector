@@ -365,6 +365,15 @@ class Destination(Model):
                                                     serialize_when_none=False)
 
 
+class DestinationsRef(Model):
+    destination_id = ListType(StringType())
+    extended_s3_destination_description = ListType(ModelType(Destination), serialize_when_none=False, deserialize_from='ExtendedS3DestinationDescription')
+    elasticsearch_destination_description = ListType(ModelType(Destination), serialize_when_none=False, deserialize_from='ElasticsearchDestinationDescription')
+    splunk_destination_description = ListType(ModelType(Destination), serialize_when_none=False, deserialize_from='SplunkDestinationDescription')
+    redshift_destination_description = ListType(ModelType(Destination), serialize_when_none=False, deserialize_from='RedshiftDestinationDescription')
+    http_endpoint_destination_description = ListType(ModelType(Destination), serialize_when_none=False, deserialize_from='HttpEndpointDestinationDescription')
+
+
 class Destinations(Model):
     destination_id = StringType(deserialize_from='DestinationId')
     s3_destination_description = ModelType(S3DestinationDescription, deserialize_from='S3DestinationDescription')
@@ -412,17 +421,17 @@ class Source(Model):
 
 
 class LambdaTab(Model):
-    source_record_transformation = StringType()
-    data_transformation = StringType()
-    buffer_conditions = StringType()
-    lambda_func = StringType()
-    lambda_func_ver = StringType()
-    timeout = StringType()
+    source_record_transformation = StringType(choices=('Enabled', 'Disabled'))
+    data_transformation = StringType(serialize_when_none=False)
+    buffer_conditions = StringType(serialize_when_none=False)
+    lambda_func = StringType(serialize_when_none=False)
+    lambda_func_ver = StringType(serialize_when_none=False)
+    timeout = StringType(serialize_when_none=False)
 
 
 class AdditionalTabs(Model):
     destination_name = StringType()
-    cloud_watch_info = StringType()
+    cloud_watch_info = StringType(choices=('Enabled', 'Disabled'))
     lambda_tab = ModelType(LambdaTab)
     iam_role = StringType()
     s3_backup_info = ModelType(S3BackupInfo)
@@ -443,7 +452,8 @@ class DeliveryStreamDescription(Model):
     create_timestamp = DateTimeType(deserialize_from='CreateTimestamp')
     last_update_timestamp = DateTimeType(deserialize_from='LastUpdateTimestamp')
     source = ModelType(Source)  # Source, deserialize_from="Source"
-    destinations = ListType(ModelType(Destinations))
+    destinations = ListType(ModelType(Destinations), deserialize_from="Destinations")
+    destinations_ref = ModelType(DestinationsRef)
     additional_tabs = ModelType(AdditionalTabs)
     HasMoreDestinations = BooleanType(deserialize_from='has_more_destinations')
 
