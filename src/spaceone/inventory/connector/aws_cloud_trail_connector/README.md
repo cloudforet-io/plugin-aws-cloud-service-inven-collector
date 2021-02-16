@@ -15,7 +15,7 @@ Please contact us if you need any further information. (<support@spaceone.dev>)
 - Boto3 info
   - Client : cloudtrail
   - API used
-    - [CloudFront.Paginator.ListDistributions](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/autoscaling.html#AutoScaling.Paginator.DescribeAutoScalingGroups)
+    - [describe_trails()](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/cloudtrail.html#CloudTrail.Client.describe_trails)
     - [get_event_selectors()](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/cloudtrail.html#CloudTrail.Client.get_event_selectors)
     - [list_tags()](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/cloudtrail.html#CloudTrail.Client.list_tags)
     - [get_insight_selectors()](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/cloudtrail.html#CloudTrail.Client.get_insight_selectors)
@@ -30,6 +30,7 @@ Please contact us if you need any further information. (<support@spaceone.dev>)
     "Statement": [
         {
             "Action": [
+                "cloudtrail:Describe*",
                 "cloudtrail:Get*",
                 "cloudtrail:List*",
             ],

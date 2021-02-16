@@ -28,6 +28,7 @@ Please contact us if you need any further information. (<support@spaceone.dev>)
     "Statement": [
         {
             "Action": [
+                "sqs:Get*"
                 "sqs:List*"
             ],
             "Effect": "Allow",
