@@ -99,10 +99,20 @@ class KinesisFirehoseConnector(SchematicAWSConnector):
         return destinations_ref
 
     def refine_destinations_ref(self, key, values):
+        destn_type_map = {
+            "RedshiftDestinationDescription": self.update_redshift_destination_description,
+            "HttpEndpointDestinationDescription": self.update_http_endpoint_destination_description,
+            "ExtendedS3DestinationDescription": self.update_extended_s3_destination_description,
+            "ElasticsearchDestinationDescription": self.update_elasticsearch_destination_description,
+            "SplunkDestinationDescription": self.update_splunk_destination_description
+        }
+
         additional_tabs = dict()
 
         for value in values:
-            destn_name, refined_destn_des = eval(f"self.update_" + self.camel_to_snake(key) + "(value)")
+            #destn_name, refined_destn_des = eval(f"self.update_" + self.camel_to_snake(key) + "(value)")
+            destn_name, refined_destn_des = destn_type_map[key](value)
+
             value.update(refined_destn_des)
             additional_tabs = {
                 "destination_name": destn_name,
@@ -236,10 +246,10 @@ class KinesisFirehoseConnector(SchematicAWSConnector):
     def get_role_arn(role_arn):
         return role_arn.split("/")[-1]
 
-    @staticmethod
-    def camel_to_snake(name):
-        name = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
-        return re.sub('([a-z0-9])([A-Z])', r'\1_\2', name).lower()
+    # @staticmethod
+    # def camel_to_snake(name):
+    #     name = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
+    #     return re.sub('([a-z0-9])([A-Z])', r'\1_\2', name).lower()
 
     @staticmethod
     def get_source(source):
