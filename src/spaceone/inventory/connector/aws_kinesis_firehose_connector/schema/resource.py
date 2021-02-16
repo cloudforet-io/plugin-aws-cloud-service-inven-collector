@@ -96,7 +96,7 @@ firehose_meta_s3_destination_details = TableDynamicLayout.set_fields(
 
 firehose_meta_s3_destination_glue = TableDynamicLayout.set_fields(
     "Convert record format",
-    root_path="data.destinations.extended_s3_destination_description",
+    root_path="data.destinations_ref.extended_s3_destination_description",
     fields=[
         TextDyField.data_source("Record format conversion",
                                 "data_format_conversion_configuration.record_format_conversion"),
@@ -125,7 +125,7 @@ firehose_meta_s3_destination = ListDynamicLayout.set_layouts(
 # TAB - Http Endpoint Destination
 firehose_meta_http_endpoint_destination_details = TableDynamicLayout.set_fields(
     "Http Endpoint Destination",
-    root_path="data.destinations.http_endpoint_destination_description",
+    root_path="data.destinations_ref.http_endpoint_destination_description",
     fields=[
         TextDyField.data_source("HTTP endpoint name", "endpoint_configuration.name"),
         TextDyField.data_source("HTTP endpoint URL", "endpoint_configuration.url"),
@@ -138,7 +138,7 @@ firehose_meta_http_endpoint_destination_details = TableDynamicLayout.set_fields(
 # TAB - Elastic Search Destination
 firehose_meta_elasticsearch_destination_description = TableDynamicLayout.set_fields(
     "Amazon Elastic Search Destination",
-    root_path="data.destinations.elasticsearch_destination_description",
+    root_path="data.destinations_ref.elasticsearch_destination_description",
     fields=[
         TextDyField.data_source("Cluster endpoint", "cluster_endpoint"),
         TextDyField.data_source("Domain name", "domain_name"),
@@ -155,7 +155,7 @@ firehose_meta_elasticsearch_destination_description = TableDynamicLayout.set_fie
 # TAB - Splunk Destination
 firehose_meta_splunk_destination_details = TableDynamicLayout.set_fields(
     "Amazon Splunk Destination",
-    root_path="data.destinations.splunk_destination_description",
+    root_path="data.destinations_ref.splunk_destination_description",
     fields=[
         TextDyField.data_source("HEC Endpoint", "hec_endpoint"),
         TextDyField.data_source("HEC ACK timeout", "hec_acknowledgment_timeout_in_seconds"),
@@ -167,7 +167,7 @@ firehose_meta_splunk_destination_details = TableDynamicLayout.set_fields(
 # TAB - Redshift Destination
 firehose_meta_redshift_destination_details = TableDynamicLayout.set_fields(
     "Amazon Redshift Destination",
-    root_path="data.destinations.redshift_destination_description",
+    root_path="data.destinations_ref.redshift_destination_description",
     fields=[
         TextDyField.data_source("COPY options", "copy_command.copy_options"),
         TextDyField.data_source("COPY command retry duration (seconds)", "retry_options.duration_in_seconds"),
