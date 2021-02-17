@@ -14,7 +14,7 @@ Please contact us if you need any further information. (<support@spaceone.dev>)
 
 ---
 
-### Collecting Contents
+## Collecting Contents
 
 * Table of Contents
     * [API Gateway](/src/spaceone/inventory/connector/aws_api_gateway_connector/README.md)
@@ -108,6 +108,7 @@ Please contact us if you need any further information. (<support@spaceone.dev>)
         * VPN Connection
         * VPN Gateway
     
+
 ---
 ## Authentication Overview
 
@@ -127,6 +128,7 @@ Please, set authentication privilege for followings:
                 "application-autoscaling:Describe*",
                 "autoscaling:Describe*",
                 "cloudfront:List*",
+                "cloudtrail:Describe*",
                 "cloudtrail:Get*",
                 "cloudtrail:List*",
                 "cloudwatch:Describe*",
@@ -169,7 +171,8 @@ Please, set authentication privilege for followings:
                 "secretsmanager:List*",
                 "sns:Get*",
                 "sns:List*",
-                "sqs:List*",
+                "sqs:Get*",
+                "sqs:List*"
             ],
             "Effect": "Allow",
             "Resource": "*"
@@ -178,3 +181,26 @@ Please, set authentication privilege for followings:
 }
 </code>
 </pre>
+
+
+---
+
+
+## Release Note
+
+### Ver 1.8
+
+* Add to supported Cloud Service
+  * Amazon MSK (Managed Streaming for Apache)
+    * Cluster
+    * Cluster Configuration
+    
+  * Kinesis Data Stream
+    * Data Stream
+    
+  * Kinesis Data Firehose
+    * Delivery Stream
+    
+  * Amazon Certificate Manager (ACM)
+    * Certificate
+    
