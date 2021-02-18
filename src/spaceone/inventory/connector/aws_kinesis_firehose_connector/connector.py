@@ -110,7 +110,6 @@ class KinesisFirehoseConnector(SchematicAWSConnector):
         additional_tabs = dict()
 
         for value in values:
-            #destn_name, refined_destn_des = eval(f"self.update_" + self.camel_to_snake(key) + "(value)")
             destn_name, refined_destn_des = destn_type_map[key](value)
 
             value.update(refined_destn_des)
@@ -245,11 +244,6 @@ class KinesisFirehoseConnector(SchematicAWSConnector):
     @staticmethod
     def get_role_arn(role_arn):
         return role_arn.split("/")[-1]
-
-    # @staticmethod
-    # def camel_to_snake(name):
-    #     name = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
-    #     return re.sub('([a-z0-9])([A-Z])', r'\1_\2', name).lower()
 
     @staticmethod
     def get_source(source):
