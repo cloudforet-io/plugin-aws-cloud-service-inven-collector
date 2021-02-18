@@ -99,7 +99,7 @@ class S3BackupDescription(Model):
     cloud_watch_logging_options = ModelType(CloudWatchLoggingOptions, deserialize_from='CloudWatchLoggingOptions')
 
 
-class ColumnToJsonKeyMappings(Model):  # SimpleTableLayout
+class ColumnToJsonKeyMappings(Model):
     key = StringType()
     value = StringType()
 
