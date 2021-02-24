@@ -75,7 +75,6 @@ class RDSConnector(SchematicAWSConnector):
             # For All except Database
             for collect_resource in collect_resources:
                 resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
-
         print(f' RDS Finished {time.time() - start_time} Seconds')
         return resources
 
@@ -252,7 +251,7 @@ class RDSConnector(SchematicAWSConnector):
                               'oracle-ee', 'oracle-se', 'oracle-se1', 'oracle-se2',
                               'sqlserver-ex', 'sqlserver-web', 'sqlserver-se', 'sqlserver-ee']
 
-        EXCLUDE_FILTER = {'ap-south-1': ['oracle-se', 'oracle-se1']}
+        EXCLUDE_FILTER = {'ap-south-1': ['oracle-se', 'oracle-se1'], 'sa-east-1': ['oracle-se', 'oracle-se1']}
 
         if EXCLUDE_FILTER.get(region_name):
             filter_values = [rds_filter for rds_filter in DEFAULT_RDS_FILTER if rds_filter not in EXCLUDE_FILTER.get(region_name)]
