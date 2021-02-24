@@ -116,7 +116,6 @@ class CollectorService(BaseService):
             for future in concurrent.futures.as_completed(future_executors):
                 for result in future.result():
                     collected_region = self.get_region_from_result(result.get('resource', {}))
-
                     if collected_region is not None and \
                             collected_region.get('resource', {}).get('region_code') not in collected_region_code:
                         resource_regions.append(collected_region)
