@@ -111,8 +111,12 @@ class CollectorService(BaseService):
             for execute_manager in self.execute_managers:
                 print(f'@@@ {execute_manager} @@@')
                 _manager = self.locator.get_manager(execute_manager)
-                future_executors.append(executor.submit(_manager.collect_resources, **params))
-
+                #future_executors.append(executor.submit(_manager.collect_resources, **params))
+                try:
+                    _mgr_data = executor.submit(_manager.collect_resources, **params)
+                    future_executors.append(_mgr_data)
+                except Exception as e:
+                    _LOGGER.error(f'failed to execute {execute_manager}')
             for future in concurrent.futures.as_completed(future_executors):
                 for result in future.result():
                     collected_region = self.get_region_from_result(result.get('resource', {}))
