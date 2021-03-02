@@ -249,10 +249,11 @@ class RDSConnector(SchematicAWSConnector):
     @staticmethod
     def get_rds_filter(region_name):
         DEFAULT_RDS_FILTER = ['aurora', 'aurora-mysql', 'mysql', 'mariadb', 'postgres',
-                              'oracle-ee', 'oracle-se', 'oracle-se1', 'oracle-se2',
+                              # 'oracle-ee', 'oracle-se', 'oracle-se1', 'oracle-se2',
                               'sqlserver-ex', 'sqlserver-web', 'sqlserver-se', 'sqlserver-ee']
 
-        EXCLUDE_FILTER = {'ap-south-1': ['oracle-se', 'oracle-se1']}
+        # EXCLUDE_FILTER = {'ap-south-1': ['oracle-se', 'oracle-se1']}
+        EXCLUDE_FILTER = {}
 
         if EXCLUDE_FILTER.get(region_name):
             filter_values = [rds_filter for rds_filter in DEFAULT_RDS_FILTER if rds_filter not in EXCLUDE_FILTER.get(region_name)]
