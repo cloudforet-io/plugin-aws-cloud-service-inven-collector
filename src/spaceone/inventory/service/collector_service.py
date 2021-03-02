@@ -108,24 +108,30 @@ class CollectorService(BaseService):
         with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKER) as executor:
             print("[ EXECUTOR START ]")
             future_executors = []
+
+            error_occured = False
             for execute_manager in self.execute_managers:
                 print(f'@@@ {execute_manager} @@@')
                 _manager = self.locator.get_manager(execute_manager)
-                #future_executors.append(executor.submit(_manager.collect_resources, **params))
-                try:
-                    _mgr_data = executor.submit(_manager.collect_resources, **params)
-                    future_executors.append(_mgr_data)
-                except Exception as e:
-                    _LOGGER.error(f'failed to execute {execute_manager}')
+                future_executors.append(executor.submit(_manager.collect_resources, **params))
+                # try:
+                #     _mgr_data = executor.submit(_manager.collect_resources, **params)
+                #     future_executors.append(_mgr_data)
+                # except Exception as e:
+                #     _LOGGER.error(f'failed to execute {execute_manager}')
             for future in concurrent.futures.as_completed(future_executors):
-                for result in future.result():
-                    collected_region = self.get_region_from_result(result.get('resource', {}))
-                    if collected_region is not None and \
-                            collected_region.get('resource', {}).get('region_code') not in collected_region_code:
-                        resource_regions.append(collected_region)
-                        collected_region_code.append(collected_region.get('resource', {}).get('region_code'))
+                try:
+                    for result in future.result():
+                        collected_region = self.get_region_from_result(result.get('resource', {}))
+                        if collected_region is not None and \
+                                collected_region.get('resource', {}).get('region_code') not in collected_region_code:
+                            resource_regions.append(collected_region)
+                            collected_region_code.append(collected_region.get('resource', {}).get('region_code'))
 
-                    yield result
+                        yield result
+                except Exception as e:
+                    _LOGGER.error(f'failed to result {e}')
+                    error_occured = True
 
         print(f'TOTAL TIME : {time.time() - start_time} Seconds')
         for resource_region in resource_regions:
