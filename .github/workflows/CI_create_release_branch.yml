@@ -25,12 +25,7 @@ jobs:
           git config user.email github-actions@github.com
           git add .
           git commit -m "[CI/CD] create branch ${{ env.BRANCH }}"
-          git push
-          git reset HEAD^
-          rm -rf .github
-          git add .
-          git commit -m "[CI/CD] create branch ${{ env.BRANCH }}"
           git tag ${{ env.VERSION }}
+          git push --atomic origin master ${{ env.VERSION }}
           git checkout -b ${{ env.BRANCH }}
-          git push origin ${{ env.VERSION }}
           git push --set-upstream origin ${{ env.BRANCH }}
