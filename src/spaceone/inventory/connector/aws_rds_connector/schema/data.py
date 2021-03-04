@@ -503,6 +503,7 @@ class Database(Model):
     cluster = ModelType(Cluster, serialize_when_none=False)
     instance = ModelType(Instance, serialize_when_none=False)
     account_id = StringType()
+    tags = ListType(ModelType(Tags), default=[])
     cloudwatch = ModelType(CloudWatchModel, serialize_when_none=False)
 
     def reference(self, region_code):
