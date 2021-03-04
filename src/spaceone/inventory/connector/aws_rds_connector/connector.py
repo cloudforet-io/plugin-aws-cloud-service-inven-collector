@@ -92,6 +92,7 @@ class RDSConnector(SchematicAWSConnector):
                 'multi_az': cluster.multi_az,
                 'account_id': self.account_id,
                 'cluster': cluster,
+                'tags': cluster.tags
             }
             yield Database(db, strict=False), DBClusterResource
 
@@ -109,6 +110,7 @@ class RDSConnector(SchematicAWSConnector):
                     'multi_az': instance.multi_az,
                     'account_id': self.account_id,
                     'instance': instance,
+                    'tags': instance.tags
                 }
                 yield Database(db, strict=False), DBInstanceResource
 
