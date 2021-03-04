@@ -68,6 +68,7 @@ class RDSConnector(SchematicAWSConnector):
                 resources.append(DatabaseResponse(
                     {'resource': resource(
                         {'data': database_vo,
+                         'tags': database_vo.tags,
                          'region_code': region_name,
                          'reference': ReferenceModel(database_vo.reference(region_name))})}
                 ))
