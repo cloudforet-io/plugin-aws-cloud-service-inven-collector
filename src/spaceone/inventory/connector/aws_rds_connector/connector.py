@@ -68,7 +68,7 @@ class RDSConnector(SchematicAWSConnector):
                 resources.append(DatabaseResponse(
                     {'resource': resource(
                         {'data': database_vo,
-                         'tags': database_vo.tags,
+                         'tags': [{'key':tag.key, 'value': tag.value} for tag in database_vo.tags],
                          'region_code': region_name,
                          'reference': ReferenceModel(database_vo.reference(region_name))})}
                 ))
@@ -95,6 +95,7 @@ class RDSConnector(SchematicAWSConnector):
                 'cluster': cluster,
                 'tags': cluster.tags
             }
+
             yield Database(db, strict=False), DBClusterResource
 
         # Instance Only
