@@ -16,7 +16,7 @@ Memcached
 memcached_base = ItemDynamicLayout.set_fields('Description', fields=[
     TextDyField.data_source('Cluster Name', 'data.cache_cluster_id'),
     TextDyField.data_source('ARN', 'data.arn'),
-    EnumDyField.data_source('Status', 'data.status', default_state={
+    EnumDyField.data_source('Status', 'data.cache_cluster_status', default_state={
         'safe': ['available'],
     }),
     TextDyField.data_source('Configuration Endpoint', 'data.configuration_endpoint_display'),
@@ -35,12 +35,13 @@ memcached_base = ItemDynamicLayout.set_fields('Description', fields=[
     TextDyField.data_source('Maintenance Window', 'data.preferred_maintenance_window'),
     TextDyField.data_source('Backup Retension Period', 'data.snapshot_retention_limit'),
     TextDyField.data_source('Backup Window', 'data.snapshot_window'),
+    DateTimeDyField.data_source('Creation Time', 'data.cache_cluster_create_time')
 ])
 
 memcached_node = TableDynamicLayout.set_fields('Nodes', 'data.nodes', fields=[
     TextDyField.data_source('Node Name', 'node_name'),
     EnumDyField.data_source('Status', 'status', default_state={
-        'safe': ['available'],
+        'safe': ['in-sync'],
     }),
     TextDyField.data_source('Port', 'port'),
     TextDyField.data_source('Endpoint', 'endpoint'),
@@ -65,8 +66,20 @@ redis_base = ItemDynamicLayout.set_fields('Description', fields=[
         'warning': ['creating', 'modifying', 'deleting', 'snapshotting'],
         'alert': ['create-failed']
     }),
-    TextDyField.data_source('Configuration Endpoint', 'data.configuration_endpoint.address'),
+    TextDyField.data_source('Configuration Endpoint Address', 'data.configuration_endpoint.address'),
     TextDyField.data_source('Configuration Endpoint Port', 'data.configuration_endpoint.port'),
+    TextDyField.data_source('Primary Endpoint', 'data.primary_endpoint'),
+    TextDyField.data_source('Reader Endpoint', 'data.reader_endpoint'),
+    TextDyField.data_source('Engine', 'data.engine'),
+    TextDyField.data_source('Engine Version Compatibility', 'data.engine_version'),
+    TextDyField.data_source('Multi-AZ', 'data.multi_az'),
+    ListDyField.data_source('Availability Zones', 'data.availability_zones', options={
+        'delimiter': '<br>'
+    }),
+    TextDyField.data_source('Auto Fail-over', 'data.automatic_failover'),
+    TextDyField.data_source('Description', 'data.description'),
+    TextDyField.data_source('Parameter Group ', 'data.parameter_group_name'),
+    TextDyField.data_source('Subnet Group ', 'data.subnet_group_name'),
     TextDyField.data_source('Description', 'data.description'),
     TextDyField.data_source('Backup Retention Period', 'data.snapshot_retention_limit'),
     TextDyField.data_source('Encryption in-transit', 'data.transit_encryption_enabled'),
