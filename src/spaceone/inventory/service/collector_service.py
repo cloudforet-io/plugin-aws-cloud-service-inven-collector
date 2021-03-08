@@ -30,7 +30,7 @@ class CollectorService(BaseService):
             'Route53ConnectorManager',
             'S3ConnectorManager',
             'AutoScalingConnectorManager',
-            # 'ElastiCacheConnectorManager',
+            'ElastiCacheConnectorManager',
             'APIGatewayConnectorManager',
             'DirectConnectConnectorManager',
             # 'WorkSpaceConnectorManager',
@@ -111,11 +111,11 @@ class CollectorService(BaseService):
             print("[ EXECUTOR START ]")
             future_executors = []
 
-            error_occured = False
             for execute_manager in self.execute_managers:
                 print(f'@@@ {execute_manager} @@@')
                 _manager = self.locator.get_manager(execute_manager)
                 future_executors.append(executor.submit(_manager.collect_resources, **params))
+
             for future in concurrent.futures.as_completed(future_executors):
                 try:
                     for result in future.result():
@@ -128,7 +128,6 @@ class CollectorService(BaseService):
                         yield result
                 except Exception as e:
                     _LOGGER.error(f'failed to result {e}')
-                    error_occured = True
 
         print(f'TOTAL TIME : {time.time() - start_time} Seconds')
         for resource_region in resource_regions:
