@@ -15,9 +15,8 @@ cst_memcached.tags = {
 
 cst_memcached._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('ARN', 'data.arn'),
         TextDyField.data_source('Cluster Name', 'data.cache_cluster_id'),
-        EnumDyField.data_source('Status', 'data.status', default_state={
+        EnumDyField.data_source('Status', 'data.cache_cluster_status', default_state={
             'safe': ['available'],
         }),
         TextDyField.data_source('Nodes', 'data.num_cache_nodes'),
@@ -52,7 +51,7 @@ cst_redis.tags = {
 
 cst_redis._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Cluster Name', 'data.cluster_name'),
+        TextDyField.data_source('Cluster Name', 'data.replication_group_id'),
         TextDyField.data_source('Mode', 'data.mode'),
         EnumDyField.data_source('Status', 'data.status', default_state={
             'safe': ['available'],
@@ -61,18 +60,19 @@ cst_redis._metadata = CloudServiceTypeMeta.set_meta(
         }),
         TextDyField.data_source('Shard', 'data.shard_count'),
         TextDyField.data_source('Nodes', 'data.node_count'),
-        TextDyField.data_source('Node Type', 'data.node_type'),
-        TextDyField.data_source('Encryption in-transit', 'data.encryption_in_transit'),
-        TextDyField.data_source('Encryption at-rest', 'data.encryption_at_rest'),
+        TextDyField.data_source('Node Type', 'data.cache_node_type'),
+        TextDyField.data_source('Encryption in-transit', 'data.transit_encryption_enabled'),
+        TextDyField.data_source('Encryption at-rest', 'data.at_rest_encryption_enabled'),
     ],
     search=[
         SearchField.set(name='ARN', key='data.arn'),
         SearchField.set(name='Cluster Name', key='data.replication_group_id'),
         SearchField.set(name='Mode', key='data.mode'),
         SearchField.set(name='Status', key='data.status'),
-        SearchField.set(name='Nodes', key='data.num_cache_nodes', data_type='integer'),
+        SearchField.set(name='Shard Count', key='data.shard_count', data_type='integer'),
+        SearchField.set(name='Node Count', key='data.node_count', data_type='integer'),
         SearchField.set(name='Node Type', key='data.cache_node_type'),
-        SearchField.set(name='Zone', key='data.preferred_availability_zone'),
+        SearchField.set(name='Multi AZ', key='data.multi_az'),
         SearchField.set(name='Configuration Endpoint Address', key='data.configuration_endpoint.address'),
         SearchField.set(name='Configuration Endpoint Port', key='data.configuration_endpoint.port'),
     ]
