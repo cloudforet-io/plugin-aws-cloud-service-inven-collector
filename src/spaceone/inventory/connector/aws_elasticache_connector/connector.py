@@ -79,6 +79,7 @@ class ElastiCacheConnector(SchematicAWSConnector):
                 'subnet_group_name': self.get_redis_subnet_group_name(replication_group, cache_clusters),
                 'parameter_group_name': self.get_redis_parameter_group_name(replication_group, cache_clusters),
                 'node_count': self.get_node_count(replication_group.get('NodeGroups', [])),
+                'nodes': self.get_redis_nodes_info(replication_group, cache_clusters),
                 'account_id': self.account_id
             })
 
@@ -86,6 +87,10 @@ class ElastiCacheConnector(SchematicAWSConnector):
                 replication_group.update({
                     'primary_endpoint': self.get_redis_primary_endpoint(replication_group),
                     'reader_endpoint': self.get_redis_reader_endpoint(replication_group)
+                })
+            elif replication_group.get('mode') == 'Clustered Redis':
+                replication_group.update({
+                    'shards': self.get_redis_shards_info(replication_group, cache_clusters)
                 })
 
             yield Redis(replication_group, strict=False)
@@ -204,3 +209,61 @@ class ElastiCacheConnector(SchematicAWSConnector):
                     return cache_cluster.get('CacheParameterGroup', {}).get('CacheParameterGroupName', '')
 
         return ''
+
+    def get_redis_nodes_info(self, replication_group, cache_clusters):
+        nodes = []
+
+        for member in replication_group.get('MemberClusters', []):
+            node_dic = {}
+            for cache_cluster in cache_clusters:
+                if cache_cluster.get('CacheClusterId') == member:
+                    node_dic.update({
+                        'node_name': member,
+                        'arn': cache_cluster.get('ARN'),
+                        'status': cache_cluster.get('CacheClusterStatus', ''),
+                        'parameter_group_status': cache_cluster.get('CacheParameterGroup', {}).get('ParameterApplyStatus', ''),
+                        'created_on': cache_cluster.get('CacheClusterCreateTime', '')
+                    })
+                    break
+
+            for node_group in replication_group.get('NodeGroups', []):
+                for node_group_member in node_group.get('NodeGroupMembers', []):
+                    if node_group_member.get('CacheClusterId') == member:
+                        if replication_group.get('ClusterEnabled') is False:
+                            node_dic.update({
+                                'current_role': node_group_member.get('CurrentRole', ''),
+                                'endpoint': node_group_member.get('ReadEndpoint', {}).get('Address', ''),
+                                'port': node_group_member.get('ReadEndpoint', {}).get('Port', ''),
+                                'zone': node_group_member.get('PreferredAvailabilityZone', ''),
+                            })
+                        else:
+                            node_dic.update({
+                                'endpoint': self.set_redis_cluster_node_endpoint(member, replication_group.get('ConfigurationEndpoint', {}).get('Address')),
+                                'port': replication_group.get('ConfigurationEndpoint', {}).get('Port', ''),
+                                'zone': node_group_member.get('PreferredAvailabilityZone', ''),
+                            })
+
+            nodes.append(node_dic)
+
+        return nodes
+
+    @staticmethod
+    def get_redis_shards_info(replication_group, cache_clusters):
+        shards = []
+
+        for node_group in replication_group.get('NodeGroups', []):
+             shards.append({
+                'shard_name': f'{replication_group.get("ReplicationGroupId", "")}-{node_group.get("NodeGroupId", "")}',
+                'nodes': len(node_group.get('NodeGroupMembers', [])),
+                'status': node_group.get('Status', ''),
+                'slots': node_group.get('Slots', '')
+            })
+
+        return shards
+
+    @staticmethod
+    def set_redis_cluster_node_endpoint(member, address):
+        if address:
+            address_split = address.split('.')[1:]
+            address_split.insert(0, member)
+            return '.'.join(address_split)

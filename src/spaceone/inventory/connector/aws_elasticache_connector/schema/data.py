@@ -103,6 +103,25 @@ class MemcachedPendingModifiedValues(Model):
                                    serialize_when_none=False)
 
 
+class RedisShard(Model):
+    shard_name = StringType()
+    nodes = IntType()
+    status = StringType()
+    slots = StringType()
+
+
+class RedisNode(Model):
+    node_name = StringType()
+    status = StringType()
+    current_role = StringType(serialize_when_none=False)
+    port = IntType()
+    endpoint = StringType()
+    arn = StringType()
+    parameter_group_status = StringType()
+    zone = StringType()
+    created_on = DateTimeType()
+
+
 class Redis(Model):
     arn = StringType(deserialize_from='ARN', serialize_when_none=False)
     replication_group_id = StringType(deserialize_from="ReplicationGroupId", serialize_when_none=False)
@@ -142,6 +161,8 @@ class Redis(Model):
     member_clusters_outpost_arns = ListType(StringType, deserialize_from='MemberClustersOutpostArns', default=[])
     kms_key_id = StringType(deserialize_from='KmsKeyId', serialize_when_none=False)
     user_group_ids = ListType(StringType, deserialize_from='UserGroupIds', default=[])
+    shards = ListType(ModelType(RedisShard), default=[])
+    nodes = ListType(ModelType(RedisNode), default=[])
     account_id = StringType(default="")
 
     def reference(self, region_code):
