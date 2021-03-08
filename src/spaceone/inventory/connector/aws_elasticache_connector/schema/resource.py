@@ -41,11 +41,13 @@ memcached_base = ItemDynamicLayout.set_fields('Description', fields=[
 memcached_node = TableDynamicLayout.set_fields('Nodes', 'data.nodes', fields=[
     TextDyField.data_source('Node Name', 'node_name'),
     EnumDyField.data_source('Status', 'status', default_state={
-        'safe': ['in-sync'],
+        'safe': ['available'],
     }),
     TextDyField.data_source('Port', 'port'),
     TextDyField.data_source('Endpoint', 'endpoint'),
-    TextDyField.data_source('Parameter Group Status', 'parameter_group_status'),
+    EnumDyField.data_source('Parameter Group Status', 'parameter_group_status', default_state={
+        'safe': ['in-sync'],
+    }),
     DateTimeDyField.data_source('Created On', 'created_on')
 ])
 
@@ -96,8 +98,33 @@ redis_base = ItemDynamicLayout.set_fields('Description', fields=[
     })
 ])
 
+redis_shards = TableDynamicLayout.set_fields('Shards', 'data.shards', fields=[
+    TextDyField.data_source('Shard Name', 'shard_name'),
+    EnumDyField.data_source('Status', 'status', default_state={
+        'safe': ['available'],
+    }),
+    TextDyField.data_source('Node Counts', 'nodes'),
+    TextDyField.data_source('Slots', 'slots')
+])
+
+redis_nodes = TableDynamicLayout.set_fields('Nodes', 'data.nodes', fields=[
+    TextDyField.data_source('Node Name', 'node_name'),
+    EnumDyField.data_source('Status', 'status', default_state={
+        'safe': ['available'],
+    }),
+    TextDyField.data_source('Current Role', 'current_role'),
+    TextDyField.data_source('Port', 'port'),
+    TextDyField.data_source('Endpoint', 'endpoint'),
+    EnumDyField.data_source('Parameter Group Status', 'parameter_group_status', default_state={
+        'safe': ['in-sync'],
+    }),
+    TextDyField.data_source('Zone', 'zone'),
+    TextDyField.data_source('ARN', 'arn'),
+    DateTimeDyField.data_source('Created On', 'created_on')
+])
+
 redis_tags = SimpleTableDynamicLayout.set_tags()
-redis_metadata = CloudServiceMeta.set_layouts(layouts=[redis_base, redis_tags])
+redis_metadata = CloudServiceMeta.set_layouts(layouts=[redis_base, redis_shards, redis_nodes, redis_tags])
 
 
 # Memcached
