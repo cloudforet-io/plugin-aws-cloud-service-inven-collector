@@ -28,7 +28,9 @@ class ElastiCacheConnector(SchematicAWSConnector):
             # print(f'[ {region_name} ]')
             self.reset_region(region_name)
 
-            for memcached_vo in self.get_memcached_data(region_name):
+            cache_clusters = [cluster for cluster in self.describe_clusters()]
+
+            for memcached_vo in self.get_memcached_data(region_name, cache_clusters):
                 if getattr(memcached_vo, 'set_cloudwatch', None):
                     memcached_vo.cloudwatch = CloudWatchModel(memcached_vo.set_cloudwatch(region_name))
 
@@ -40,7 +42,7 @@ class ElastiCacheConnector(SchematicAWSConnector):
                          'reference': ReferenceModel(memcached_vo.reference(region_name))})}
                 ))
 
-            for redis_vo in self.get_redis_data(region_name):
+            for redis_vo in self.get_redis_data(region_name, cache_clusters):
                 if getattr(redis_vo, 'set_cloudwatch', None):
                     redis_vo.cloudwatch = CloudWatchModel(redis_vo.set_cloudwatch(region_name))
 
@@ -54,8 +56,8 @@ class ElastiCacheConnector(SchematicAWSConnector):
         print(f' ElastiCache Finished {time.time() - start_time} Seconds')
         return resources
 
-    def get_memcached_data(self, region_name):
-        for cluster in self.describe_clusters():
+    def get_memcached_data(self, region_name, cache_clusters):
+        for cluster in cache_clusters:
             if cluster.get('Engine') == 'memcached':
                 cluster.update({
                     'configuration_endpoint_display': self.set_configuration_endpoint_display(cluster.get('ConfigurationEndpoint')),
@@ -66,12 +68,25 @@ class ElastiCacheConnector(SchematicAWSConnector):
 
                 yield Memcached(cluster, strict=False)
 
-    def get_redis_data(self, region_name):
+    def get_redis_data(self, region_name, cache_clusters):
         for replication_group in self.describe_replication_groups():
             replication_group.update({
                 'mode': self.set_redis_mode(replication_group.get('ClusterEnabled')),
+                'engine': 'redis',
+                'engine_version': self.get_engine_version(replication_group, cache_clusters),
+                'shard_count': self.get_shard_count(replication_group.get('MemberClusters', [])),
+                'availability_zones': self.get_redis_availability_zones(replication_group.get('NodeGroups', [])),
+                'subnet_group_name': self.get_redis_subnet_group_name(replication_group, cache_clusters),
+                'parameter_group_name': self.get_redis_parameter_group_name(replication_group, cache_clusters),
+                'node_count': self.get_node_count(replication_group.get('NodeGroups', [])),
                 'account_id': self.account_id
             })
+
+            if replication_group.get('mode') == 'Redis':
+                replication_group.update({
+                    'primary_endpoint': self.get_redis_primary_endpoint(replication_group),
+                    'reader_endpoint': self.get_redis_reader_endpoint(replication_group)
+                })
 
             yield Redis(replication_group, strict=False)
 
@@ -124,8 +139,68 @@ class ElastiCacheConnector(SchematicAWSConnector):
         else:
             return ''
 
-    def set_redis_mode(self, cluster_enabled):
+    @staticmethod
+    def set_redis_mode(cluster_enabled):
         if cluster_enabled:
             return 'Clustered Redis'
         else:
             return 'Redis'
+
+    @staticmethod
+    def get_node_count(member_clusters):
+        return len(member_clusters)
+
+    @staticmethod
+    def get_shard_count(node_groups):
+        return len(node_groups)
+
+    @staticmethod
+    def get_redis_primary_endpoint(replication_group):
+        for node_group in replication_group.get('NodeGroups', []):
+            primary_endpoint = node_group.get("PrimaryEndpoint", {})
+            return f'{primary_endpoint.get("Address", "")}:{primary_endpoint.get("Port", "")}'
+
+    @staticmethod
+    def get_redis_reader_endpoint(replication_group):
+        for node_group in replication_group.get('NodeGroups', []):
+            reader_endpoint = node_group.get("ReaderEndpoint", {})
+            return f'{reader_endpoint.get("Address", "")}:{reader_endpoint.get("Port", "")}'
+
+    @staticmethod
+    def get_engine_version(replication_group, cache_clusters):
+        for member in replication_group.get('MemberClusters', []):
+            for cache_cluster in cache_clusters:
+                if cache_cluster.get('CacheClusterId') == member:
+                    return cache_cluster.get('EngineVersion', '')
+
+        return ''
+
+    @staticmethod
+    def get_redis_availability_zones(node_groups):
+        azs = []
+
+        for node_group in node_groups:
+            members = node_group.get('NodeGroupMembers', [])
+            for member in members:
+                if member.get('PreferredAvailabilityZone'):
+                    azs.append(member.get('PreferredAvailabilityZone'))
+
+        return list(set(azs))
+
+    @staticmethod
+    def get_redis_subnet_group_name(replication_group, cache_clusters):
+        for member in replication_group.get('MemberClusters', []):
+            for cache_cluster in cache_clusters:
+                if cache_cluster.get('CacheClusterId') == member:
+                    return cache_cluster.get('CacheSubnetGroupName', '')
+
+        return ''
+
+    @staticmethod
+    def get_redis_parameter_group_name(replication_group, cache_clusters):
+        for member in replication_group.get('MemberClusters', []):
+            for cache_cluster in cache_clusters:
+                if cache_cluster.get('CacheClusterId') == member:
+                    return cache_cluster.get('CacheParameterGroup', {}).get('CacheParameterGroupName', '')
+
+        return ''
