@@ -1,7 +1,7 @@
 # EFS
 
 ![EFS](https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-Elastic-File-System_EFS.svg)
-**Plugin to collect Security EFS**
+**Plugin to collect EFS**
 
 Please contact us if you need any further information. (<support@spaceone.dev>)
 

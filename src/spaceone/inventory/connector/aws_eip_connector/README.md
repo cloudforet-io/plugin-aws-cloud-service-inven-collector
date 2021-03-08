@@ -1,7 +1,7 @@
 # EIP
 
 ![EIP](https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-EC2_Elastic-IP-Address_light-bg.svg)
-**Plugin to collect Security EIP**
+**Plugin to collect EIP**
 
 Please contact us if you need any further information. (<support@spaceone.dev>)
 
