@@ -1,7 +1,7 @@
 # ECS
 
 ![ECS](https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-Elastic-Container-Service.svg)
-**Plugin to collect Security ECS**
+**Plugin to collect ECS**
 
 Please contact us if you need any further information. (<support@spaceone.dev>)
 

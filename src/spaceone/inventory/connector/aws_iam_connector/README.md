@@ -1,7 +1,7 @@
 # IAM
 
 ![IAM](https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/AWS-Identity-and-Access-Management_IAM.svg)
-**Plugin to collect Security IAM**
+**Plugin to collect IAM**
 
 Please contact us if you need any further information. (<support@spaceone.dev>)
 

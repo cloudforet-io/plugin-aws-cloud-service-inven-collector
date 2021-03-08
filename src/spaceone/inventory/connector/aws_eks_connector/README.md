@@ -1,7 +1,7 @@
 # EKS
 
 ![EKS](https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-Elastic-Kubernetes-Service.svg)
-**Plugin to collect Security EKS**
+**Plugin to collect EKS**
 
 Please contact us if you need any further information. (<support@spaceone.dev>)
 
