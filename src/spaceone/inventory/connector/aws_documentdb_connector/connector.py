@@ -10,7 +10,7 @@ from spaceone.inventory.connector.aws_documentdb_connector.schema.service_type i
 from spaceone.inventory.libs.connector import SchematicAWSConnector
 
 _LOGGER = logging.getLogger(__name__)
-EXCLUDE_REGION = ['us-west-1', 'ap-east-1', 'eu-north-1', 'me-south-1', 'sa-east-1']
+EXCLUDE_REGION = ['us-west-1', 'ap-east-1', 'eu-north-1', 'me-south-1', 'sa-east-1', 'ap-northeast-3']
 
 
 class DocumentDBConnector(SchematicAWSConnector):
