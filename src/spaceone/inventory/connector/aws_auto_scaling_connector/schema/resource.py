@@ -27,7 +27,7 @@ asg_meta_autoscaling = ItemDynamicLayout.set_fields('Auto Scaling', fields=[
     TextDyField.data_source('Service Linked Role ARN', 'data.service_linked_role_arn'),
     ListDyField.data_source('Target Group ARNs', 'data.target_group_arns',
                             default_badge={'delimiter': '<br>'}),
-    ListDyField.data_source('Load Balancer Names', 'data.load_balancer_names',
+    ListDyField.data_source('Load Balancer ARNs', 'data.load_balancer_arns',
                             default_badge={'delimiter': '<br>'}),
     BadgeDyField.data_source('Termination Policies', 'data.termination_policies'),
     DateTimeDyField.data_source('Creation Time', 'data.created_time'),

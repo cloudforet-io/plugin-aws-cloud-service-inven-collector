@@ -404,6 +404,7 @@ class AutoScalingGroup(Model):
     availability_zones = ListType(StringType, deserialize_from="AvailabilityZones", default=[])
     load_balancer_names = ListType(StringType, deserialize_from="LoadBalancerNames", default=[])
     target_group_arns = ListType(StringType, deserialize_from="TargetGroupARNs", default=[])
+    load_balancer_arns = ListType(StringType, default=[])
     health_check_type = StringType(deserialize_from="HealthCheckType", serialize_when_none=False)
     health_check_grace_period = IntType(deserialize_from="HealthCheckGracePeriod", serialize_when_none=False)
     instances = ListType(ModelType(AutoScalingGroupInstances), deserialize_from="Instances", default=[])
