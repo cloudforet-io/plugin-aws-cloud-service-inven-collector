@@ -124,6 +124,11 @@ class AutoScalingConnector(SchematicAWSConnector):
                                 'display_launch_configuration_template': instance.get('LaunchConfigurationName')
                             })
 
+                if raw.get('TargetGroupARNs'):
+                    raw.update({
+                        'load_balancer_arns': self.get_load_balancer_arns(raw.get('TargetGroupARNs', []))
+                    })
+
                 res = AutoScalingGroup(raw, strict=False)
                 yield res
 
@@ -175,6 +180,28 @@ class AutoScalingConnector(SchematicAWSConnector):
                 res = LaunchTemplateDetail(raw, strict=False)
                 self._launch_templates.append(res)
                 yield res
+
+    def get_load_balancer_arns(self, target_group_arns):
+        elb_client = self.session.client('elbv2')
+
+        lb_arns = []
+        max_tg_count = 20
+        i = 0
+        tg_arns = []
+        for tg_arn in target_group_arns:
+            if i < max_tg_count:
+                tg_arns.append(tg_arn)
+                i = i + 1
+            else:
+                response = elb_client.describe_target_groups(TargetGroupArns=tg_arns)
+
+                for target_group in response.get('TargetGroups', []):
+                    lb_arns.extend(target_group.get('LoadBalancerArns', []))
+
+                tg_arns = []
+                i = 0
+
+        return list(set(lb_arns))
 
     def _match_launch_template_version(self, lt):
         ec2_client = self.session.client('ec2')
