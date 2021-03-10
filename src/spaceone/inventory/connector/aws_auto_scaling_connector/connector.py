@@ -97,6 +97,7 @@ class AutoScalingConnector(SchematicAWSConnector):
                                                 self._describe_lifecycle_hooks(raw['AutoScalingGroupName']))),
                     'autoscaling_tags': list(map(lambda tag: AutoScalingGroupTags(tag, strict=False),
                                                   raw.get('Tags', []))),
+                    'instances': self.get_asg_instances(raw.get('Instances', [])),
                     'tags': list(map(lambda tag: Tags(tag, strict=False),
                                      self.get_general_tags(raw.get('Tags', [])))),
                     'account_id': self.account_id
@@ -181,25 +182,41 @@ class AutoScalingConnector(SchematicAWSConnector):
                 self._launch_templates.append(res)
                 yield res
 
+    def get_asg_instances(self, instances):
+        ec2_client = self.session.client('ec2')
+        max_count = 20
+        instances_from_ec2 = []
+        split_instances = [instances[i:i+max_count] for i in range(0, len(instances), max_count)]
+
+        for instances in split_instances:
+            instance_ids = [_instance.get('InstanceId') for _instance in instances if _instance.get('InstanceId')]
+            response = ec2_client.describe_instances(InstanceIds=instance_ids)
+
+            for reservation in response.get('Reservations', []):
+                instances_from_ec2.extend(reservation.get('Instances', []))
+
+        for instance in instances:
+            for instance_from_ec2 in instances_from_ec2:
+                if instance_from_ec2.get('InstanceId') == instance.get('InstanceId'):
+                    instance.update({
+                        'lifecycle': instance_from_ec2.get('InstanceLifecycle', 'scheduled')
+                    })
+                    break
+
+        return instances
+
     def get_load_balancer_arns(self, target_group_arns):
         elb_client = self.session.client('elbv2')
-
         lb_arns = []
-        max_tg_count = 20
-        i = 0
-        tg_arns = []
-        for tg_arn in target_group_arns:
-            if i < max_tg_count:
-                tg_arns.append(tg_arn)
-                i = i + 1
-            else:
-                response = elb_client.describe_target_groups(TargetGroupArns=tg_arns)
+        max_count = 20
 
-                for target_group in response.get('TargetGroups', []):
-                    lb_arns.extend(target_group.get('LoadBalancerArns', []))
+        split_tgs_arns = [target_group_arns[i:i+max_count] for i in range(0, len(target_group_arns), max_count)]
 
-                tg_arns = []
-                i = 0
+        for tg_arns in split_tgs_arns:
+            response = elb_client.describe_target_groups(TargetGroupArns=tg_arns)
+
+            for target_group in response.get('TargetGroups', []):
+                lb_arns.extend(target_group.get('LoadBalancerArns', []))
 
         return list(set(lb_arns))
 

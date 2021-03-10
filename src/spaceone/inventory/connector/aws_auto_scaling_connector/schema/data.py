@@ -358,6 +358,7 @@ class AutoScalingGroupInstances(Model):
     instance_type = StringType(deserialize_from="InstanceType", serialize_when_none=False)
     availability_zone = StringType(deserialize_from="AvailabilityZone", serialize_when_none=False)
     lifecycle_state = StringType(deserialize_from="LifecycleState", serialize_when_none=False)
+    lifecycle = StringType(choices=('spot', 'scheduled'), serialize_when_none=False)
     health_status = StringType(deserialize_from="HealthStatus", serialize_when_none=False)
     launch_configuration_name = StringType(deserialize_from="LaunchConfigurationName", serialize_when_none=False)
     launch_template = ModelType(LaunchTemplate, deserialize_from="LaunchTemplate", serialize_when_none=False)
@@ -407,7 +408,7 @@ class AutoScalingGroup(Model):
     load_balancer_arns = ListType(StringType, default=[])
     health_check_type = StringType(deserialize_from="HealthCheckType", serialize_when_none=False)
     health_check_grace_period = IntType(deserialize_from="HealthCheckGracePeriod", serialize_when_none=False)
-    instances = ListType(ModelType(AutoScalingGroupInstances), deserialize_from="Instances", default=[])
+    instances = ListType(ModelType(AutoScalingGroupInstances), default=[])
     created_time = DateTimeType(deserialize_from="CreatedTime")
     suspended_processes = ListType(ModelType(AutoScalingGroupSuspendedProcesses),
                                    deserialize_from="SuspendedProcesses",

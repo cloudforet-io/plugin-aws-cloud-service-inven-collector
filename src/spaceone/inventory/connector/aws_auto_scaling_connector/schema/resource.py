@@ -64,7 +64,8 @@ asg_meta_lt = ItemDynamicLayout.set_fields('Launch Template', fields=[
 # TAB - Instance
 asg_meta_instance = TableDynamicLayout.set_fields('Instances', 'data.instances', fields=[
     TextDyField.data_source('Instance ID', 'instance_id'),
-    EnumDyField.data_source('Lifecycle', 'lifecycle_state', default_state={
+    TextDyField.data_source('Life Cycle', 'lifecycle'),
+    EnumDyField.data_source('Lifecycle Status', 'lifecycle_state', default_state={
         'safe': ['InService'],
         'available': ['Standby'],
         'warning': ['Pending', 'Pending:Wait', 'Pending:Proceed', 'Quarantined', 'Detaching', 'EnteringStandby',
