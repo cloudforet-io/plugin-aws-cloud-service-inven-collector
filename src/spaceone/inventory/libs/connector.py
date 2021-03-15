@@ -106,10 +106,12 @@ class SchematicAWSConnector(AWSConnector):
     def collect_data(self):
         collect_data = (resource.to_primitive() for resource in self.get_resources())
 
-        # for resource in collect_data:
-        #     print("-------------")
-        #     print(resource)
-        #     print("-------------")
+        import pprint
+        for resource in collect_data:
+            if resource.get('resource', {}).get('cloud_service_type', '') == 'AutoScalingGroup':
+                print("-------------")
+                pprint.pprint(resource.get('resource', {}).get('data', {}))
+                print("-------------")
 
         return collect_data
 
