@@ -80,6 +80,8 @@ class AutoScalingConnector(SchematicAWSConnector):
                     notification_configurations = self._describe_notification_configurations()
 
                 match_lc = self._match_launch_configuration(raw.get('LaunchConfigurationName', ''))
+                match_lt = self._match_launch_template(raw.get('LaunchTemplate', {}))
+
                 match_policies = self._match_policies(policies, raw.get('AutoScalingGroupName'))
                 match_noti_confs = self._match_notification_configuration(notification_configurations,
                                                                           raw.get('AutoScalingGroupName'))
@@ -109,16 +111,21 @@ class AutoScalingConnector(SchematicAWSConnector):
                     })
                 elif raw.get('LaunchTemplate'):
                     raw.update({
-                        'display_launch_configuration_template': raw.get('LaunchTemplate').get('LaunchTemplateName')
+                        'display_launch_configuration_template': raw.get('LaunchTemplate').get('LaunchTemplateName'),
+                        'launch_template': match_lt
                     })
                 else:
                     for instance in raw.get('Instances', []):
                         if instance.get('LaunchTemplate'):
                             raw.update({
-                                'LaunchTemplate': instance.get('LaunchTemplate'),
+                                #'LaunchTemplate': instance.get('LaunchTemplate'),
+                                'launch_template': match_lt,
                                 'display_launch_configuration_template': instance.get('LaunchTemplate').get(
                                     'LaunchTemplateName')
                             })
+                            print("######")
+                            print(raw.get('launch_template'))
+                            print("######")
                         elif instance.get('LaunchConfigurationName'):
                             raw.update({
                                 'LaunchConfigurationName': instance.get('LaunchConfigurationName'),
@@ -229,6 +236,10 @@ class AutoScalingConnector(SchematicAWSConnector):
     def _match_launch_configuration(self, lc):
         return next((launch_configuration for launch_configuration in self._launch_configurations
                      if launch_configuration.launch_configuration_name == lc), '')
+
+    def _match_launch_template(self, lt_dict):
+        return next((launch_template for launch_template in self._launch_templates
+                     if launch_template.launch_template_id == lt_dict.get('LaunchTemplateId')), None)
 
     @staticmethod
     def _match_launch_template_data(lt_ver):
