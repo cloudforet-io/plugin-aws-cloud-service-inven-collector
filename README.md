@@ -8,7 +8,7 @@ get cloud service data from AWS.
 
 
 Find us also at [Dockerhub](https://hub.docker.com/repository/docker/spaceone/aws-cloud-services)
-> Latest stable version : 1.7
+> Latest stable version : 1.9
 
 Please contact us if you need any further information. (<support@spaceone.dev>)
 
@@ -54,6 +54,9 @@ Please contact us if you need any further information. (<support@spaceone.dev>)
         * EIP
     * [EKS](/src/spaceone/inventory/connector/aws_eks_connector/README.md)
         * Cluster
+    * [ElastiCache](/src/spaceone/inventory/connector/aws_elasticache_connector/README.md)
+        * Memcached
+        * Redis
     * [ELB](/src/spaceone/inventory/connector/aws_elb_connector/README.md)
         * Load Balancer
         * Target Group
@@ -146,6 +149,8 @@ Please, set authentication privilege for followings:
                 "ecs:List*",
                 "eks:Describe*",
                 "eks:List*",
+                "elasticache:Describe*",
+                "elasticache:List*",
                 "elasticfilesystem:Describe*",
                 "elasticloadbalancing:Describe*",
                 "firehose:Describe*",
@@ -187,6 +192,19 @@ Please, set authentication privilege for followings:
 
 
 ## Release Note
+
+### Ver 1.9
+
+* Add to supported Cloud Service
+  * ElastiCache
+    * Memcached
+    * Redis
+    
+* Add related Launch Template detail data in Auto Scaling Group information
+* Add releated ELB ARNs in Auto Scaling Group
+* Add lifecycle(Spot or Scheduled) information in Auto Scaling Group's instances
+* Fix bug, etc.
+
 
 ### Ver 1.8
 
