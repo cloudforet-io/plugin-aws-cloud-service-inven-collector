@@ -123,9 +123,6 @@ class AutoScalingConnector(SchematicAWSConnector):
                                 'display_launch_configuration_template': instance.get('LaunchTemplate').get(
                                     'LaunchTemplateName')
                             })
-                            print("######")
-                            print(raw.get('launch_template'))
-                            print("######")
                         elif instance.get('LaunchConfigurationName'):
                             raw.update({
                                 'LaunchConfigurationName': instance.get('LaunchConfigurationName'),
