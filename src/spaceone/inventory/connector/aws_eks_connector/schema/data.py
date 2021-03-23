@@ -94,6 +94,7 @@ class NodeGroup(Model):
     nodegroup_name = StringType(deserialize_from="nodegroupName")
     nodegroup_arn = StringType(deserialize_from="nodegroupArn")
     cluster_name = StringType(deserialize_from="clusterName")
+    cluster_arn = StringType()
     version = StringType(deserialize_from="version")
     release_version = StringType(deserialize_from="releaseVersion")
     created_at = DateTimeType(deserialize_from="createdAt")
@@ -110,8 +111,14 @@ class NodeGroup(Model):
     resources = ModelType(resources, deserialize_from="resources")
     disk_size = IntType(deserialize_from="diskSize")
     health = ModelType(health, deserialize_from="health")
-    tags = ModelType(Tags, deserialize_from="tags")
+    account_id = StringType(default="")
+    tags = ListType(ModelType(Tags), deserialize_from="tags", default=[])
 
+    def reference(self, region_code):
+        return {
+            "resource_id": self.nodegroup_arn,
+            "external_link": f"https://console.aws.amazon.com/eks/home?region={region_code}#/clusters/{self.cluster_name}"
+        }
 
 '''
 CLUSTER
