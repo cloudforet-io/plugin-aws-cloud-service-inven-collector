@@ -8,7 +8,7 @@ get cloud service data from AWS.
 
 
 Find us also at [Dockerhub](https://hub.docker.com/repository/docker/spaceone/aws-cloud-services)
-> Latest stable version : 1.9
+> Latest stable version : 1.9.1
 
 Please contact us if you need any further information. (<support@spaceone.dev>)
 
@@ -54,6 +54,7 @@ Please contact us if you need any further information. (<support@spaceone.dev>)
         * EIP
     * [EKS](/src/spaceone/inventory/connector/aws_eks_connector/README.md)
         * Cluster
+        * Node Group
     * [ElastiCache](/src/spaceone/inventory/connector/aws_elasticache_connector/README.md)
         * Memcached
         * Redis
@@ -192,6 +193,11 @@ Please, set authentication privilege for followings:
 
 
 ## Release Note
+
+### Ver 1.9.1
+* Add Node Group in EKS
+  * Group: EKS
+  * Name : NodeGroup
 
 ### Ver 1.9
 
