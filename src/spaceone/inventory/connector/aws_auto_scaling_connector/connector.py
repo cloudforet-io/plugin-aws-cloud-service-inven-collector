@@ -190,6 +190,7 @@ class AutoScalingConnector(SchematicAWSConnector):
         ec2_client = self.session.client('ec2')
         max_count = 20
         instances_from_ec2 = []
+        # Max 20 instance_ids for describe_instances()
         split_instances = [instances[i:i+max_count] for i in range(0, len(instances), max_count)]
 
         for instances in split_instances:
@@ -203,7 +204,7 @@ class AutoScalingConnector(SchematicAWSConnector):
             for instance_from_ec2 in instances_from_ec2:
                 if instance_from_ec2.get('InstanceId') == instance.get('InstanceId'):
                     instance.update({
-                        'lifecycle': instance_from_ec2.get('InstanceLifecycle', 'scheduled')
+                        'lifecycle_test': instance_from_ec2.get('InstanceLifecycle', 'scheduled')
                     })
                     break
 
