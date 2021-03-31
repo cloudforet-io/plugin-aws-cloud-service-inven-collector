@@ -72,7 +72,6 @@ class AutoScalingConnector(SchematicAWSConnector):
 
         for data in response_iterator:
             for raw in data.get('AutoScalingGroups', []):
-
                 if policies is None:
                     policies = self._describe_policies()
 
@@ -85,6 +84,10 @@ class AutoScalingConnector(SchematicAWSConnector):
                 match_policies = self._match_policies(policies, raw.get('AutoScalingGroupName'))
                 match_noti_confs = self._match_notification_configuration(notification_configurations,
                                                                           raw.get('AutoScalingGroupName'))
+                match_lb_arns = self.get_load_balancer_arns(raw.get('TargetGroupARNs', []))
+                match_lbs = self.get_load_balancer_info(match_lb_arns)
+
+                print(f"match_lb_arns: {match_lb_arns}\nmatch_lbs:{match_lbs}")
 
                 raw.update({
                     'launch_configuration': LaunchConfiguration(match_lc, strict=False),
@@ -98,7 +101,7 @@ class AutoScalingConnector(SchematicAWSConnector):
                     'lifecycle_hooks': list(map(lambda lifecycle_hook: LifecycleHook(lifecycle_hook, strict=False),
                                                 self._describe_lifecycle_hooks(raw['AutoScalingGroupName']))),
                     'autoscaling_tags': list(map(lambda tag: AutoScalingGroupTags(tag, strict=False),
-                                                  raw.get('Tags', []))),
+                                                 raw.get('Tags', []))),
                     'instances': self.get_asg_instances(raw.get('Instances', [])),
                     'tags': list(map(lambda tag: Tags(tag, strict=False),
                                      self.get_general_tags(raw.get('Tags', [])))),
@@ -118,7 +121,7 @@ class AutoScalingConnector(SchematicAWSConnector):
                     for instance in raw.get('Instances', []):
                         if instance.get('LaunchTemplate'):
                             raw.update({
-                                #'LaunchTemplate': instance.get('LaunchTemplate'),
+                                # 'LaunchTemplate': instance.get('LaunchTemplate'),
                                 'launch_template': match_lt,
                                 'display_launch_configuration_template': instance.get('LaunchTemplate').get(
                                     'LaunchTemplateName')
@@ -131,7 +134,8 @@ class AutoScalingConnector(SchematicAWSConnector):
 
                 if raw.get('TargetGroupARNs'):
                     raw.update({
-                        'load_balancer_arns': self.get_load_balancer_arns(raw.get('TargetGroupARNs', []))
+                        'load_balancers': match_lbs,
+                        'load_balancer_arns': match_lb_arns
                     })
 
                 res = AutoScalingGroup(raw, strict=False)
@@ -190,7 +194,7 @@ class AutoScalingConnector(SchematicAWSConnector):
         ec2_client = self.session.client('ec2')
         max_count = 20
         instances_from_ec2 = []
-        split_instances = [instances[i:i+max_count] for i in range(0, len(instances), max_count)]
+        split_instances = [instances[i:i + max_count] for i in range(0, len(instances), max_count)]
 
         for instances in split_instances:
             instance_ids = [_instance.get('InstanceId') for _instance in instances if _instance.get('InstanceId')]
@@ -214,7 +218,7 @@ class AutoScalingConnector(SchematicAWSConnector):
         lb_arns = []
         max_count = 20
 
-        split_tgs_arns = [target_group_arns[i:i+max_count] for i in range(0, len(target_group_arns), max_count)]
+        split_tgs_arns = [target_group_arns[i:i + max_count] for i in range(0, len(target_group_arns), max_count)]
 
         for tg_arns in split_tgs_arns:
             response = elb_client.describe_target_groups(TargetGroupArns=tg_arns)
@@ -223,6 +227,38 @@ class AutoScalingConnector(SchematicAWSConnector):
                 lb_arns.extend(target_group.get('LoadBalancerArns', []))
 
         return list(set(lb_arns))
+
+    def get_load_balancer_info(self, lb_arns):
+        if not len(lb_arns): return []
+        elb_client = self.session.client('elbv2')
+        lbs = elb_client.describe_load_balancers(LoadBalancerArns=lb_arns).get('LoadBalancers', [])
+        load_balancer_data_list = []
+
+        for lb in lbs:
+            lb_arn = lb.get('LoadBalancerArn', '')
+            listeners = elb_client.describe_listeners(LoadBalancerArn=lb_arn).get('Listeners', [])
+            lb.update({
+                'listeners': listeners
+            })
+            load_balancer_data_list.append(self.get_load_balancer_data(lb))
+
+        return load_balancer_data_list
+
+    @staticmethod
+    def get_load_balancer_data(match_load_balancer):
+        return {
+            'endpoint': match_load_balancer.get('DNSName', ''),
+            'type': match_load_balancer.get('Type'),
+            'scheme': match_load_balancer.get('Scheme'),
+            'name': match_load_balancer.get('LoadBalancerName', ''),
+            'protocol': [listener.get('Protocol') for listener in match_load_balancer.get('listeners', []) if
+                         listener.get('Protocol') is not None],
+            'port': [listener.get('Port') for listener in match_load_balancer.get('listeners', []) if
+                     listener.get('Port') is not None],
+            'tags': {
+                'arn': match_load_balancer.get('LoadBalancerArn', '')
+            }
+        }
 
     def _match_launch_template_version(self, lt):
         ec2_client = self.session.client('ec2')

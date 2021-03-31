@@ -84,6 +84,25 @@ asg_meta_instance = TableDynamicLayout.set_fields('Instances', 'data.instances',
     TextDyField.data_source('Weighted Capacity', 'weighted_capacity'),
 ])
 
+# TAB - ELB
+asg_meta_elb = TableDynamicLayout.set_fields('ELB', root_path='data.load_balancers', fields=[
+    TextDyField.data_source('Name', 'name', reference={
+        'resource_type': 'inventory.CloudService',
+        'reference_key': 'data.load_balancer_name'
+    }),
+    TextDyField.data_source('Endpoint', 'endpoint', reference={
+        'resource_type': 'inventory.CloudService',
+        'reference_key': 'data.dns_name'
+    }),
+    EnumDyField.data_source('Type', 'type', default_badge={
+        'indigo.500': ['network'], 'coral.600': ['application']
+    }),
+    ListDyField.data_source('Protocol', 'protocol', options={'delimiter': '<br>'}),
+    ListDyField.data_source('Port', 'port', options={'delimiter': '<br>'}),
+    TextDyField.data_source('Scheme', 'scheme')
+])
+
+
 # TAB - Policy
 asg_meta_policy = TableDynamicLayout.set_fields('Policies', 'data.policies', fields=[
     TextDyField.data_source('Policy Name', 'policy_name'),
@@ -134,9 +153,9 @@ asg_meta_tags = TableDynamicLayout.set_fields('Tags', 'data.tags', fields=[
         'indigo.500': ['true'], 'coral.600': ['false']
     }),
 ])
-asg_meta = CloudServiceMeta.set_layouts([asg_meta_autoscaling, asg_meta_lc, asg_meta_lt, asg_meta_instance, asg_meta_policy,
-                                         asg_meta_notification, asg_meta_scheduled_action, asg_meta_lifecycle_hooks,
-                                         asg_meta_tags])
+asg_meta = CloudServiceMeta.set_layouts([asg_meta_autoscaling, asg_meta_lc, asg_meta_lt, asg_meta_instance, asg_meta_elb,
+                                         asg_meta_policy, asg_meta_notification, asg_meta_scheduled_action,
+                                         asg_meta_lifecycle_hooks, asg_meta_tags])
 
 
 '''

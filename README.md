@@ -194,6 +194,12 @@ Please, set authentication privilege for followings:
 
 ## Release Note
 
+### Ver 1.9.2
+* Add Load Balancers in Auto Scaling Group
+  * Group: Auto Scaling Group
+  * Name : LoadBalaners
+
+
 ### Ver 1.9.1
 * Add Node Group in EKS
   * Group: EKS
