@@ -15,7 +15,7 @@ Please contact us if you need any further information. (<support@spaceone.dev>)
   - Launch Template
   
 - Boto3 info
-  - Client : autoscaling, ec2
+  - Client : autoscaling, ec2, elb2
   - API used
     - [AutoScaling.Paginator.DescribeAutoScalingGroups](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/autoscaling.html#AutoScaling.Paginator.DescribeAutoScalingGroups)
     - [AutoScaling.Paginator.DescribeLaunchConfigurations](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/autoscaling.html#AutoScaling.Paginator.DescribeLaunchConfigurations)
@@ -25,7 +25,9 @@ Please contact us if you need any further information. (<support@spaceone.dev>)
     - [describe_lifecycle_hooks()](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/autoscaling.html#AutoScaling.Client.describe_lifecycle_hooks)
     - [describe_notification_configurations()](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/autoscaling.html#AutoScaling.Client.describe_notification_configurations)
     - [describe_scheduled_actions()](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/autoscaling.html#AutoScaling.Client.describe_notification_configurations)
-  
+    - [describe_listeners()](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/elbv2.html#ElasticLoadBalancingv2.Client.describe_listeners)
+    - [describe_load_balancers()](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/elbv2.html#ElasticLoadBalancingv2.Client.describe_load_balancers)
+    - [describe_target_groups()](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/elbv2.html#ElasticLoadBalancingv2.Client.describe_target_groups)
   
 ### Required Policy
   
