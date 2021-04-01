@@ -3,8 +3,7 @@
 ![AWS Cloud Services](https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/aws-cloudservice.svg)
 **Plugin to collect Google Cloud Services**
 
-> SpaceONE's [plugin-aws-cloud-services](https://github.com/spaceone-dev/plugin-aws-cloud-services) is a convenient tool to 
-get cloud service data from AWS.
+> SpaceONE's [plugin-aws-cloud-services](https://github.com/spaceone-dev/plugin-aws-cloud-services) is a convenient tool to get cloud service data from AWS.
 
 
 Find us also at [Dockerhub](https://hub.docker.com/repository/docker/spaceone/aws-cloud-services)
@@ -26,7 +25,7 @@ Please contact us if you need any further information. (<support@spaceone.dev>)
     * [Cloud Front](/src/spaceone/inventory/connector/aws_cloud_front_connector/README.md)
         * Distribution
     * [Cloud Trail](/src/spaceone/inventory/connector/aws_cloud_trail_connector/README.md)
-        * Trail  
+        * Trail
     * [Direct Connect](/src/spaceone/inventory/connector/aws_direct_connect_connector/README.md)
         * Connection
         * Direct Connect Gateway
@@ -83,7 +82,7 @@ Please contact us if you need any further information. (<support@spaceone.dev>)
         * Database
         * Instance
         * Snapshot
-        * Subnet Group 
+        * Subnet Group
         * Option Group
     * [Redshift](/src/spaceone/inventory/connector/aws_redshift_connector/README.md)
         * Cluster
@@ -111,13 +110,13 @@ Please contact us if you need any further information. (<support@spaceone.dev>)
         * Customer Gateway
         * VPN Connection
         * VPN Gateway
-    
 
 ---
+
 ## Authentication Overview
 
-Registered service account on SpaceONE must have certain permissions to collect cloud service data 
-Please, set authentication privilege for followings:
+Registered service account on SpaceONE must have certain permissions to collect cloud service data Please, set
+authentication privilege for followings:
 
 <pre>
 <code>
@@ -191,46 +190,46 @@ Please, set authentication privilege for followings:
 
 ---
 
-
 ## Release Note
 
 ### Ver 1.9.2
-* Add Load Balancers in Auto Scaling Group
-  * Group: Auto Scaling Group
-  * Name : LoadBalaners
 
+* Add Load Balancers in Auto Scaling Group
+    * Group: Auto Scaling Group
+    * Name : LoadBalaners
+* Add related Auto Scaling Group ARNs in EKS
 
 ### Ver 1.9.1
+
 * Add Node Group in EKS
-  * Group: EKS
-  * Name : NodeGroup
+    * Group: EKS
+    * Name : NodeGroup
 
 ### Ver 1.9
 
 * Add to supported Cloud Service
-  * ElastiCache
-    * Memcached
-    * Redis
-    
+    * ElastiCache
+        * Memcached
+        * Redis
+
 * Add related Launch Template detail data in Auto Scaling Group information
 * Add releated ELB ARNs in Auto Scaling Group
 * Add lifecycle(Spot or Scheduled) information in Auto Scaling Group's instances
 * Fix bug, etc.
 
-
 ### Ver 1.8
 
 * Add to supported Cloud Service
-  * Amazon MSK (Managed Streaming for Apache)
-    * Cluster
-    * Cluster Configuration
-    
-  * Kinesis Data Stream
-    * Data Stream
-    
-  * Kinesis Data Firehose
-    * Delivery Stream
-    
-  * Amazon Certificate Manager (ACM)
-    * Certificate
+    * Amazon MSK (Managed Streaming for Apache)
+        * Cluster
+        * Cluster Configuration
+
+    * Kinesis Data Stream
+        * Data Stream
+
+    * Kinesis Data Firehose
+        * Delivery Stream
+
+    * Amazon Certificate Manager (ACM)
+        * Certificate
     

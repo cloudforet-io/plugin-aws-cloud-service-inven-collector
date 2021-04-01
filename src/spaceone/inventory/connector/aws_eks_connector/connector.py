@@ -1,5 +1,5 @@
-import time
 import logging
+import time
 from typing import List
 
 from spaceone.inventory.connector.aws_eks_connector.schema.data import Cluster, NodeGroup, Update, Tags
@@ -9,9 +9,7 @@ from spaceone.inventory.connector.aws_eks_connector.schema.service_type import C
 from spaceone.inventory.libs.connector import SchematicAWSConnector
 from spaceone.inventory.libs.schema.resource import ReferenceModel
 
-
 _LOGGER = logging.getLogger(__name__)
-EXCLUDE_REGION = ['us-west-1']          # NOT SUPOORTED REGION
 
 
 class EKSConnector(SchematicAWSConnector):
@@ -85,6 +83,7 @@ class EKSConnector(SchematicAWSConnector):
                     yield Cluster(cluster, strict=False)
 
     def list_node_groups(self, cluster_name, cluster_arn):
+        asgs = self.get_auto_scaling_groups()
         paginator = self.client.get_paginator('list_nodegroups')
         response_iterator = paginator.paginate(
             clusterName=cluster_name,
@@ -104,6 +103,10 @@ class EKSConnector(SchematicAWSConnector):
                     'tags': list(map(lambda tag: Tags(tag, strict=False),
                                      self.convert_tags(node_group.get('tags', {}))))
                 })
+                asg_names = [asg.get("name", "") for asg in
+                             node_group.get("resources", "").get("autoScalingGroups", [])]
+                if len(asg_names) > 0:
+                    node_group["resources"]["autoScalingGroups"] = self.get_matched_auto_scaling_groups(asgs, asg_names)
                 yield NodeGroup(node_group, strict=False)
 
     def list_updates(self, cluster_name):
@@ -129,3 +132,29 @@ class EKSConnector(SchematicAWSConnector):
             list_tags.append({'key': _key, 'value': tags[_key]})
 
         return list_tags
+
+    def get_auto_scaling_groups(self):
+        auto_scaling_client = self.session.client('autoscaling')
+        paginator = auto_scaling_client.get_paginator('describe_auto_scaling_groups')
+        response_iterator = paginator.paginate(
+            PaginationConfig={
+                'MaxItems': 10000,
+                'PageSize': 50,
+            }
+        )
+
+        asgs = []
+        for data in response_iterator:
+            for asg in data.get('AutoScalingGroups', []):
+                asgs.append({
+                    "name": asg.get("AutoScalingGroupName", ""),
+                    "arn": asg.get("AutoScalingGroupARN", "")
+                })
+        return asgs
+
+    def get_matched_auto_scaling_groups(self, asgs, asg_names):
+        matched_asgs = []
+        for asg in asgs:
+            if asg.get("name", "") in asg_names:
+                matched_asgs.append(asg)
+        return matched_asgs

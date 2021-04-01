@@ -1,10 +1,10 @@
-from schematics.types import ModelType, StringType, PolyModelType, DictType, ListType
+from schematics.types import ModelType, StringType, PolyModelType
 
 from spaceone.inventory.connector.aws_eks_connector.schema.data import Cluster, NodeGroup
-from spaceone.inventory.libs.schema.resource import CloudServiceResource, CloudServiceResponse, CloudServiceMeta
 from spaceone.inventory.libs.schema.dynamic_field import TextDyField, ListDyField, EnumDyField, DateTimeDyField
 from spaceone.inventory.libs.schema.dynamic_layout import ItemDynamicLayout, TableDynamicLayout, \
     SimpleTableDynamicLayout
+from spaceone.inventory.libs.schema.resource import CloudServiceResource, CloudServiceResponse, CloudServiceMeta
 
 cluster_base = ItemDynamicLayout.set_fields('Cluster', fields=[
     TextDyField.data_source('Name', 'data.name'),
@@ -64,9 +64,8 @@ cluster_update = TableDynamicLayout.set_fields('Updates', 'data.updates', fields
 ])
 
 cluster_tags = SimpleTableDynamicLayout.set_tags()
-cluster_metadata = CloudServiceMeta.set_layouts(layouts=[cluster_base, cluster_node_groups, cluster_logging, cluster_tags])
-
-
+cluster_metadata = CloudServiceMeta.set_layouts(
+    layouts=[cluster_base, cluster_node_groups, cluster_logging, cluster_tags])
 
 node_group_base = ItemDynamicLayout.set_fields('Node Group', fields=[
     TextDyField.data_source('Node Group Name', 'data.nodegroup_name'),
@@ -100,7 +99,7 @@ node_group_base = ItemDynamicLayout.set_fields('Node Group', fields=[
 node_group_scaling_config = ItemDynamicLayout.set_fields('Scaling Config', fields=[
     TextDyField.data_source('Min Size', 'data.scaling_config.min_size'),
     TextDyField.data_source('Max Size', 'data.scaling_config.max_size'),
-    TextDyField.data_source('Desired Size', 'data.scaling_config.desited_size'),
+    TextDyField.data_source('Desired Size', 'data.scaling_config.desired_size'),
 ])
 
 node_group_resource = ItemDynamicLayout.set_fields('Resources', fields=[
@@ -120,9 +119,8 @@ node_group_health = TableDynamicLayout.set_fields('Health', 'data.health.issues'
 ])
 
 node_group_tags = SimpleTableDynamicLayout.set_tags()
-node_group_metadata = CloudServiceMeta.set_layouts(layouts=[node_group_base, node_group_scaling_config, 
+node_group_metadata = CloudServiceMeta.set_layouts(layouts=[node_group_base, node_group_scaling_config,
                                                             node_group_resource, node_group_health, node_group_tags])
-
 
 
 class EKSResource(CloudServiceResource):
