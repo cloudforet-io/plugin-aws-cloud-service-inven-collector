@@ -32,9 +32,6 @@ class EKSConnector(SchematicAWSConnector):
             resources.append(cst)
 
         for region_name in self.region_names:
-            if region_name in EXCLUDE_REGION:
-                continue
-
             resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
             self.reset_region(region_name)
 
