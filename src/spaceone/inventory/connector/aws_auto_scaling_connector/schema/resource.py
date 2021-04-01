@@ -61,24 +61,6 @@ asg_meta_lt = ItemDynamicLayout.set_fields('Launch Template', fields=[
     TextDyField.data_source('Version', 'data.launch_template.version')
 ])
 
-# TAB - ELB
-asg_meta_elb = TableDynamicLayout.set_fields('ELB', root_path='data.load_balancers', fields=[
-    TextDyField.data_source('Name', 'name', reference={
-        'resource_type': 'inventory.CloudService',
-        'reference_key': 'data.load_balancer_name'
-    }),
-    TextDyField.data_source('Endpoint', 'endpoint', reference={
-        'resource_type': 'inventory.CloudService',
-        'reference_key': 'data.dns_name'
-    }),
-    EnumDyField.data_source('Type', 'type', default_badge={
-        'indigo.500': ['network'], 'coral.600': ['application']
-    }),
-    ListDyField.data_source('Protocol', 'protocol', options={'delimiter': '<br>'}),
-    ListDyField.data_source('Port', 'port', options={'delimiter': '<br>'}),
-    TextDyField.data_source('Scheme', 'scheme')
-])
-
 # TAB - Instance
 asg_meta_instance = TableDynamicLayout.set_fields('Instances', 'data.instances', fields=[
     TextDyField.data_source('Instance ID', 'instance_id'),
@@ -100,6 +82,24 @@ asg_meta_instance = TableDynamicLayout.set_fields('Instances', 'data.instances',
         'indigo.500': ['true'], 'coral.600': ['false']
     }),
     TextDyField.data_source('Weighted Capacity', 'weighted_capacity'),
+])
+
+# TAB - ELB
+asg_meta_elb = TableDynamicLayout.set_fields('ELB', root_path='data.load_balancers', fields=[
+    TextDyField.data_source('Name', 'name', reference={
+        'resource_type': 'inventory.CloudService',
+        'reference_key': 'data.load_balancer_name'
+    }),
+    TextDyField.data_source('Endpoint', 'endpoint', reference={
+        'resource_type': 'inventory.CloudService',
+        'reference_key': 'data.dns_name'
+    }),
+    EnumDyField.data_source('Type', 'type', default_badge={
+        'indigo.500': ['network'], 'coral.600': ['application']
+    }),
+    ListDyField.data_source('Protocol', 'protocol', options={'delimiter': '<br>'}),
+    ListDyField.data_source('Port', 'port', options={'delimiter': '<br>'}),
+    TextDyField.data_source('Scheme', 'scheme')
 ])
 
 # TAB - Policy
