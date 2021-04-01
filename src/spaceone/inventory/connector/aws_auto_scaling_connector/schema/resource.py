@@ -27,7 +27,7 @@ asg_meta_autoscaling = ItemDynamicLayout.set_fields('Auto Scaling', fields=[
     TextDyField.data_source('Service Linked Role ARN', 'data.service_linked_role_arn'),
     ListDyField.data_source('Target Group ARNs', 'data.target_group_arns',
                             default_badge={'delimiter': '<br>'}),
-    ListDyField.data_source('Load Balancer Names', 'data.load_balancer_names',
+    ListDyField.data_source('Load Balancer ARNs', 'data.load_balancer_arns',
                             default_badge={'delimiter': '<br>'}),
     BadgeDyField.data_source('Termination Policies', 'data.termination_policies'),
     DateTimeDyField.data_source('Creation Time', 'data.created_time'),
@@ -64,7 +64,8 @@ asg_meta_lt = ItemDynamicLayout.set_fields('Launch Template', fields=[
 # TAB - Instance
 asg_meta_instance = TableDynamicLayout.set_fields('Instances', 'data.instances', fields=[
     TextDyField.data_source('Instance ID', 'instance_id'),
-    EnumDyField.data_source('Lifecycle', 'lifecycle_state', default_state={
+    TextDyField.data_source('Life Cycle', 'lifecycle'),
+    EnumDyField.data_source('Lifecycle Status', 'lifecycle_state', default_state={
         'safe': ['InService'],
         'available': ['Standby'],
         'warning': ['Pending', 'Pending:Wait', 'Pending:Proceed', 'Quarantined', 'Detaching', 'EnteringStandby',
@@ -82,6 +83,25 @@ asg_meta_instance = TableDynamicLayout.set_fields('Instances', 'data.instances',
     }),
     TextDyField.data_source('Weighted Capacity', 'weighted_capacity'),
 ])
+
+# TAB - ELB
+asg_meta_elb = TableDynamicLayout.set_fields('ELB', root_path='data.load_balancers', fields=[
+    TextDyField.data_source('Name', 'name', reference={
+        'resource_type': 'inventory.CloudService',
+        'reference_key': 'data.load_balancer_name'
+    }),
+    TextDyField.data_source('Endpoint', 'endpoint', reference={
+        'resource_type': 'inventory.CloudService',
+        'reference_key': 'data.dns_name'
+    }),
+    EnumDyField.data_source('Type', 'type', default_badge={
+        'indigo.500': ['network'], 'coral.600': ['application']
+    }),
+    ListDyField.data_source('Protocol', 'protocol', options={'delimiter': '<br>'}),
+    ListDyField.data_source('Port', 'port', options={'delimiter': '<br>'}),
+    TextDyField.data_source('Scheme', 'scheme')
+])
+
 
 # TAB - Policy
 asg_meta_policy = TableDynamicLayout.set_fields('Policies', 'data.policies', fields=[
@@ -133,9 +153,9 @@ asg_meta_tags = TableDynamicLayout.set_fields('Tags', 'data.tags', fields=[
         'indigo.500': ['true'], 'coral.600': ['false']
     }),
 ])
-asg_meta = CloudServiceMeta.set_layouts([asg_meta_autoscaling, asg_meta_lc, asg_meta_lt, asg_meta_instance, asg_meta_policy,
-                                         asg_meta_notification, asg_meta_scheduled_action, asg_meta_lifecycle_hooks,
-                                         asg_meta_tags])
+asg_meta = CloudServiceMeta.set_layouts([asg_meta_autoscaling, asg_meta_lc, asg_meta_lt, asg_meta_instance, asg_meta_elb,
+                                         asg_meta_policy, asg_meta_notification, asg_meta_scheduled_action,
+                                         asg_meta_lifecycle_hooks, asg_meta_tags])
 
 
 '''

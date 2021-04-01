@@ -4,99 +4,127 @@ from schematics.types import ModelType, StringType, PolyModelType, DictType, Lis
 
 from spaceone.inventory.connector.aws_elasticache_connector.schema.data import Redis, Memcached
 from spaceone.inventory.libs.schema.resource import CloudServiceResource, CloudServiceResponse, CloudServiceMeta
-from spaceone.inventory.libs.schema.dynamic_field import TextDyField, ListDyField, BadgeDyField
-from spaceone.inventory.libs.schema.dynamic_layout import ItemDynamicLayout, TableDynamicLayout
+from spaceone.inventory.libs.schema.dynamic_field import TextDyField, ListDyField, BadgeDyField, DateTimeDyField, \
+    EnumDyField
+from spaceone.inventory.libs.schema.dynamic_layout import ItemDynamicLayout, TableDynamicLayout, SimpleTableDynamicLayout
 
 logger = logging.getLogger(__name__)
 
+'''
+Memcached
+'''
+memcached_base = ItemDynamicLayout.set_fields('Description', fields=[
+    TextDyField.data_source('Cluster Name', 'data.cache_cluster_id'),
+    TextDyField.data_source('ARN', 'data.arn'),
+    EnumDyField.data_source('Status', 'data.cache_cluster_status', default_state={
+        'safe': ['available'],
+    }),
+    TextDyField.data_source('Configuration Endpoint', 'data.configuration_endpoint_display'),
+    TextDyField.data_source('Engine', 'data.engine'),
+    TextDyField.data_source('Engine Version Compatibility', 'data.engine_version'),
+    TextDyField.data_source('Node Type', 'data.cache_node_type'),
+    TextDyField.data_source('Number of Nodes', 'data.num_cache_nodes'),
+    TextDyField.data_source('Availability Zones', 'data.preferred_availability_zone'),
+    TextDyField.data_source('Parameter Group', 'data.cache_parameter_group.cache_parameter_group_name'),
+    TextDyField.data_source('Subnet Group', 'data.cache_subnet_group_name'),
+    ListDyField.data_source('Security Group', 'data.security_groups', options={
+        'delimiter': '<br>',
+        'sub_key': 'security_group_id'
+    }),
+    TextDyField.data_source('Notification ARN', 'data.notification_configuration.topic_arn'),
+    TextDyField.data_source('Maintenance Window', 'data.preferred_maintenance_window'),
+    TextDyField.data_source('Backup Retension Period', 'data.snapshot_retention_limit'),
+    TextDyField.data_source('Backup Window', 'data.snapshot_window'),
+    DateTimeDyField.data_source('Creation Time', 'data.cache_cluster_create_time')
+])
 
-# meta data details (Memcached)
-# memcached_base_detail = ItemDynamicView({'name': "Base Information"})
-# memcached_base_detail.data_source = [
-#     TextDyField.data_source('Cluster', 'data.cluster_name'),
-#     TextDyField.data_source('Cluster Endpoint', 'data.configuration_endpoint'),
-#     TextDyField.data_source('Status ', 'data.status'),
-#     TextDyField.data_source('Engine ', 'data.engine'),
-#     TextDyField.data_source('Engine Version Compatibility ', 'data.engine_version_compatibility'),
-#     TextDyField.data_source('Availability Zones ', 'data.availability_zone'),
-#     TextDyField.data_source('Nodes Pending Deletion ', 'data.nodes_pending_deletion'),
-#     TextDyField.data_source('Parameter Group ', 'data.parameter_group'),
-#     ListDyField.data_source('Security Groups ', 'data.security_groups'),
-#     TextDyField.data_source('Maintenance Window ', 'data.maintenance_window'),
-#     TextDyField.data_source('Backup Window ', 'data.backup_window'),
-#     TextDyField.data_source('Creation Time ', 'data.creation_time'),
-#     TextDyField.data_source('Update Status ', 'data.update_status'),
-#     TextDyField.data_source('Node type', 'data.node_type'),
-#     TextDyField.data_source('Number of Nodes', 'data.number_of_nodes'),
-#     TextDyField.data_source('Number of Nodes Pending Creation', 'data.number_of_nodes_pending_creation'),
-#     TextDyField.data_source('Subnet Group', 'data.subnet_group'),
-#     TextDyField.data_source('Notification ARN', 'data.notification_arn'),
-#     TextDyField.data_source('Backup Retention Period', 'data.backup_retention_period'),
-# ]
-#
-# memcached_node = TableDynamicView({'name': 'Nodes', 'key_path': 'data.nodes'})
-# memcached_node.data_source = [
-#     TextDyField.data_source('Node Name', 'data.cache_node_id'),
-#     TextDyField.data_source('Status', 'data.cache_node_status'),
-#     TextDyField.data_source('Port', 'data.endpoint.port'),
-#     TextDyField.data_source('Endpoint', 'data.endpoint.address'),
-#     TextDyField.data_source('Parameter Group Status', 'data.parameter_group_status'),
-#     TextDyField.data_source('Availability Zone', 'data.customer_availability_zone'),
-#     TextDyField.data_source('Created on', 'data.cache_node_create_time'),
-# ]
-#
-# memcached_metadata = BaseMetaData()
-# memcached_metadata.details = [memcached_base_detail, ]
-# memcached_metadata.sub_data = [memcached_node, ]
-#
-#
-#
-# # meta data details (Redis)
-# redis_base_detail = ItemDynamicView({'name': "Base Information"})
-# redis_base_detail.data_source = [
-#     TextDyField.data_source('Name', 'data.cluster_name'),
-#     TextDyField.data_source('Configuration Endpoint', 'data.configuration_endpoint'),
-#     TextDyField.data_source('Creation Time', 'data.creation_time'),
-#     TextDyField.data_source('Status', 'data.status'),
-#     TextDyField.data_source('Primary Endpoint', 'data.primary_endpoint'),
-#     TextDyField.data_source('Update Status', 'data.update_action_status'),
-#     TextDyField.data_source('Engine', 'data.engine'),
-#     TextDyField.data_source('Engine Version Compatibility', 'data.engine_version_compatibility'),
-#     TextDyField.data_source('Reader Endpoint', 'data.reader_endpoint'),
-#     TextDyField.data_source('Node Type', 'data.cluster.cache_node_type'),
-#     ListDyField.data_source('Availability Zones', 'data.availability_zones'),
-#     TextDyField.data_source('Shards', 'data.shard_count'),
-#     TextDyField.data_source('Number of Nodes', 'data.node_count'),
-#     TextDyField.data_source('Automatic Failover', 'data.cluster.automatic_failover'),
-#     TextDyField.data_source('Description', 'data.cluster.description'),
-#     TextDyField.data_source('Parameter Group', 'data.parameter_group'),
-#     TextDyField.data_source('Subnet Group', 'data.subnet_group'),
-#     ListDyField.data_source('Security Groups', 'data.security_groups'),
-#     TextDyField.data_source('Notification ARN', 'data.notification_arn'),
-#     TextDyField.data_source('Notification status', 'data.notification_status'),
-#     TextDyField.data_source('Maintenance Window', 'data.maintenance_window'),
-#     TextDyField.data_source('Backup retention Period', 'data.backup_retention_period'),
-#     TextDyField.data_source('Backup window', 'data.backup_window'),
-#     TextDyField.data_source('Backup Node ID', 'data.backup_node_id'),
-#     TextDyField.data_source('Encryption in-transit', 'data.cluster.transit_encryption_enabled'),
-#     TextDyField.data_source('Encryption at-rest', 'data.cluster.at_rest_encryption_enabled'),
-#     TextDyField.data_source('Redis AUTH', 'data.auth_enabled'),
-#     TextDyField.data_source('AUTH Token Last Modified Date', 'data.auth_token_last_modified_date'),
-#     TextDyField.data_source('Customer Managed CMK', 'data.cluster.kms_key_id'),
-# ]
-#
-# redis_node = TableDynamicView({'name': 'Nodes', 'key_path': 'data.nodes'})
-# redis_node.data_source = [
-#     TextDyField.data_source('Name', 'data.cluster_name'),
-# ]
-#
-# redis_metadata = BaseMetaData()
-# redis_metadata.details = [redis_base_detail, ]
-# redis_metadata.sub_data = [redis_node, ]
+memcached_node = TableDynamicLayout.set_fields('Nodes', 'data.nodes', fields=[
+    TextDyField.data_source('Node Name', 'node_name'),
+    EnumDyField.data_source('Status', 'status', default_state={
+        'safe': ['available'],
+    }),
+    TextDyField.data_source('Port', 'port'),
+    TextDyField.data_source('Endpoint', 'endpoint'),
+    EnumDyField.data_source('Parameter Group Status', 'parameter_group_status', default_state={
+        'safe': ['in-sync'],
+    }),
+    DateTimeDyField.data_source('Created On', 'created_on')
+])
+
+memcached_tags = SimpleTableDynamicLayout.set_tags()
+memcached_metadata = CloudServiceMeta.set_layouts(layouts=[memcached_base, memcached_node, memcached_tags])
 
 
-memcached_metadata = CloudServiceMeta.set()
-redis_metadata = CloudServiceMeta.set()
+
+'''
+Redis
+'''
+redis_base = ItemDynamicLayout.set_fields('Description', fields=[
+    TextDyField.data_source('Name', 'data.replication_group_id'),
+    TextDyField.data_source('ARN', 'data.arn'),
+    TextDyField.data_source('Mode', 'data.mode'),
+    EnumDyField.data_source('Status', 'data.status', default_state={
+        'safe': ['available'],
+        'warning': ['creating', 'modifying', 'deleting', 'snapshotting'],
+        'alert': ['create-failed']
+    }),
+    TextDyField.data_source('Configuration Endpoint Address', 'data.configuration_endpoint.address'),
+    TextDyField.data_source('Configuration Endpoint Port', 'data.configuration_endpoint.port'),
+    TextDyField.data_source('Primary Endpoint', 'data.primary_endpoint'),
+    TextDyField.data_source('Reader Endpoint', 'data.reader_endpoint'),
+    TextDyField.data_source('Engine', 'data.engine'),
+    TextDyField.data_source('Engine Version Compatibility', 'data.engine_version'),
+    TextDyField.data_source('Multi-AZ', 'data.multi_az'),
+    ListDyField.data_source('Availability Zones', 'data.availability_zones', options={
+        'delimiter': '<br>'
+    }),
+    TextDyField.data_source('Auto Fail-over', 'data.automatic_failover'),
+    TextDyField.data_source('Description', 'data.description'),
+    TextDyField.data_source('Parameter Group ', 'data.parameter_group_name'),
+    TextDyField.data_source('Subnet Group ', 'data.subnet_group_name'),
+    TextDyField.data_source('Description', 'data.description'),
+    TextDyField.data_source('Backup Retention Period', 'data.snapshot_retention_limit'),
+    TextDyField.data_source('Encryption in-transit', 'data.transit_encryption_enabled'),
+    TextDyField.data_source('Backup Window', 'data.snapshot_window'),
+    TextDyField.data_source('Encryption at-rest', 'data.at_rest_encryption_enabled'),
+    TextDyField.data_source('Redis AUTH Default User Access', 'data.auth_token_enabled'),
+    TextDyField.data_source('Custom Managed CMK', 'data.kms_key_id'),
+    ListDyField.data_source('User Group', 'data.user_group_ids', options={
+        'delimiter': '<br>'
+    }),
+    DateTimeDyField.data_source('AUTH token last modified date', 'data.auth_token_last_modified_date'),
+    ListDyField.data_source('Outpost ARN', 'data.member_clusters_outpost_arns', options={
+        'delimiter': '<br>'
+    })
+])
+
+redis_shards = TableDynamicLayout.set_fields('Shards', 'data.shards', fields=[
+    TextDyField.data_source('Shard Name', 'shard_name'),
+    EnumDyField.data_source('Status', 'status', default_state={
+        'safe': ['available'],
+    }),
+    TextDyField.data_source('Node Counts', 'nodes'),
+    TextDyField.data_source('Slots', 'slots')
+])
+
+redis_nodes = TableDynamicLayout.set_fields('Nodes', 'data.nodes', fields=[
+    TextDyField.data_source('Node Name', 'node_name'),
+    EnumDyField.data_source('Status', 'status', default_state={
+        'safe': ['available'],
+    }),
+    TextDyField.data_source('Current Role', 'current_role'),
+    TextDyField.data_source('Port', 'port'),
+    TextDyField.data_source('Endpoint', 'endpoint'),
+    EnumDyField.data_source('Parameter Group Status', 'parameter_group_status', default_state={
+        'safe': ['in-sync'],
+    }),
+    TextDyField.data_source('Zone', 'zone'),
+    TextDyField.data_source('ARN', 'arn'),
+    DateTimeDyField.data_source('Created On', 'created_on')
+])
+
+redis_tags = SimpleTableDynamicLayout.set_tags()
+redis_metadata = CloudServiceMeta.set_layouts(layouts=[redis_base, redis_shards, redis_nodes, redis_tags])
 
 
 # Memcached
@@ -107,7 +135,7 @@ class ElasticCacheResource(CloudServiceResource):
 class MemcachedResource(ElasticCacheResource):
     cloud_service_type = StringType(default='Memcached')
     data = ModelType(Memcached)
-    cloud_service_meta = ModelType(CloudServiceMeta, default=memcached_metadata)
+    _metadata = ModelType(CloudServiceMeta, default=memcached_metadata, serialized_name='metadata')
 
 
 class MemcachedResponse(CloudServiceResponse):
@@ -117,8 +145,8 @@ class MemcachedResponse(CloudServiceResponse):
 # Redis
 class RedisResource(ElasticCacheResource):
     cloud_service_type = StringType(default='Redis')
-    data = ModelType(Memcached)
-    cloud_service_meta = ModelType(CloudServiceMeta, default=redis_metadata)
+    data = ModelType(Redis)
+    _metadata = ModelType(CloudServiceMeta, default=redis_metadata, serialized_name='metadata')
 
 
 class RedisResponse(CloudServiceResponse):

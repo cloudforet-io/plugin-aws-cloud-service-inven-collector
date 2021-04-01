@@ -14,9 +14,6 @@ from spaceone.inventory.libs.schema.resource import ReferenceModel, CloudWatchMo
 
 
 _LOGGER = logging.getLogger(__name__)
-RDS_FILTER = ['aurora', 'aurora-mysql', 'aurora-postgresql', 'mysql', 'mariadb', 'postgres',
-              'oracle-ee', 'oracle-se', 'oracle-se1', 'oracle-se2',
-              'sqlserver-ex', 'sqlserver-web', 'sqlserver-se', 'sqlserver-ee']
 
 
 class RDSConnector(SchematicAWSConnector):
@@ -71,6 +68,7 @@ class RDSConnector(SchematicAWSConnector):
                 resources.append(DatabaseResponse(
                     {'resource': resource(
                         {'data': database_vo,
+                         'tags': [{'key':tag.key, 'value': tag.value} for tag in database_vo.tags],
                          'region_code': region_name,
                          'reference': ReferenceModel(database_vo.reference(region_name))})}
                 ))
@@ -78,13 +76,12 @@ class RDSConnector(SchematicAWSConnector):
             # For All except Database
             for collect_resource in collect_resources:
                 resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
-
         print(f' RDS Finished {time.time() - start_time} Seconds')
         return resources
 
     def db_cluster_data(self, region_name) -> List[Database]:
         # Cluster
-        for cluster in self.describe_clusters():
+        for cluster in self.describe_clusters(region_name):
             db = {
                 'arn': cluster.db_cluster_arn,
                 'db_identifier': cluster.db_cluster_identifier,
@@ -96,11 +93,13 @@ class RDSConnector(SchematicAWSConnector):
                 'multi_az': cluster.multi_az,
                 'account_id': self.account_id,
                 'cluster': cluster,
+                'tags': cluster.tags
             }
+
             yield Database(db, strict=False), DBClusterResource
 
         # Instance Only
-        for instance in self.describe_instances():
+        for instance in self.describe_instances(region_name):
             if not instance.db_cluster_identifier:
                 db = {
                     'arn': instance.db_instance_arn,
@@ -113,18 +112,14 @@ class RDSConnector(SchematicAWSConnector):
                     'multi_az': instance.multi_az,
                     'account_id': self.account_id,
                     'instance': instance,
+                    'tags': instance.tags
                 }
                 yield Database(db, strict=False), DBInstanceResource
 
-    def describe_clusters(self) -> List[Cluster]:
+    def describe_clusters(self, region_name) -> List[Cluster]:
         paginator = self.client.get_paginator('describe_db_clusters')
         response_iterator = paginator.paginate(
-            Filters=[
-                {
-                    'Name': 'engine',
-                    'Values': RDS_FILTER
-                },
-            ],
+            Filters=self.get_rds_filter(region_name),
             PaginationConfig={
                 'MaxItems': 10000,
                 'PageSize': 50,
@@ -140,18 +135,13 @@ class RDSConnector(SchematicAWSConnector):
                 yield res
 
     def instance_data(self, region_name) -> List[Instance]:
-        for instance in self.describe_instances():
+        for instance in self.describe_instances(region_name):
             yield instance
 
-    def describe_instances(self) -> List[Instance]:
+    def describe_instances(self, region_name) -> List[Instance]:
         paginator = self.client.get_paginator('describe_db_instances')
         response_iterator = paginator.paginate(
-            Filters=[
-                {
-                    'Name': 'engine',
-                    'Values': RDS_FILTER
-                },
-            ],
+            Filters=self.get_rds_filter(region_name),
             PaginationConfig={
                 'MaxItems': 10000,
                 'PageSize': 50,
@@ -167,12 +157,7 @@ class RDSConnector(SchematicAWSConnector):
     def snapshot_request_data(self, region_name) -> List[Snapshot]:
         paginator = self.client.get_paginator('describe_db_snapshots')
         response_iterator = paginator.paginate(
-            Filters=[
-                {
-                    'Name': 'engine',
-                    'Values': RDS_FILTER
-                },
-            ],
+            Filters=self.get_rds_filter(region_name),
             PaginationConfig={
                 'MaxItems': 10000,
                 'PageSize': 50,
@@ -263,3 +248,22 @@ class RDSConnector(SchematicAWSConnector):
             return azs[0][:-1]
 
         return None
+
+    @staticmethod
+    def get_rds_filter(region_name):
+        DEFAULT_RDS_FILTER = ['aurora', 'aurora-mysql', 'mysql', 'mariadb', 'postgres',
+                              #'oracle-ee', 'oracle-se', 'oracle-se1', 'oracle-se2',
+                              'sqlserver-ex', 'sqlserver-web', 'sqlserver-se', 'sqlserver-ee']
+
+        #EXCLUDE_FILTER = {'ap-south-1': ['oracle-se', 'oracle-se1'], 'sa-east-1': ['oracle-se', 'oracle-se1']}
+        EXCLUDE_FILTER = {}
+
+        if EXCLUDE_FILTER.get(region_name):
+            filter_values = [rds_filter for rds_filter in DEFAULT_RDS_FILTER if rds_filter not in EXCLUDE_FILTER.get(region_name)]
+        else:
+            filter_values = DEFAULT_RDS_FILTER
+
+        return [{
+            'Name': 'engine',
+            'Values': filter_values
+        }]

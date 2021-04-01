@@ -26,11 +26,13 @@ class FailureDescription(Model):
 
 
 class DeliveryStreamEncryptionConfiguration(Model):
-    key_arn = StringType(deserialize_from='KeyARN')
-    key_type = StringType(deserialize_from='KeyType', choices=('AWS_OWNED_CMK', 'CUSTOMER_MANAGED_CMK'))
+    key_arn = StringType(deserialize_from='KeyARN', serialize_when_none=False)
+    key_type = StringType(deserialize_from='KeyType', choices=('AWS_OWNED_CMK', 'CUSTOMER_MANAGED_CMK'),
+                          serialize_when_none=False)
     status = StringType(deserialize_from='Status',
                         choices=('ENABLED', 'ENABLING', 'ENABLING_FAILED', 'DISABLED', 'DISABLING', 'DISABLING_FAILED'))
-    failure_description = ModelType(FailureDescription, deserialize_from="FailureDescription")
+    failure_description = ModelType(FailureDescription, deserialize_from="FailureDescription",
+                                    serialize_when_none=False)
 
 
 class KinesisStreamSourceDescription(Model):
@@ -51,9 +53,10 @@ class KMSEncryptionConfig(Model):
 
 
 class EncryptionConfiguration(Model):
-    no_encryption_config = StringType(deserialize_from="NoEncryptionConfig")
-    no_encryption = StringType(deserialize_from="NoEncryption")
-    kms_encryption_config = ModelType(KMSEncryptionConfig, deserialize_from="KMSEncryptionConfig")
+    no_encryption_config = StringType(deserialize_from="NoEncryptionConfig", serialize_when_none=False)
+    no_encryption = StringType(deserialize_from="NoEncryption", serialize_when_none=False)
+    kms_encryption_config = ModelType(KMSEncryptionConfig, deserialize_from="KMSEncryptionConfig",
+                                      serialize_when_none=False)
 
 
 class CloudWatchLoggingOptions(Model):
@@ -65,18 +68,6 @@ class CloudWatchLoggingOptions(Model):
 class BufferingHints(Model):
     size_in_mbs = IntType(deserialize_from='SizeInMBs')
     interval_in_seconds = IntType(deserialize_from='IntervalInSeconds')
-
-
-class S3DestinationDescription(Model):
-    role_arn = StringType(deserialize_from='RoleARN')
-    bucket_arn = StringType(deserialize_from='BucketARN')
-    prefix = StringType(deserialize_from='Prefix')
-    error_output_prefix = StringType(deserialize_from='ErrorOutputPrefix')
-    buffering_hints = ModelType(BufferingHints, deserialize_from='BufferingHints')
-    compression_format = StringType(deserialize_from='CompressionFormat',
-                                    choices=('UNCOMPRESSED', 'GZIP', 'ZIP', 'Snappy', 'HADOOP_SNAPPY'))
-    encryption_configuration = ModelType(EncryptionConfiguration, deserialize_from='EncryptionConfiguration')
-    CloudWatchLoggingOptions = ModelType(CloudWatchLoggingOptions, deserialize_from='CloudWatchLoggingOptions')
 
 
 class Parameters(Model):
@@ -103,11 +94,12 @@ class S3BackupDescription(Model):
     buffering_hints = ModelType(BufferingHints, deserialize_from='BufferingHints')
     compression_format = StringType(deserialize_from='CompressionFormat',
                                     choices=('UNCOMPRESSED', 'GZIP', 'ZIP', 'Snappy', 'HADOOP_SNAPPY'))
-    encryption_configuration = ModelType(EncryptionConfiguration, deserialize_from='EncryptionConfiguration')
+    encryption_configuration = ModelType(EncryptionConfiguration, deserialize_from='EncryptionConfiguration',
+                                         serialize_when_none=False)
     cloud_watch_logging_options = ModelType(CloudWatchLoggingOptions, deserialize_from='CloudWatchLoggingOptions')
 
 
-class ColumnToJsonKeyMappings(Model):  # SimpleTableLayout
+class ColumnToJsonKeyMappings(Model):
     key = StringType()
     value = StringType()
 
@@ -165,40 +157,26 @@ class OutputFormatConfiguration(Model):
 class SchemaConfiguration(Model):
     role_arn = StringType(deserialize_from='RoleARN')
     catalog_id = StringType(deserialize_from='CatalogId')
-    database_name = StringType(deserialize_from='DatabaseName')
-    table_name = StringType(deserialize_from='TableName')
-    region = StringType(deserialize_from='Region')
-    version_id = StringType(deserialize_from='VersionId')
+    database_name = StringType(deserialize_from='DatabaseName', serialize_when_none=False)
+    table_name = StringType(deserialize_from='TableName', serialize_when_none=False)
+    region = StringType(deserialize_from='Region', serialize_when_none=False)
+    version_id = StringType(deserialize_from='VersionId', serialize_when_none=False)
 
 
 class DataFormatConversionConfiguration(Model):
+    enabled = BooleanType(deserialize_from='Enabled')
     schema_configuration = ModelType(SchemaConfiguration, deserialize_from="SchemaConfiguration")
     input_format_configuration = ModelType(InputFormatConfiguration, deserialize_from='InputFormatConfiguration')
     output_format_configuration = ModelType(OutputFormatConfiguration, deserialize_from='OutputFormatConfiguration')
-
-
-class ExtendedS3DestinationDescription(Model):
-    role_arn = StringType(deserialize_from='RoleARN')
-    bucket_arn = StringType(deserialize_from='BucketARN')
-    prefix = StringType(deserialize_from='Prefix')
-    error_output_prefix = StringType(deserialize_from='ErrorOutputPrefix')
-    buffering_hints = ModelType(BufferingHints, deserialize_from='BufferingHints')
-    compression_format = StringType(deserialize_from='CompressionFormat',
-                                    choices=('UNCOMPRESSED', 'GZIP', 'ZIP', 'Snappy', 'HADOOP_SNAPPY'))
-    encryption_configuration = ModelType(EncryptionConfiguration, deserialize_from='EncryptionConfiguration')
-    cloud_watch_logging_options = ModelType(CloudWatchLoggingOptions, deserialize_from='CloudWatchLoggingOptions')
-    processing_configuration = ModelType(ProcessingConfiguration, deserialize_from="ProcessingConfiguration")
-    s3_backup_mode = StringType(deserialize_from='S3BackupMode', choices=('Disabled', 'Enabled'))
-    s3_backup_description = ModelType(S3BackupDescription, deserialize_from='S3BackupDescription')
-    data_format_conversion_configuration = ModelType(DataFormatConversionConfiguration,
-                                                     deserialize_from='DataFormatConversionConfiguration')
-    enabled = BooleanType(deserialize_from='Enabled')
+    input_format = ListType(StringType())
+    output_format = ListType(StringType())
+    record_format_conversion = StringType(choices=('Enabled', 'Disabled'))
 
 
 class CopyCommand(Model):
     data_table_name = StringType(deserialize_from='DataTableName')
-    data_table_columns = StringType(deserialize_from='DataTableColumns')
-    copy_options = StringType(deserialize_from='CopyOptions')
+    data_table_columns = StringType(deserialize_from='DataTableColumns', serialize_when_none=False)
+    copy_options = StringType(deserialize_from='CopyOptions', serialize_when_none=False)
 
 
 class RetryOptions(Model):
@@ -217,51 +195,11 @@ class S3Configuration(Model):
     cloud_watch_logging_options = ModelType(CloudWatchLoggingOptions, deserialize_from='CloudWatchLoggingOptions')
 
 
-class RedshiftDestinationDescription(Model):
-    role_arn = StringType(deserialize_from='RoleARN')
-    cluster_jdb_curl = StringType(deserialize_from='ClusterJDBCURL')
-    copy_command = ModelType(CopyCommand, deserialize_from='CopyCommand')
-    username = StringType(deserialize_from='Username')
-    retry_options = ModelType(RetryOptions, deserialize_from='RetryOptions')
-    s3_configuration = ModelType(S3Configuration, deserialize_from='S3Configuration')
-    processing_configuration = ModelType(ProcessingConfiguration, deserialize_from="ProcessingConfiguration")
-
-
 class VpcConfigurationDescription(Model):
     subnet_ids = ListType(StringType(), deserialize_from='SubnetIds')
     role_arn = StringType(deserialize_from='RoleARN')
     security_group_ids = ListType(StringType(), deserialize_from='SecurityGroupIds')
     vpc_id = StringType(deserialize_from='VpcId')
-
-
-class ElasticsearchDestinationDescription(Model):
-    role_arn = StringType(deserialize_from='RoleARN')
-    domain_arn = StringType(deserialize_from='DomainARN')
-    cluster_endpoint = StringType(deserialize_from='ClusterEndpoint')
-    index_name = StringType(deserialize_from='IndexName')
-    type_name = StringType(deserialize_from='TypeName')
-    index_rotation_period = StringType(deserialize_from='IndexRotationPeriod',
-                                       choices=('NoRotation', 'OneHour', 'OneDay', 'OneWeek', 'OneMonth'))
-    buffering_hints = ModelType(BufferingHints, deserialize_from='BufferingHints')
-    retry_options = ModelType(RetryOptions, deserialize_from='RetryOptions')
-    s3_backup_mode = StringType(deserialize_from='S3BackupMode', choices=('Disabled', 'Enabled'))
-    s3_destination_description = ModelType(S3DestinationDescription, deserialize_from='S3DestinationDescription')
-    processing_configuration = ModelType(ProcessingConfiguration, deserialize_from="ProcessingConfiguration")
-    cloud_watch_logging_options = ModelType(CloudWatchLoggingOptions, deserialize_from='CloudWatchLoggingOptions')
-    vpc_configuration_description = ModelType(VpcConfigurationDescription,
-                                              deserialize_from='VpcConfigurationDescription')
-
-
-class SplunkDestinationDescription(Model):
-    hec_endpoint = StringType(deserialize_from='HECEndpoint')
-    hec_endpoint_type = StringType(deserialize_from='HECEndpointType', choices=('Raw', 'Event'))
-    hec_token = StringType(deserialize_from='HECToken')
-    hec_acknowledgment_timeout_in_seconds = IntType(deserialize_from='HECAcknowledgmentTimeoutInSeconds')
-    retry_options = ModelType(RetryOptions, deserialize_from='RetryOptions')
-    s3_backup_mode = StringType(deserialize_from='S3BackupMode', choices=('Disabled', 'Enabled'))
-    s3_destination_description = ModelType(S3DestinationDescription, deserialize_from='S3DestinationDescription')
-    processing_configuration = ModelType(ProcessingConfiguration, deserialize_from="ProcessingConfiguration")
-    cloud_watch_logging_options = ModelType(CloudWatchLoggingOptions, deserialize_from='CloudWatchLoggingOptions')
 
 
 class EndpointConfiguration(Model):
@@ -276,29 +214,157 @@ class CommonAttributes(Model):
 
 class RequestConfiguration(Model):
     content_encoding = StringType(deserialize_from='ContentEncoding', choices=('NONE', 'GZIP'))
-    common_attributes = ModelType(CommonAttributes, deserialize_from='CommonAttributes')
+    common_attributes = ListType(ModelType(CommonAttributes, deserialize_from='CommonAttributes'))
 
 
-class HttpEndpointDestinationDescription(Model):
-    endpoint_configuration = ModelType(EndpointConfiguration, deserialize_from='EndpointConfiguration')
+class S3DestinationDescription(Model):
+    role_arn = StringType(deserialize_from='RoleARN')
+    bucket_arn = StringType(deserialize_from='BucketARN')
+    prefix = StringType(deserialize_from='Prefix')
+    error_output_prefix = StringType(deserialize_from='ErrorOutputPrefix')
     buffering_hints = ModelType(BufferingHints, deserialize_from='BufferingHints')
+    compression_format = StringType(deserialize_from='CompressionFormat',
+                                    choices=('UNCOMPRESSED', 'GZIP', 'ZIP', 'Snappy', 'HADOOP_SNAPPY'))
+    encryption_configuration = ModelType(EncryptionConfiguration, deserialize_from='EncryptionConfiguration')
     cloud_watch_logging_options = ModelType(CloudWatchLoggingOptions, deserialize_from='CloudWatchLoggingOptions')
-    request_configuration = ModelType(RequestConfiguration, deserialize_from='RequestConfiguration')
+
+
+class Destination(Model):
+    cloud_watch_logging_options = ModelType(BufferingHints, deserialize_from='CloudWatchLoggingOptions')
+    processing_configuration = ModelType(ProcessingConfiguration, deserialize_from="ProcessingConfiguration")
+    s3_backup_mode = StringType(deserialize_from='S3BackupMode', choices=('FailedDataOnly', 'AllData'))
+
+    s3_destination_description = ModelType(S3DestinationDescription, deserialize_from='S3DestinationDescription',
+                                           serialize_when_none=False)
+    role_arn = StringType(deserialize_from='RoleARN', serialize_when_none=False)
+    buffering_hints = ModelType(BufferingHints, deserialize_from='BufferingHints', serialize_when_none=False)
+    request_configuration = ModelType(RequestConfiguration, deserialize_from='RequestConfiguration',
+                                      serialize_when_none=False)
+    retry_options = ModelType(RetryOptions, deserialize_from='RetryOptions', serialize_when_none=False)
+
+    # ExtendedS3DestinationDescription
+    bucket_name = StringType(serialize_when_none=False)
+    buffer_conditions = StringType(serialize_when_none=False)
+    bucket_arn = StringType(deserialize_from='BucketARN', serialize_when_none=False)
+    prefix = StringType(deserialize_from='Prefix', serialize_when_none=False)
+    error_output_prefix = StringType(deserialize_from='ErrorOutputPrefix', serialize_when_none=False)
+    compression_format = StringType(deserialize_from='CompressionFormat',
+                                    choices=('UNCOMPRESSED', 'GZIP', 'ZIP', 'Snappy', 'HADOOP_SNAPPY'),
+                                    serialize_when_none=False)
+    encryption_configuration = ModelType(EncryptionConfiguration, deserialize_from='EncryptionConfiguration',
+                                         serialize_when_none=False)
+    data_format_conversion_configuration = ModelType(DataFormatConversionConfiguration,
+                                                     deserialize_from='DataFormatConversionConfiguration',
+                                                     serialize_when_none=False)
+
+    # RedshiftDestinationDescription
+    cluster_jdb_curl = StringType(deserialize_from='ClusterJDBCURL', serialize_when_none=False)
+    copy_command = ModelType(CopyCommand, deserialize_from='CopyCommand', serialize_when_none=False)
+    username = StringType(deserialize_from='Username', serialize_when_none=False)
+
+    # ElasticsearchDestinationDescription
+    domain_name = StringType(serialize_when_none=False)
+    domain_arn = StringType(deserialize_from='DomainARN', serialize_when_none=False)
+    cluster_endpoint = StringType(deserialize_from='ClusterEndpoint', serialize_when_none=False)
+    index_name = StringType(deserialize_from='IndexName', serialize_when_none=False)
+    type_name = StringType(deserialize_from='TypeName', serialize_when_none=False)
+    index_rotation_period = StringType(deserialize_from='IndexRotationPeriod',
+                                       choices=('NoRotation', 'OneHour', 'OneDay', 'OneWeek', 'OneMonth'),
+                                       serialize_when_none=False)
+    vpc_configuration_description = ModelType(VpcConfigurationDescription,
+                                              deserialize_from='VpcConfigurationDescription', serialize_when_none=False)
+    # HttpEndpointDestinationDescription
+    endpoint_configuration = ModelType(EndpointConfiguration, deserialize_from='EndpointConfiguration',
+                                       serialize_when_none=False)
+    buffer_conditions = StringType(serialize_when_none=False)
+    cluster = StringType(serialize_when_none=False)
+    db_name = StringType(serialize_when_none=False)
+
+    # SplunkDestinationDescription
+    hec_endpoint = StringType(deserialize_from='HECEndpoint', serialize_when_none=False)
+    hec_endpoint_type = StringType(deserialize_from='HECEndpointType', choices=('Raw', 'Event'),
+                                   serialize_when_none=False)
+    hec_token = StringType(deserialize_from='HECToken', serialize_when_none=False)
+    hec_acknowledgment_timeout_in_seconds = IntType(deserialize_from='HECAcknowledgmentTimeoutInSeconds',
+                                                    serialize_when_none=False)
+
+
+class DestinationsRef(Model):
+    destination_id = ListType(StringType())
+    extended_s3_destination_description = ListType(ModelType(Destination), serialize_when_none=False,
+                                                   deserialize_from='ExtendedS3DestinationDescription')
+    elasticsearch_destination_description = ListType(ModelType(Destination), serialize_when_none=False,
+                                                     deserialize_from='ElasticsearchDestinationDescription')
+    splunk_destination_description = ListType(ModelType(Destination), serialize_when_none=False,
+                                              deserialize_from='SplunkDestinationDescription')
+    redshift_destination_description = ListType(ModelType(Destination), serialize_when_none=False,
+                                                deserialize_from='RedshiftDestinationDescription')
+    http_endpoint_destination_description = ListType(ModelType(Destination), serialize_when_none=False,
+                                                     deserialize_from='HttpEndpointDestinationDescription')
 
 
 class Destinations(Model):
     destination_id = StringType(deserialize_from='DestinationId')
     s3_destination_description = ModelType(S3DestinationDescription, deserialize_from='S3DestinationDescription')
-    extended_s3_destination_description = ModelType(ExtendedS3DestinationDescription,
+    extended_s3_destination_description = ModelType(Destination,
                                                     deserialize_from='ExtendedS3DestinationDescription')
-    redshift_destination_description = ModelType(RedshiftDestinationDescription,
-                                                 deserialize_from='RedshiftDestinationDescription')
-    elasticsearch_destination_description = ModelType(ElasticsearchDestinationDescription,
+    elasticsearch_destination_description = ModelType(Destination,
                                                       deserialize_from='ElasticsearchDestinationDescription')
-    splunk_destination_description = ModelType(SplunkDestinationDescription,
+    splunk_destination_description = ModelType(Destination,
                                                deserialize_from='SplunkDestinationDescription')
-    http_endpoint_destination_description = ModelType(HttpEndpointDestinationDescription,
+    redshift_destination_description = ModelType(Destination,
+                                                 deserialize_from='RedshiftDestinationDescription')
+    http_endpoint_destination_description = ModelType(Destination,
                                                       deserialize_from='HttpEndpointDestinationDescription')
+
+
+class LambdaTab(Model):
+    source_record_transformation = StringType(choices=('Enabled', 'Disabled'))
+    buffer_conditions = StringType(serialize_when_none=False)
+    data_transformation = StringType(serialize_when_none=False)
+    lambda_func = StringType(serialize_when_none=False)
+    lambda_func_ver = StringType(serialize_when_none=False)
+    timeout = StringType(serialize_when_none=False)
+
+
+class S3BackupInfo(Model):
+    backup_mode = StringType(choices=('Enabled', 'Disabled'))
+    bucket_name = StringType(serialize_when_none=False)
+    buffer_conditions = StringType(serialize_when_none=False)
+    bucket_error_prefix = StringType(serialize_when_none=False)
+    compression = StringType(serialize_when_none=False)
+    encryption = StringType(serialize_when_none=False)
+
+
+class AdditionalTabs(Model):
+    cloud_watch_info = StringType(choices=('Enabled', 'Disabled'))
+    destination_name = StringType()
+    iam_role = StringType()
+    lambda_tab = ModelType(LambdaTab, serialize_when_none=False)
+    s3_backup_info = ModelType(S3BackupInfo)
+
+
+class Source(Model):
+    source_details = StringType()
+    source_name = StringType()
+
+
+class LambdaTab(Model):
+    source_record_transformation = StringType(choices=('Enabled', 'Disabled'))
+    data_transformation = StringType(serialize_when_none=False)
+    buffer_conditions = StringType(serialize_when_none=False)
+    lambda_func = StringType(serialize_when_none=False)
+    lambda_func_ver = StringType(serialize_when_none=False)
+    timeout = StringType(serialize_when_none=False)
+
+
+class AdditionalTabs(Model):
+    destination_name = StringType()
+    cloud_watch_info = StringType(choices=('Enabled', 'Disabled'))
+    lambda_tab = ModelType(LambdaTab)
+    iam_role = StringType()
+    s3_backup_info = ModelType(S3BackupInfo)
+
 
 class DeliveryStreamDescription(Model):
     delivery_stream_name = StringType(deserialize_from='DeliveryStreamName')
@@ -307,18 +373,21 @@ class DeliveryStreamDescription(Model):
         'CREATING', 'CREATING_FAILED', 'DELETING', 'DELETING_FAILED', 'ACTIVE', 'SUSPENDED'))
     failure_description = ModelType(FailureDescription, deserialize_from='FailureDescription')
     delivery_stream_encryption_configuration = ModelType(DeliveryStreamEncryptionConfiguration,
-                                                         deserialize_from='DeliveryStreamEncryptionConfiguration')
+                                                         deserialize_from='DeliveryStreamEncryptionConfiguration',
+                                                         serialize_when_none=False)
     delivery_stream_type = StringType(deserialize_from="DeliveryStreamType",
                                       choices=('DirectPut', 'KinesisStreamAsSource'))
     version_id = StringType(deserialize_from='VersionId')
     create_timestamp = DateTimeType(deserialize_from='CreateTimestamp')
     last_update_timestamp = DateTimeType(deserialize_from='LastUpdateTimestamp')
-    source = ModelType(Source, default={}) #Source, deserialize_from="Source"
-    destinations = ListType(ModelType(Destinations), deserialize_from='Destinations')
+    source = ModelType(Source)  # Source, deserialize_from="Source"
+    destinations = ListType(ModelType(Destinations), deserialize_from="Destinations")
+    destinations_ref = ModelType(DestinationsRef)
+    additional_tabs = ModelType(AdditionalTabs)
     HasMoreDestinations = BooleanType(deserialize_from='has_more_destinations')
 
     def reference(self, region_code):
         return {
-            'resource_id': self.stream_arn,
-            'external_link': f'https://console.aws.amazon.com/kinesis/home?region={region_code}#/streams/details/{self.stream_name}'
+            'resource_id': self.delivery_stream_arn,
+            'external_link': f'https://console.aws.amazon.com/firehose/home?region={region_code}#/details/{self.delivery_stream_name}'
         }

@@ -16,14 +16,19 @@ class Tags(Model):
 '''
 NOTIFICATION CONFIGURATION
 '''
+
+
 class NotificationConfiguration(Model):
     auto_scaling_group_name = StringType(deserialize_from="AutoScalingGroupName", serialize_when_none=False)
     topic_arn = StringType(deserialize_from="TopicARN", serialize_when_none=False)
     notification_type = StringType(deserialize_from="NotificationType", serialize_when_none=False)
 
+
 '''
 LIFECYCLE HOOK
 '''
+
+
 class LifecycleHook(Model):
     lifecycle_hook_name = StringType(deserialize_from="LifecycleHookName", serialize_when_none=False)
     auto_scaling_group_name = StringType(deserialize_from="AutoScalingGroupName", serialize_when_none=False)
@@ -35,9 +40,12 @@ class LifecycleHook(Model):
     global_timeout = IntType(deserialize_from="GlobalTimeout", serialize_when_none=False)
     default_result = StringType(deserialize_from="DefaultResult", serialize_when_none=False)
 
+
 '''
 SCHEDULED ACTION
 '''
+
+
 class ScheduledAction(Model):
     auto_scaling_group_name = StringType(deserialize_from="AutoScalingGroupName", serialize_when_none=False)
     scheduled_action_name = StringType(deserialize_from="ScheduledActionName", serialize_when_none=False)
@@ -50,9 +58,12 @@ class ScheduledAction(Model):
     max_size = IntType(deserialize_from="MaxSize", serialize_when_none=False)
     desired_capacity = IntType(deserialize_from="DesiredCapacity", serialize_when_none=False)
 
+
 '''
 POLICY
 '''
+
+
 class PredefinedMetricSpecification(Model):
     predefined_metric_type = StringType(deserialize_from="PredefinedMetricType", choices=("ASGAverageCPUUtilization",
                                                                                           "ASGAverageNetworkIn",
@@ -123,9 +134,12 @@ class AutoScalingPolicy(Model):
                                               serialize_when_none=False)
     enabled = BooleanType(deserialize_from="Enabled", serialize_when_none=False)
 
+
 '''
 LAUNCH CONFIGURATION
 '''
+
+
 class Ebs(Model):
     snapshot_id = StringType(deserialize_from="SnapshotId", serialize_when_none=False)
     volume_size = IntType(deserialize_from="VolumeSize", serialize_when_none=False)
@@ -162,15 +176,16 @@ class LaunchConfiguration(Model):
     ramdisk_id = StringType(deserialize_from="RamdiskId", serialize_when_none=False)
     block_device_mappings = ListType(ModelType(AutoScalingLaunchConfigurationBlockDeviceMappings),
                                      deserialize_from="BlockDeviceMappings", serialize_when_none=False)
-    instance_monitoring = ModelType(InstanceMonitoring, deserialize_from="InstanceMonitoring", serialize_when_none=False)
+    instance_monitoring = ModelType(InstanceMonitoring, deserialize_from="InstanceMonitoring",
+                                    serialize_when_none=False)
     spot_price = StringType(deserialize_from="SpotPrice", serialize_when_none=False)
     iam_instance_profile = StringType(deserialize_from="IamInstanceProfile", serialize_when_none=False)
     created_time = DateTimeType(deserialize_from="CreatedTime", serialize_when_none=False)
     ebs_optimized = BooleanType(deserialize_from="EbsOptimized", serialize_when_none=False)
     associate_public_ip_address = BooleanType(deserialize_from="AssociatePublicIpAddress", serialize_when_none=False)
     placement_tenancy = StringType(deserialize_from="PlacementTenancy", serialize_when_none=False)
-    region_name = StringType(default='', serialize_when_none=False)
-    account_id = StringType(default='', serialize_when_none=False)
+    region_name = StringType(serialize_when_none=False)
+    account_id = StringType(serialize_when_none=False)
 
     def reference(self, region_code):
         return {
@@ -182,6 +197,8 @@ class LaunchConfiguration(Model):
 '''
 LAUNCH TEMPLATE
 '''
+
+
 class LicenseSpecification(Model):
     license_configuration_arn = StringType(deserialize_from="LicenseConfigurationArn", serialize_when_none=False)
 
@@ -311,6 +328,8 @@ class LaunchTemplateDetail(Model):
 '''
 AUTO SCALING GROUPS
 '''
+
+
 class LaunchTemplate(Model):
     launch_template_id = StringType(deserialize_from="LaunchTemplateId", serialize_when_none=False)
     launch_template_name = StringType(deserialize_from="LaunchTemplateName", serialize_when_none=False)
@@ -338,7 +357,8 @@ class MixedInstancesPolicyLaunchTemplate(Model):
 class InstancesDistribution(Model):
     on_demand_allocation_strategy = StringType(deserialize_from="OnDemandAllocationStrategy", serialize_when_none=False)
     on_demand_base_capacity = IntType(deserialize_from="OnDemandBaseCapacity", serialize_when_none=False)
-    on_demand_percentage_above_base_capacity = IntType(deserialize_from="OnDemandPercentageAboveBaseCapacity", serialize_when_none=False)
+    on_demand_percentage_above_base_capacity = IntType(deserialize_from="OnDemandPercentageAboveBaseCapacity",
+                                                       serialize_when_none=False)
     spot_allocation_strategy = StringType(deserialize_from="SpotAllocationStrategy", serialize_when_none=False)
     spot_instance_pools = IntType(deserialize_from="SpotInstancePools", serialize_when_none=False)
     spot_max_price = StringType(deserialize_from="SpotMaxPrice", serialize_when_none=False)
@@ -358,6 +378,7 @@ class AutoScalingGroupInstances(Model):
     instance_type = StringType(deserialize_from="InstanceType", serialize_when_none=False)
     availability_zone = StringType(deserialize_from="AvailabilityZone", serialize_when_none=False)
     lifecycle_state = StringType(deserialize_from="LifecycleState", serialize_when_none=False)
+    lifecycle = StringType(choices=('spot', 'scheduled'), serialize_when_none=False)
     health_status = StringType(deserialize_from="HealthStatus", serialize_when_none=False)
     launch_configuration_name = StringType(deserialize_from="LaunchConfigurationName", serialize_when_none=False)
     launch_template = ModelType(LaunchTemplate, deserialize_from="LaunchTemplate", serialize_when_none=False)
@@ -383,6 +404,19 @@ class AutoScalingGroupTags(Model):
     propagate_at_launch = BooleanType(deserialize_from="PropagateAtLaunch", serialize_when_none=False)
 
 
+class LoadBalancerTags(Model):
+    arn = StringType()
+
+
+class LoadBalancer(Model):
+    type = StringType(choices=('application', 'network'), deserialize_from="Type")
+    endpoint = StringType(deserialize_from="LoadBalancerName")
+    port = ListType(IntType(deserialize_from=""))
+    name = StringType()
+    protocol = ListType(StringType())
+    scheme = StringType(choices=('internet-facing', 'internal'), deserialize_from="Scheme")
+
+
 class AutoScalingGroup(Model):
     auto_scaling_group_name = StringType(deserialize_from="AutoScalingGroupName")
     auto_scaling_group_arn = StringType(deserialize_from="AutoScalingGroupARN")
@@ -392,7 +426,8 @@ class AutoScalingGroup(Model):
     scheduled_actions = ListType(ModelType(ScheduledAction), default=[])
     lifecycle_hooks = ListType(ModelType(LifecycleHook), default=[])
     notification_configurations = ListType(ModelType(NotificationConfiguration), default=[])
-    launch_template = ModelType(LaunchTemplate, deserialize_from="LaunchTemplate", serialize_when_none=False)
+    # launch_template = ModelType(LaunchTemplate, deserialize_from="LaunchTemplate", serialize_when_none=False)
+    launch_template = ModelType(LaunchTemplateDetail, serialize_when_none=False)
     display_launch_configuration_template = StringType(default="")
     mixed_instances_policy = ModelType(MixedInstancesPolicy,
                                        deserialize_from="MixedInstancesPolicy",
@@ -402,11 +437,12 @@ class AutoScalingGroup(Model):
     desired_capacity = IntType(deserialize_from="DesiredCapacity", serialize_when_none=False)
     default_cooldown = IntType(deserialize_from="DefaultCooldown", serialize_when_none=False)
     availability_zones = ListType(StringType, deserialize_from="AvailabilityZones", default=[])
-    load_balancer_names = ListType(StringType, deserialize_from="LoadBalancerNames", default=[])
     target_group_arns = ListType(StringType, deserialize_from="TargetGroupARNs", default=[])
+    load_balancer_arns = ListType(StringType, default=[])
+    load_balancers = ListType(ModelType(LoadBalancer), default=[])
     health_check_type = StringType(deserialize_from="HealthCheckType", serialize_when_none=False)
     health_check_grace_period = IntType(deserialize_from="HealthCheckGracePeriod", serialize_when_none=False)
-    instances = ListType(ModelType(AutoScalingGroupInstances), deserialize_from="Instances", default=[])
+    instances = ListType(ModelType(AutoScalingGroupInstances), default=[])
     created_time = DateTimeType(deserialize_from="CreatedTime")
     suspended_processes = ListType(ModelType(AutoScalingGroupSuspendedProcesses),
                                    deserialize_from="SuspendedProcesses",
@@ -436,6 +472,7 @@ class AutoScalingGroup(Model):
     def set_cloudwatch(self, region_code):
         return {
             "namespace": "AWS/AutoScaling",
-            "dimensions": [CloudWatchDimensionModel({'Name': 'AutoScalingGroupName', 'Value': self.auto_scaling_group_name})],
+            "dimensions": [
+                CloudWatchDimensionModel({'Name': 'AutoScalingGroupName', 'Value': self.auto_scaling_group_name})],
             "region_name": region_code
         }
