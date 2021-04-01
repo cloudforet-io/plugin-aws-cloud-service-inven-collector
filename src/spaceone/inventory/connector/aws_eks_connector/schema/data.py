@@ -57,6 +57,7 @@ class labels(Model):
 
 class resourcesAutoScalingGroups(Model):
     name = StringType(deserialize_from="name")
+    arn = StringType(deserialize_from="arn")
 
 
 class resources(Model):
