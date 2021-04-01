@@ -88,8 +88,6 @@ class AutoScalingConnector(SchematicAWSConnector):
                 match_lb_arns = self.get_load_balancer_arns(raw.get('TargetGroupARNs', []))
                 match_lbs = self.get_load_balancer_info(match_lb_arns)
 
-                print(f"match_lb_arns: {match_lb_arns}\nmatch_lbs:{match_lbs}")
-
                 raw.update({
                     'launch_configuration': LaunchConfiguration(match_lc, strict=False),
                     'policies': list(map(lambda policy: AutoScalingPolicy(policy, strict=False), match_policies)),
