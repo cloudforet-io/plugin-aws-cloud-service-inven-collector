@@ -103,11 +103,11 @@ node_group_scaling_config = ItemDynamicLayout.set_fields('Scaling Config', field
 ])
 
 node_group_resource = ItemDynamicLayout.set_fields('Resources', fields=[
-    ListDyField.data_source('Auto Scaling Groups', 'data.resources.auto_scaling_groups', options={
+    ListDyField.data_source('Auto Scaling Group Name', 'data.resources.auto_scaling_groups', options={
         'delimiter': '<br>',
         'sub_key': 'name'
     }),
-    ListDyField.data_source('Auto Scaling Groups', 'data.resources.auto_scaling_groups', options={
+    ListDyField.data_source('Auto Scaling Group ARN', 'data.resources.auto_scaling_groups', options={
         'delimiter': '<br>',
         'sub_key': 'arn'
     }),
