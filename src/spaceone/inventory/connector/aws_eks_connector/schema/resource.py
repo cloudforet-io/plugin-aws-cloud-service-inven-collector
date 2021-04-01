@@ -107,6 +107,10 @@ node_group_resource = ItemDynamicLayout.set_fields('Resources', fields=[
         'delimiter': '<br>',
         'sub_key': 'name'
     }),
+    ListDyField.data_source('Auto Scaling Groups', 'data.resources.auto_scaling_groups', options={
+        'delimiter': '<br>',
+        'sub_key': 'arn'
+    }),
     TextDyField.data_source('Remote Access Security Group', 'data.resources.remote_access_security_group'),
 ])
 
