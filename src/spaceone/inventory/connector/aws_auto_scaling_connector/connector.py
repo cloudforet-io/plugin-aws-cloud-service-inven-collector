@@ -72,6 +72,7 @@ class AutoScalingConnector(SchematicAWSConnector):
 
         for data in response_iterator:
             for raw in data.get('AutoScalingGroups', []):
+
                 if policies is None:
                     policies = self._describe_policies()
 
@@ -192,7 +193,7 @@ class AutoScalingConnector(SchematicAWSConnector):
         ec2_client = self.session.client('ec2')
         max_count = 20
         instances_from_ec2 = []
-        split_instances = [instances[i:i + max_count] for i in range(0, len(instances), max_count)]
+        split_instances = [instances[i:i+max_count] for i in range(0, len(instances), max_count)]
 
         for instances in split_instances:
             instance_ids = [_instance.get('InstanceId') for _instance in instances if _instance.get('InstanceId')]

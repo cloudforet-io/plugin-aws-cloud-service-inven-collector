@@ -379,6 +379,7 @@ class AutoScalingGroupInstances(Model):
     availability_zone = StringType(deserialize_from="AvailabilityZone", serialize_when_none=False)
     lifecycle_state = StringType(deserialize_from="LifecycleState", serialize_when_none=False)
     lifecycle = StringType(choices=('spot', 'scheduled'), serialize_when_none=False)
+    lifecycle_test = StringType(choices=('spot', 'scheduled'), serialize_when_none=False)
     health_status = StringType(deserialize_from="HealthStatus", serialize_when_none=False)
     launch_configuration_name = StringType(deserialize_from="LaunchConfigurationName", serialize_when_none=False)
     launch_template = ModelType(LaunchTemplate, deserialize_from="LaunchTemplate", serialize_when_none=False)
