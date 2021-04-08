@@ -74,11 +74,11 @@ class ElastiCacheConnector(SchematicAWSConnector):
                 'mode': self.set_redis_mode(replication_group.get('ClusterEnabled')),
                 'engine': 'redis',
                 'engine_version': self.get_engine_version(replication_group, cache_clusters),
-                'shard_count': self.get_shard_count(replication_group.get('MemberClusters', [])),
+                'shard_count': self.get_shard_count(replication_group.get('NodeGroups', [])),
                 'availability_zones': self.get_redis_availability_zones(replication_group.get('NodeGroups', [])),
                 'subnet_group_name': self.get_redis_subnet_group_name(replication_group, cache_clusters),
                 'parameter_group_name': self.get_redis_parameter_group_name(replication_group, cache_clusters),
-                'node_count': self.get_node_count(replication_group.get('NodeGroups', [])),
+                'node_count': self.get_node_count(replication_group.get('MemberClusters', [])),
                 'nodes': self.get_redis_nodes_info(replication_group, cache_clusters),
                 'account_id': self.account_id
             })
