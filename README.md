@@ -196,6 +196,7 @@ authentication privilege for followings:
 
 * (Fix Bug) Modify node_count, shard_count in ElastiCache
 * (Fix Bug) Modify unexpected region code in EKS Node Group
+* (Fix Bug) Modify RDS Filter action
 
 ### Ver 1.9.2
 
