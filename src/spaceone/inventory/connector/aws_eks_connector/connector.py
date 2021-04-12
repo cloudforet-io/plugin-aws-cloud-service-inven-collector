@@ -33,17 +33,19 @@ class EKSConnector(SchematicAWSConnector):
 
         for region_name in self.region_names:
             resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
-            self.reset_region(region_name)
 
-        # For Node Group
-        for node_group_vo in self.node_groups:
-            resources.append(NodeGroupResponse(
-                {'resource': NodeGroupResource(
-                    {'data': node_group_vo,
-                     'tags': [{'key': tag.key, 'value': tag.value} for tag in node_group_vo.tags],
-                     'region_code': region_name,
-                     'reference': ReferenceModel(node_group_vo.reference(region_name))})}
-            ))
+            # For Node Group
+            for node_group_vo in self.node_groups:
+                resources.append(NodeGroupResponse(
+                    {'resource': NodeGroupResource(
+                        {'data': node_group_vo,
+                         'tags': [{'key': tag.key, 'value': tag.value} for tag in node_group_vo.tags],
+                         'region_code': region_name,
+                         'reference': ReferenceModel(node_group_vo.reference(region_name))})}
+                ))
+
+            self.node_groups = []
+            self.reset_region(region_name)
 
         print(f' EKS Finished {time.time() - start_time} Seconds')
         return resources
