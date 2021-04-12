@@ -137,13 +137,6 @@ class AutoScalingConnector(SchematicAWSConnector):
                     })
 
                 res = AutoScalingGroup(raw, strict=False)
-
-                print("------ ASG: Instances --------")
-                _res = res.to_primitive()
-                print(_res.get('auto_scaling_group_name'))
-                print(_res.get('instances'))
-                print("--------------")
-
                 yield res
 
     def request_launch_configuration_data(self, region_name) -> List[LaunchConfiguration]:
