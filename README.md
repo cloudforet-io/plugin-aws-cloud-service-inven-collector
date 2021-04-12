@@ -194,8 +194,9 @@ authentication privilege for followings:
 
 ### Ver 1.9.3
 
-* (Bug) Modify node_count, shard_count in ElastiCache
-
+* (Fix Bug) Modify node_count, shard_count in ElastiCache
+* (Fix Bug) Modify unexpected region code in EKS Node Group
+* (Fix Bug) Modify RDS Filter action
 
 ### Ver 1.9.2
 
