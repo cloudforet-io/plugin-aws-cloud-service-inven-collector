@@ -197,6 +197,7 @@ authentication privilege for followings:
 * (Fix Bug) Modify node_count, shard_count in ElastiCache
 * (Fix Bug) Modify unexpected region code in EKS Node Group
 * (Fix Bug) Modify RDS Filter action
+* Add search matched launch template to Auto Scaling Group through mixed instance policy info
 
 ### Ver 1.9.2
 
