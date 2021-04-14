@@ -77,7 +77,7 @@ class RDSConnector(SchematicAWSConnector):
                              'reference': ReferenceModel(database_vo.reference(region_name))})}
                     ))
             except Exception as e:
-                print(f'[ERROR {service_name}] REGION : {region_name} {e}')
+                print(f'[ERROR RDS] REGION : {region_name} {e}')
 
             # For All except Database
             for collect_resource in collect_resources:
