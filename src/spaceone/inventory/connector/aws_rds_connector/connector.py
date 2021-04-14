@@ -63,18 +63,21 @@ class RDSConnector(SchematicAWSConnector):
             # print(f'[ {region_name} ]')
             self.reset_region(region_name)
 
-            # For Database
-            for database_vo, resource in self.db_cluster_data(region_name):
-                if getattr(database_vo, 'set_cloudwatch', None):
-                    database_vo.cloudwatch = CloudWatchModel(database_vo.set_cloudwatch(region_name))
+            try:
+                # For Database
+                for database_vo, resource in self.db_cluster_data(region_name):
+                    if getattr(database_vo, 'set_cloudwatch', None):
+                        database_vo.cloudwatch = CloudWatchModel(database_vo.set_cloudwatch(region_name))
 
-                resources.append(DatabaseResponse(
-                    {'resource': resource(
-                        {'data': database_vo,
-                         'tags': [{'key':tag.key, 'value': tag.value} for tag in database_vo.tags],
-                         'region_code': region_name,
-                         'reference': ReferenceModel(database_vo.reference(region_name))})}
-                ))
+                    resources.append(DatabaseResponse(
+                        {'resource': resource(
+                            {'data': database_vo,
+                             'tags': [{'key':tag.key, 'value': tag.value} for tag in database_vo.tags],
+                             'region_code': region_name,
+                             'reference': ReferenceModel(database_vo.reference(region_name))})}
+                    ))
+            except Exception as e:
+                print(f'[ERROR RDS] REGION : {region_name} {e}')
 
             # For All except Database
             for collect_resource in collect_resources:
