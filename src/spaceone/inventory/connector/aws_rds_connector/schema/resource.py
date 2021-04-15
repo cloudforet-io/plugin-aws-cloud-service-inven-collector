@@ -33,10 +33,10 @@ cluster_endpoint = ItemDynamicLayout.set_fields('Endpoints', fields=[
 cluster_conf = ItemDynamicLayout.set_fields('Configuration', fields=[
     TextDyField.data_source('DB Cluster ID', 'data.cluster.db_cluster_identifier'),
     TextDyField.data_source('ARN', 'data.cluster.db_cluster_arn'),
-    BadgeDyField.data_source('DB Cluster Role', 'data.cluster.db_cluster_role'),
+    TextDyField.data_source('DB Cluster Role', 'data.cluster.db_cluster_role'),
     TextDyField.data_source('Engine Version', 'data.cluster.engine_version'),
     TextDyField.data_source('Resource ID', 'data.cluster.db_cluster_resource_id'),
-    BadgeDyField.data_source('Engine Mode', 'data.cluster.engine_mode'),
+    TextDyField.data_source('Engine Mode', 'data.cluster.engine_mode'),
     TextDyField.data_source('DB Cluster Parameter Group', 'data.cluster.db_cluster_parameter_group'),
     EnumDyField.data_source('Deletion Protection', 'data.cluster.deletion_protection', default_badge={
         'indigo.500': ['true'], 'coral.600': ['false']
@@ -48,11 +48,11 @@ cluster_conf = ItemDynamicLayout.set_fields('Configuration', fields=[
     EnumDyField.data_source('Multi AZ', 'data.cluster.multi_az', default_badge={
         'indigo.500': ['true'], 'coral.600': ['false']
     }),
-    EnumDyField.data_source('Encrypted', 'data.cluster.encrypted', default_badge={
+    EnumDyField.data_source('Encrypted', 'data.cluster.storage_encrypted', default_badge={
         'indigo.500': ['true'], 'coral.600': ['false']
     }),
     TextDyField.data_source('KSM Key', 'data.cluster.kms_key_id'),
-    DateTimeDyField.data_source('Created Time', 'data.cluster_create_time')
+    DateTimeDyField.data_source('Created Time', 'data.cluster.cluster_create_time')
 ])
 
 cluster_maintenance = ItemDynamicLayout.set_fields('Maintenance', fields=[

@@ -110,11 +110,18 @@ class AutoScalingConnector(SchematicAWSConnector):
                     raw.update({
                         'display_launch_configuration_template': raw.get('LaunchConfigurationName')
                     })
+                elif raw.get('MixedInstancesPolicy', {}).get('LaunchTemplate', {}).get('LaunchTemplateSpecification'):
+                    _lt_info = raw.get('MixedInstancesPolicy', {}).get('LaunchTemplate', {}).get('LaunchTemplateSpecification')
+                    raw.update({
+                        'display_launch_configuration_template': _lt_info.get('LaunchTemplateName'),
+                        'launch_template': match_lt
+                    })
                 elif raw.get('LaunchTemplate'):
                     raw.update({
                         'display_launch_configuration_template': raw.get('LaunchTemplate').get('LaunchTemplateName'),
                         'launch_template': match_lt
                     })
+
                 else:
                     for instance in raw.get('Instances', []):
                         if instance.get('LaunchTemplate'):
@@ -273,6 +280,8 @@ class AutoScalingConnector(SchematicAWSConnector):
 
         if raw.get('LaunchTemplate'):
             lt_dict = raw.get('LaunchTemplate')
+        elif raw.get('MixedInstancesPolicy', {}).get('LaunchTemplate', {}).get('LaunchTemplateSpecification'):
+            lt_dict = raw.get('MixedInstancesPolicy', {}).get('LaunchTemplate', {}).get('LaunchTemplateSpecification')
         else:
             for instance in raw.get('Instances', []):
                 if instance.get('LaunchTemplate'):

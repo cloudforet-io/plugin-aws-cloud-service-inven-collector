@@ -14,6 +14,9 @@ from spaceone.inventory.libs.schema.resource import ReferenceModel, CloudWatchMo
 
 
 _LOGGER = logging.getLogger(__name__)
+DEFAULT_RDS_FILTER = ['aurora', 'aurora-mysql', 'mysql', 'mariadb', 'postgres',
+                      'oracle-ee', 'oracle-se1', 'oracle-se2', 'oracle-se',
+                      'sqlserver-ex', 'sqlserver-web', 'sqlserver-se', 'sqlserver-ee']
 
 
 class RDSConnector(SchematicAWSConnector):
@@ -60,18 +63,21 @@ class RDSConnector(SchematicAWSConnector):
             # print(f'[ {region_name} ]')
             self.reset_region(region_name)
 
-            # For Database
-            for database_vo, resource in self.db_cluster_data(region_name):
-                if getattr(database_vo, 'set_cloudwatch', None):
-                    database_vo.cloudwatch = CloudWatchModel(database_vo.set_cloudwatch(region_name))
+            try:
+                # For Database
+                for database_vo, resource in self.db_cluster_data(region_name):
+                    if getattr(database_vo, 'set_cloudwatch', None):
+                        database_vo.cloudwatch = CloudWatchModel(database_vo.set_cloudwatch(region_name))
 
-                resources.append(DatabaseResponse(
-                    {'resource': resource(
-                        {'data': database_vo,
-                         'tags': [{'key':tag.key, 'value': tag.value} for tag in database_vo.tags],
-                         'region_code': region_name,
-                         'reference': ReferenceModel(database_vo.reference(region_name))})}
-                ))
+                    resources.append(DatabaseResponse(
+                        {'resource': resource(
+                            {'data': database_vo,
+                             'tags': [{'key':tag.key, 'value': tag.value} for tag in database_vo.tags],
+                             'region_code': region_name,
+                             'reference': ReferenceModel(database_vo.reference(region_name))})}
+                    ))
+            except Exception as e:
+                print(f'[ERROR RDS] REGION : {region_name} {e}')
 
             # For All except Database
             for collect_resource in collect_resources:
@@ -119,20 +125,21 @@ class RDSConnector(SchematicAWSConnector):
     def describe_clusters(self, region_name) -> List[Cluster]:
         paginator = self.client.get_paginator('describe_db_clusters')
         response_iterator = paginator.paginate(
-            Filters=self.get_rds_filter(region_name),
             PaginationConfig={
                 'MaxItems': 10000,
                 'PageSize': 50,
             }
         )
+
         for data in response_iterator:
             for raw in data.get('DBClusters', []):
-                raw.update({
-                    'db_cluster_role': 'Master',
-                    'tags': self.list_tags_for_resource(raw['DBClusterArn'])
-                })
-                res = Cluster(raw, strict=False)
-                yield res
+                if raw.get('Engine') in DEFAULT_RDS_FILTER:
+                    raw.update({
+                        'db_cluster_role': 'Master',
+                        'tags': self.list_tags_for_resource(raw['DBClusterArn'])
+                    })
+                    res = Cluster(raw, strict=False)
+                    yield res
 
     def instance_data(self, region_name) -> List[Instance]:
         for instance in self.describe_instances(region_name):
@@ -141,7 +148,6 @@ class RDSConnector(SchematicAWSConnector):
     def describe_instances(self, region_name) -> List[Instance]:
         paginator = self.client.get_paginator('describe_db_instances')
         response_iterator = paginator.paginate(
-            Filters=self.get_rds_filter(region_name),
             PaginationConfig={
                 'MaxItems': 10000,
                 'PageSize': 50,
@@ -149,15 +155,15 @@ class RDSConnector(SchematicAWSConnector):
         )
         for data in response_iterator:
             for raw in data.get('DBInstances', []):
-                raw.update({
-                    'tags': self.list_tags_for_resource(raw['DBInstanceArn'])
-                })
-                yield Instance(raw, strict=False)
+                if raw.get('Engine') in DEFAULT_RDS_FILTER:
+                    raw.update({
+                        'tags': self.list_tags_for_resource(raw['DBInstanceArn'])
+                    })
+                    yield Instance(raw, strict=False)
 
     def snapshot_request_data(self, region_name) -> List[Snapshot]:
         paginator = self.client.get_paginator('describe_db_snapshots')
         response_iterator = paginator.paginate(
-            Filters=self.get_rds_filter(region_name),
             PaginationConfig={
                 'MaxItems': 10000,
                 'PageSize': 50,
@@ -165,12 +171,13 @@ class RDSConnector(SchematicAWSConnector):
         )
         for data in response_iterator:
             for raw in data.get('DBSnapshots', []):
-                raw.update({
-                    'region_name': region_name,
-                    'account_id': self.account_id,
-                    'tags': self.list_tags_for_resource(raw['DBSnapshotArn'])
-                })
-                yield Snapshot(raw, strict=False)
+                if raw.get('Engine') in DEFAULT_RDS_FILTER:
+                    raw.update({
+                        'region_name': region_name,
+                        'account_id': self.account_id,
+                        'tags': self.list_tags_for_resource(raw['DBSnapshotArn'])
+                    })
+                    yield Snapshot(raw, strict=False)
 
     def subnet_group_request_data(self, region_name) -> List[SubnetGroup]:
         paginator = self.client.get_paginator('describe_db_subnet_groups')
@@ -248,22 +255,3 @@ class RDSConnector(SchematicAWSConnector):
             return azs[0][:-1]
 
         return None
-
-    @staticmethod
-    def get_rds_filter(region_name):
-        DEFAULT_RDS_FILTER = ['aurora', 'aurora-mysql', 'mysql', 'mariadb', 'postgres',
-                              #'oracle-ee', 'oracle-se', 'oracle-se1', 'oracle-se2',
-                              'sqlserver-ex', 'sqlserver-web', 'sqlserver-se', 'sqlserver-ee']
-
-        #EXCLUDE_FILTER = {'ap-south-1': ['oracle-se', 'oracle-se1'], 'sa-east-1': ['oracle-se', 'oracle-se1']}
-        EXCLUDE_FILTER = {}
-
-        if EXCLUDE_FILTER.get(region_name):
-            filter_values = [rds_filter for rds_filter in DEFAULT_RDS_FILTER if rds_filter not in EXCLUDE_FILTER.get(region_name)]
-        else:
-            filter_values = DEFAULT_RDS_FILTER
-
-        return [{
-            'Name': 'engine',
-            'Values': filter_values
-        }]

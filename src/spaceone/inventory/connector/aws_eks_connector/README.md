@@ -13,7 +13,7 @@ Please contact us if you need any further information. (<support@spaceone.dev>)
   - Cluster
   
 - Boto3 info
-  - Client : eks
+  - Client : eks, auto_scaling
   - API used
     - [EKS.Paginator.ListClusters](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/eks.html#EKS.Paginator.ListClusters)
     - [EKS.Paginator.ListNodegroups](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/eks.html#EKS.Paginator.ListNodegroups)
@@ -21,6 +21,7 @@ Please contact us if you need any further information. (<support@spaceone.dev>)
     - [describe_cluster()](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/eks.html#EKS.Client.describe_cluster)
     - [describe_nodegroup()](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/eks.html#EKS.Client.describe_nodegroup)
     - [describe_update()](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/eks.html#EKS.Client.describe_update)
+    - [AutoScaling.Paginator.DescribeAutoScalingGroups](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/autoscaling.html#AutoScaling.Paginator.DescribeAutoScalingGroups)
 
 ### Required Policy
   
