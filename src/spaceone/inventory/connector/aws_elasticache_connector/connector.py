@@ -28,30 +28,34 @@ class ElastiCacheConnector(SchematicAWSConnector):
             # print(f'[ {region_name} ]')
             self.reset_region(region_name)
 
-            cache_clusters = [cluster for cluster in self.describe_clusters()]
+            try:
+                cache_clusters = [cluster for cluster in self.describe_clusters()]
 
-            for memcached_vo in self.get_memcached_data(region_name, cache_clusters):
-                if getattr(memcached_vo, 'set_cloudwatch', None):
-                    memcached_vo.cloudwatch = CloudWatchModel(memcached_vo.set_cloudwatch(region_name))
+                for memcached_vo in self.get_memcached_data(region_name, cache_clusters):
+                    if getattr(memcached_vo, 'set_cloudwatch', None):
+                        memcached_vo.cloudwatch = CloudWatchModel(memcached_vo.set_cloudwatch(region_name))
 
-                resources.append(MemcachedResponse(
-                    {'resource': MemcachedResource(
-                        {'data': memcached_vo,
-                         'tags': [{'key':tag.key, 'value': tag.value} for tag in memcached_vo.tags],
-                         'region_code': region_name,
-                         'reference': ReferenceModel(memcached_vo.reference(region_name))})}
-                ))
+                    resources.append(MemcachedResponse(
+                        {'resource': MemcachedResource(
+                            {'data': memcached_vo,
+                             'tags': [{'key':tag.key, 'value': tag.value} for tag in memcached_vo.tags],
+                             'region_code': region_name,
+                             'reference': ReferenceModel(memcached_vo.reference(region_name))})}
+                    ))
 
-            for redis_vo in self.get_redis_data(region_name, cache_clusters):
-                if getattr(redis_vo, 'set_cloudwatch', None):
-                    redis_vo.cloudwatch = CloudWatchModel(redis_vo.set_cloudwatch(region_name))
+                for redis_vo in self.get_redis_data(region_name, cache_clusters):
+                    if getattr(redis_vo, 'set_cloudwatch', None):
+                        redis_vo.cloudwatch = CloudWatchModel(redis_vo.set_cloudwatch(region_name))
 
-                resources.append(RedisResponse(
-                    {'resource': RedisResource(
-                        {'data': redis_vo,
-                         'region_code': region_name,
-                         'reference': ReferenceModel(redis_vo.reference(region_name))})}
-                ))
+                    resources.append(RedisResponse(
+                        {'resource': RedisResource(
+                            {'data': redis_vo,
+                             'region_code': region_name,
+                             'reference': ReferenceModel(redis_vo.reference(region_name))})}
+                    ))
+
+            except Exception as e:
+                print(f'[ERROR ElastiCache] REGION : {region_name} {e}')
 
         print(f' ElastiCache Finished {time.time() - start_time} Seconds')
         return resources
