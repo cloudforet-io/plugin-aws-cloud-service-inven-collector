@@ -1,6 +1,6 @@
 # Amazon MSK
 
-![MSK](https://assets-console-spaceone-stg.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon_MSK.svg)
+![MSK](https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-MSK.svg)
 
 **Plugin to collect MSK**
 
