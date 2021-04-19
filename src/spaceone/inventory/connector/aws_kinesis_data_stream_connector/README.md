@@ -1,6 +1,6 @@
 # Kinesis Data Stream
 
-![KinesisDataStream](https://assets-console-spaceone-stg.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon_Kinesis_Firehose.svg)
+![KinesisDataStream](https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-Kinesis-Firehose.svg)
 
 **Plugin to collect Kinesis Data Stream**
 
