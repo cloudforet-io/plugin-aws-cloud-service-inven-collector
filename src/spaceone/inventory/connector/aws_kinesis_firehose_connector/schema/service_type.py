@@ -11,7 +11,7 @@ cst_firehose.is_primary = True
 cst_firehose.is_major = False
 cst_firehose.service_code = "AmazonKinesisFirehose"
 cst_firehose.tags = {
-    'spaceone:icon': 'https://assets-console-spaceone-stg.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon_Kinesis_Firehose.svg',
+    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-Kinesis-Firehose.svg',
 }
 
 cst_firehose._metadata = CloudServiceTypeMeta.set_meta(
