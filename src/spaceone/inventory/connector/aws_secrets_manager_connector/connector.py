@@ -54,4 +54,4 @@ class SecretsManagerConnector(SchematicAWSConnector):
                 raw['account_id'] = self.account_id
 
                 result = Secret(raw, strict=False)
-                yield result
+                yield result, result.name

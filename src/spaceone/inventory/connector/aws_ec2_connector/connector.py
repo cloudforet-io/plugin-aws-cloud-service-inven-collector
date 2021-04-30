@@ -62,7 +62,7 @@ class EC2Connector(SchematicAWSConnector):
                     'launch_permissions': [LaunchPermission(_permission, strict=False) for _permission in permission_info.get('LaunchPermissions', [])]
                 })
 
-            yield Image(image, strict=False)
+            yield Image(image, strict=False), image.get('Name', '')
 
     def request_security_group_data(self, region_name) -> List[SecurityGroup]:
         # Get default VPC
@@ -131,7 +131,7 @@ class EC2Connector(SchematicAWSConnector):
                 })
 
                 result = SecurityGroup(raw, strict=False)
-                yield result
+                yield result, result.group_name
 
     def custom_security_group_rule_info(self, raw_rule, remote, remote_type):
         raw_rule.update({

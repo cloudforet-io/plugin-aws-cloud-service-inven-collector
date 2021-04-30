@@ -58,7 +58,7 @@ class EFSConnector(SchematicAWSConnector):
                                              resource_id=raw['FileSystemId'])
                 })
                 res = FileSystem(raw, strict=False)
-                yield res
+                yield res, res.name
 
     def describe_lifecycle_configuration(self, file_system_id):
         response = self.client.describe_lifecycle_configuration(FileSystemId=file_system_id)

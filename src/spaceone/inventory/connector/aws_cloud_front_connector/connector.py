@@ -31,9 +31,12 @@ class CFConnector(SchematicAWSConnector):
                     data.cloudwatch = CloudWatchModel(data.set_cloudwatch())
 
                 resources.append(self.response_schema(
-                    {'resource': DistributionResource({'data': data,
-                                                       'reference': ReferenceModel(data.reference()),
-                                                       'region_code': 'global'})}))
+                    {'resource': DistributionResource({
+                        'name': data.domain_name,
+                        'data': data,
+                        'reference': ReferenceModel(data.reference()),
+                        'region_code': 'global'})
+                    }))
         except Exception as e:
             print(f'[ERROR {self.service_name}] {e}')
 

@@ -59,8 +59,10 @@ class DirectConnectConnector(SchematicAWSConnector):
         try:
             for data in self.direct_connect_gateway_request_data():
                 resources.append(self.dcgw_response_schema(
-                    {'resource': DirectConnectGatewayResource({'data': data,
-                                                               'reference': ReferenceModel(data.reference)})}))
+                    {'resource': DirectConnectGatewayResource({
+                        'name': data.direct_connect_gateway_name,
+                        'data': data,
+                        'reference': ReferenceModel(data.reference)})}))
         except Exception as e:
             print(f'[ERROR {self.service_name}] {e}')
 
@@ -74,7 +76,7 @@ class DirectConnectConnector(SchematicAWSConnector):
             raw.update({
                 'account_id': self.account_id
             })
-            yield Connection(raw, strict=False)
+            yield Connection(raw, strict=False), raw.get('connectionName', '')
 
     def direct_connect_gateway_request_data(self) -> List[Connection]:
         response = self.client.describe_direct_connect_gateways()
@@ -92,7 +94,7 @@ class DirectConnectConnector(SchematicAWSConnector):
             raw.update({
                 'account_id': self.account_id
             })
-            yield VirtualPrivateGateway(raw, strict=False)
+            yield VirtualPrivateGateway(raw, strict=False), ''
 
     def lag_request_data(self, region_name) -> List[Connection]:
         response = self.client.describe_lags()
@@ -101,4 +103,4 @@ class DirectConnectConnector(SchematicAWSConnector):
             raw.update({
                 'account_id': self.account_id
             })
-            yield LAG(raw, strict=False)
+            yield LAG(raw, strict=False), raw.get('lagName', '')

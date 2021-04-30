@@ -46,29 +46,43 @@ class IAMConnector(SchematicAWSConnector):
 
             for data in self.request_role_data(policies):
                 resources.append(self.role_response_schema(
-                    {'resource': RoleResource({'data': data, 'reference': ReferenceModel(data.reference()),
-                                               'region_code': 'global'})}))
+                    {'resource': RoleResource({
+                        'name': data.role_name,
+                        'data': data,
+                        'reference': ReferenceModel(data.reference()),
+                        'region_code': 'global'})}))
 
             for data in users:
                 resources.append(self.user_response_schema(
-                    {'resource': UserResource({'data': data, 'reference': ReferenceModel(data.reference()),
-                                               'region_code': 'global'})}))
+                    {'resource': UserResource({
+                        'name': data.user_name,
+                        'data': data,
+                        'reference': ReferenceModel(data.reference()),
+                        'region_code': 'global'})}))
 
             for data in self.request_group_data(users, policies):
                 resources.append(self.group_response_schema(
-                    {'resource': GroupResource({'data': data, 'reference': ReferenceModel(data.reference()),
-                                               'region_code': 'global'})}))
+                    {'resource': GroupResource({
+                        'name': data.group_name,
+                        'data': data,
+                        'reference': ReferenceModel(data.reference()),
+                        'region_code': 'global'})}))
 
             for data in policies:
                 resources.append(self.policy_response_schema(
-                    {'resource': PolicyResource({'data': data, 'reference': ReferenceModel(data.reference()),
-                                                 'region_code': 'global'})}))
+                    {'resource': PolicyResource({
+                        'name': data.policy_name,
+                        'data': data,
+                        'reference': ReferenceModel(data.reference()),
+                        'region_code': 'global'})}))
 
             for data in self.request_identity_provider_data():
                 resources.append(self.identity_provider_response_schema(
-                    {'resource': IdentityProviderResource(
-                        {'data': data, 'reference': ReferenceModel(data.reference()),
-                         'region_code': 'global'})}))
+                    {'resource': IdentityProviderResource({
+                        'name': data.url,
+                        'data': data,
+                        'reference': ReferenceModel(data.reference()),
+                        'region_code': 'global'})}))
 
         except Exception as e:
             print(traceback.format_exc())

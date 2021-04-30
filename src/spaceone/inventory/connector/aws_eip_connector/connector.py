@@ -60,7 +60,7 @@ class EIPConnector(SchematicAWSConnector):
                 'name': self._get_name_from_tags(_ip.get('Tags', []))
             })
             result = ElasticIPAddress(_ip, strict=False)
-            yield result
+            yield result, result.name
 
     def _describe_nat_gateways(self):
         response = self.client.describe_nat_gateways()

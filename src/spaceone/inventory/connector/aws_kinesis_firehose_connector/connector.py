@@ -66,7 +66,7 @@ class KinesisFirehoseConnector(SchematicAWSConnector):
                 }
             )
             res = DeliveryStreamDescription(delivery_stream_info, strict=False)
-            yield res
+            yield res, res.delivery_stream_name
 
     def get_tags(self, name):
         tag_response = self.client.list_tags_for_delivery_stream(DeliveryStreamName=name)

@@ -65,16 +65,17 @@ class RDSConnector(SchematicAWSConnector):
 
             try:
                 # For Database
-                for database_vo, resource in self.db_cluster_data(region_name):
+                for database_vo, resource, identifier in self.db_cluster_data(region_name):
                     if getattr(database_vo, 'set_cloudwatch', None):
                         database_vo.cloudwatch = CloudWatchModel(database_vo.set_cloudwatch(region_name))
 
                     resources.append(DatabaseResponse(
-                        {'resource': resource(
-                            {'data': database_vo,
-                             'tags': [{'key':tag.key, 'value': tag.value} for tag in database_vo.tags],
-                             'region_code': region_name,
-                             'reference': ReferenceModel(database_vo.reference(region_name))})}
+                        {'resource': resource({
+                            'name': identifier,
+                            'data': database_vo,
+                            'tags': [{'key':tag.key, 'value': tag.value} for tag in database_vo.tags],
+                            'region_code': region_name,
+                            'reference': ReferenceModel(database_vo.reference(region_name))})}
                     ))
             except Exception as e:
                 print(f'[ERROR RDS] REGION : {region_name} {e}')
@@ -87,7 +88,7 @@ class RDSConnector(SchematicAWSConnector):
 
     def db_cluster_data(self, region_name) -> List[Database]:
         # Cluster
-        for cluster in self.describe_clusters(region_name):
+        for cluster, cluster_identifier in self.describe_clusters(region_name):
             db = {
                 'arn': cluster.db_cluster_arn,
                 'db_identifier': cluster.db_cluster_identifier,
@@ -102,10 +103,10 @@ class RDSConnector(SchematicAWSConnector):
                 'tags': cluster.tags
             }
 
-            yield Database(db, strict=False), DBClusterResource
+            yield Database(db, strict=False), DBClusterResource, cluster_identifier
 
         # Instance Only
-        for instance in self.describe_instances(region_name):
+        for instance, instance_identifier in self.describe_instances(region_name):
             if not instance.db_cluster_identifier:
                 db = {
                     'arn': instance.db_instance_arn,
@@ -120,7 +121,7 @@ class RDSConnector(SchematicAWSConnector):
                     'instance': instance,
                     'tags': instance.tags
                 }
-                yield Database(db, strict=False), DBInstanceResource
+                yield Database(db, strict=False), DBInstanceResource, instance_identifier
 
     def describe_clusters(self, region_name) -> List[Cluster]:
         paginator = self.client.get_paginator('describe_db_clusters')
@@ -139,11 +140,11 @@ class RDSConnector(SchematicAWSConnector):
                         'tags': self.list_tags_for_resource(raw['DBClusterArn'])
                     })
                     res = Cluster(raw, strict=False)
-                    yield res
+                    yield res, res.db_cluster_identifier
 
     def instance_data(self, region_name) -> List[Instance]:
-        for instance in self.describe_instances(region_name):
-            yield instance
+        for instance, instance_identifier in self.describe_instances(region_name):
+            yield instance, instance_identifier
 
     def describe_instances(self, region_name) -> List[Instance]:
         paginator = self.client.get_paginator('describe_db_instances')
@@ -159,7 +160,7 @@ class RDSConnector(SchematicAWSConnector):
                     raw.update({
                         'tags': self.list_tags_for_resource(raw['DBInstanceArn'])
                     })
-                    yield Instance(raw, strict=False)
+                    yield Instance(raw, strict=False), raw.get('DBInstanceIdentifier', '')
 
     def snapshot_request_data(self, region_name) -> List[Snapshot]:
         paginator = self.client.get_paginator('describe_db_snapshots')
@@ -177,7 +178,7 @@ class RDSConnector(SchematicAWSConnector):
                         'account_id': self.account_id,
                         'tags': self.list_tags_for_resource(raw['DBSnapshotArn'])
                     })
-                    yield Snapshot(raw, strict=False)
+                    yield Snapshot(raw, strict=False), raw.get('DBSnapshotIdentifier', '')
 
     def subnet_group_request_data(self, region_name) -> List[SubnetGroup]:
         paginator = self.client.get_paginator('describe_db_subnet_groups')
@@ -194,7 +195,7 @@ class RDSConnector(SchematicAWSConnector):
                     'account_id': self.account_id,
                     'tags': self.list_tags_for_resource(raw['DBSubnetGroupArn'])
                 })
-                yield SubnetGroup(raw, strict=False)
+                yield SubnetGroup(raw, strict=False), raw.get('DBSubnetGroupName', '')
 
     def parameter_group_request_data(self, region_name) -> List[ParameterGroup]:
         paginator = self.client.get_paginator('describe_db_parameter_groups')
@@ -213,7 +214,7 @@ class RDSConnector(SchematicAWSConnector):
                     'parameters': list(self.describe_db_parameters(raw.get('DBParameterGroupName'))),
                     'tags': self.list_tags_for_resource(raw['DBParameterGroupArn'])
                 })
-                yield ParameterGroup(raw, strict=False)
+                yield ParameterGroup(raw, strict=False), raw.get('DBParameterGroupName', '')
 
     def option_group_request_data(self, region_name) -> List[OptionGroup]:
         paginator = self.client.get_paginator('describe_option_groups')
@@ -230,7 +231,7 @@ class RDSConnector(SchematicAWSConnector):
                     'account_id': self.account_id,
                     'tags': self.list_tags_for_resource(raw['OptionGroupArn'])
                 })
-                yield OptionGroup(raw, strict=False)
+                yield OptionGroup(raw, strict=False), raw.get('OptionGroupName', '')
 
     def describe_db_parameters(self, db_parameter_group_name) -> List[Parameter]:
         paginator = self.client.get_paginator('describe_db_parameters')
