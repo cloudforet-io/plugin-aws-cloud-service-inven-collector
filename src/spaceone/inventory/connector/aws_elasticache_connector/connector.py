@@ -37,10 +37,11 @@ class ElastiCacheConnector(SchematicAWSConnector):
 
                     resources.append(MemcachedResponse(
                         {'resource': MemcachedResource(
-                            {'data': memcached_vo,
-                             'tags': [{'key':tag.key, 'value': tag.value} for tag in memcached_vo.tags],
-                             'region_code': region_name,
-                             'reference': ReferenceModel(memcached_vo.reference(region_name))})}
+                            {
+                                'data': memcached_vo,
+                                'tags': [{'key':tag.key, 'value': tag.value} for tag in memcached_vo.tags],
+                                'region_code': region_name,
+                                'reference': ReferenceModel(memcached_vo.reference(region_name))})}
                     ))
 
                 for redis_vo in self.get_redis_data(region_name, cache_clusters):

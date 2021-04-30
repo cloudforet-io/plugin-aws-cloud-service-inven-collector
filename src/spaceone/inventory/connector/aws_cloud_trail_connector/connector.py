@@ -61,7 +61,7 @@ class CloudTrailConnector(SchematicAWSConnector):
 
                 res = Trail(raw, strict=False)
                 self.trails.append(raw['TrailARN'])
-                yield res
+                yield res, res.name
 
     def _get_event_selector(self, trail_name):
         response = self.client.get_event_selectors(TrailName=trail_name)

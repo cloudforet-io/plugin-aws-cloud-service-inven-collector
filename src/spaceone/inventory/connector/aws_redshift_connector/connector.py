@@ -61,7 +61,7 @@ class RedshiftConnector(SchematicAWSConnector):
                 })
 
                 res = Cluster(raw, strict=False)
-                yield res
+                yield res, res.cluster_identifier
 
     def describe_tags(self, arn_vo):
         response = {}

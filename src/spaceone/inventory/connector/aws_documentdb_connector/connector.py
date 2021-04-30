@@ -94,7 +94,7 @@ class DocumentDBConnector(SchematicAWSConnector):
                     raw.update({'parameter_group': parameter_group})
 
                 res = Cluster(raw, strict=False)
-                yield res
+                yield res, res.db_cluster_identifier
 
     def request_subnet_group_data(self, region_name) -> List[SubnetGroup]:
         paginator = self.client.get_paginator('describe_db_subnet_groups')
@@ -111,7 +111,7 @@ class DocumentDBConnector(SchematicAWSConnector):
                     'tags': self.request_tags(raw['DBSubnetGroupArn'])
                 })
                 res = SubnetGroup(raw, strict=False)
-                yield res
+                yield res, res.db_subnet_group_name
 
     def request_parameter_group_data(self, region_name) -> List[ParameterGroup]:
         res_pgs = self.client.describe_db_cluster_parameter_groups()
@@ -123,7 +123,7 @@ class DocumentDBConnector(SchematicAWSConnector):
                 'tags': self.request_tags(pg_data['DBClusterParameterGroupArn'])
             })
             param_group = ParameterGroup(pg_data, strict=False)
-            yield param_group
+            yield param_group, param_group.db_cluster_parameter_group_name
 
     def request_parameter_data(self, pg_name) -> List[Parameter]:
         res_params = self.client.describe_db_cluster_parameters(DBClusterParameterGroupName=pg_name)

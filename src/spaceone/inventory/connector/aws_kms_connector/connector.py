@@ -59,7 +59,7 @@ class KMSConnector(SchematicAWSConnector):
                 })
 
             res = Key(key, strict=False)
-            yield res
+            yield res, res.alias_name
 
     def list_keys(self):
         paginator = self.client.get_paginator('list_keys')

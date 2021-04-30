@@ -7,7 +7,7 @@
 
 
 Find us also at [Dockerhub](https://hub.docker.com/repository/docker/spaceone/aws-cloud-services)
-> Latest stable version : 1.9.3
+> Latest stable version : 1.10
 
 Please contact us if you need any further information. (<support@spaceone.dev>)
 
@@ -191,6 +191,11 @@ authentication privilege for followings:
 ---
 
 ## Release Note
+
+### Ver 1.10
+
+* Add name field each cloud services for standardization
+
 
 ### Ver 1.9.3
 

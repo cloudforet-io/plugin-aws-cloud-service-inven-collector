@@ -60,7 +60,7 @@ class ECRConnector(SchematicAWSConnector):
                 })
                 res = Repository(raw, strict=False)
 
-                yield res
+                yield res, res.repository_name
 
     def _describe_images(self, repo):
         paginator = self.client.get_paginator('describe_images')

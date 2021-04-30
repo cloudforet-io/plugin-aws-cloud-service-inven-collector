@@ -63,7 +63,7 @@ class ACMConnector(SchematicAWSConnector):
                 })
 
                 res = Certificate(certificate_info, strict=False)
-                yield res
+                yield res, res.domain_name
 
     def get_tags(self, arn):
         tag_response = self.client.list_tags_for_certificate(CertificateArn=arn)
