@@ -8,6 +8,7 @@ cst_ebs.name = 'Volume'
 cst_ebs.provider = 'aws'
 cst_ebs.group = 'EC2'
 cst_ebs.labels = ['Compute', 'Storage']
+cst_ebs.is_primary = True
 cst_ebs.is_major = True
 cst_ebs.service_code = 'AmazonEC2'
 cst_ebs.tags = {
