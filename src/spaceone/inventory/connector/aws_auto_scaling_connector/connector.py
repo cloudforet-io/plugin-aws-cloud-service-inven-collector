@@ -144,7 +144,7 @@ class AutoScalingConnector(SchematicAWSConnector):
                     })
 
                 res = AutoScalingGroup(raw, strict=False)
-                yield res
+                yield res, res.auto_scaling_group_name
 
     def request_launch_configuration_data(self, region_name) -> List[LaunchConfiguration]:
         paginator = self.client.get_paginator('describe_launch_configurations')
@@ -162,7 +162,7 @@ class AutoScalingConnector(SchematicAWSConnector):
                 })
                 res = LaunchConfiguration(raw, strict=False)
                 self._launch_configurations.append(res)
-                yield res
+                yield res, res.launch_configuration_name
 
     def request_launch_template_data(self, region_name) -> List[LaunchTemplateDetail]:
         ec2_client = self.session.client('ec2')
@@ -193,7 +193,7 @@ class AutoScalingConnector(SchematicAWSConnector):
 
                 res = LaunchTemplateDetail(raw, strict=False)
                 self._launch_templates.append(res)
-                yield res
+                yield res, res.launch_template_name
 
     def get_asg_instances(self, instances):
         ec2_client = self.session.client('ec2')

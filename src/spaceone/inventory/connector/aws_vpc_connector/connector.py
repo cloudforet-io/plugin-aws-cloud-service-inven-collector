@@ -210,7 +210,8 @@ class VPCConnector(SchematicAWSConnector):
                     'dhcp_option': match_dhcp_option
                 })
 
-            yield VPC(vpc, strict=False)
+            vpc = VPC(vpc, strict=False)
+            yield vpc, vpc.name
 
     def describe_vpc_attribute(self, vpc_id, attribute):
         response = self.client.describe_vpc_attribute(VpcId=vpc_id, Attribute=attribute)
@@ -241,7 +242,7 @@ class VPCConnector(SchematicAWSConnector):
 
             peer_connect = PeeringConnection(peerx, strict=False)
             self.peering_connections.append(peer_connect)
-            yield peer_connect
+            yield peer_connect, peer_connect.name
 
     def request_nat_gateway_data(self, region_name):
         response = {}
@@ -262,7 +263,7 @@ class VPCConnector(SchematicAWSConnector):
 
             nat_gateway = NATGateway(ngw, strict=False)
             self.nat_gateways.append(nat_gateway)
-            yield nat_gateway
+            yield nat_gateway, nat_gateway.name
 
     def request_network_acl_data(self, region_name):
         response = {}
@@ -288,7 +289,7 @@ class VPCConnector(SchematicAWSConnector):
 
             network_acl = NetworkACL(nacl, strict=False)
             self.network_acls.append(network_acl)
-            yield network_acl
+            yield network_acl, network_acl.name
 
     def request_endpoint_data(self, region_name):
         response = {}
@@ -309,7 +310,7 @@ class VPCConnector(SchematicAWSConnector):
 
             endpoint = Endpoint(endp, strict=False)
             self.endpoints.append(endpoint)
-            yield endpoint
+            yield endpoint, endpoint.name
 
     def request_egress_only_internet_gateway_data(self, region_name):
         response = {}
@@ -331,7 +332,7 @@ class VPCConnector(SchematicAWSConnector):
 
             egress_only_internet_gateway = EgressOnlyInternetGateway(eoigw, strict=False)
             self.egress_only_internet_gateways.append(egress_only_internet_gateway)
-            yield egress_only_internet_gateway
+            yield egress_only_internet_gateway, egress_only_internet_gateway.name
 
     def request_internet_gateway_data(self, region_name):
         response = {}
@@ -363,7 +364,7 @@ class VPCConnector(SchematicAWSConnector):
 
             internet_gateway = InternetGateway(igw, strict=False)
             self.internet_gateways.append(internet_gateway)
-            yield internet_gateway
+            yield internet_gateway, internet_gateway.name
 
     def request_route_table_data(self, region_name):
         response = {}
@@ -391,7 +392,7 @@ class VPCConnector(SchematicAWSConnector):
 
             route_table = RouteTable(rt, strict=False)
             self.route_tables.append(route_table)
-            yield route_table
+            yield route_table, route_table.name
 
     def request_subnet_data(self, region_name):
         response = {}
@@ -424,7 +425,7 @@ class VPCConnector(SchematicAWSConnector):
 
             subnet = Subnet(subnet, strict=False)
             self.subnets.append(subnet)
-            yield subnet
+            yield subnet, subnet.name
 
     def request_transit_gateway_data(self, region_name):
         response = self.client.describe_transit_gateways()
@@ -439,7 +440,7 @@ class VPCConnector(SchematicAWSConnector):
 
             tgw = TransitGateway(transit_gateway, strict=False)
             self.transit_gateways.append(tgw)
-            yield tgw
+            yield tgw, tgw.name
 
     def request_customer_gateway_data(self, region_name):
         response = self.client.describe_customer_gateways()
@@ -461,7 +462,7 @@ class VPCConnector(SchematicAWSConnector):
             customer_gw = CustomerGateway(customer_gateway, strict=False)
             self.customer_gateways.append(customer_gw)
 
-            yield customer_gw
+            yield customer_gw, customer_gw.name
 
     def request_vpn_gateway_data(self, region_name):
         response = self.client.describe_vpn_gateways()
@@ -483,7 +484,7 @@ class VPCConnector(SchematicAWSConnector):
             vpn_gw = VPNGateway(vpn_gateway, strict=False)
             self.vpn_gateways.append(vpn_gw)
 
-            yield vpn_gw
+            yield vpn_gw, vpn_gw.name
 
     def request_vpn_connection_data(self, region_name):
         response = self.client.describe_vpn_connections()
@@ -497,7 +498,7 @@ class VPCConnector(SchematicAWSConnector):
 
             vpn_conn = VPNConnection(vpn_connection, strict=False)
             self.vpn_connections.append(vpn_conn)
-            yield vpn_conn
+            yield vpn_conn, vpn_conn.name
 
     @staticmethod
     def _get_name_from_tags(tags):

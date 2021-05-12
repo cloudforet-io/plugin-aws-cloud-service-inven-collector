@@ -79,7 +79,7 @@ class APIGatewayConnector(SchematicAWSConnector):
                                      self.convert_tags(raw.get('tags', {}))))
                 })
 
-                yield RestAPI(raw, strict=False)
+                yield RestAPI(raw, strict=False), raw.get('name', '')
 
     def request_websocket_data(self, region_name) -> List[HTTPWebsocket]:
         # Get HTTP or WebSocket
@@ -105,7 +105,7 @@ class APIGatewayConnector(SchematicAWSConnector):
                     'tags': self.convert_tags(raw.get('tags', {}))
                 })
 
-                yield HTTPWebsocket(raw, strict=False)
+                yield HTTPWebsocket(raw, strict=False), raw.get('Name', '')
 
     def set_rest_api_resource(self, resource):
         resource.update({

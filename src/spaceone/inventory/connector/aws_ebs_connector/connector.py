@@ -75,7 +75,7 @@ class EBSConnector(SchematicAWSConnector):
                         'kms_key_id': self._get_kms_key_id(kms_arn)
                     })
 
-                yield Volume(raw, strict=False)
+                yield Volume(raw, strict=False), raw.get('name', '')
 
     def request_snapshot_data(self, region_name) -> List[Snapshot]:
         paginator = self.client.get_paginator('describe_snapshots')
@@ -105,7 +105,7 @@ class EBSConnector(SchematicAWSConnector):
                         'kms_key_id': self._get_kms_key_id(kms_arn)
                     })
 
-                yield Snapshot(raw, strict=False)
+                yield Snapshot(raw, strict=False), raw.get('name', '')
 
     @staticmethod
     def _get_name_from_tags(tags):

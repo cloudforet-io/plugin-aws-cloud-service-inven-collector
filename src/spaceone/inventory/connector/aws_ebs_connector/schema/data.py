@@ -16,6 +16,7 @@ class Tags(Model):
 
 
 class Snapshot(Model):
+    name = StringType(default="")
     arn = StringType(default="")
     data_encryption_key_id = StringType(deserialize_from="DataEncryptionKeyId")
     description = StringType(deserialize_from="Description")

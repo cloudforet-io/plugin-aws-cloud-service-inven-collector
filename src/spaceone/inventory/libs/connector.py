@@ -108,10 +108,10 @@ class SchematicAWSConnector(AWSConnector):
 
         # import pprint
         # for resource in collect_data:
-        #     if resource.get('resource', {}).get('cloud_service_type', '') == 'AutoScalingGroup':
-        #         print("-------------")
-        #         pprint.pprint(resource.get('resource', {}).get('data', {}))
-        #         print("-------------")
+        #     print("-------------")
+        #     # pprint.pprint(resource.get('resource', {}).get('data', {}))
+        #     pprint.pprint(resource.get('resource', {}))
+        #     print("-------------")
 
         return collect_data
 
@@ -128,17 +128,21 @@ class SchematicAWSConnector(AWSConnector):
         resources = []
 
         try:
-            for data in collect_resource_info['request_method'](region_name, **collect_resource_info.get('kwargs', {})):
+            for data, name in collect_resource_info['request_method'](region_name, **collect_resource_info.get('kwargs', {})):
                 if getattr(data, 'set_cloudwatch', None):
                     data.cloudwatch = CloudWatchModel(data.set_cloudwatch(region_name))
 
-                resources.append(collect_resource_info['response_schema'](
-                    {'resource': collect_resource_info['resource'](
-                        {'data': data,
-                         'tags': self.get_resource_tags(getattr(data, 'tags', [])),
-                         'region_code': region_name,
-                         'reference': ReferenceModel(data.reference(region_name))})}
-                ))
+                resources.append(collect_resource_info['response_schema']({
+                    'resource': collect_resource_info['resource'](
+                        {
+                            'name': name,
+                            'data': data,
+                            'tags': self.get_resource_tags(getattr(data, 'tags', [])),
+                            'region_code': region_name,
+                            'reference': ReferenceModel(data.reference(region_name))
+                        }
+                    )
+                }))
 
         except Exception as e:
             print(f'[ERROR {service_name}] REGION : {region_name} {e}')

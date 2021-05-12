@@ -65,7 +65,7 @@ class MSKConnector(SchematicAWSConnector):
                 })
 
                 res = Cluster(raw, strict=False)
-                yield res
+                yield res, res.cluster_name
 
     def request_configuration_data(self, region_name) -> List[Configuration]:
         paginator = self.client.get_paginator('list_configurations')
@@ -82,7 +82,7 @@ class MSKConnector(SchematicAWSConnector):
                     'revisions_configurations': self.get_revisions(raw.get('Arn'))
                 })
                 res = Configuration(raw, strict=False)
-                yield res
+                yield res, res.name
 
     def get_nodes(self, arn):
         node_response = self.client.list_nodes(ClusterArn=arn)

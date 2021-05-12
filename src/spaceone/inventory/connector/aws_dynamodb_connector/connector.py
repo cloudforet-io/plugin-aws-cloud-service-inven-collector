@@ -75,7 +75,7 @@ class DynamoDBConnector(SchematicAWSConnector):
                     'account_id': self.account_id
                 })
                 res = Table(table, strict=False)
-                yield res
+                yield res, res.table_name
 
     def _get_contributor_insights(self, table_name):
         response = self.client.describe_contributor_insights(TableName=table_name)

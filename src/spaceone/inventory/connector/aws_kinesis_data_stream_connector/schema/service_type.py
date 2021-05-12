@@ -18,7 +18,7 @@ cst_kds.is_primary = True
 cst_kds.is_major = True
 cst_kds.service_code = "AmazonKinesis"
 cst_kds.tags = {
-    "spaceone:icon": "https://assets-console-spaceone-stg.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon_Kinesis_Firehose.svg",
+    "spaceone:icon": "https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-Kinesis-Firehose.svg",
 }
 
 cst_kds._metadata = CloudServiceTypeMeta.set_meta(

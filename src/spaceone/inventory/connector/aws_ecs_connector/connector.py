@@ -49,7 +49,7 @@ class ECSConnector(SchematicAWSConnector):
                 'account_id': self.account_id
             })
             res = Cluster(raw, strict=False)
-            yield res
+            yield res, res.cluster_name
 
     def list_clusters(self):
         paginator = self.client.get_paginator('list_clusters')

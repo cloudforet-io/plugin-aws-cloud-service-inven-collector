@@ -13,30 +13,25 @@ class Tags(Model):
     value = StringType(deserialize_from="Value")
 
 
-# OK
 class CustomHeadersItems(Model):
     header_name = StringType(deserialize_from="HeaderName")
     header_value = StringType(deserialize_from="HeaderValue")
 
 
-# OK
 class CustomHeaders(Model):
     quantity = IntType(deserialize_from="Quantity")
     items = ListType(ModelType(CustomHeadersItems), deserialize_from="Items", serialize_when_none=False)
 
 
-# OK
 class S3OriginConfig(Model):
     origin_access_identity = StringType(deserialize_from="OriginAccessIdentity", serialize_when_none=False)
 
 
-# OK
 class OriginSslProtocols(Model):
     quantity = IntType(deserialize_from="Quantity")
     items = ListType(StringType, deserialize_from="Items", choices=('SSLv3', 'TLSv1', 'TLSv1.1', 'TLSv1.2'))
 
 
-# OK
 class CustomOriginConfig(Model):
     http_port = IntType(deserialize_from="HTTPPort", serialize_when_none=False)
     https_port = IntType(deserialize_from="HTTPSPort", serialize_when_none=False)
@@ -48,13 +43,11 @@ class CustomOriginConfig(Model):
     origin_keepalive_timeout = IntType(deserialize_from="OriginKeepaliveTimeout", serialize_when_none=False)
 
 
-# OK
 class OriginShield(Model):
     enabled = BooleanType(deserialize_from="Enabled")
     origin_shield_region = StringType(deserialize_from="OriginShieldRegion", serialize_when_none=False)
 
 
-# OK
 class OriginsItems(Model):
     id = StringType(deserialize_from="Id")
     domain_name = StringType(deserialize_from="DomainName", serialize_when_none=False)
@@ -68,72 +61,60 @@ class OriginsItems(Model):
     origin_shield = ModelType(OriginShield, deserialize_from="OriginShield", serialize_when_none=False)
 
 
-# OK
 class Origins(Model):
     quantity = IntType(deserialize_from="Quantity")
     items = ListType(ModelType(OriginsItems), deserialize_from="Items", serialize_when_none=False)
 
 
-# OK
 class StatusCodes(Model):
     quantity = IntType(deserialize_from="Quantity")
     items = ListType(IntType, deserialize_from="Items", serialize_when_none=False)
 
 
-# OK
 class FailoverCriteria(Model):
     status_codes = ModelType(StatusCodes, deserialize_from="StatusCodes", serialize_when_none=False)
 
 
-# OK
 class MembersItems(Model):
     origin_id = StringType(deserialize_from="OriginId", serialize_when_none=False)
 
 
-# OK
 class Members(Model):
     quantity = IntType(deserialize_from="Quantity")
     items = ListType(ModelType(MembersItems), deserialize_from="Items", serialize_when_none=False)
 
 
-# OK
 class OriginGroupsItems(Model):
     id = StringType(deserialize_from="Id")
     failover_criteria = ModelType(FailoverCriteria, deserialize_from="FailoverCriteria", serialize_when_none=False)
     members = ModelType(Members, deserialize_from="Members", serialize_when_none=False)
 
 
-# OK
 class OriginGroups(Model):
     quantity = IntType(deserialize_from="Quantity")
     items = ListType(ModelType(OriginGroupsItems), deserialize_from="Items", serialize_when_none=False)
 
 
-# OK
 class WhitelistedNames(Model):
     quantity = IntType(deserialize_from="Quantity")
     items = ListType(StringType, deserialize_from="Items", serialize_when_none=False)
 
 
-# OK
 class Cookies(Model):
     forward = StringType(deserialize_from="Forward", choices=("none", "whitelist", "all"))
     whitelisted_names = ModelType(WhitelistedNames, deserialize_from="WhitelistedNames", serialize_when_none=False)
 
 
-# OK
 class Headers(Model):
     quantity = IntType(deserialize_from="Quantity")
     items = ListType(StringType, deserialize_from="Items", serialize_when_none=False)
 
 
-# OK
 class QueryStringCacheKeys(Model):
     quantity = IntType(deserialize_from="Quantity")
     items = ListType(StringType, deserialize_from="Items", serialize_when_none=False)
 
 
-# OK
 class ForwardedValues(Model):
     query_string = BooleanType(deserialize_from="QueryString", serialize_when_none=False)
     cookies = ModelType(Cookies, deserialize_from="Cookies", serialize_when_none=False)
@@ -142,28 +123,24 @@ class ForwardedValues(Model):
                                         serialize_when_none=False)
 
 
-# OK
 class TrustedSigners(Model):
     enabled = BooleanType(deserialize_from="Enabled")
     quantity = IntType(deserialize_from="Quantity", serialize_when_none=False)
     items = ListType(StringType, deserialize_from="Items", serialize_when_none=False)
 
 
-# OK
 class TrustedKeyGroups(Model):
     enabled = BooleanType(deserialize_from="Enabled")
     quantity = IntType(deserialize_from="Quantity", serialize_when_none=False)
     items = ListType(StringType, deserialize_from="Items", serialize_when_none=False)
 
 
-# OK
 class CachedMethods(Model):
     quantity = IntType(deserialize_from="Quantity")
     items = ListType(StringType, deserialize_from="Items",
                      choices=('GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'OPTIONS', 'DELETE'))
 
 
-# OK
 class AllowedMethods(Model):
     quantity = IntType(deserialize_from="Quantity")
     items = ListType(StringType, deserialize_from="Items",
@@ -171,7 +148,6 @@ class AllowedMethods(Model):
     cached_methods = ModelType(CachedMethods, deserialize_from="CachedMethods", serialize_when_none=False)
 
 
-# OK
 class LambdaFunctionAssociationsItems(Model):
     lambda_function_arn = StringType(deserialize_from="LambdaFunctionARN", serialize_when_none=False)
     event_type = StringType(deserialize_from="EventType",
@@ -179,13 +155,11 @@ class LambdaFunctionAssociationsItems(Model):
     include_body = BooleanType(deserialize_from="IncludeBody", serialize_when_none=False)
 
 
-# OK
 class LambdaFunctionAssociations(Model):
     quantity = IntType(deserialize_from="Quantity")
     items = ListType(ModelType(LambdaFunctionAssociationsItems), deserialize_from="Items", serialize_when_none=False)
 
 
-# OK
 class DefaultCacheBehavior(Model):
     target_origin_id = StringType(deserialize_from="TargetOriginId", serialize_when_none=False)
     trusted_signers = ModelType(TrustedSigners, deserialize_from="TrustedSigners", serialize_when_none=False)
@@ -207,7 +181,6 @@ class DefaultCacheBehavior(Model):
     max_ttl = IntType(deserialize_from="MaxTTL", serialize_when_none=False)
 
 
-# OK
 class CacheBehaviorsItems(Model):
     path_pattern = StringType(deserialize_from="PathPattern", serialize_when_none=False)
     target_origin_id = StringType(deserialize_from="TargetOriginId", serialize_when_none=False)
@@ -230,13 +203,11 @@ class CacheBehaviorsItems(Model):
     max_ttl = IntType(deserialize_from="MaxTTL", serialize_when_none=False)
 
 
-# OK
 class CacheBehaviors(Model):
     quantity = IntType(deserialize_from="Quantity")
     items = ListType(ModelType(CacheBehaviorsItems), deserialize_from="Items", serialize_when_none=False)
 
 
-# OK
 class CustomErrorResponsesItems(Model):
     error_code = IntType(deserialize_from="ErrorCode", serialize_when_none=False)
     response_page_path = StringType(deserialize_from="ResponsePagePath", serialize_when_none=False)
@@ -244,36 +215,31 @@ class CustomErrorResponsesItems(Model):
     error_caching_min_ttl = IntType(deserialize_from="ErrorCachingMinTTL", serialize_when_none=False)
 
 
-# OK
 class CustomErrorResponses(Model):
     quantity = IntType(deserialize_from="Quantity")
     items = ListType(ModelType(CustomErrorResponsesItems), deserialize_from="Items", serialize_when_none=False)
 
 
-# OK
 class GeoRestriction(Model):
     restriction_type = StringType(deserialize_from="RestrictionType", choices=("blacklist", "whitelist", "none"))
     quantity = IntType(deserialize_from="Quantity")
     items = ListType(StringType, deserialize_from="Items", serialize_when_none=False)
 
 
-# OK
 class Restrictions(Model):
     geo_restriction = ModelType(GeoRestriction, deserialize_from="GeoRestriction", serialize_when_none=False)
 
 
-# OK
 class AliasICPRecordals(Model):
     cname = StringType(deserialize_from="CNAME", serialize_when_none=False)
     icp_recordal_status = StringType(deserialize_from="ICPRecordalStatus", choices=("APPROVED", "SUSPENDED", "PENDING"))
 
-# OK
+
 class Alias(Model):
     quantity = IntType(deserialize_from="Quantity")
     Items = ListType(StringType, deserialize_from="Items", serialize_when_none=False)
 
 
-# OK
 class ViewerCertificate(Model):
     cloud_front_default_certificate = BooleanType(deserialize_from="CloudFrontDefaultCertificate",
                                                   serialize_when_none=False)

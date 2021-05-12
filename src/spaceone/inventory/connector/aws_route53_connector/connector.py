@@ -26,15 +26,18 @@ class Route53Connector(SchematicAWSConnector):
                 resources.append(cst)
 
             # merge data
-            for data in self.request_data():
+            for data, name in self.request_data():
                 if getattr(data, 'set_cloudwatch', None):
                     data.cloudwatch = CloudWatchModel(data.set_cloudwatch())
 
                 resources.append(self.response_schema(
-                    {'resource': HostedZoneResource({'data': data,
-                                                     'reference': ReferenceModel(data.reference()),
-                                                     'region_code': 'global'
-                                                     })}))
+                    {'resource': HostedZoneResource({
+                        'name': name,
+                        'data': data,
+                        'reference': ReferenceModel(data.reference()),
+                        'region_code': 'global'
+                    })}))
+
         except Exception as e:
             print(f'[ERROR {self.service_name}] {e}')
 
@@ -62,7 +65,7 @@ class Route53Connector(SchematicAWSConnector):
                 })
 
                 res = HostedZone(raw, strict=False)
-                yield res
+                yield res, res.name
 
     def describe_record_sets(self, host_zone_id):
         paginator = self.client.get_paginator('list_resource_record_sets')

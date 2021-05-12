@@ -30,12 +30,13 @@ class S3Connector(SchematicAWSConnector):
                 resources.append(cst)
 
             # merge data
-            for data in self.request_data():
+            for data, name in self.request_data():
                 # This is Global API, yet set up its region for bucket
                 if getattr(data, 'set_cloudwatch', None):
                     data.cloudwatch = CloudWatchModel(data.set_cloudwatch())
 
                 bucket_resource = {
+                    'name': name,
                     'data': data,
                     'reference': ReferenceModel(data.reference())
                 }
@@ -110,7 +111,7 @@ class S3Connector(SchematicAWSConnector):
             })
 
             res = Bucket(raw, strict=False)
-            yield res
+            yield res, res.name
 
     def get_bucket_versioning(self, bucket_name):
         response = self.client.get_bucket_versioning(Bucket=bucket_name)

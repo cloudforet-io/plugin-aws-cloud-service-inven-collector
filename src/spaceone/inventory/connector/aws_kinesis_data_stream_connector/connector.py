@@ -97,7 +97,7 @@ class KinesisDataStreamConnector(SchematicAWSConnector):
                     }
                 )
                 res = StreamDescription(stream_info, strict=False)
-                yield res
+                yield res, res.stream_name
 
     def get_tags(self, name):
         tag_response = self.client.list_tags_for_stream(StreamName=name)

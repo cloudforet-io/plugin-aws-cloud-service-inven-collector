@@ -128,7 +128,7 @@ class LambdaConnector(SchematicAWSConnector):
                         EnvironmentVariable({'key': k, 'value': v}) for k, v in env.get('Variables', {}).items()
                     ]
 
-                yield func
+                yield func, func.name
 
     def request_layer_data(self, region_name) -> List[Layer]:
         paginator = self.client.get_paginator('list_layers')
@@ -151,4 +151,4 @@ class LambdaConnector(SchematicAWSConnector):
                     'account_id': self.account_id
                 })
 
-                yield Layer(raw, strict=False)
+                yield Layer(raw, strict=False), raw.get('LayerName', '')

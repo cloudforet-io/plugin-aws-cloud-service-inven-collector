@@ -69,7 +69,7 @@ class SNSConnector(SchematicAWSConnector):
                         topic['kms'] = kms
 
                 res = Topic(topic, strict=False)
-                yield res
+                yield res, res.name
 
     @property
     def kms_client(self):

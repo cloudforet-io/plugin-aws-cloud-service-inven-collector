@@ -68,7 +68,7 @@ class ELBConnector(SchematicAWSConnector):
 
             target_group = TargetGroup(raw_tg, strict=False)
             self.target_groups.append(target_group)
-            yield target_group
+            yield target_group, target_group.target_group_name
 
     def request_load_balancer_data(self, region_name):
         all_tags = []
@@ -90,7 +90,7 @@ class ELBConnector(SchematicAWSConnector):
 
             load_balancer = LoadBalancer(raw_lb, strict=False)
             self.load_balancers.append(load_balancer)
-            yield load_balancer
+            yield load_balancer, load_balancer.load_balancer_name
 
 
     def request_loadbalancer(self, region_name):
