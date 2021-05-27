@@ -129,6 +129,11 @@ class CollectorService(BaseService):
                 except Exception as e:
                     _LOGGER.error(f'failed to result {e}')
 
+        # for execute_manager in self.execute_managers:
+        #     print(f'@@@ {execute_manager} @@@')
+        #     _manager = self.locator.get_manager(execute_manager)
+        #     result = _manager.collect_resources(**params)
+
         print(f'TOTAL TIME : {time.time() - start_time} Seconds')
         for resource_region in resource_regions:
             yield resource_region

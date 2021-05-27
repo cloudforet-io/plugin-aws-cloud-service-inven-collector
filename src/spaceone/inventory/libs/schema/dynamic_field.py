@@ -1,6 +1,6 @@
 import math
 from schematics import Model
-from schematics.types import ModelType, StringType, PolyModelType, DictType, ListType
+from schematics.types import ModelType, StringType, PolyModelType, DictType, ListType, BooleanType
 from .dynamic_search import BaseDynamicSearch
 
 
@@ -37,9 +37,17 @@ class BaseField(Model):
     options = PolyModelType([Model, DictType(PolyModelType(Model))], serialize_when_none=False)
 
 
-class FieldViewOption(BaseField):
-    class Options:
-        serialize_when_none = False
+class FieldViewOption(Model):
+    link = StringType(serialize_when_none=False)
+    variables = StringType(serialize_when_none=False)
+    sortable = BooleanType(serialize_when_none=False)
+    sort_key = StringType(serialize_when_none=False)
+    translation_id = StringType(serialize_when_none=False)
+    default = StringType(serialize_when_none=False)
+    is_optional = BooleanType(serialize_when_none=False)
+    postfix = StringType(serialize_when_none=False)
+    prefix = StringType(serialize_when_none=False)
+    field_description = StringType(serialize_when_none=False)
 
 
 class BaseDynamicField(BaseField):
@@ -53,7 +61,7 @@ class BaseDynamicField(BaseField):
 
 
 class TextDyFieldOptions(FieldViewOption):
-    link = StringType(serialize_when_none=False)
+    pass
 
 
 class BadgeDyFieldOptions(FieldViewOption):
@@ -61,20 +69,17 @@ class BadgeDyFieldOptions(FieldViewOption):
     shape = StringType(serialize_when_none=False, choices=['SQUARE', 'ROUND'])
     outline_color = StringType(serialize_when_none=False, choices=BACKGROUND_COLORS)
     background_color = StringType(serialize_when_none=False, choices=BACKGROUND_COLORS)
-    link = StringType(serialize_when_none=False)
 
 
 class StateDyFieldOptions(FieldViewOption):
     text_color = StringType(serialize_when_none=False)
     icon = ModelType(Icon, serialize_when_none=False)
-    link = StringType(serialize_when_none=False)
 
 
 class ImageDyFieldOptions(FieldViewOption):
     image_url = StringType(default='')
     width = StringType(serialize_when_none=False)
     height = StringType(serialize_when_none=False)
-    link = StringType(serialize_when_none=False)
 
 
 class DateTimeDyFieldOptions(FieldViewOption):
@@ -221,7 +226,6 @@ class ListDyFieldOptions(FieldViewOption):
     item = PolyModelType([BadgeItemDyField, StateDyField, DateTimeDyField, DictDyField], serialize_when_none=False)
     sub_key = StringType(serialize_when_none=False)
     delimiter = StringType(serialize_when_none=False)
-    link = StringType(serialize_when_none=False)
 
 
 class ListDyField(BaseDynamicField):

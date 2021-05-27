@@ -27,6 +27,22 @@ cst_distribution._metadata = CloudServiceTypeMeta.set_meta(
             'safe': ['Enabled'],
             'alert': ['Disabled'],
         }),
+        # For Dynamic Table
+        TextDyField.data_source('ARN', 'data.arn', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Comment', 'data.comment', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Price Class', 'data.price_class', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('HTTP Version', 'data.http_version', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+            'is_optional': True
+        })
     ],
     search=[
         SearchField.set(name='Distribution ID', key='data.id'),
@@ -35,7 +51,6 @@ cst_distribution._metadata = CloudServiceTypeMeta.set_meta(
                         enums={'Deployed': {'label': 'Deployed', 'icon': {'color': 'green.500'}}}),
         SearchField.set(name='Domain Name', key='data.domain_name'),
         SearchField.set(name='CNAME', key='data.alias_icp_recordals.cname'),
-        SearchField.set(name='Region', key='data.region_name'),
         SearchField.set(name='AWS Account ID', key='data.account_id'),
     ]
 )
