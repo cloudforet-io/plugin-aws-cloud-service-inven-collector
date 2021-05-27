@@ -45,7 +45,6 @@ class LAG(Model):
     lag_state = StringType(deserialize_from="lagState", choices=("requested", "pending", "available", "down",
                                                                  "deleting", "deleted", "unknown"))
     location = StringType(deserialize_from="location")
-    region = StringType(deserialize_from="region")
     minimum_links = IntType(deserialize_from="minimumLinks")
     aws_device = StringType(deserialize_from="awsDevice")
     aws_device_v2 = StringType(deserialize_from="awsDeviceV2")
@@ -70,7 +69,6 @@ VIRTUAL GATEWAY
 class VirtualPrivateGateway(Model):
     virtual_gateway_id = StringType(deserialize_from="virtualGatewayId")
     virtual_gateway_state = StringType(deserialize_from="virtualGatewayState")
-    region = StringType(deserialize_from="region")
     owner_account = StringType(deserialize_from="ownerAccount")
     account_id = StringType()
 

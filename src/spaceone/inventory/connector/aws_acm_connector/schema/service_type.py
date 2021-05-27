@@ -14,10 +14,9 @@ cst_certi.tags = {
 
 cst_certi._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        # TextDyField.data_source('Name', 'data.'),
         TextDyField.data_source('Domain Name', 'data.domain_name'),
         ListDyField.data_source('Additional Names', 'data.additional_names_display', options={
-            "delimiter": ", "
+            "delimiter": "<br>"
         }),
         EnumDyField.data_source('Status', 'data.status', default_state={
             'safe': ['ISSUED'],
@@ -27,6 +26,31 @@ cst_certi._metadata = CloudServiceTypeMeta.set_meta(
         TextDyField.data_source('Type', 'data.type_display'),
         TextDyField.data_source('In use?', 'data.in_use_display'),
         TextDyField.data_source('Renewal Eligibility', 'data.renewal_eligibility_display'),
+        # For Dynamic Table
+        TextDyField.data_source('Identifier', 'data.identifier', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Issuer', 'data.issuer', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Certificate ARN', 'data.certificate_arn', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Subject', 'data.subject', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Serial', 'data.serial', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Signature Algorithm', 'data.signature_algorithm', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Key Algorithm', 'data.key_algorithm', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+            'is_optional': True
+        })
     ],
     search=[
         SearchField.set(name='Domain Name', key='data.domain_name'),

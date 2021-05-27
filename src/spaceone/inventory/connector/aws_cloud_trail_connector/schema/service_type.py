@@ -28,6 +28,28 @@ cst_trail._metadata = CloudServiceTypeMeta.set_meta(
         TextDyField.data_source('S3 Bucket', 'data.s3_bucket_name'),
         TextDyField.data_source('Log file Prefix', 'data.s3_key_prefix'),
         TextDyField.data_source('CloudWatch Logs Log group', 'data.cloud_watch_logs_log_group_arn'),
+        # For Dynamic Table
+        TextDyField.data_source('Trail ARN', 'data.trail_arn', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Log file Validation Enabled', 'data.log_file_validation_enabled', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('SNS Topic name', 'data.sns_topic_name', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('SNS Topic ARN', 'data.sns_topic_arn', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('KMS Key ID', 'data.kms_key_id', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Include Global Service Events', 'data.include_global_service_events', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+            'is_optional': True
+        }),
     ],
     search=[
         SearchField.set(name='Name', key='data.name'),

@@ -20,16 +20,79 @@ cst_asg._metadata = CloudServiceTypeMeta.set_meta(
         TextDyField.data_source('Max', 'data.max_size'),
         TextDyField.data_source('Launch Template / Configuration', 'data.display_launch_configuration_template'),
         ListDyField.data_source('AZ', 'data.availability_zones',
-                                default_badge={'delimiter': '<br>'})
+                                default_badge={'delimiter': '<br>'}),
+        # For Dynamic Table
+        TextDyField.data_source('ARN', 'data.arn', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Health Check Type', 'data.health_check_type', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Instance Protected from Scale In', 'data.new_instances_protected_from_scale_in',
+                                options={'is_optional': True}),
+        TextDyField.data_source('Default CoolDown (sec)', 'data.default_cooldown', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Health Check Grace Period (sec)', 'data.health_check_grace_period', options={
+            'is_optional': True
+        }),
+        ListDyField.data_source('Instances ID', 'data.instances.instance_id', options={
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Instances Lifecycle', 'data.instances.lifecycle', options={
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Instances status', 'data.instances.health_status', options={
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Instances type', 'data.instances.instance_type', options={
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Instances type', 'data.instances.availability_zone', options={
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        ListDyField.data_source('LoadBalancers ARNs', 'data.load_balancer_arns', options={
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        ListDyField.data_source('LoadBalancers name', 'data.load_balancers.name', options={
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        ListDyField.data_source('LoadBalancers endpoint', 'data.load_balancers.endpoint', options={
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Target Group ARNs', 'data.target_group_arns', options={
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Policy ARNs', 'data.policies.policy_arn', options={
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Policy Names', 'data.policies.policy_name', options={
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+            'is_optional': True
+        }),
     ],
     search=[
         SearchField.set(name='Name', key='data.auto_scaling_group_name'),
         SearchField.set(name='ARN', key='data.auto_scaling_group_arn'),
         SearchField.set(name='Launch Configuration Name', key='data.launch_configuration_name'),
+        SearchField.set(name='Launch Configuration ARN', key='data.launch_configuration.launch_configuration_arn'),
+        SearchField.set(name='Launch Template Name', key='data.launch_template.launch_template_name'),
+        SearchField.set(name='Launch Template ID', key='data.launch_template.launch_template_id'),
         SearchField.set(name='Availability Zone', key='data.availability_zones'),
-        SearchField.set(name='Creation Time', key='data.created_time', data_type='datetime'),
         SearchField.set(name='Instance ID', key='data.instances.instance_id'),
-        SearchField.set(name='Region', key='region_code'),
         SearchField.set(name='AWS Account ID', key='data.account_id'),
     ]
 )
@@ -51,6 +114,29 @@ launch_configuration._metadata = CloudServiceTypeMeta.set_meta(
         TextDyField.data_source('Instance Type', 'data.instance_type'),
         TextDyField.data_source('Spot Price', 'data.spot_price'),
         DateTimeDyField.data_source('Creation Time', 'data.created_time'),
+        # For Dynamic Table
+        TextDyField.data_source('ARN', 'data.arn', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Keypair name', 'data.key_name', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('IAM Instance Profile', 'data.iam_instance_profile', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('IAM Instance Profile', 'data.iam_instance_profile', options={
+            'is_optional': True
+        }),
+        ListDyField.data_source('Security Group IDs', 'data.security_groups', options={
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        TextDyField.data_source('Image ID', 'data.image_id', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+            'is_optional': True
+        }),
     ],
     search=[
         SearchField.set(name='Name', key='data.launch_configuration_name'),
@@ -60,7 +146,6 @@ launch_configuration._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Monitoring', key='data.instance_monitoring.enabled', data_type='boolean'),
         SearchField.set(name='Security Group ID', key='data.security_groups'),
         SearchField.set(name='Created Time', key='data.created_time', data_type='datetime'),
-        SearchField.set(name='Region', key='region_code'),
         SearchField.set(name='AWS Account ID', key='data.account_id'),
     ]
 )
@@ -86,6 +171,29 @@ launch_template._metadata = CloudServiceTypeMeta.set_meta(
         }),
         TextDyField.data_source('Version', 'data.version'),
         DateTimeDyField.data_source('Creation Time', 'data.create_time'),
+        # For Dynamic Table
+        TextDyField.data_source('ARN', 'data.arn', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Launch Template ID', 'data.launch_template_id', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Version Description', 'data.version_description', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Keypair name', 'data.launch_template_data.key_name', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Instance Type', 'data.launch_template_data.instance_type', options={
+            'is_optional': True
+        }),
+        ListDyField.data_source('Security Groups', 'data.launch_template_data.security_group_ids', options={
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+            'is_optional': True
+        }),
     ],
     search=[
         SearchField.set(name='Name', key='data.launch_template_name'),

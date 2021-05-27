@@ -1,4 +1,4 @@
-from spaceone.inventory.libs.schema.dynamic_field import TextDyField, EnumDyField, SearchField
+from spaceone.inventory.libs.schema.dynamic_field import TextDyField, EnumDyField, SearchField, ListDyField
 from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, \
     CloudServiceTypeMeta
 
@@ -31,6 +31,31 @@ cst_connection_meta = CloudServiceTypeMeta.set_meta(
         TextDyField.data_source('Region', 'data.region'),
         TextDyField.data_source('Location', 'data.location'),
         TextDyField.data_source('Bandwidth', 'data.bandwidth'),
+        # For Dynamic Table
+        TextDyField.data_source('Logical Redundancy', 'data.has_logical_redundancy', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('VLAN', 'data.vlan', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('LAG ID', 'data.lag_id', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Jumbo Frame Capable', 'data.jumbo_frame_capable', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Partner Name', 'data.partner_name', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('AWS Device', 'data.aws_device', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('AWS Device V2', 'data.aws_device_v2', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'data.owner_account', options={
+            'is_optional': True
+        }),
     ],
     search=[
         SearchField.set(name='Connection ID', key='data.connection_id'),
@@ -52,7 +77,6 @@ cst_connection_meta = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Lag ID', key='data.lag_id'),
         SearchField.set(name='AWS Device', key='data.aws_device'),
         SearchField.set(name='Provider Name', key='data.provider_name'),
-        SearchField.set(name='Region', key='data.region_name'),
         SearchField.set(name='AWS Account ID', key='data.account_id'),
     ]
 )
@@ -79,6 +103,16 @@ cst_dc_gw_meta = CloudServiceTypeMeta.set_meta(
             'disable': ['deleted'],
             'warning': ['pending', 'deleting']
         }),
+        # For Dynamic Table
+        TextDyField.data_source('Amazon side ASN', 'data.amazon_side_asn', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('State Change Error', 'data.state_change_error', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'data.owner_account', options={
+            'is_optional': True
+        }),
     ],
     search=[
         SearchField.set(name='Direct Connect Gateway ID', key='data.direct_connect_gateway_id'),
@@ -91,7 +125,6 @@ cst_dc_gw_meta = CloudServiceTypeMeta.set_meta(
                             'deleting': {'label': 'Deleting', 'icon': {'color': 'yellow.500'}}
                         }),
         SearchField.set(name='Amazon Side ASN', key='data.amazon_side_asn'),
-        SearchField.set(name='Region', key='data.region_name'),
         SearchField.set(name='AWS Account ID', key='data.account_id'),
     ]
 )
@@ -118,7 +151,10 @@ cst_vp_gw_meta = CloudServiceTypeMeta.set_meta(
             'warning': ['pending', 'deleting'],
             'disable': ['deleted']
         }),
-        TextDyField.data_source('Region', 'data.region'),
+        # For Dynamic Table
+        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+            'is_optional': True
+        }),
     ],
     search=[
         SearchField.set(name='Virtual Private Gateway ID', key='data.virtual_gateway_id'),
@@ -129,7 +165,6 @@ cst_vp_gw_meta = CloudServiceTypeMeta.set_meta(
                             'pending': {'label': 'Pending', 'icon': {'color': 'yellow.500'}},
                             'deleting': {'label': 'Deleting', 'icon': {'color': 'yellow.500'}}
                         }),
-        SearchField.set(name='Region', key='data.region_name'),
         SearchField.set(name='AWS Account ID', key='data.account_id'),
     ]
 )
@@ -160,7 +195,60 @@ cst_lags_meta = CloudServiceTypeMeta.set_meta(
             'disable': ['unknown', 'deleted']
         }),
         TextDyField.data_source('Location', 'data.location'),
-        TextDyField.data_source('Region', 'data.region'),
+        # For Dynamic Table
+        TextDyField.data_source('Connections Bandwidth', 'data.connections_bandwidth', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Number of Connections', 'data.number_of_connections', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Minimum Links', 'data.minimum_links', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('AWS Device', 'data.aws_device', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('AWS Device V2', 'data.aws_device_v2', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Allows Hosted Connections', 'data.allows_hosted_connections', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Jumbo Frame Capable', 'data.jumbo_frame_capable', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Logical Redundancy', 'data.has_logical_redundancy', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Logical Redundancy', 'data.has_logical_redundancy', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Provider Name', 'data.provider_name', options={
+            'is_optional': True
+        }),
+        ListDyField.data_source('Connection IDs', 'data.connections.connection_id', options={
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Connection Names', 'data.connections.connection_name', options={
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Connection States', 'data.connections.connection_state', options={
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Connection VLANs', 'data.connections.vlan', options={
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Connection Bandwidth', 'data.connections.bandwidth', options={
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+            'is_optional': True
+        }),
     ],
     search=[
         SearchField.set(name='Lag ID', key='data.lag_id'),
@@ -178,7 +266,6 @@ cst_lags_meta = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Bandwidth', key='data.connections_bandwidth'),
         SearchField.set(name='Minimum Links', key='data.minimum_links', data_type='integer'),
         SearchField.set(name='AWS Device', key='data.aws_device'),
-        SearchField.set(name='Region', key='data.region_name'),
         SearchField.set(name='AWS Account ID', key='data.account_id'),
     ]
 )

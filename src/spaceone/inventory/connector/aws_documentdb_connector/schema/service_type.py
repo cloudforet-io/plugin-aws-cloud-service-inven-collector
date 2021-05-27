@@ -1,4 +1,5 @@
-from spaceone.inventory.libs.schema.dynamic_field import TextDyField, BadgeDyField, EnumDyField, SearchField
+from spaceone.inventory.libs.schema.dynamic_field import TextDyField, BadgeDyField, EnumDyField, SearchField, \
+    DateTimeDyField, ListDyField
 from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, \
     CloudServiceTypeMeta
 
@@ -22,9 +23,99 @@ cst_cluster._metadata = CloudServiceTypeMeta.set_meta(
                         'resetting-master-credentials', 'upgrading'],
             'alert': ['deleting', 'failing-over', 'inaccessible-encryption-credentials', 'migration-failed']
         }),
-        EnumDyField.data_source('Engine', 'data.engine', default_outline_badge=['docdb']),
+        TextDyField.data_source('Engine', 'data.engine'),
         TextDyField.data_source('Version', 'data.engine_version'),
         TextDyField.data_source('Instances', 'data.instance_count'),
+        # For Dynamic Table
+        TextDyField.data_source('DB Cluster ARN', 'data.db_cluster_arn', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('DB Cluster Resource ID', 'data.db_cluster_resource_id', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Endpoint', 'data.endpoint', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Reader Endpoint', 'data.reader_endpoint', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Port', 'data.port', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Multi AZ', 'data.multi_az', options={
+            'is_optional': True
+        }),
+        ListDyField.data_source('Availability Zones', 'data.availability_zones', options={
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Instances ARN', 'data.instances', options={
+            'delimiter': '<br>',
+            'sub_key': 'db_instance_arn',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Instances Identifier', 'data.instances', options={
+            'delimiter': '<br>',
+            'sub_key': 'db_instance_identifier',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Instances Availability Zone', 'data.instances', options={
+            'delimiter': '<br>',
+            'sub_key': 'availability_zone',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Instances Type', 'data.instances', options={
+            'delimiter': '<br>',
+            'sub_key': 'db_instance_class',
+            'is_optional': True
+        }),
+        TextDyField.data_source('DB Cluster Parameter Group', 'data.parameter_group', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Parameter Group', 'data.db_cluster_parameter_group', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Subnet Group', 'data.subnet_group', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('DB Subnet Group', 'data.db_subnet_group', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Master Username', 'data.master_username', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Storage Encrypted', 'data.storage_encrypted', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('KMS Key ID', 'data.kms_key_id', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Deletion Protection', 'data.deletion_protection', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Preferred Maintenance Window', 'data.preferred_maintenance_window', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Preferred Backup Window', 'data.preferred_backup_window', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Backup Retention Period', 'data.backup_retention_period', options={
+            'is_optional': True
+        }),
+        DateTimeDyField.data_source('Latest Restorable Time', 'data.latest_restorable_time', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Hosted Zone ID', 'data.hosted_zone_id', options={
+            'is_optional': True
+        }),
+        ListDyField.data_source('Security Groups', 'data.vpc_security_groups', options={
+            'delimiter': '<br>',
+            'sub_key': 'vpc_security_group_id',
+            'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+            'is_optional': True
+        }),
     ],
     search=[
         SearchField.set(name='Cluster', key='data.db_cluster_identifier'),
@@ -66,6 +157,17 @@ cst_subnet_group._metadata = CloudServiceTypeMeta.set_meta(
         }),
         TextDyField.data_source('Description', 'data.db_subnet_group_description'),
         TextDyField.data_source('VPC', 'data.vpc_id'),
+        TextDyField.data_source('Subnet Group ARN', 'data.db_subnet_group_arn', options={
+            'is_optional': True
+        }),
+        ListDyField.data_source('Subnet Identifier', 'data.subnets', options={
+            'delimeter': '<br>',
+            'sub_key': 'subnet_identifier',
+            'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+            'is_optional': True
+        })
     ],
     search=[
         SearchField.set(name='Name', key='data.db_subnet_group_name'),
@@ -91,8 +193,14 @@ cst_parameter_group.tags = {
 cst_parameter_group._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
         TextDyField.data_source('Name', 'data.db_cluster_parameter_group_name'),
-        BadgeDyField.data_source('Family', 'data.db_parameter_group_family'),
+        TextDyField.data_source('Family', 'data.db_parameter_group_family'),
         TextDyField.data_source('Description', 'data.description'),
+        TextDyField.data_source('Parameter Group ARN', 'data.db_cluster_parameter_group_arn', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+            'is_optional': True
+        })
     ],
     search=[
         SearchField.set(name='Name', key='data.db_cluster_parameter_group_name'),

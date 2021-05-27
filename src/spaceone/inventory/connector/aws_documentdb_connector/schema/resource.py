@@ -78,7 +78,6 @@ cluster_subnet_groups = ItemDynamicLayout.set_fields('Subnet Groups', 'data.subn
     }),
     TextDyField.data_source('Description', 'db_subnet_group_description'),
     ListDyField.data_source('Subnet', 'subnets', options={
-        'type': 'outline',
         'sub_key': 'subnet_identifier',
     })
 ])
