@@ -161,7 +161,7 @@ cst_subnet_group._metadata = CloudServiceTypeMeta.set_meta(
             'is_optional': True
         }),
         ListDyField.data_source('Subnet Identifier', 'data.subnets', options={
-            'delimeter': '<br>',
+            'delimiter': '<br>',
             'sub_key': 'subnet_identifier',
             'is_optional': True
         }),
