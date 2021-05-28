@@ -1,5 +1,5 @@
 from spaceone.inventory.libs.schema.dynamic_field import TextDyField, DateTimeDyField, EnumDyField, \
-    BadgeDyField, SearchField
+    BadgeDyField, SearchField, ListDyField
 from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, CloudServiceTypeMeta
 
 
@@ -32,6 +32,12 @@ cst_rds_database._metadata = CloudServiceTypeMeta.set_meta(
         TextDyField.data_source('Size', 'data.size'),
         TextDyField.data_source('Region & AZ', 'data.availability_zone'),
         TextDyField.data_source('Multi-AZ', 'data.multi_az'),
+        TextDyField.data_source('ARN', 'data.arn', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+            'is_optional': True
+        })
     ],
     search=[
         SearchField.set(name='DB Identifier', key='data.db_identifier'),
@@ -102,6 +108,111 @@ cst_rds_instance._metadata = CloudServiceTypeMeta.set_meta(
         TextDyField.data_source('VPC ID', 'data.db_subnet_group.vpc_id'),
         TextDyField.data_source('Availability Zone', 'data.availability_zone'),
         TextDyField.data_source('Multi-AZ', 'data.multi_az'),
+        TextDyField.data_source('ARN', 'data.db_instance_arn', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Engine Version', 'data.engine_version', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Storage Type', 'data.storage_type', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Endpoint Address', 'data.endpoint.address', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Endpoint Port', 'data.endpoint.port', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Publicly Accessible', 'data.publicly_accessible', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('IAM Database Authentication Enabled', 'data.iam_database_authentication_enabled',
+                                options={
+                                    'is_optional': True
+                                }),
+        TextDyField.data_source('Master Username', 'data.master_username', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('CA Certificate Identifier', 'data.ca_certificate_identifier', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Hosted Zone ID', 'data.endpoint.hosted_zone_id', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Deletion Protection', 'data.deletion_protection', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('VPC ID', 'data.db_subnet_group.vpc_id', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Subnet Group Name', 'data.db_subnet_group.db_subnet_group_name', options={
+            'is_optional': True
+        }),
+        ListDyField.data_source('Subnet IDs', 'data.db_subnet_group.subnets', options={
+            'delimiter': '<br>',
+            'sub_key': 'subnet_identifier',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Availability Zones', 'data.db_subnet_group.subnets', options={
+            'delimiter': '<br>',
+            'sub_key': 'subnet_availability_zone.name',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Security Group IDs', 'data.vpc_security_groups', options={
+            'delimiter': '<br>',
+            'sub_key': 'vpc_security_group_id',
+            'is_optional': True
+        }),
+        TextDyField.data_source('Monitoring Interval', 'data.monitoring_interval', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Auto Minor Version Upgrade', 'data.auto_minor_version_upgrade', options={
+            'is_optional': True
+        }),
+        ListDyField.data_source('DB Parameter Group Names', 'data.db_parameter_groups', options={
+            'delimiter': '<br>',
+            'sub_key': 'db_parameter_group_name',
+            'is_optional': True
+        }),
+        TextDyField.data_source('License Model', 'data.license_model', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Backup Retention Period', 'data.backup_retention_period', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('DBI Resource ID', 'data.dbi_resource_id', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Storage Encrypted', 'data.storage_encrypted', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('KMS Key ID', 'data.kms_key_id', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Allocated Storage', 'data.allocated_storage', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Max Allocated Storage', 'data.max_allocated_storage', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Multi AZ', 'data.multi_az', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Preferred Backup Window', 'data.preferred_backup_window', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Preferred Maintenance Window', 'data.preferred_maintenance_window', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('DB Name', 'data.db_name', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Performance Insights Enabled', 'data.performance_insights_enabled', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+            'is_optional': True
+        })
     ],
     search=[
         SearchField.set(name='DB Identifier', key='data.db_instance_identifier'),

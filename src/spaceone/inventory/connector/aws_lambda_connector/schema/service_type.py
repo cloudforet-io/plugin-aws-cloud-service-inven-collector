@@ -17,12 +17,69 @@ cst_function.tags = {
 cst_function._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
         TextDyField.data_source('Name', 'data.name'),
-        BadgeDyField.data_source('Runtime', 'data.runtime'),
+        TextDyField.data_source('Runtime', 'data.runtime'),
         SizeField.data_source('Code Size', 'data.code_size'),
         SizeField.data_source('Memory Size', 'data.memory_size', options={
             'source_unit': 'MB'
         }),
         TextDyField.data_source('Description', 'data.description'),
+        TextDyField.data_source('ARN', 'data.arn', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Version', 'data.version', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Role ARN', 'data.role', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Handler', 'data.handler', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('VPC ID', 'data.vpc_config.vpc.id', options={
+            'is_optional': True
+        }),
+        ListDyField.data_source('Subnet IDs', 'data.vpc_config.subnets', options={
+            'delimiter': '<br>',
+            'sub_key': 'id',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Security Group IDs', 'data.vpc_config.security_groups', options={
+            'delimiter': '<br>',
+            'sub_key': 'id',
+            'is_optional': True
+        }),
+        TextDyField.data_source('Code SHA256', 'data.code_sha256', options={
+            'is_optional': True
+        }),
+        ListDyField.data_source('Layers ARN', 'data.layers', options={
+            'delimiter': '<br>',
+            'sub_key': 'arn',
+            'is_optional': True
+        }),
+        TextDyField.data_source('KMS Key ARN', 'data.kms_key_arn', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Dead Letter Target Name', 'data.dead_letter_config.target_name', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Dead Letter Target ARN', 'data.dead_letter_config.target_arn', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Trace Config Mode', 'data.trace_config.mode', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Timeout', 'data.time_out', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Revision ID', 'data.revision_id', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Master ARN', 'data.master_arn', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+            'is_optional': True
+        })
     ],
     search=[
         SearchField.set(name='Name', key='data.name'),
@@ -63,9 +120,12 @@ cst_layer._metadata = CloudServiceTypeMeta.set_meta(
         TextDyField.data_source('Name', 'data.layer_name'),
         TextDyField.data_source('Version', 'data.latest_matching_version.version'),
         TextDyField.data_source('Description', 'data.latest_matching_version.description'),
-        ListDyField.data_source('Compatible Runtimes', 'data.latest_matching_version.compatible_runtimes', default_badge={
-            'type': 'outline',
+        ListDyField.data_source('Compatible Runtimes', 'data.latest_matching_version.compatible_runtimes', options={
+            'delimiter': '<br>'
         }),
+        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+            'is_optional': True
+        })
     ],
     search=[
         SearchField.set(name='Name', key='data.layer_name'),

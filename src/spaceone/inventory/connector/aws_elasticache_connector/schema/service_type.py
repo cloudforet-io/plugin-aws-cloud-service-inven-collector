@@ -1,4 +1,4 @@
-from spaceone.inventory.libs.schema.dynamic_field import TextDyField, SearchField, EnumDyField
+from spaceone.inventory.libs.schema.dynamic_field import TextDyField, SearchField, EnumDyField, ListDyField
 from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, CloudServiceTypeMeta
 
 cst_memcached = CloudServiceTypeResource()
@@ -23,6 +23,45 @@ cst_memcached._metadata = CloudServiceTypeMeta.set_meta(
         TextDyField.data_source('Node Type', 'data.cache_node_type'),
         TextDyField.data_source('Zone', 'data.preferred_availability_zone'),
         TextDyField.data_source('Configuration Endpoint', 'data.configuration_endpoint_display'),
+        TextDyField.data_source('ARN', 'data.arn', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Cache Node Type', 'data.cache_node_type', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Engine Version', 'data.engine_version', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Description', 'data.description', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Automatic Failover', 'data.automatic_failover', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Endpoint Address', 'data.configuration_endpoint.address', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Port', 'data.configuration_endpoint.port', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Snapshot Retention Limit', 'data.snapshot_retention_limit', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Replication Group ID', 'data.replication_group_id', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Snapshot Window', 'data.snapshot_window', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Subnet Group Name', 'data.cache_subnet_group_name', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Auth Token Enabled', 'data.auth_token_enabled', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+            'is_optional': True
+        })
     ],
     search=[
         SearchField.set(name='ARN', key='data.arn'),
@@ -63,6 +102,55 @@ cst_redis._metadata = CloudServiceTypeMeta.set_meta(
         TextDyField.data_source('Node Type', 'data.cache_node_type'),
         TextDyField.data_source('Encryption in-transit', 'data.transit_encryption_enabled'),
         TextDyField.data_source('Encryption at-rest', 'data.at_rest_encryption_enabled'),
+        TextDyField.data_source('ARN', 'data.arn', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Cache Node Type', 'data.cache_node_type', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Engine Version', 'data.engine_version', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Description', 'data.description', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Automatic Failover', 'data.automatic_failover', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Endpoint Address', 'data.configuration_endpoint.address', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Port', 'data.configuration_endpoint.port', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Snapshot Retention Limit', 'data.snapshot_retention_limit', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Parameter Group Name', 'data.parameter_group_name', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Replication Group ID', 'data.replication_group_id', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Snapshot Window', 'data.snapshot_window', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Multi AZ', 'data.multi_az', options={
+            'is_optional': True
+        }),
+        ListDyField.data_source('Availability Zones', 'data.availability_zones', options={
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        TextDyField.data_source('Subnet Group Name', 'data.subnet_group_name', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Auth Token Enabled', 'data.auth_token_enabled', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+            'is_optional': True
+        })
     ],
     search=[
         SearchField.set(name='ARN', key='data.arn'),

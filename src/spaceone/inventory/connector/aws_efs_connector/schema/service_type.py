@@ -1,5 +1,5 @@
 from spaceone.inventory.libs.schema.dynamic_field import TextDyField, DateTimeDyField, EnumDyField, SearchField, \
-    SizeField
+    SizeField, ListDyField
 from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, \
     CloudServiceTypeMeta
 
@@ -27,6 +27,41 @@ cst_filesystem._metadata = CloudServiceTypeMeta.set_meta(
         SizeField.data_source('Metered Sizes', 'data.size_in_bytes.value'),
         TextDyField.data_source('Mount Targets', 'data.number_of_mount_targets'),
         DateTimeDyField.data_source('Creation date', 'data.creation_time'),
+
+        TextDyField.data_source('ARN', 'data.arn', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Throughput Mode', 'data.throughput_mode', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Performance Mode', 'data.performance_mode', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Encrypted', 'data.encrypted', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('KMS Key ARN', 'data.kms_key_id', options={
+            'is_optional': True
+        }),
+        ListDyField.data_source('Mount Target IDs', 'data.mount_targets', options={
+            'sub_key': 'mount_target_id',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Mount Target IP', 'data.mount_targets', options={
+            'sub_key': 'ip_address',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Mount Target State', 'data.mount_targets', options={
+            'sub_key': 'life_cycle_state',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Mount Target AZ', 'data.mount_targets', options={
+            'sub_key': 'availability_zone_name',
+            'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+            'is_optional': True
+        }),
     ],
     search=[
         SearchField.set(name='File System ID', key='data.file_system_id'),

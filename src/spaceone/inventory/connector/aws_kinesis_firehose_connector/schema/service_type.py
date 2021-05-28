@@ -30,6 +30,39 @@ cst_firehose._metadata = CloudServiceTypeMeta.set_meta(
         TextDyField.data_source("Data transformation", "data.additional_tabs.lambda_tab.data_transformation"),
         TextDyField.data_source("Destination", "data.additional_tabs.destination_name"),
         DateTimeDyField.data_source("Creation time", "data.create_timestamp"),
+TextDyField.data_source('ARN', 'data.delivery_stream_arn', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Type', 'data.delivery_stream_type', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Version ID', 'data.version_id', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Encryption Configuration Status',
+                                'data.delivery_stream_encryption_configuration.status',
+                                options={'is_optional': True}),
+        TextDyField.data_source('Cloudwatch Enabled', 'data.additional_tabs.cloud_watch_info', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('IAM Role', 'data.additional_tabs.iam_role', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('S3 Backup Mode', 'data.additional_tabs.backup_mode', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Lambda Data Transformation', 'data.lambda_tab.data_transformation', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Lambda Source Record Transformation',
+                                'data.lambda_tab.source_record_transformation',
+                                options={'is_optional': True}),
+        TextDyField.data_source('Failure Description', 'data.failure_description', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+            'is_optional': True
+        })
     ],
     search=[
         SearchField.set(name="Stream Name", key="data.delivery_stream_name"),
