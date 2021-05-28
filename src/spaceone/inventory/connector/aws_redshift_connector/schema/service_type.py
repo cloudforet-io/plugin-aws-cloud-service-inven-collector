@@ -1,4 +1,5 @@
-from spaceone.inventory.libs.schema.dynamic_field import TextDyField, EnumDyField, BadgeDyField, SearchField
+from spaceone.inventory.libs.schema.dynamic_field import TextDyField, EnumDyField, BadgeDyField, SearchField, \
+    ListDyField, DateTimeDyField
 from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, \
     CloudServiceTypeMeta
 
@@ -28,6 +29,71 @@ cst_redshift_cluster._metadata = CloudServiceTypeMeta.set_meta(
         TextDyField.data_source('Cluster Version', 'data.cluster_version'),
         TextDyField.data_source('Nodes', 'data.number_of_nodes'),
         TextDyField.data_source('Node Type', 'data.node_type'),
+        TextDyField.data_source('Endpoint', 'data.endpoint.address', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Port', 'data.endpoint.Port', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('VPC ID', 'data.vpc_id', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Availability Zone', 'data.availability_zone', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Cluster Revision Number', 'data.cluster_revision_number', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Preferred Maintenance Window', 'data.preferred_maintenance_window', options={
+            'is_optional': True
+        }),
+        DateTimeDyField.data_source('Next maintenance window start time', 'data.next_maintenance_window_start_time',
+                                    options={'is_optional': True}),
+        TextDyField.data_source('DB Name', 'data.db_name', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Allow Version Upgrade', 'data.allow_version_upgrade', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Encrypted', 'data.encrypted', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('KMS Key ID', 'data.kms_key_id', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Publicly Accessible', 'data.publicly_accessible', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Automated Snapshot Retention Period', 'data.automated_snapshot_retention_period',
+                                options={'is_optional': True}),
+        TextDyField.data_source('Subnet Group Name', 'data.cluster_subnet_group_name', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Master Username', 'data.master_username', options={
+            'is_optional': True
+        }),
+        ListDyField.data_source('IAM Role ARNs', 'data.iam_roles', options={
+            'delimiter': '<br>',
+            'sub_key': 'iam_role_arn',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Security Groups', 'data.vpc_security_groups', options={
+            'delimiter': '<br>',
+            'sub_key': 'vpc_security_group_id',
+            'is_optional': True
+        }),
+        TextDyField.data_source('HSM Status', 'data.hsm_status', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Snapshot Schedule Identifier', 'data.snapshot_schedule_identifier', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Manual Snapshot Retention Period', 'data.manual_snapshot_retention_period', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+            'is_optional': True
+        })
     ],
     search=[
         SearchField.set(name='Cluster Identifier', key='data.cluster_identifier'),

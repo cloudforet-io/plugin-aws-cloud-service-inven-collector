@@ -264,18 +264,49 @@ cst_rds_snapshot._metadata = CloudServiceTypeMeta.set_meta(
         TextDyField.data_source('Snapshot', 'data.db_snapshot_identifier'),
         TextDyField.data_source('DB Instance', 'data.db_instance_identifier'),
         EnumDyField.data_source('Status', 'data.status', default_state={
+            'warning': ['creating', 'deleting'],
             'safe': ['available'],
         }),
-        EnumDyField.data_source('Type', 'data.snapshot_type', default_outline_badge=['manual', 'automated']),
-        EnumDyField.data_source('Engine', 'data.engine',
-                                default_outline_badge=['aurora', 'mysql', 'mariadb', 'postgres', 'oracle-ee', 'oracle-se',
-                                                       'oracle-se1', 'oracle-se2', 'sqlserver-ex', 'sqlserver-web',
-                                                       'sqlserver-se', 'sqlserver-ee']),
+        TextDyField.data_source('Type', 'data.snapshot_type'),
+        TextDyField.data_source('Engine', 'data.engine'),
         TextDyField.data_source('AZ', 'data.availability_zone'),
         EnumDyField.data_source('Encryption', 'data.encrypted', default_badge={
             'indigo.500': ['true'], 'coral.600': ['false']
         }),
         DateTimeDyField.data_source('Snapshot Creation Time', 'data.snapshot_create_time'),
+        TextDyField.data_source('ARN', 'data.db_snapshot_arn', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('VPC ID', 'data.vpc_id', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Engine Version', 'data.engine_version', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Storage Type', 'data.storage_type', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('IOPS', 'data.iops', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Allocated Storage', 'data.allocated_storage', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('KMS ID', 'data.kms_key_id', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('DBI Resource ID', 'data.dbi_resource_id', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Option Group Name', 'data.option_group_name', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('License Model', 'data.license_model', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+            'is_optional': True
+        })
     ],
     search=[
         SearchField.set(name='Snapshot Identifier', key='data.db_snapshot_identifier'),
@@ -312,6 +343,22 @@ cst_rds_subnetgrp._metadata = CloudServiceTypeMeta.set_meta(
             'safe': ['Complete']
         }),
         TextDyField.data_source('VPC', 'data.vpc_id'),
+        TextDyField.data_source('ARN', 'data.db_subnet_group_arn', options={
+            'is_optional': True
+        }),
+        ListDyField.data_source('Subnet IDs', 'data.subnets', options={
+            'sub_key': 'subnet_identifier',
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Availability Zones', 'data.subnets', options={
+            'sub_key': 'subnet_availability_zone.name',
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+            'is_optional': True
+        })
     ],
     search=[
         SearchField.set(name='Name', key='data.db_subnet_group_name'),
@@ -336,8 +383,17 @@ cst_rds_paramgrp.tags = {
 cst_rds_paramgrp._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
         TextDyField.data_source('Name', 'data.db_parameter_group_name'),
-        BadgeDyField.data_source('Family', 'data.db_parameter_group_family'),
+        TextDyField.data_source('Family', 'data.db_parameter_group_family'),
         TextDyField.data_source('Description', 'data.description'),
+        TextDyField.data_source('ARN', 'data.db_parameter_group_arn', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Type', 'data.db_parameter_group_type', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+            'is_optional': True
+        })
     ],
     search=[
         SearchField.set(name='Name', key='data.db_parameter_group_name'),
@@ -362,10 +418,22 @@ cst_rds_optgrp.tags = {
 }
 cst_rds_optgrp._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'data.db_parameter_group_name'),
-        TextDyField.data_source('Description', 'data.description'),
+        TextDyField.data_source('Name', 'data.option_group_name'),
+        TextDyField.data_source('Description', 'data.option_group_description'),
         TextDyField.data_source('Engine', 'data.engine_name'),
         TextDyField.data_source('Engine version', 'data.major_engine_version'),
+        TextDyField.data_source('ARN', 'data.option_group_arn', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('VPC ID', 'data.vpc_id', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Allows VPC and Non VPC Instance Memberships',
+                                'data.allows_vpc_and_non_vpc_instance_memberships',
+                                options={'is_optional': True}),
+        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+            'is_optional': True
+        })
     ],
     search=[
         SearchField.set(name='Name', key='data.option_group_name'),
