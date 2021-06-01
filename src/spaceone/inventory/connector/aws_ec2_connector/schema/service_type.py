@@ -63,6 +63,30 @@ cst_ami._metadata = CloudServiceTypeMeta.set_meta(
         TextDyField.data_source('Platform', 'data.platform'),
         TextDyField.data_source('Root Device Type', 'data.root_device_type'),
         TextDyField.data_source('Virtualization', 'data.virtualization_type'),
+        TextDyField.data_source('Architecture', 'data.architecture', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Virtualization Type', 'data.virtualization_type', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Description', 'data.description', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Root Device Name', 'data.root_device_name', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Root Device Type', 'data.root_device_type', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('SR-IOV Net Support ', 'data.sriov_net_support', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Hypervisor ', 'data.hypervisor', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Platform Details ', 'data.platform_details', options={
+            'is_optional': True
+        })
     ],
     search=[
         SearchField.set(name='AMI ID', key='data.image_id'),

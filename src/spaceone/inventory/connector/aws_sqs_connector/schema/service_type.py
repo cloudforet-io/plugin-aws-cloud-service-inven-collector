@@ -17,6 +17,54 @@ cst_que._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
         TextDyField.data_source('name', 'data.name'),
         TextDyField.data_source('url', 'data.url'),
+        TextDyField.data_source('ARN', 'data.kms.alias', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Approximate Number of Messages', 'data.approximate_number_of_messages', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Approximate Number of Messages Delay', 'data.approximate_number_of_messages_delayed',
+                                options={'is_optional': True}),
+        TextDyField.data_source('Approximate Number of Messages Not Visible', 'data.approximate_number_of_messages_not_visible',
+                                options={
+                                    'is_optional': True
+                                }),
+        TextDyField.data_source('Delay Seconds', 'data.delay_seconds', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Maximum Message Size', 'data.maximum_message_size', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Message Retention Period', 'data.message_retention_period', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Receive Message Wait Time Seconds', 'data.receive_message_wait_time_seconds', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Visiblility Timeout', 'data.visibility_timeout', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('FIFO Queue', 'data.fifo_queue', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Content Based Duplication', 'data.content_based_duplication', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('KMS Master Key ID', 'data.kms_master_key_id', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('KMS Reuse Period Seconds', 'data.kms_data_key_reuse_period_seconds', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Dead Letter Target ARN', 'data.redrive_policy.dead_letter_target_arn', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Max Recieve Count', 'data.redrive_policy.max_receive_count', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+            'is_optional': True
+        }),
     ],
     search=[
         SearchField.set(name='Name', key='data.name'),

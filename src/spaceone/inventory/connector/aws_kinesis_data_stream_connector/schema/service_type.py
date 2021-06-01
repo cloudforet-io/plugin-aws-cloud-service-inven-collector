@@ -2,6 +2,7 @@ from spaceone.inventory.libs.schema.dynamic_field import (
     SearchField,
     TextDyField,
     EnumDyField,
+    ListDyField
 )
 from spaceone.inventory.libs.schema.resource import (
     CloudServiceTypeResource,
@@ -40,6 +41,26 @@ cst_kds._metadata = CloudServiceTypeMeta.set_meta(
         TextDyField.data_source(
             "Consumers with enhanced fan-out", "data.consumers_vo.num_of_consumers"
         ),
+        TextDyField.data_source('ARN', 'data.stream_arn', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Encryption Type', 'data.encryption_type', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Encryption Key ID', 'data.key_id', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Closed Shards', 'data.closed_shards_num', options={
+            'is_optional': True
+        }),
+        ListDyField.data_source('Shard IDs', 'data.shards', options={
+            'delimiter': '<br>',
+            'sub_key': 'shard_id',
+            'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+            'is_optional': True
+        }),
     ],
     search=[
         SearchField.set(name="Stream Name", key="data.stream_name"),

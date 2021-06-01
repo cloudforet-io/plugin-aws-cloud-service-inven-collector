@@ -16,8 +16,50 @@ cst_group.tags = {
 cst_group._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
         TextDyField.data_source('Group Name', 'data.group_name'),
-        TextDyField.data_source('Users', 'data.user_count'),
+        TextDyField.data_source('User Count', 'data.user_count'),
         DateTimeDyField.data_source('Creation Time', 'data.create_date'),
+        TextDyField.data_source('ARN', 'data.arn', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Group ID', 'data.group_id', options={
+            'is_optional': True
+        }),
+        ListDyField.data_source('Attached Policies name', 'data.attached_permission', options={
+            'sub_key': 'policy_name',
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Attached Policies Id', 'data.attached_permission', options={
+            'sub_key': 'policy_id',
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Attached Policies ARN', 'data.attached_permission', options={
+            'sub_key': 'arn',
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        ListDyField.data_source('User Names', 'data.users', options={
+            'sub_key': 'user_name',
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Users Last Activity', 'data.users', options={
+            'sub_key': 'last_activity',
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Users Access Key Age', 'data.users', options={
+            'sub_key': 'access_key_age_display',
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        TextDyField.data_source('Path', 'data.path', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+            'is_optional': True
+        })
     ],
     search=[
         SearchField.set(name='Group Name', key='data.group_name'),
@@ -42,15 +84,73 @@ cst_user.tags = {
 cst_user._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
         TextDyField.data_source('User Name', 'data.user_name'),
-        ListDyField.data_source('Groups', 'data.groups', default_badge={
-            'type': 'outline',
-            'sub_key': 'group_name',
+        ListDyField.data_source('Groups', 'data.groups', options={
+            'delimiter': '<br>',
+            'sub_key': 'group_name'
         }),
         TextDyField.data_source('Access Key Age', 'data.access_key_age_display'),
         TextDyField.data_source('Last Activity', 'data.last_activity'),
-        EnumDyField.data_source('MFA', 'data.mfa_device', default_badge={
-            'indigo.500': ['Virtual'], 'coral.600': ['Not enabled'],
+        TextDyField.data_source('MFA', 'data.mfa_device'),
+        TextDyField.data_source('ARN', 'data.arn', options={
+            'is_optional': True
         }),
+        TextDyField.data_source('User ID', 'data.user_id', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Console Password Enabled', 'data.sign_in_credential.console_password', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('MFA Device', 'data.mfa_device', options={
+            'is_optional': True
+        }),
+        ListDyField.data_source('Access Key IDs', 'data.access_key', options={
+            'sub_key': 'key_id',
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Access Key status', 'data.access_key', options={
+            'sub_key': 'status',
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        ListDyField.data_source('SSH Public Key', 'data.ssh_public_key', options={
+            'delimiter': '<br>',
+            'sub_key': 'key_id',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Cassandra Credential User Name', 'data.cassandra_credential', options={
+            'delimiter': '<br>',
+            'sub_key': 'service_user_name',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Code Commit Credential User Name', 'data.code_commit_credential', options={
+            'delimiter': '<br>',
+            'sub_key': 'service_user_name',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Policy Names', 'data.policies', options={
+            'sub_key': 'policy_name',
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Policy IDs', 'data.policies', options={
+            'sub_key': 'policy_id',
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Policy ARNs', 'data.policies', options={
+            'sub_key': 'arn',
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Policy Types', 'data.policies', options={
+            'sub_key': 'policy_type',
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+            'is_optional': True
+        })
     ],
     search=[
         SearchField.set(name='User Name', key='data.user_name'),
@@ -105,8 +205,54 @@ cst_role.tags = {
 cst_role._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
         TextDyField.data_source('Role Name', 'data.role_name'),
-        ListDyField.data_source('Trusted Entities', 'data.trusted_entities', default_badge={'type': 'outline', 'delimiter': '<br>'}),
         TextDyField.data_source('Last Activity', 'data.last_activity'),
+        ListDyField.data_source('Trusted Entities', 'data.trusted_entities', options={
+            'delimiter': '<br>'
+        }),
+        TextDyField.data_source('ARN', 'data.arn', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Role ID', 'data.role_id', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Role Last Used Region', 'data.role_last_used.region', options={
+            'is_optional': True
+        }),
+        DateTimeDyField.data_source('Role Last Used Date', 'data.role_last_used.last_used_data', options={
+            'is_optional': True
+        }),
+        ListDyField.data_source('Policy Names', 'data.policies', options={
+            'delimiter': '<br>',
+            'sub_key': 'policy_name',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Policy ARNs', 'data.policies', options={
+            'delimiter': '<br>',
+            'sub_key': 'arn',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Policy IDs', 'data.policies', options={
+            'delimiter': '<br>',
+            'sub_key': 'policy_id',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Policy Types', 'data.policies', options={
+            'delimiter': '<br>',
+            'sub_key': 'policy_type',
+            'is_optional': True
+        }),
+        TextDyField.data_source('Path', 'data.path', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Max Session Duration', 'data.max_session_duration', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Description', 'data.description', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+            'is_optional': True
+        })
     ],
     search=[
         SearchField.set(name='Role Name', key='data.role_name'),
@@ -134,6 +280,29 @@ cst_policy._metadata = CloudServiceTypeMeta.set_meta(
         TextDyField.data_source('Policy Name', 'data.policy_name'),
         TextDyField.data_source('Policy ID', 'data.policy_id'),
         TextDyField.data_source('Attachment Count', 'data.attachment_count'),
+        TextDyField.data_source('ARN', 'data.arn', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Is Attachable', 'data.is_attachable', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Description', 'data.description', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Policy Type', 'data.policy_type', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Default Version ID', 'data.default_version_id', options={
+            'is_optional': True
+        }),
+        ListDyField.data_source('Policy Usage Name', 'data.policy_usage', options={
+            'delimiter': '<br>',
+            'sub_key': 'name',
+            'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+            'is_optional': True
+        })
     ],
     search=[
         SearchField.set(name='Policy Name', key='data.policy_name'),
@@ -164,6 +333,20 @@ cst_identity_provider._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
         TextDyField.data_source(name='Identity Provider URL', key='data.url'),
         EnumDyField.data_source(name='provider_type', key='data.provider_type', default_badge={'indigo.500': ['OIDC']}),
+        TextDyField.data_source('ARN', 'data.arn', options={
+            'is_optional': True
+        }),
+        ListDyField.data_source('Client ID List', 'data.client_id_list', options={
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Thumbprint List', 'data.thumbprint_list', options={
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+            'is_optional': True
+        })
     ],
     search=[
         SearchField.set(name='Identity Provider URL', key='data.url'),

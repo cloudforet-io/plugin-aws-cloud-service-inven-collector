@@ -1,5 +1,5 @@
 from spaceone.inventory.libs.schema.dynamic_field import TextDyField, EnumDyField, SearchField, DateTimeDyField, \
-    SizeField
+    SizeField, ListDyField
 from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, \
     CloudServiceTypeMeta
 
@@ -27,12 +27,31 @@ cst_ebs._metadata = CloudServiceTypeMeta.set_meta(
             'alert': ['error']
         }),
         SizeField.data_source('Size', 'data.size'),
-        EnumDyField.data_source('Volume Type', 'data.volume_type',
-                                default_outline_badge=['standard', 'io1', 'gp2', 'gp3', 'sc1', 'st1']),
+        TextDyField.data_source('Volume Type', 'data.volume_type'),
         TextDyField.data_source('IOPS', 'data.iops'),
         TextDyField.data_source('From Snapshot', 'data.snapshot_id'),
         TextDyField.data_source('Availablity Zone', 'data.availability_zone'),
         DateTimeDyField.data_source('Created', 'data.create_time'),
+        TextDyField.data_source('ARN', 'data.arn', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Encrypted', 'data.encrypted', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('KMS Key ID', 'data.kms_key_id', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Multi Attach Enabled', 'data.multi_attach_enabled', options={
+            'is_optional': True
+        }),
+        ListDyField.data_source('Attached Instance ID', 'data.attachments', options={
+            'sub_key': 'instance_id',
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+            'is_optional': True
+        })
     ],
     search=[
         SearchField.set(name='Volume ID', key='data.volume_id'),
@@ -96,6 +115,18 @@ cst_snapshot._metadata = CloudServiceTypeMeta.set_meta(
             'indigo.500': ['true'], 'coral.600': ['false']
         }),
         DateTimeDyField.data_source('Start Time', 'data.start_time'),
+        TextDyField.data_source('ARN', 'data.arn', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Encrypted', 'data.encrypted', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('KMS Key ID', 'data.kms_key_id', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+            'is_optional': True
+        })
     ],
     search=[
         SearchField.set(name='Snapshot ID', key='data.snapshot_id'),

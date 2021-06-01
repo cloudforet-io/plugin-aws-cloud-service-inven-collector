@@ -18,6 +18,18 @@ cst_ecr_repo._metadata = CloudServiceTypeMeta.set_meta(
         TextDyField.data_source('Repository name', 'data.repository_name'),
         TextDyField.data_source('URI', 'data.repository_uri'),
         DateTimeDyField.data_source('Created', 'data.created_at'),
+        TextDyField.data_source('Registry ARN ', 'data.repository_arn', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Image Tag Mutability ', 'data.image_tag_mutability', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Image Scanning on Push ', 'data.image_scanning_configuration.scan_on_push', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+            'is_optional': True
+        }),
     ],
     search=[
         SearchField.set(name='Repository ID', key='data.registry_id'),

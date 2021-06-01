@@ -30,6 +30,90 @@ cst_vpc._metadata = CloudServiceTypeMeta.set_meta(
             'indigo.500': ['true'], 'coral.600': ['false']
         }),
         TextDyField.data_source('Owner', 'data.owner_id'),
+        TextDyField.data_source('ARN', 'data.arn', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('DHCP Options ID', 'data.dhcp_options_id', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Enable DNS Hostnames', 'data.enable_dns_hostnames', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Enable DNS Support', 'data.enable_dns_support', options={
+            'is_optional': True
+        }),
+        ListDyField.data_source('Subnet ARNs', 'data.subnets', options={
+            'sub_key': 'subnet_arn',
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Subnet IDs', 'data.subnets', options={
+            'sub_key': 'subnet_id',
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Subnet Names', 'data.subnets', options={
+            'sub_key': 'name',
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Subnet CIDRs', 'data.subnets', options={
+            'sub_key': 'cidr_block',
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Subnet Availability Zones', 'data.subnets', options={
+            'sub_key': 'availability_zone',
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        ListDyField.data_source('NAT Gatway Names', 'data.nat_gateways', options={
+            'sub_key': 'name',
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        ListDyField.data_source('NAT Gatway ARNs', 'data.nat_gateways', options={
+            'sub_key': 'arn',
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Endpoint ARNs', 'data.endpoints', options={
+            'sub_key': 'arn',
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Endpoint Names', 'data.endpoints', options={
+            'sub_key': 'name',
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Peering Connection Names', 'data.peering_connections', options={
+            'sub_key': 'name',
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        TextDyField.data_source('Egress Only Internet Gateway ARN', 'data.egress_only_internet_gateway.arn',
+                                options={'is_optional': True}),
+        TextDyField.data_source('Egress Only Internet Gateway Name', 'data.egress_only_internet_gateway.name',
+                                options={'is_optional': True}),
+        TextDyField.data_source('Internet Gateway ARN', 'data.internet_gateway.arn',
+                                options={'is_optional': True}),
+        TextDyField.data_source('Internet Gateway Name', 'data.internet_gateway.name',
+                                options={'is_optional': True}),
+        TextDyField.data_source('Transit Gateway ARN', 'data.transit_gateway.transit_gateway_arn',
+                                options={'is_optional': True}),
+        TextDyField.data_source('Transit Gateway Name', 'data.transit_gateway.name',
+                                options={'is_optional': True}),
+        TextDyField.data_source('Transit Gateway ID', 'data.transit_gateway.transit_gateway_id',
+                                options={'is_optional': True}),
+        TextDyField.data_source('VPN Gateway ID', 'data.vpn_gateway.vpn_gateway_id',
+                                options={'is_optional': True}),
+        TextDyField.data_source('VPN Gateway Name', 'data.vpn_gateway.name',
+                                options={'is_optional': True}),
+        TextDyField.data_source('VPN Connection ID', 'data.vpn_gateway.vpn_connection.vpn_connection_id',
+                                options={'is_optional': True}),
+        TextDyField.data_source('VPN Connection Name', 'data.vpn_gateway.vpn_connection.name',
+                                options={'is_optional': True}),
     ],
     search=[
         SearchField.set(name='VPC ID', key='data.vpc_id'),
@@ -84,6 +168,54 @@ cst_subnet._metadata = CloudServiceTypeMeta.set_meta(
             'indigo.500': ['public'], 'coral.600': ['private']
         }),
         TextDyField.data_source('VPC', 'data.vpc_id'),
+        TextDyField.data_source('ARN', 'data.subnet_arn', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Route Table ID', 'data.route_table.route_table_id', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Route Table ARN', 'data.route_table.arn', options={
+            'is_optional': True
+        }),
+        ListDyField.data_source('NAT Gateway ARNs', 'data.nat_gateways', options={
+            'sub_key': 'arn',
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        ListDyField.data_source('NAT Gateway IDs', 'data.nat_gateways', options={
+            'sub_key': 'nat_gateway_id',
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        ListDyField.data_source('NAT Gateway Names', 'data.nat_gateways', options={
+            'sub_key': 'name',
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        TextDyField.data_source('Network ACL ARN', 'data.network_acl.arn', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Network ACL ID', 'data.network_acl.network_acl_id', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Network ACL Name', 'data.network_acl.name', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Available IP Address Count', 'data.available_ip_address_count', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Assign IPv6 on Creation', 'data.assign_ipv6_address_on_creation', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Default for Availability Zone', 'data.default_for_az', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Public IP on Launch', 'data.map_public_ip_on_launch', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+            'is_optional': True
+        })
     ],
     search=[
         SearchField.set(name='Subnet ID', key='data.subnet_id'),
@@ -126,18 +258,39 @@ cst_rt._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
         TextDyField.data_source('Name', 'data.name'),
         TextDyField.data_source('Route Table ID', 'data.route_table_id'),
-        ListDyField.data_source('Subnet associations', 'data.subnet_associations', default_badge={
-            'type': 'outline',
+        ListDyField.data_source('Subnet associations', 'data.subnet_associations', options={
             'sub_key': 'subnet_id',
+            'delimiter': '<br>'
         }),
-        ListDyField.data_source('Edge associations', 'data.edge_associations', default_badge={
-            'type': 'outline',
+        ListDyField.data_source('Edge associations', 'data.edge_associations', options={
             'sub_key': 'gateway_id',
+            'delimiter': '<br>'
         }),
         EnumDyField.data_source('Main', 'data.main', default_badge={
             'indigo.500': ['Yes'], 'coral.600': ['No']
         }),
         TextDyField.data_source('VPC ID', 'data.vpc_id'),
+        TextDyField.data_source('ARN', 'data.arn', options={
+            'is_optional': True
+        }),
+        ListDyField.data_source('Association Subnet ID', 'data.subnet_associations', options={
+            'sub_key': 'subnet_id',
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Route Target', 'data.routes', options={
+            'sub_key': 'target',
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Route Destination CIDR', 'data.routes', options={
+            'sub_key': 'destination_cidr_block',
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+            'is_optional': True
+        })
     ],
     search=[
         SearchField.set(name='Route Table ID', key='data.route_table_id'),
@@ -175,9 +328,15 @@ cst_igw._metadata = CloudServiceTypeMeta.set_meta(
             'warning': ['attaching', 'detaching'],
             'disable': ['detached']
         }),
-        ListDyField.data_source('VPC ID', 'data.attachments', default_badge={
-            'type': 'outline',
+        ListDyField.data_source('VPC ID', 'data.attachments', options={
             'sub_key': 'vpc_id',
+            'delimiter': '<br>'
+        }),
+        TextDyField.data_source('ARN', 'data.arn', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+            'is_optional': True
         })
     ],
     search=[
@@ -211,14 +370,20 @@ cst_eoigw._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
         TextDyField.data_source('Name', 'data.name'),
         TextDyField.data_source('Egress Only Internet Gateway ID', 'data.egress_only_internet_gateway_id'),
-        ListDyField.data_source('State', 'data.attachments', default_badge={
-            'type': 'outline',
+        ListDyField.data_source('State', 'data.attachments', options={
+            'delimiter': '<br>',
             'sub_key': 'state',
         }),
-        ListDyField.data_source('VPC ID', 'data.attachments', default_badge={
-            'type': 'outline',
+        ListDyField.data_source('VPC ID', 'data.attachments', options={
+            'delimiter': '<br>',
             'sub_key': 'vpc_id',
         }),
+        TextDyField.data_source('ARN', 'data.arn', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+            'is_optional': True
+        })
     ],
     search=[
         SearchField.set(name='Egress Only Gateway ID', key='data.egress_only_internet_gateway_id'),
@@ -257,24 +422,42 @@ cst_natgw._metadata = CloudServiceTypeMeta.set_meta(
             'alert': ['failed'],
             'disable': ['deleted']
         }),
-        ListDyField.data_source('Elastic IP', 'data.nat_gateway_addresses', default_badge={
-            'type': 'outline',
+        ListDyField.data_source('Elastic IP', 'data.nat_gateway_addresses', options={
             'sub_key': 'public_ip',
-            'delimiter': '  '
+            'delimiter': '<br>'
         }),
-        ListDyField.data_source('Private IP', 'data.nat_gateway_addresses', default_badge={
-            'type': 'outline',
+        ListDyField.data_source('Private IP', 'data.nat_gateway_addresses', options={
             'sub_key': 'private_ip',
-            'delimiter': '  '
+            'delimiter': '<br>'
         }),
-        ListDyField.data_source('Network Interface', 'data.nat_gateway_addresses', default_badge={
-            'type': 'outline',
+        ListDyField.data_source('Network Interface', 'data.nat_gateway_addresses', options={
             'sub_key': 'network_interface_id',
-            'delimiter': '  '
+            'delimiter': '<br>'
         }),
         TextDyField.data_source('VPC ID', 'data.vpc_id'),
         TextDyField.data_source('Subnet', 'data.subnet_id'),
         DateTimeDyField.data_source('Created', 'data.create_time'),
+        TextDyField.data_source('ARN', 'data.arn', options={
+            'is_optional': True
+        }),
+        ListDyField.data_source('Private IP', 'data.nat_gateway_addresses', options={
+            'sub_key': 'private_ip',
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Public IP', 'data.nat_gateway_addresses', options={
+            'sub_key': 'public_ip',
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Network Interface ID', 'data.nat_gateway_addresses', options={
+            'sub_key': 'network_interface_id',
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+            'is_optional': True
+        })
     ],
     search=[
         SearchField.set(name='NAT Gateway ID', key='data.nat_gateway_id'),
@@ -323,6 +506,12 @@ cst_peerconn._metadata = CloudServiceTypeMeta.set_meta(
         TextDyField.data_source('Accepter VPC', 'data.accepter_vpc_info.vpc_id'),
         TextDyField.data_source('Accepter VPC CIDR', 'data.accepter_vpc_info.cidr_block'),
         TextDyField.data_source('Accepter Owner', 'data.accepter_vpc_info.owner_id'),
+        TextDyField.data_source('ARN', 'data.arn', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+            'is_optional': True
+        })
     ],
     search=[
         SearchField.set(name='Peering Connection ID', key='data.vpc_peering_connection_id'),
@@ -367,6 +556,20 @@ cst_nacl._metadata = CloudServiceTypeMeta.set_meta(
             'indigo.500': ['true'], 'coral.600': ['false']
         }),
         TextDyField.data_source('VPC ID', 'data.vpc_id'),
+        TextDyField.data_source('ARN', 'data.arn', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Default', 'data.is_default', options={
+            'is_optional': True
+        }),
+        ListDyField.data_source('Association Subnet ID', 'data.associations', options={
+            'sub_key': 'subnet_id',
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+            'is_optional': True
+        })
     ],
     search=[
         SearchField.set(name='Network ACL ID', key='data.network_acl_id'),
@@ -417,8 +620,39 @@ cst_endpoint._metadata = CloudServiceTypeMeta.set_meta(
         }),
         TextDyField.data_source('VPC ID', 'data.vpc_id'),
         TextDyField.data_source('Service Name', 'data.service_name'),
-        EnumDyField.data_source('Endpoint Type', 'data.vpc_endpoint_type', default_outline_badge=['Interface', 'Gateway']),
+        TextDyField.data_source('Endpoint Type', 'data.vpc_endpoint_type'),
         DateTimeDyField.data_source('Creation Time', 'data.creation_timestamp'),
+        TextDyField.data_source('ARN', 'data.arn', options={
+            'is_optional': True
+        }),
+        ListDyField.data_source('Route Table IDs', 'data.route_table_ids', options={
+            'is_optional': True
+        }),
+        ListDyField.data_source('Subnet IDs', 'data.subnet_ids', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Requester Managed', 'data.requester_managed', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Private DNS Enabled', 'data.private_dns_enabled', options={
+            'is_optional': True
+        }),
+        ListDyField.data_source('Network Interface IDs', 'data.network_interface_ids', options={
+            'is_optional': True
+        }),
+        ListDyField.data_source('DNS Entries Names', 'data.dns_entries', options={
+            'sub_key': 'dns_name',
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        ListDyField.data_source('DNS Entries Hosted Zone ID', 'data.dns_entries', options={
+            'sub_key': 'hosted_zone_id',
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+            'is_optional': True
+        })
     ],
     search=[
         SearchField.set(name='Endpoint ID', key='data.vpc_endpoint_id'),
@@ -466,6 +700,52 @@ cst_transitgw._metadata = CloudServiceTypeMeta.set_meta(
             'safe': ['available'],
             'warning': ['pending', 'modifying', 'deleting'],
             'disable': ['deleted']
+        }),
+        TextDyField.data_source('ARN', 'data.transit_gateway_arn', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('VPN ECMP Support', 'data.options.vpn_ecmp_support', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('DNS Support', 'data.options.dns_support', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Association Default Route Table ID', 'data.options.association_default_route_table_id',
+                                options={'is_optional': True}),
+        TextDyField.data_source('Multicast Support', 'data.options.multicast_support',
+                                options={'is_optional': True}),
+        TextDyField.data_source('Default Route Table Association', 'data.options.default_route_table_association',
+                                options={'is_optional': True}),
+        TextDyField.data_source('Default Route Table Propagation', 'data.options.default_route_table_propagation',
+                                options={'is_optional': True}),
+        TextDyField.data_source('Propagation Default Route Table ID', 'data.options.propagation_default_route_table_id',
+                                options={'is_optional': True}),
+        TextDyField.data_source('Auto Accept Shared Attachments', 'data.options.auto_accept_shared_attachments',
+                                options={'is_optional': True}),
+        TextDyField.data_source('Amazon Side ASN', 'data.options.amazon_side_asn',
+                                options={'is_optional': True}),
+        ListDyField.data_source('VPN Connection IDs', 'data.vpn_connections', options={
+            'sub_key': 'vpn_connection_id',
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        ListDyField.data_source('VPN Connection Names', 'data.vpn_connections', options={
+            'sub_key': 'name',
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        ListDyField.data_source('VPN Connection Types', 'data.vpn_connections', options={
+            'sub_key': 'type',
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        ListDyField.data_source('VPN Connection Customer Gateway ID', 'data.vpn_connections', options={
+            'sub_key': 'customer_gateway_id',
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+            'is_optional': True
         })
     ],
     search=[
@@ -511,6 +791,35 @@ cst_customgw._metadata = CloudServiceTypeMeta.set_meta(
         TextDyField.data_source('Type', 'data.type'),
         TextDyField.data_source('IP Address', 'data.ip_address'),
         TextDyField.data_source('BGP ASN', 'data.bgp_asn'),
+        TextDyField.data_source('Certificate ARN', 'data.certificate_arn', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('VPN Connection ID', 'data.vpn_connection.vpn_connection_id', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('VPN Connection Name', 'data.vpn_connection.name', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('VPN Connection Type', 'data.vpn_connection.type', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('VPN Connection Category', 'data.vpn_connection.category', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('VPN Connection VPN Gateway ID', 'data.vpn_connection.vpn_gateway_id', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('VPN Connection Customer Gateway ID', 'data.vpn_connection.customer_gateway_id',
+                                options={
+                                    'is_optional': True
+                                }),
+        TextDyField.data_source('VPN Connection Transit Gateway ID', 'data.vpn_connection.transit_gateway_id',
+                                options={
+                                    'is_optional': True
+                                }),
+        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+            'is_optional': True
+        })
     ],
     search=[
         SearchField.set(name='Customer Gateway ID', key='data.customer_gateway_id'),
@@ -566,6 +875,27 @@ cst_vpnconn._metadata = CloudServiceTypeMeta.set_meta(
         EnumDyField.data_source('Category', 'data.category', default_badge={
             'indigo.500': ['VPN'], 'coral.500': ['VPN-Classic']
         }),
+        ListDyField.data_source('Virtual Gateway Telemetry: Outside IP', 'data.vgw_telemetry', options={
+            'sub_key': 'outside_ip_address',
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        TextDyField.data_source('Enable Acceleration', 'data.options.enable_acceleration', options={
+            'is_optional': True
+        }),
+        ListDyField.data_source('VPN Tunnel: Outside IP', 'data.options.tunnel_options', options={
+            'sub_key': 'outside_ip_address',
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Routes: Destination CIDR', 'data.routes', options={
+            'sub_key': 'destination_cidr_block',
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+            'is_optional': True
+        })
     ],
     search=[
         SearchField.set(name='VPN Connection ID', key='data.vpn_connection_id'),
@@ -612,11 +942,23 @@ cst_vpngw._metadata = CloudServiceTypeMeta.set_meta(
         TextDyField.data_source('ID', 'data.vpn_gateway_id'),
         TextDyField.data_source('State', 'data.state'),
         TextDyField.data_source('Type', 'data.type'),
-        ListDyField.data_source('VPC', 'data.vpc_attachments', default_badge={
-            'type': 'outline',
+        ListDyField.data_source('VPC', 'data.vpc_attachments', options={
             'sub_key': 'vpc_id',
+            'delimiter': '<br>'
         }),
         TextDyField.data_source('ASN (Amazon side)', 'data.amazon_side_asn'),
+        TextDyField.data_source('Availability Zone', 'data.availability_zone', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('VPN Connection ID', 'data.vpn_connection.vpn_connection_id', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('VPN Connection Name', 'data.vpn_connection.name', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+            'is_optional': True
+        })
     ],
     search=[
         SearchField.set(name='Virtual Private Gateway ID', key='data.vpn_gateway_id'),
