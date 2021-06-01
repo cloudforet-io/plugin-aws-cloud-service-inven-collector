@@ -1,4 +1,4 @@
-from spaceone.inventory.libs.schema.dynamic_field import TextDyField, EnumDyField, SearchField
+from spaceone.inventory.libs.schema.dynamic_field import TextDyField, EnumDyField, SearchField, ListDyField
 from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, \
     CloudServiceTypeMeta
 
@@ -25,6 +25,46 @@ cst_kms_cluster._metadata = CloudServiceTypeMeta.set_meta(
         }),
         EnumDyField.data_source('Enabled', 'data.enabled', default_badge={
             'indigo.500': ['true'], 'coral.600': ['false']
+        }),
+        TextDyField.data_source('ARN', 'data.arn', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Key Usage', 'data.key_usage', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Origin', 'data.origin', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Key Roated', 'data.key_rotated', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Customer Master Key Spec.', 'data.customer_master_key_spec', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Custom Key ID', 'data.custom_key_store_id', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Signing Algorithms', 'data.signing_algorithms', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Cloud HSM Cluster ID', 'data.cloud_hsm_cluster_id', options={
+            'is_optional': True
+        }),
+        ListDyField.data_source('Encryption Algorithms', 'data.encryption_algorithms', options={
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        TextDyField.data_source('Key Type Path', 'data.key_type_path', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Key Manager', 'data.key_manager', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Description', 'data.description', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+            'is_optional': True
         })
     ],
     search=[

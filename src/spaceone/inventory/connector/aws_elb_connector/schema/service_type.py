@@ -32,6 +32,82 @@ cst_elb._metadata = CloudServiceTypeMeta.set_meta(
             'delimiter': '<br>'
         }),
         DateTimeDyField.data_source('Created At', 'data.created_time'),
+        TextDyField.data_source('ARN', 'data.load_balancer_arn', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Scheme', 'data.scheme', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('VPC ID', 'data.vpc_id', options={
+            'is_optional': True
+        }),
+        ListDyField.data_source('Subnet ID', 'data.availability_zones', options={
+            'delimiter': '<br>',
+            'sub_key': 'subnet_id',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Availability Zone', 'data.availability_zones', options={
+            'delimiter': '<br>',
+            'sub_key': 'zone_name',
+            'is_optional': True
+        }),
+        TextDyField.data_source('Hosted Zone ID', 'data.canonical_hosted_zone_id', options={
+            'is_optional': True
+        }),
+        ListDyField.data_source('Security Groups', 'data.security_group', options={
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Listener IDs', 'data.listeners', options={
+            'delimiter': '<br>',
+            'sub_key': 'listener_arn',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Protocols', 'data.listeners', options={
+            'delimiter': '<br>',
+            'sub_key': 'protocol',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Ports', 'data.listeners', options={
+            'delimiter': '<br>',
+            'sub_key': 'port',
+            'is_optional': True
+        }),
+        TextDyField.data_source('IP Address Type', 'data.ip_address_type', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Access Log S3 Bucket', 'data.attributes.access_logs_s3_bucket', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Routing HTTP2 Enabled', 'data.attributes.routing_http2_enabled', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Idel Timeout Seconds', 'data.attributes.idle_timeout_seconds', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Routing HTTP Drop Invalid Header Fields Enabled',
+                                'data.attributes.routing_http_drop_invalid_header_fields_enabled', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('WAF Fail Open Enabled',
+                                'data.attributes.waf_fail_open_enabled', options={
+                'is_optional': True
+        }),
+        TextDyField.data_source('Deletion Protection Enabled',
+                                'data.attributes.deletion_protection_enabled', options={
+                'is_optional': True
+        }),
+        TextDyField.data_source('Routing HTTP Desync Mitigation Mode',
+                                'data.attributes.routing_http_desync_mitigation_mode', options={
+                'is_optional': True
+        }),
+        TextDyField.data_source('Load Balancing Cross Zone Enabled',
+                                'data.attributes.load_balancing_cross_zone_enabled', options={
+                'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+            'is_optional': True
+        })
     ],
     search=[
         SearchField.set(name='Name', key='data.load_balancer_name'),
@@ -88,14 +164,54 @@ cst_tg._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
         TextDyField.data_source('Name', 'data.target_group_name'),
         TextDyField.data_source('Port', 'data.port'),
-        EnumDyField.data_source('Protocol', 'data.protocol',
-                                default_outline_badge=['HTTP', 'HTTPS', 'TCP', 'TLS', 'UDP', 'TCP_UDP']),
-        EnumDyField.data_source('Target Type', 'data.target_type',
-                                default_outline_badge=['instance', 'ip', 'lambda']),
-        ListDyField.data_source('Load Balancer', 'data.load_balancer_arns', default_badge={'type': 'outline'}),
+        TextDyField.data_source('Protocol', 'data.protocol'),
+        TextDyField.data_source('Target Type', 'data.target_type'),
+        ListDyField.data_source('Load Balancers', 'data.load_balancer_arns', options={
+            'delimiter': '<br>'
+        }),
         EnumDyField.data_source('Health Check', 'data.health_check_enabled', default_badge={
             'indigo.500': ['true'], 'coral.600': ['false']
         }),
+        TextDyField.data_source('ARN', 'data.target_group_arn', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('VPC ID', 'data.vpc_id', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Healthy Threshold Count', 'data.healthy_threshold_count', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Unhealthy Threshold Count', 'data.unhealthy_threshold_count', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Health Check Enabled', 'data.health_check_enabled', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Health Check Timeout Seconds', 'data.health_check_timeout_seconds', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Health Check Interval Seconds', 'data.health_check_interval_seconds', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Deregistration Delay Timeout Seconds', 'data.deregistration_delay_timeout_seconds',
+                                options={'is_optional': True}),
+        TextDyField.data_source('Slow Start Duration Seconds', 'data.slow_start_duration_seconds', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Stickiness Enabled', 'data.stickiness_enabled', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Stickiness Type', 'data.stickiness_type', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Load Balancing Algorithm Type', 'data.load_balancing_algorithm_type', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Stickiness LB Cookie Duration Seconds', 'data.stickiness_lb_cookie_duration_seconds',
+                                options={'is_optional': True}),
+        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+            'is_optional': True
+        })
     ],
     search=[
         SearchField.set(name='Name', key='data.target_group_name'),

@@ -1,4 +1,4 @@
-from spaceone.inventory.libs.schema.dynamic_field import TextDyField, EnumDyField, SearchField
+from spaceone.inventory.libs.schema.dynamic_field import TextDyField, EnumDyField, SearchField, ListDyField
 from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, CloudServiceTypeMeta
 
 cst_ecs_cluster = CloudServiceTypeResource()
@@ -26,6 +26,67 @@ cst_ecs_cluster._metadata = CloudServiceTypeMeta.set_meta(
         TextDyField.data_source('Running Tasks', 'data.running_tasks_count'),
         TextDyField.data_source('Pending Tasks', 'data.pending_tasks_count'),
         TextDyField.data_source('Registered Instances', 'data.registered_container_instances_count'),
+        TextDyField.data_source('Cluster ARN', 'data.cluster_arn', options={
+            'is_optional': True
+        }),
+        ListDyField.data_source('Services ARN', 'data.services', options={
+            'sub_key': 'service_arn',
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Services name', 'data.services', options={
+            'sub_key': 'service_name',
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Services Launch Type', 'data.services', options={
+            'sub_key': 'launch_type',
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Services Role ARN', 'data.services', options={
+            'sub_key': 'role_arn',
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Services Scheduling Strategy', 'data.services', options={
+            'sub_key': 'scheduling_strategy',
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Tasks ARN', 'data.tasks', options={
+            'sub_key': 'task_arn',
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Tasks name', 'data.tasks', options={
+            'sub_key': 'task',
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Tasks Availability Zone', 'data.tasks', options={
+            'sub_key': 'availability_zone',
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Tasks Health Status', 'data.tasks', options={
+            'sub_key': 'health_status',
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Tasks CPU', 'data.tasks', options={
+            'sub_key': 'cpu',
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Tasks CPU', 'data.tasks', options={
+            'sub_key': 'memory',
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+            'is_optional': True
+        }),
     ],
     search=[
         SearchField.set(name='Cluster Name', key='data.cluster_name'),

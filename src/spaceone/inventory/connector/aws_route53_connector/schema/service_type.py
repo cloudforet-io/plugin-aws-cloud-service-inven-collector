@@ -1,4 +1,4 @@
-from spaceone.inventory.libs.schema.dynamic_field import TextDyField, EnumDyField, SearchField
+from spaceone.inventory.libs.schema.dynamic_field import TextDyField, EnumDyField, SearchField, ListDyField
 from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, CloudServiceTypeMeta
 
 cst_hostedzone = CloudServiceTypeResource()
@@ -21,6 +21,28 @@ cst_hostedzone._metadata = CloudServiceTypeMeta.set_meta(
         TextDyField.data_source('Record Set Count', 'data.resource_record_set_count'),
         TextDyField.data_source('Comment', 'data.config.comment'),
         TextDyField.data_source('Host Zone ID', 'data.id'),
+        TextDyField.data_source('ARN', 'data.arn', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Private Zone', 'data.config.private_zone', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Caller Reference', 'data.caller_reference', options={
+            'is_optional': True
+        }),
+        ListDyField.data_source('Record Set Names', 'data.record_sets', options={
+            'sub_key': 'name',
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Record Set TTLs', 'data.record_sets', options={
+            'sub_key': 'ttl',
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+            'is_optional': True
+        })
     ],
     search=[
         SearchField.set(name='Name', key='data.name'),

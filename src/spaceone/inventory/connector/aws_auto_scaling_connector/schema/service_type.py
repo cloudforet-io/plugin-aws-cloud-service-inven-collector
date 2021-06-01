@@ -22,7 +22,7 @@ cst_asg._metadata = CloudServiceTypeMeta.set_meta(
         ListDyField.data_source('AZ', 'data.availability_zones',
                                 default_badge={'delimiter': '<br>'}),
         # For Dynamic Table
-        TextDyField.data_source('ARN', 'data.arn', options={
+        TextDyField.data_source('ARN', 'data.auto_scaling_group_arn', options={
             'is_optional': True
         }),
         TextDyField.data_source('Health Check Type', 'data.health_check_type', options={

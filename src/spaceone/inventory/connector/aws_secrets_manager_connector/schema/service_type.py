@@ -1,4 +1,4 @@
-from spaceone.inventory.libs.schema.dynamic_field import TextDyField, DateTimeDyField, SearchField
+from spaceone.inventory.libs.schema.dynamic_field import TextDyField, DateTimeDyField, SearchField, ListDyField
 from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, \
     CloudServiceTypeMeta
 
@@ -18,6 +18,41 @@ cst_secret._metadata = CloudServiceTypeMeta.set_meta(
         TextDyField.data_source('Name', 'data.name'),
         TextDyField.data_source('Description', 'data.description'),
         DateTimeDyField.data_source('Last Retrieved', 'data.last_accessed_date'),
+        TextDyField.data_source('ARN', 'data.arn', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('KMS Key ID', 'data.kms_key_id', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Rotation Enabled', 'data.rotation_enabled', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Rotation Lambda ARN', 'data.rotation_lambda_arn', options={
+            'is_optional': True
+        }),
+        ListDyField.data_source('Rotation Rule: Automatically After Days', 'data.rotation_rules', options={
+            'sub_key': 'automatically_after_days',
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        DateTimeDyField.data_source('Last Rotated Date', 'data.last_rotated_date', options={
+            'is_optional': True
+        }),
+        DateTimeDyField.data_source('Last Changed Date', 'data.last_changed_date', options={
+            'is_optional': True
+        }),
+        DateTimeDyField.data_source('Last Accessed Date', 'data.last_accessed_date', options={
+            'is_optional': True
+        }),
+        DateTimeDyField.data_source('Last Deleted Date', 'data.deleted_date', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Owning Service', 'data.owning_service', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+            'is_optional': True
+        }),
     ],
     search=[
         SearchField.set(name='Name', key='data.name'),

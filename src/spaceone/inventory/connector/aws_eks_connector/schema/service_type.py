@@ -22,6 +22,60 @@ cst_eks_cluster._metadata = CloudServiceTypeMeta.set_meta(
             'safe': ['ACTIVE'],
             'warning': ['CREATING', 'DELETING', 'UPDATING'],
             'alert': ['FAILED']
+        }),
+        TextDyField.data_source('ARN', 'data.arn', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Role ARN', 'data.role_arn', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Endpoint', 'data.endpoint', options={
+            'is_optional': True
+        }),
+        ListDyField.data_source('Node Group ARNs', 'data.node_groups', options={
+            'delimiter': 'nodegroup_arn',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Node Group names', 'data.node_groups', options={
+            'delimiter': 'nodegroup_name',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Node Role ARNs', 'data.node_groups', options={
+            'delimiter': 'node_role',
+            'is_optional': True
+        }),
+        TextDyField.data_source('VPC ID', 'data.resources_vpc_config.vpc_id', options={
+            'is_optional': True
+        }),
+        ListDyField.data_source('Subnets', 'data.resources_vpc_config.subnet_ids', options={
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Public Access CIDRs', 'data.resources_vpc_config.public_access_cidrs', options={
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        TextDyField.data_source('Cluster Security Group ID', 'data.resources_vpc_config.cluster_security_group_id', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Endpoint Public Access', 'data.resources_vpc_config.endpoint_public_access', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Endpoint Private Access', 'data.resources_vpc_config.endpoint_private_access', options={
+            'is_optional': True
+        }),
+        ListDyField.data_source('Cluster Logging Enabled', 'data.logging.cluster_logging', options={
+            'delimiter': 'enabled',
+            'is_optional': True
+        }),
+        TextDyField.data_source('OIDC issuer', 'data.identity.oidc.issuer', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Platform Version', 'data.platform_version', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+            'is_optional': True
         })
     ],
     search=[
@@ -65,6 +119,57 @@ cst_eks_nodegrp._metadata = CloudServiceTypeMeta.set_meta(
         }),
         ListDyField.data_source('Instance Types', 'data.instance_types', options={
             'delimiter': '<br>'
+        }),
+        TextDyField.data_source('ARN', 'data.nodegroup_arn', options={
+            'is_optional': True
+        }),
+        ListDyField.data_source('Auto Scaling Group ARN', 'data.resources.auto_scaling_groups', options={
+            'delimiter': '<br>',
+            'sub_key': 'arn',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Auto Scaling Group Name', 'data.resources.auto_scaling_groups', options={
+            'delimiter': '<br>',
+            'sub_key': 'name',
+            'is_optional': True
+        }),
+        TextDyField.data_source('Scaling Config: Desired Size', 'data.scaling_config.desired_size', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Scaling Config: Min Size', 'data.scaling_config.min_size', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Scaling Config: Max Size', 'data.scaling_config.max_size', options={
+            'is_optional': True
+        }),
+        ListDyField.data_source('Subnets', 'data.subnets', options={
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Instance Types', 'data.instance_types', options={
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        TextDyField.data_source('Remote Access Security Group', 'data.resources.remote_access_security_group', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('AMI Type', 'data.ami_type', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Disk Size', 'data.disk_size', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Node Role ARN', 'data.node_role', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('EC2 SSH Key', 'data.remote_access.ec2_ssh_key', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Release Version', 'data.release_version', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+            'is_optional': True
         })
     ],
     search=[
