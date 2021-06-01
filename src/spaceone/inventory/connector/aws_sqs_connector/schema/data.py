@@ -8,7 +8,7 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class RedrivePolicy(Model):
-    dead_ketter_target_arn = StringType(deserialize_from="deadLetterTargetArn")
+    dead_letter_target_arn = StringType(deserialize_from="deadLetterTargetArn")
     max_receive_count = StringType(deserialize_from="maxReceiveCount")
 
 

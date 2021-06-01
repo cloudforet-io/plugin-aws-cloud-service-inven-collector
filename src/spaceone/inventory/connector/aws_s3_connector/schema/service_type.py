@@ -1,4 +1,4 @@
-from spaceone.inventory.libs.schema.dynamic_field import TextDyField, SearchField, EnumDyField, SizeField
+from spaceone.inventory.libs.schema.dynamic_field import TextDyField, SearchField, EnumDyField, SizeField, ListDyField
 from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, CloudServiceTypeMeta
 
 cst_bucket = CloudServiceTypeResource()
@@ -23,6 +23,55 @@ cst_bucket._metadata = CloudServiceTypeMeta.set_meta(
         }),
         TextDyField.data_source('Object Total Counts', 'data.object_count'),
         SizeField.data_source('Object Total Size', 'data.object_total_size'),
+        TextDyField.data_source('ARN', 'data.arn', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Versioning Status', 'data.versioning.status', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Webhosting Index Document', 'data.website_hosting.index_document', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Webhosting Error Document', 'data.website_hosting.error_document', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Webhosting Error Document', 'data.website_hosting.routing_rules', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Access Logging Target Bucket', 'data.server_access_logging.target_bucket', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Access Logging Target Prefix', 'data.server_access_logging.target_prefix', options={
+            'is_optional': True
+        }),
+        ListDyField.data_source('Webhosting Routing Rules Condition', 'data.website_hosting.routing_rules', options={
+            'sub_key': 'condition',
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        TextDyField.data_source('Object Lock Enabled', 'data.object_lock.object_lock_enabled', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Transfer Acceleration Enabled', 'data.transfer_acceleration.transfer_acceleration',
+                                options={'is_optional': True}),
+        ListDyField.data_source('Notification Type', 'data.notification_configurations', options={
+            'sub_key': 'notification_type',
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Notification ID', 'data.notification_configurations', options={
+            'sub_key': 'id',
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        ListDyField.data_source('Notification ARN', 'data.notification_configurations', options={
+            'sub_key': 'arn',
+            'delimiter': '<br>',
+            'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+            'is_optional': True
+        })
     ],
     search=[
         SearchField.set(name='Bucket Name', key='data.name'),

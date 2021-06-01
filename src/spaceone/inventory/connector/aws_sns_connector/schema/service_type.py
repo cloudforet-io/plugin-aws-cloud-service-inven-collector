@@ -14,7 +14,34 @@ cst_topic.tags = {
 
 cst_topic._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'data.name')
+        TextDyField.data_source('Name', 'data.name'),
+        TextDyField.data_source('ARN', 'data.topic_arn', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Display Name', 'data.display_name', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Subscription Confirmed', 'data.subscription_confirmed', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Subscription Pending', 'data.subscriptions_pending', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Subscription Deleted', 'data.subscription_deleted', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('KMS ID', 'data.kms.kms_id', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('KMS ARN', 'data.kms.arn', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('KMS Alias', 'data.kms.alias', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+            'is_optional': True
+        }),
     ],
     search=[
         SearchField.set(name='Topic Name', key='data.name'),
