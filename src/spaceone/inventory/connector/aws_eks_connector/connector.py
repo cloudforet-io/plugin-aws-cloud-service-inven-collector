@@ -32,6 +32,7 @@ class EKSConnector(SchematicAWSConnector):
             resources.append(cst)
 
         for region_name in self.region_names:
+            self.reset_region(region_name)
             resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
 
             try:
@@ -49,7 +50,6 @@ class EKSConnector(SchematicAWSConnector):
                 print(f'[ERROR EKS] REGION : {region_name} {e}')
 
             self.node_groups = []
-            self.reset_region(region_name)
 
         print(f' EKS Finished {time.time() - start_time} Seconds')
         return resources

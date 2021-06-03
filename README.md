@@ -192,6 +192,11 @@ authentication privilege for followings:
 
 ## Release Note
 
+### Ver 1.11
+
+* Add is_optional in Cloud Service Type metadata for Dynamic Tables
+* (Fix Bug) Modify region_code for EKS Cluster
+
 ### Ver 1.10
 
 * Add name field each cloud services for standardization
