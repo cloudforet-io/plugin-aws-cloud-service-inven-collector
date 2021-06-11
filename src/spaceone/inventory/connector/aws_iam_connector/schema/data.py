@@ -14,13 +14,13 @@ class Tags(Model):
 
 
 class Condition(Model):
-    condition = StringType(serialized_name='condition')
+    condition = StringType(deserialize_from='condition_name')
     key = StringType()
     value = StringType()
 
 
 class _Condition(Model):
-    condition = StringType(serialized_name='condition')
+    condition = StringType(deserialize_from='condition_name')
     key = StringType()
     value = BooleanType()
 

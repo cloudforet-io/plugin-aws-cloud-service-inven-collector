@@ -274,8 +274,11 @@ class IAMConnector(SchematicAWSConnector):
                 # pprint(policy)
                 # print()
                 # print('----------------------')
+                try:
+                    policies.append(Policy(policy, strict=False))
 
-                policies.append(Policy(policy, strict=False))
+                except Exception as e:
+                    _LOGGER.debug(f'[IAM: Policy details]: {policy}')
 
         return policies
 
@@ -489,8 +492,8 @@ class IAMConnector(SchematicAWSConnector):
         action = self._switch_to_list(candidate.get('Action', []))
         resource = self._switch_to_list(candidate.get('Resource', []))
         effect = candidate.get('Effect', '')
-        condition = candidate.get('Condition', None)
-        sid = candidate.get('Sid', None)
+        condition = candidate.get('Condition')
+        sid = candidate.get('Sid')
 
         statement_candidate = {
             'action': action,
@@ -508,13 +511,13 @@ class IAMConnector(SchematicAWSConnector):
                                 conditions.append({
                                     'condition_name': k,
                                     'key': k2,
-                                    'value': value_in_v2
+                                    'value': self._change_to_string(value_in_v2)
                                 })
                         else:
                             conditions.append({
                                 'condition_name': k,
                                 'key': k2,
-                                'value': v2
+                                'value': self._change_to_string(v2)
                             })
             statement_candidate.update({'condition': conditions})
 
@@ -738,6 +741,20 @@ class IAMConnector(SchematicAWSConnector):
             return f'{access_key_last_used.get("last_update_date")} with {service_name} in {region}'
         else:
             return 'N/A'
+
+    @staticmethod
+    def _change_to_string(value):
+        if isinstance(value, str):
+            return value
+        elif isinstance(value, bool):
+            bool_to_string = str(value)
+            return bool_to_string.lower()
+        elif isinstance(value, float):
+            return str(value)
+        elif isinstance(value, int):
+            return str(value)
+        else:
+            return ''
 
     @staticmethod
     def _get_provider_type(url):
