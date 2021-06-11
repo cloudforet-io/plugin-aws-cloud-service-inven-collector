@@ -199,7 +199,7 @@ class LoadBalancer(Model):
     state = ModelType(State, deserialize_from="State")
     type = StringType(deserialize_from="Type", choices=("application", "network"))
     availability_zones = ListType(ModelType(LoadBalancerAvailabilityZones), deserialize_from="AvailabilityZones")
-    security_group = ListType(StringType, deserialize_from="SecurityGroup")
+    security_groups = ListType(StringType, deserialize_from="SecurityGroups", default=[])
     ip_address_type = StringType(deserialize_from="IpAddressType", choices=("ipv4", "dualstack"))
     account_id = StringType(default="")
     tags = ListType(ModelType(Tags), default=[])
