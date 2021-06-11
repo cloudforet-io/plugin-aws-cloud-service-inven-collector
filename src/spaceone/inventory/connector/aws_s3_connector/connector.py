@@ -59,8 +59,9 @@ class S3Connector(SchematicAWSConnector):
 
         for raw in response.get('Buckets', []):
             bucket_name = raw.get('Name')
+            print(f"----- {bucket_name} ----")
             region_name = self.get_bucket_location(bucket_name)
-
+            print(region_name)
             raw.update({
                 'arn': self.generate_arn(service=self.service_name,
                                          region="",
@@ -74,35 +75,46 @@ class S3Connector(SchematicAWSConnector):
 
             if versioning := self.get_bucket_versioning(bucket_name):
                 raw.update({'versioning': versioning})
+                print(f'Versioning : {versioning}')
 
             if server_access_logging := self.get_server_access_logging(bucket_name):
                 raw.update({'server_access_logging': server_access_logging})
+                print(f'Server Access Logging : {server_access_logging}')
 
             if website_hosting := self.get_website_hosting(bucket_name):
                 raw.update({'website_hosting': website_hosting})
+                print(f'Website Hosting : {website_hosting}')
 
             if encryption := self.get_encryption(bucket_name):
                 raw.update({'encryption': encryption})
+                print(f'Encryption : {encryption}')
 
             if object_lock := self.get_object_lock(bucket_name):
                 raw.update({'object_lock': object_lock})
+                print(f'Object Lock : {object_lock}')
 
             if public_access := self.get_bucket_public_access(bucket_name):
                 raw.update({'public_access': public_access})
+                print(f'Public Access : {public_access}')
 
             if transfer_acceleration := self.get_transfer_acceleration(bucket_name):
                 raw.update({'transfer_acceleration': transfer_acceleration})
+                print(f'Transfer Acceleration : {transfer_acceleration}')
 
             if request_payment := self.get_request_payment(bucket_name):
                 raw.update({'request_payment': request_payment})
+                print(f'Request Payment : {request_payment}')
 
             if notification_configurations := self.get_notification_configurations(bucket_name):
                 raw.update({'notification_configurations': notification_configurations})
+                print(f'Notification Conf : {notification_configurations}')
 
             if tags := self.get_tags(bucket_name):
                 raw.update({'tags': tags})
+                print(f'Tags : {tags}')
 
             count, size = self.get_count_and_size(bucket_name, raw.get('region_name'))
+            print(f'Count: {count} / Size: {size}')
 
             raw.update({
                 'object_count': count,
