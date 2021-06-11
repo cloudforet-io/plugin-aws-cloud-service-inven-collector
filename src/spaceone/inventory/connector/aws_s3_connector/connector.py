@@ -58,6 +58,7 @@ class S3Connector(SchematicAWSConnector):
         response = self.client.list_buckets()
 
         print(f'[S3 Resource] {response}')
+        print(f'[S3 Resource] Count: {len(response.get("Buckets", []))}')
 
         for raw in response.get('Buckets', []):
             bucket_name = raw.get('Name')
