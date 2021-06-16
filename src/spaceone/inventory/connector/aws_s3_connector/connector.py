@@ -57,76 +57,65 @@ class S3Connector(SchematicAWSConnector):
     def request_data(self) -> List[Bucket]:
         response = self.client.list_buckets()
 
-        print(f'[S3 Resource] {response}')
-        print(f'[S3 Resource] Count: {len(response.get("Buckets", []))}')
-
         for raw in response.get('Buckets', []):
-            bucket_name = raw.get('Name')
-            print(f"----- {bucket_name} ----")
-            region_name = self.get_bucket_location(bucket_name)
-            print(region_name)
-            raw.update({
-                'arn': self.generate_arn(service=self.service_name,
-                                         region="",
-                                         account_id="",
-                                         resource_type=bucket_name,
-                                         resource_id="*"),
-                'account_id': self.account_id
-            })
+            try:
+                bucket_name = raw.get('Name')
+                region_name = self.get_bucket_location(bucket_name)
 
-            raw.update({'region_name': 'us-east-1' if region_name is None else region_name})
+                raw.update({
+                    'arn': self.generate_arn(service=self.service_name,
+                                             region="",
+                                             account_id="",
+                                             resource_type=bucket_name,
+                                             resource_id="*"),
+                    'account_id': self.account_id
+                })
 
-            if versioning := self.get_bucket_versioning(bucket_name):
-                raw.update({'versioning': versioning})
-                print(f'Versioning : {versioning}')
+                raw.update({'region_name': 'us-east-1' if region_name is None else region_name})
 
-            if server_access_logging := self.get_server_access_logging(bucket_name):
-                raw.update({'server_access_logging': server_access_logging})
-                print(f'Server Access Logging : {server_access_logging}')
+                if versioning := self.get_bucket_versioning(bucket_name):
+                    raw.update({'versioning': versioning})
 
-            if website_hosting := self.get_website_hosting(bucket_name):
-                raw.update({'website_hosting': website_hosting})
-                print(f'Website Hosting : {website_hosting}')
+                if server_access_logging := self.get_server_access_logging(bucket_name):
+                    raw.update({'server_access_logging': server_access_logging})
 
-            if encryption := self.get_encryption(bucket_name):
-                raw.update({'encryption': encryption})
-                print(f'Encryption : {encryption}')
+                if website_hosting := self.get_website_hosting(bucket_name):
+                    raw.update({'website_hosting': website_hosting})
 
-            if object_lock := self.get_object_lock(bucket_name):
-                raw.update({'object_lock': object_lock})
-                print(f'Object Lock : {object_lock}')
+                if encryption := self.get_encryption(bucket_name):
+                    raw.update({'encryption': encryption})
 
-            if public_access := self.get_bucket_public_access(bucket_name):
-                raw.update({'public_access': public_access})
-                print(f'Public Access : {public_access}')
+                if object_lock := self.get_object_lock(bucket_name):
+                    raw.update({'object_lock': object_lock})
 
-            if transfer_acceleration := self.get_transfer_acceleration(bucket_name):
-                raw.update({'transfer_acceleration': transfer_acceleration})
-                print(f'Transfer Acceleration : {transfer_acceleration}')
+                if public_access := self.get_bucket_public_access(bucket_name):
+                    raw.update({'public_access': public_access})
 
-            if request_payment := self.get_request_payment(bucket_name):
-                raw.update({'request_payment': request_payment})
-                print(f'Request Payment : {request_payment}')
+                if transfer_acceleration := self.get_transfer_acceleration(bucket_name):
+                    raw.update({'transfer_acceleration': transfer_acceleration})
 
-            if notification_configurations := self.get_notification_configurations(bucket_name):
-                raw.update({'notification_configurations': notification_configurations})
-                print(f'Notification Conf : {notification_configurations}')
+                if request_payment := self.get_request_payment(bucket_name):
+                    raw.update({'request_payment': request_payment})
 
-            if tags := self.get_tags(bucket_name):
-                raw.update({'tags': tags})
-                print(f'Tags : {tags}')
+                if notification_configurations := self.get_notification_configurations(bucket_name):
+                    raw.update({'notification_configurations': notification_configurations})
 
-            count, size = self.get_count_and_size(bucket_name, raw.get('region_name'))
-            print(f'Count: {count} / Size: {size}')
+                if tags := self.get_tags(bucket_name):
+                    raw.update({'tags': tags})
 
-            raw.update({
-                'object_count': count,
-                'object_total_size': size,
-                'size': size
-            })
+                count, size = self.get_count_and_size(bucket_name, raw.get('region_name'))
 
-            res = Bucket(raw, strict=False)
-            yield res, res.name
+                raw.update({
+                    'object_count': count,
+                    'object_total_size': size,
+                    'size': size
+                })
+
+                res = Bucket(raw, strict=False)
+                yield res, res.name
+
+            except Exception as e:
+                _LOGGER.error(f'[S3 Bucket Error] {e}')
 
     def get_bucket_versioning(self, bucket_name):
         response = self.client.get_bucket_versioning(Bucket=bucket_name)
