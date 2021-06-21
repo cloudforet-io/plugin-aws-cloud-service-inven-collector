@@ -60,7 +60,6 @@ class S3Connector(SchematicAWSConnector):
         for raw in response.get('Buckets', []):
             try:
                 bucket_name = raw.get('Name')
-                region_name = self.get_bucket_location(bucket_name)
 
                 raw.update({
                     'arn': self.generate_arn(service=self.service_name,
@@ -68,10 +67,11 @@ class S3Connector(SchematicAWSConnector):
                                              account_id="",
                                              resource_type=bucket_name,
                                              resource_id="*"),
-                    'account_id': self.account_id
+                    'account_id': self.account_id,
+                    'region_name': self.get_bucket_location(bucket_name)
                 })
 
-                raw.update({'region_name': 'us-east-1' if region_name is None else region_name})
+                # raw.update({'region_name': 'us-east-1' if region_name is None else region_name})
 
                 if versioning := self.get_bucket_versioning(bucket_name):
                     raw.update({'versioning': versioning})
@@ -118,24 +118,30 @@ class S3Connector(SchematicAWSConnector):
                 _LOGGER.error(f'[S3 Bucket Error] {e}')
 
     def get_bucket_versioning(self, bucket_name):
-        response = self.client.get_bucket_versioning(Bucket=bucket_name)
+        try:
+            response = self.client.get_bucket_versioning(Bucket=bucket_name)
 
-        if status := response.get('Status'):
-            version = {
-                'status': status,
-                'mfa_delete': response.get('MFADelete')
-            }
-            return Versioning(version, strict=False)
-
-        return None
+            if status := response.get('Status'):
+                version = {
+                    'status': status,
+                    'mfa_delete': response.get('MFADelete')
+                }
+                return Versioning(version, strict=False)
+            else:
+                return None
+        except Exception as e:
+            return None
 
     def get_server_access_logging(self, bucket_name):
-        response = self.client.get_bucket_logging(Bucket=bucket_name)
+        try:
+            response = self.client.get_bucket_logging(Bucket=bucket_name)
 
-        if access_logging := response.get('LoggingEnabled'):
-            return ServerAccessLogging(access_logging, strict=False)
-
-        return None
+            if access_logging := response.get('LoggingEnabled'):
+                return ServerAccessLogging(access_logging, strict=False)
+            else:
+                return None
+        except Exception as e:
+            return None
 
     def get_website_hosting(self, bucket_name):
         try:
@@ -143,7 +149,7 @@ class S3Connector(SchematicAWSConnector):
             del response['ResponseMetadata']
             return WebsiteHosting(response, strict=False)
 
-        except ClientError as e:
+        except Exception as e:
             return None
 
     def get_encryption(self, bucket_name):
@@ -154,7 +160,7 @@ class S3Connector(SchematicAWSConnector):
                 return Encryption(encryption, strict=False)
             else:
                 return None
-        except ClientError as e:
+        except Exception as e:
             return None
 
     def get_object_lock(self, bucket_name):
@@ -165,7 +171,7 @@ class S3Connector(SchematicAWSConnector):
                 return ObjectLock(object_lock, strict=False)
             else:
                 return None
-        except ClientError as e:
+        except Exception as e:
             return None
 
     def get_transfer_acceleration(self, bucket_name):
@@ -176,36 +182,43 @@ class S3Connector(SchematicAWSConnector):
                 return_value = TransferAcceleration({'transfer_acceleration': transfer_acceleration}, strict=False)
         except Exception as e:
             pass
+
         return return_value
 
     def get_request_payment(self, bucket_name):
         response = self.client.get_bucket_request_payment(Bucket=bucket_name)
+        try:
+            if payer := response.get('Payer'):
+                return RequestPayment({'request_payment': payer}, strict=False)
+            else:
+                return None
+        except Exception as e:
+            return None
 
-        if payer := response.get('Payer'):
-            return RequestPayment({'request_payment': payer}, strict=False)
-
-        return None
 
     def get_notification_configurations(self, bucket_name):
-        response = self.client.get_bucket_notification_configuration(Bucket=bucket_name)
+        try:
+            response = self.client.get_bucket_notification_configuration(Bucket=bucket_name)
 
-        sns = self.set_notification('SNS Topic', 'TopicArn', response.get('TopicConfigurations', []))
-        que = self.set_notification('Queue', 'QueueArn', response.get('QueueConfigurations', []))
-        func = self.set_notification('Lambda Function', 'LambdaFunctionArn',
-                                     response.get('LambdaFunctionConfigurations', []))
+            sns = self.set_notification('SNS Topic', 'TopicArn', response.get('TopicConfigurations', []))
+            que = self.set_notification('Queue', 'QueueArn', response.get('QueueConfigurations', []))
+            func = self.set_notification('Lambda Function', 'LambdaFunctionArn',
+                                         response.get('LambdaFunctionConfigurations', []))
 
-        total_noti = sns + que + func
+            total_noti = sns + que + func
 
-        if len(total_noti) > 0:
-            return total_noti
-        else:
+            if len(total_noti) > 0:
+                return total_noti
+            else:
+                return None
+        except Exception as e:
             return None
 
     def get_tags(self, bucket_name):
         try:
             response = self.client.get_bucket_tagging(Bucket=bucket_name)
             return list(map(lambda tag: Tags(tag, strict=False), response.get('TagSet', [])))
-        except ClientError as e:
+        except Exception as e:
             return None
 
     def get_bucket_public_access(self, bucket_name):
@@ -214,7 +227,7 @@ class S3Connector(SchematicAWSConnector):
             response = self.client.get_bucket_policy_status(Bucket=bucket_name)
             policy_status = response.get('PolicyStatus', {})
             public_access = policy_status.get('IsPublic', False)
-        except ClientError as e:
+        except Exception as e:
             public_access = self.get_bucket_acl_info(bucket_name)
 
         return "Public" if public_access else "Private"
@@ -227,29 +240,37 @@ class S3Connector(SchematicAWSConnector):
                 uri = grants.get('Grantee').get('URI')
                 if uri is not None and uri.endswith('AllUsers'):
                     response = True
-        except ClientError as e:
+        except Exception as e:
             pass
         return response
 
     def get_bucket_location(self, bucket_name):
-        response = self.client.get_bucket_location(Bucket=bucket_name)
-        return response.get('LocationConstraint')
+        try:
+            response = self.client.get_bucket_location(Bucket=bucket_name)
+            return response.get('LocationConstraint')
+        except Exception as e:
+            _LOGGER.error(f'[S3 Get Bucket Location] {e}')
+            return ''
 
     def get_count_and_size(self, bucket_name, region_name):
         self.reset_region(region_name)
-        self.set_client('cloudwatch')
-        count_dimensions = [{"Name": "BucketName", "Value": bucket_name},
-                            {"Name": "StorageType", "Value":"AllStorageTypes"}]
+        try:
+            self.set_client('cloudwatch')
+            count_dimensions = [{"Name": "BucketName", "Value": bucket_name},
+                                {"Name": "StorageType", "Value":"AllStorageTypes"}]
 
-        size_dimensions = [{"Name": "BucketName", "Value":bucket_name},
-                           {"Name": "StorageType","Value": "StandardStorage"}]
-        count_param = self._get_metric_param('NumberOfObjects', count_dimensions)
-        size_param = self._get_metric_param('BucketSizeBytes', size_dimensions)
+            size_dimensions = [{"Name": "BucketName", "Value":bucket_name},
+                               {"Name": "StorageType","Value": "StandardStorage"}]
+            count_param = self._get_metric_param('NumberOfObjects', count_dimensions)
+            size_param = self._get_metric_param('BucketSizeBytes', size_dimensions)
 
-        count = int(self.get_metric_data(count_param))
-        size = float(self.get_metric_data(size_param))
-        self.set_client('s3')
-        return count, size
+            count = int(self.get_metric_data(count_param))
+            size = float(self.get_metric_data(size_param))
+            self.set_client('s3')
+            return count, size
+        except Exception as e:
+            self.set_client('s3')
+            return 0, 0
 
     def get_metric_data(self, params):
         metric_id = f'metric_{utils.random_string()[:12]}'
