@@ -195,7 +195,6 @@ class S3Connector(SchematicAWSConnector):
         except Exception as e:
             return None
 
-
     def get_notification_configurations(self, bucket_name):
         try:
             response = self.client.get_bucket_notification_configuration(Bucket=bucket_name)
