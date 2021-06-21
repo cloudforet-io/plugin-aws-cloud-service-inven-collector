@@ -25,11 +25,13 @@ lb_base = ItemDynamicLayout.set_fields('Load Balancers', fields=[
     EnumDyField.data_source('Scheme', 'data.scheme', default_badge={
         'indigo.500': ['internet-facing'], 'coral.600': ['internal']
     }),
-    ListDyField.data_source('Security Groups', 'data.security_groups', default_badge={'type': 'outline'}),
-    EnumDyField.data_source('IP address type', 'data.ip_address_type', default_outline_badge=['ipv4', 'dualstack']),
+    ListDyField.data_source('Security Groups', 'data.security_groups', options={
+        'delimiter': '<br>',
+    }),
+    TextDyField.data_source('IP address type', 'data.ip_address_type'),
     TextDyField.data_source('VPC ID', 'data.vpc_id'),
-    ListDyField.data_source('Availability Zones', 'data.availability_zones', default_badge={
-        'type': 'outline',
+    ListDyField.data_source('Availability Zones', 'data.availability_zones', options={
+        'delimiter': '<br>',
         'sub_key': 'zone_name',
     }),
     ListDyField.data_source('Security Groups', 'data.security_group', default_badge={
@@ -48,10 +50,20 @@ lb_listener = TableDynamicLayout.set_fields('Listeners', 'data.listeners', field
         'sub_key': 'target_group_arn'
     }),
     TextDyField.data_source('Security Policy', 'ssl_policy'),
-    ListDyField.data_source('Certificates', 'certificates', default_badge={
-        'type': 'outline',
+    ListDyField.data_source('Certificates', 'certificates', options={
+        'delimiter': '<br>',
         'sub_key': 'certificate_arn'
     })
+])
+
+lb_tg = TableDynamicLayout.set_fields('Target Groups', 'data.target_groups', fields=[
+    TextDyField.data_source('Name', 'target_group_name'),
+    TextDyField.data_source('ARN', 'target_group_arn'),
+    EnumDyField.data_source('Protocol', 'protocol',
+                            default_outline_badge=['HTTP', 'HTTPS', 'TCP', 'TLS', 'UDP', 'TCP_UDP']),
+    TextDyField.data_source('Port', 'port'),
+    EnumDyField.data_source('Target Type', 'target_type',
+                            default_outline_badge=['instance', 'ip', 'lambda']),
 ])
 
 lb_attr = ItemDynamicLayout.set_fields('Attributes', fields=[
@@ -70,7 +82,7 @@ lb_attr = ItemDynamicLayout.set_fields('Attributes', fields=[
 ])
 
 lb_tags = SimpleTableDynamicLayout.set_tags()
-lb_metadata = CloudServiceMeta.set_layouts(layouts=[lb_base, lb_listener, lb_attr, lb_tags])
+lb_metadata = CloudServiceMeta.set_layouts(layouts=[lb_base, lb_listener, lb_tg, lb_attr, lb_tags])
 
 '''
 TARGET GROUP
