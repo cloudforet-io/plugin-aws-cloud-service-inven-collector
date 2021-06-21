@@ -204,6 +204,7 @@ class LoadBalancer(Model):
     account_id = StringType(default="")
     tags = ListType(ModelType(Tags), default=[])
     listeners = ListType(ModelType(Listener))
+    target_groups = ListType(ModelType(TargetGroup), default=[])
     attributes = ModelType(LoadBalancerAttributes)
     cloudwatch = ModelType(CloudWatchModel, serialize_when_none=False)
 
