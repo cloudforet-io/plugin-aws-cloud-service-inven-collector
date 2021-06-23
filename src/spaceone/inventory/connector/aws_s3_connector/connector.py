@@ -265,24 +265,22 @@ class S3Connector(SchematicAWSConnector):
             return ''
 
     def get_count_and_size(self, bucket_name, region_name):
-        self.reset_region(region_name)
         try:
-            self.set_client('cloudwatch')
+            cloudwatch_client = self.session.client('cloudwatch', region_name=region_name)
             count_dimensions = [{"Name": "BucketName", "Value": bucket_name},
-                                {"Name": "StorageType", "Value":"AllStorageTypes"}]
+                                {"Name": "StorageType", "Value": "AllStorageTypes"}]
 
-            size_dimensions = [{"Name": "BucketName", "Value":bucket_name},
-                               {"Name": "StorageType","Value": "StandardStorage"}]
+            size_dimensions = [{"Name": "BucketName", "Value": bucket_name},
+                               {"Name": "StorageType", "Value": "StandardStorage"}]
             count_param = self._get_metric_param('NumberOfObjects', count_dimensions)
             size_param = self._get_metric_param('BucketSizeBytes', size_dimensions)
 
-            count = int(self.get_metric_data(count_param))
-            size = float(self.get_metric_data(size_param))
-            self.set_client('s3')
+            count = int(self.get_metric_data(cloudwatch_client, count_param))
+            size = float(self.get_metric_data(cloudwatch_client, size_param))
+
             return count, size
         except Exception as e:
             _LOGGER.error(f'[S3 {bucket_name}: Get Count, Size] {e}')
-            self.set_client('s3')
             return 0, 0
 
     def get_metric_data(self, params):
