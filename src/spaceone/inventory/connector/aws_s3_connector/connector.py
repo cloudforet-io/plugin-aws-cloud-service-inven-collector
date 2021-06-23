@@ -106,11 +106,11 @@ class S3Connector(SchematicAWSConnector):
                 if region_name:
                     count, size = self.get_count_and_size(bucket_name, raw.get('region_name'))
 
-                raw.update({
-                    'object_count': count,
-                    'object_total_size': size,
-                    'size': size
-                })
+                    raw.update({
+                        'object_count': count,
+                        'object_total_size': size,
+                        'size': size
+                    })
 
                 res = Bucket(raw, strict=False)
                 yield res, res.name
