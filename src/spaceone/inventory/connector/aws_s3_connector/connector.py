@@ -61,9 +61,9 @@ class S3Connector(SchematicAWSConnector):
         print(f'[S3 Resource] Count: {len(response.get("Buckets", []))}')
 
         for raw in response.get('Buckets', []):
-            try:
-                bucket_name = raw.get('Name')
+            bucket_name = raw.get('Name')
 
+            try:
                 raw.update({
                     'arn': self.generate_arn(service=self.service_name,
                                              region="",
@@ -118,7 +118,7 @@ class S3Connector(SchematicAWSConnector):
                 yield res, res.name
 
             except Exception as e:
-                _LOGGER.error(f'[S3 Bucket Error] {e}')
+                _LOGGER.error(f'[S3 Bucket Error: {bucket_name}] {e}')
 
     def get_bucket_versioning(self, bucket_name):
         try:
@@ -133,6 +133,7 @@ class S3Connector(SchematicAWSConnector):
             else:
                 return None
         except Exception as e:
+            _LOGGER.error(f'[S3 {bucket_name}: Get Bucket Versioning] {e}')
             return None
 
     def get_server_access_logging(self, bucket_name):
@@ -144,6 +145,7 @@ class S3Connector(SchematicAWSConnector):
             else:
                 return None
         except Exception as e:
+            _LOGGER.error(f'[S3 {bucket_name}: Get Server Access Logging] {e}')
             return None
 
     def get_website_hosting(self, bucket_name):
@@ -151,8 +153,8 @@ class S3Connector(SchematicAWSConnector):
             response = self.client.get_bucket_website(Bucket=bucket_name)
             del response['ResponseMetadata']
             return WebsiteHosting(response, strict=False)
-
         except Exception as e:
+            _LOGGER.error(f'[S3 {bucket_name}: Get Website Hosting] {e}')
             return None
 
     def get_encryption(self, bucket_name):
@@ -164,6 +166,7 @@ class S3Connector(SchematicAWSConnector):
             else:
                 return None
         except Exception as e:
+            _LOGGER.error(f'[S3 {bucket_name}: Get Encryption] {e}')
             return None
 
     def get_object_lock(self, bucket_name):
@@ -175,6 +178,7 @@ class S3Connector(SchematicAWSConnector):
             else:
                 return None
         except Exception as e:
+            _LOGGER.error(f'[S3 {bucket_name}: Get Object Lock] {e}')
             return None
 
     def get_transfer_acceleration(self, bucket_name):
@@ -184,18 +188,21 @@ class S3Connector(SchematicAWSConnector):
             if transfer_acceleration := response.get('Status'):
                 return_value = TransferAcceleration({'transfer_acceleration': transfer_acceleration}, strict=False)
         except Exception as e:
+            _LOGGER.error(f'[S3 {bucket_name}: Get Transfer Acceleration] {e}')
             pass
 
         return return_value
 
     def get_request_payment(self, bucket_name):
-        response = self.client.get_bucket_request_payment(Bucket=bucket_name)
         try:
+            response = self.client.get_bucket_request_payment(Bucket=bucket_name)
+            
             if payer := response.get('Payer'):
                 return RequestPayment({'request_payment': payer}, strict=False)
             else:
                 return None
         except Exception as e:
+            _LOGGER.error(f'[S3 {bucket_name}: Get Request Payment] {e}')
             return None
 
     def get_notification_configurations(self, bucket_name):
@@ -214,6 +221,7 @@ class S3Connector(SchematicAWSConnector):
             else:
                 return None
         except Exception as e:
+            _LOGGER.error(f'[S3 {bucket_name}: Get Notification Configuration] {e}')
             return None
 
     def get_tags(self, bucket_name):
@@ -221,6 +229,7 @@ class S3Connector(SchematicAWSConnector):
             response = self.client.get_bucket_tagging(Bucket=bucket_name)
             return list(map(lambda tag: Tags(tag, strict=False), response.get('TagSet', [])))
         except Exception as e:
+            _LOGGER.error(f'[S3 {bucket_name}: Get Tags] {e}')
             return None
 
     def get_bucket_public_access(self, bucket_name):
@@ -230,6 +239,7 @@ class S3Connector(SchematicAWSConnector):
             policy_status = response.get('PolicyStatus', {})
             public_access = policy_status.get('IsPublic', False)
         except Exception as e:
+            _LOGGER.error(f'[S3 {bucket_name}: Get Bucket Policy Status] {e}')
             public_access = self.get_bucket_acl_info(bucket_name)
 
         return "Public" if public_access else "Private"
@@ -243,6 +253,7 @@ class S3Connector(SchematicAWSConnector):
                 if uri is not None and uri.endswith('AllUsers'):
                     response = True
         except Exception as e:
+            _LOGGER.error(f'[S3 {bucket_name}: Get Bucket ACL] {e}')
             pass
         return response
 
@@ -251,7 +262,7 @@ class S3Connector(SchematicAWSConnector):
             response = self.client.get_bucket_location(Bucket=bucket_name)
             return response.get('LocationConstraint')
         except Exception as e:
-            _LOGGER.error(f'[S3 Get Bucket Location] {e}')
+            _LOGGER.error(f'[S3 {bucket_name}: Get Bucket Location] {e}')
             return ''
 
     def get_count_and_size(self, bucket_name, region_name):
@@ -271,6 +282,7 @@ class S3Connector(SchematicAWSConnector):
             self.set_client('s3')
             return count, size
         except Exception as e:
+            _LOGGER.error(f'[S3 {bucket_name}: Get Count, Size] {e}')
             self.set_client('s3')
             return 0, 0
 
