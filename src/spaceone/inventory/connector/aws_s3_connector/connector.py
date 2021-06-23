@@ -64,6 +64,8 @@ class S3Connector(SchematicAWSConnector):
             bucket_name = raw.get('Name')
 
             try:
+                region_name = self.get_bucket_location(bucket_name)
+
                 raw.update({
                     'arn': self.generate_arn(service=self.service_name,
                                              region="",
@@ -71,10 +73,8 @@ class S3Connector(SchematicAWSConnector):
                                              resource_type=bucket_name,
                                              resource_id="*"),
                     'account_id': self.account_id,
-                    'region_name': self.get_bucket_location(bucket_name)
+                    'region_name': region_name
                 })
-
-                # raw.update({'region_name': 'us-east-1' if region_name is None else region_name})
 
                 if versioning := self.get_bucket_versioning(bucket_name):
                     raw.update({'versioning': versioning})
@@ -106,7 +106,8 @@ class S3Connector(SchematicAWSConnector):
                 if tags := self.get_tags(bucket_name):
                     raw.update({'tags': tags})
 
-                count, size = self.get_count_and_size(bucket_name, raw.get('region_name'))
+                if region_name:
+                    count, size = self.get_count_and_size(bucket_name, raw.get('region_name'))
 
                 raw.update({
                     'object_count': count,
