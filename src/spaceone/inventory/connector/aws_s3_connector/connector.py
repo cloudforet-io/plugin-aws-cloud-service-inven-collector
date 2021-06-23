@@ -202,7 +202,6 @@ class S3Connector(SchematicAWSConnector):
             _LOGGER.error(f'[S3 {bucket_name}: Get Request Payment] {e}')
             return None
 
-
     def get_notification_configurations(self, bucket_name):
         try:
             response = self.client.get_bucket_notification_configuration(Bucket=bucket_name)
