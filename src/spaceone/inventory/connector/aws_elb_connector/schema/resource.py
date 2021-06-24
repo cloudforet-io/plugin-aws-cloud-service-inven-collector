@@ -45,8 +45,8 @@ lb_listener = TableDynamicLayout.set_fields('Listeners', 'data.listeners', field
     EnumDyField.data_source('Protocol', 'protocol', default_outline_badge=['HTTP', 'HTTPS', 'TCP', 'TLS',
                                                                            'UDP', 'TCP_UDP']),
     TextDyField.data_source('Port', 'port'),
-    ListDyField.data_source('Default Actions Target', 'default_actions', default_badge={
-        'type': 'outline',
+    ListDyField.data_source('Default Actions Target Group ARN', 'default_actions', options={
+        'delimiter': '<br>',
         'sub_key': 'target_group_arn'
     }),
     TextDyField.data_source('Security Policy', 'ssl_policy'),
