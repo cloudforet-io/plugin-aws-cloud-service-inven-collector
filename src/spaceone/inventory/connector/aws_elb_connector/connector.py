@@ -78,13 +78,14 @@ class ELBConnector(SchematicAWSConnector):
         instances = self.request_instances(region_name)
 
         lb_arns = [raw_lb.get('LoadBalancerArn') for raw_lb in raw_lbs if raw_lb.get('LoadBalancerArn')]
-        match_target_groups = []
-        match_instances = []
 
         if len(lb_arns) > 0:
             all_tags = self.request_tags(lb_arns)
 
         for raw_lb in raw_lbs:
+            match_target_groups = []
+            match_instances = []
+
             match_tags = self.search_tags(all_tags, raw_lb.get('LoadBalancerArn'))
             raw_listeners = self.request_listeners(raw_lb.get('LoadBalancerArn'))
 
