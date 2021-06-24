@@ -29,8 +29,22 @@ outbound_rules = TableDynamicLayout.set_fields('Outbound Rules', 'data.ip_permis
     TextDyField.data_source('Description', 'description_display'),
 ])
 
+sg_instance = TableDynamicLayout.set_fields('Instances', 'data.instances', fields=[
+    TextDyField.data_source('ID', 'instance_id'),
+    TextDyField.data_source('Name', 'instance_name'),
+    EnumDyField.data_source('State', 'state.name', default_state={
+        'safe': ['RUNNING'],
+        'warning': ['PENDING', 'STOPPING'],
+        'disable': ['SHUTTING-DOWN'],
+        'alert': ['STOPPED']
+    }),
+    TextDyField.data_source('VPC ID', 'vpc_id'),
+    TextDyField.data_source('Subnet ID', 'subnet_id'),
+    TextDyField.data_source('Private IP', 'private_ip_address'),
+])
+
 sg_tags = SimpleTableDynamicLayout.set_tags()
-sg_metadata = CloudServiceMeta.set_layouts(layouts=[sg, inbound_rules, outbound_rules, sg_tags])
+sg_metadata = CloudServiceMeta.set_layouts(layouts=[sg, inbound_rules, outbound_rules, sg_instance, sg_tags])
 
 
 ami = ItemDynamicLayout.set_fields('AMI', fields=[

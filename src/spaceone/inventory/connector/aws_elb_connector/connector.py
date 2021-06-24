@@ -5,7 +5,7 @@ import traceback
 from typing import List
 
 from spaceone.inventory.connector.aws_elb_connector.schema.data import LoadBalancer, TargetGroup, Tags, \
-    LoadBalancerAttributes, TargetGroupAttributes, Listener
+    LoadBalancerAttributes, TargetGroupAttributes, Listener, Instance
 from spaceone.inventory.connector.aws_elb_connector.schema.resource import LoadBalancerResource, TargetGroupResource, \
     LoadBalancerResponse, TargetGroupResponse
 from spaceone.inventory.connector.aws_elb_connector.schema.service_type import CLOUD_SERVICE_TYPES
@@ -73,9 +73,13 @@ class ELBConnector(SchematicAWSConnector):
     def request_load_balancer_data(self, region_name):
         all_tags = []
         raw_lbs = self.request_loadbalancer(region_name)
+
+        # Get EC2 Instances
+        instances = self.request_instances(region_name)
+
         lb_arns = [raw_lb.get('LoadBalancerArn') for raw_lb in raw_lbs if raw_lb.get('LoadBalancerArn')]
-        match_taget_groups = []
-        # match_instances = []
+        match_target_groups = []
+        match_instances = []
 
         if len(lb_arns) > 0:
             all_tags = self.request_tags(lb_arns)
@@ -87,18 +91,18 @@ class ELBConnector(SchematicAWSConnector):
             for _listener in raw_listeners:
                 for default_action in _listener.get('DefaultActions', []):
                     if match_tg := self.match_target_group(default_action.get('TargetGroupArn')):
-                        match_taget_groups.append(match_tg)
+                        match_target_groups.append(match_tg)
 
-            # for match_tg in match_target_groups:
-            #     match_instances.extend(self.match_elb_instance(match_tg))
+            for match_tg in match_target_groups:
+                match_instances.extend(self.match_elb_instance(match_tg, instances))
 
             raw_lb.update({
                 'region_name': region_name,
                 'account_id': self.account_id,
                 'listeners': list(map(lambda _listener: Listener(_listener, strict=False), raw_listeners)),
                 'tags': list(map(lambda match_tag: Tags(match_tag, strict=False), match_tags)),
-                'target_groups': match_taget_groups,
-                # 'instances': match_instances
+                'target_groups': match_target_groups,
+                'instances': match_instances
             })
 
             load_balancer = LoadBalancer(raw_lb, strict=False)
@@ -108,9 +112,25 @@ class ELBConnector(SchematicAWSConnector):
             # for avoid to API Rate limitation.
             time.sleep(0.5)
 
-    def match_elb_instance(self, target_group):
+    def match_elb_instance(self, target_group, instances):
+        match_instances = []
 
-        target_health = self.request_target_health(target_group.target_group_arn)
+        target_healths = self.request_target_health(target_group.target_group_arn)
+
+        for target_health in target_healths:
+            target_id = target_health.get('Target', {}).get('Id')
+
+            for instance in instances:
+                if target_group.target_type == 'instance':
+                    if instance['InstanceId'] == target_id:
+                        match_instances.append(Instance(instance, strict=False))
+                elif target_group.target_type == 'ip':
+                    for network_interface in instance.get('NetworkInterfaces', []):
+                        if network_interface.get('PrivateIpAddress') == target_id:
+                            match_instances.append(Instance(instance, strict=False))
+                            break
+
+        return match_instances
 
 
     def request_loadbalancer(self, region_name):
@@ -250,6 +270,26 @@ class ELBConnector(SchematicAWSConnector):
                 return _tg
 
         return None
+
+    def request_instances(self, region_name):
+        ec2_client = self.session.client('ec2', region_name=region_name)
+
+        instances = []
+        paginator = ec2_client.get_paginator('describe_instances')
+        response_iterator = paginator.paginate(
+            PaginationConfig={
+                'MaxItems': 10000,
+                'PageSize': 50,
+            },
+            Filters=[{'Name': 'instance-state-name',
+                      'Values': ['pending', 'running', 'shutting-down', 'stopping', 'stopped']}]
+        )
+
+        for data in response_iterator:
+            for _reservation in data.get('Reservations', []):
+                instances.extend(_reservation.get('Instances', []))
+
+        return instances
 
     @staticmethod
     def search_tags(all_tags, resource_arn):
