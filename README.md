@@ -192,7 +192,7 @@ authentication privilege for followings:
 
 ## Release Note
 
-### Ver 1.11.6
+### Ver 1.11.7
 * Add attached instances information in Security Groups
 * Add Target Groups, Instances information in Load Balancer
 
