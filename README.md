@@ -196,6 +196,13 @@ authentication privilege for followings:
 * Add attached instances information in Security Groups
 * Add Target Groups, Instances information in Load Balancer
 
+### Ver 1.11.6
+* Add exceptions for S3 collecting logic
+
+### Ver 1.11.7
+* Add attached instances information in Security Groups
+* Add Target Groups, Instances information in Load Balancer
+
 
 ### Ver 1.11.6
 * Add exceptions for S3 collecting logic
