@@ -62,8 +62,21 @@ lb_tg = TableDynamicLayout.set_fields('Target Groups', 'data.target_groups', fie
     EnumDyField.data_source('Protocol', 'protocol',
                             default_outline_badge=['HTTP', 'HTTPS', 'TCP', 'TLS', 'UDP', 'TCP_UDP']),
     TextDyField.data_source('Port', 'port'),
-    EnumDyField.data_source('Target Type', 'target_type',
-                            default_outline_badge=['instance', 'ip', 'lambda']),
+    TextDyField.data_source('Target Type', 'target_type'),
+])
+
+lb_instance = TableDynamicLayout.set_fields('Instances', 'data.instances', fields=[
+    TextDyField.data_source('ID', 'instance_id'),
+    TextDyField.data_source('Name', 'instance_name'),
+    EnumDyField.data_source('State', 'state.name', default_state={
+        'safe': ['RUNNING'],
+        'warning': ['PENDING', 'STOPPING'],
+        'disable': ['SHUTTING-DOWN'],
+        'alert': ['STOPPED']
+    }),
+    TextDyField.data_source('VPC ID', 'vpc_id'),
+    TextDyField.data_source('Subnet ID', 'subnet_id'),
+    TextDyField.data_source('Private IP', 'private_ip_address'),
 ])
 
 lb_attr = ItemDynamicLayout.set_fields('Attributes', fields=[
@@ -82,7 +95,7 @@ lb_attr = ItemDynamicLayout.set_fields('Attributes', fields=[
 ])
 
 lb_tags = SimpleTableDynamicLayout.set_tags()
-lb_metadata = CloudServiceMeta.set_layouts(layouts=[lb_base, lb_listener, lb_tg, lb_attr, lb_tags])
+lb_metadata = CloudServiceMeta.set_layouts(layouts=[lb_base, lb_attr, lb_listener, lb_tg, lb_instance, lb_tags])
 
 '''
 TARGET GROUP

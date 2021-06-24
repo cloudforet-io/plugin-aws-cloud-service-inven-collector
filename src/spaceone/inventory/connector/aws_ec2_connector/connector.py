@@ -3,7 +3,7 @@ import logging
 from typing import List
 
 from spaceone.inventory.connector.aws_ec2_connector.schema.data import SecurityGroup, SecurityGroupIpPermission, \
-    Image, LaunchPermission
+    Image, LaunchPermission, Instance
 from spaceone.inventory.connector.aws_ec2_connector.schema.resource import SecurityGroupResource, SecurityGroupResponse, \
     ImageResource, ImageResponse
 from spaceone.inventory.connector.aws_ec2_connector.schema.service_type import CLOUD_SERVICE_TYPES
@@ -68,6 +68,9 @@ class EC2Connector(SchematicAWSConnector):
         # Get default VPC
         default_vpcs = self._get_default_vpc()
 
+        # Get EC2 Instances
+        instances = self.list_instances()
+
         # Get Security Group
         paginator = self.client.get_paginator('describe_security_groups')
         response_iterator = paginator.paginate(
@@ -127,7 +130,8 @@ class EC2Connector(SchematicAWSConnector):
                 raw.update({
                     'account_id': self.account_id,
                     'ip_permissions': inbound_rules,
-                    'ip_permissions_egress': outbound_rules
+                    'ip_permissions_egress': outbound_rules,
+                    'instances': self.get_security_group_map_instances(raw, instances)
                 })
 
                 result = SecurityGroup(raw, strict=False)
@@ -143,6 +147,44 @@ class EC2Connector(SchematicAWSConnector):
         })
 
         return raw_rule
+
+    def list_instances(self):
+        instances = []
+        paginator = self.client.get_paginator('describe_instances')
+        response_iterator = paginator.paginate(
+            PaginationConfig={
+                'MaxItems': 10000,
+                'PageSize': 50,
+            },
+            Filters=[{'Name': 'instance-state-name',
+                      'Values': ['pending', 'running', 'shutting-down', 'stopping', 'stopped']}]
+        )
+
+        for data in response_iterator:
+            for _reservation in data.get('Reservations', []):
+                instances.extend(_reservation.get('Instances', []))
+
+        return instances
+
+    def _get_default_vpc(self):
+        default_vpcs = []
+        vpc_response = self.client.describe_vpcs()
+        for _vpc in vpc_response['Vpcs']:
+            if _vpc.get('IsDefault', False):
+                default_vpcs.append(_vpc['VpcId'])
+
+        return default_vpcs
+
+    def get_security_group_map_instances(self, security_group, instances):
+        sg_map_instances = []
+
+        for instance in instances:
+            for instance_sg in instance.get('SecurityGroups', []):
+                if security_group.get('GroupId') == instance_sg.get('GroupId'):
+                    instance['instance_name'] = self.get_instance_name_from_tags(instance)
+                    sg_map_instances.append(instance)
+
+        return [Instance(sg_map_instance, strict=False) for sg_map_instance in sg_map_instances]
 
     @staticmethod
     def _get_protocol_display(raw_protocol):
@@ -200,11 +242,10 @@ class EC2Connector(SchematicAWSConnector):
 
         return ''
 
-    def _get_default_vpc(self):
-        default_vpcs = []
-        vpc_response = self.client.describe_vpcs()
-        for _vpc in vpc_response['Vpcs']:
-            if _vpc.get('IsDefault', False):
-                default_vpcs.append(_vpc['VpcId'])
+    @staticmethod
+    def get_instance_name_from_tags(instance):
+        for _tag in instance.get('Tags', []):
+            if _tag.get('Key') == 'Name':
+                return _tag.get('Value')
 
-        return default_vpcs
+        return ''

@@ -270,10 +270,10 @@ class S3Connector(SchematicAWSConnector):
         try:
             cloudwatch_client = self.session.client('cloudwatch', region_name=region_name)
             count_dimensions = [{"Name": "BucketName", "Value": bucket_name},
-                                {"Name": "StorageType", "Value":"AllStorageTypes"}]
+                                {"Name": "StorageType", "Value": "AllStorageTypes"}]
 
-            size_dimensions = [{"Name": "BucketName", "Value":bucket_name},
-                               {"Name": "StorageType","Value": "StandardStorage"}]
+            size_dimensions = [{"Name": "BucketName", "Value": bucket_name},
+                               {"Name": "StorageType", "Value": "StandardStorage"}]
             count_param = self._get_metric_param('NumberOfObjects', count_dimensions)
             size_param = self._get_metric_param('BucketSizeBytes', size_dimensions)
 
