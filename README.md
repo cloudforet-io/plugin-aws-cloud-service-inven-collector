@@ -7,7 +7,7 @@
 
 
 Find us also at [Dockerhub](https://hub.docker.com/repository/docker/spaceone/aws-cloud-services)
-> Latest stable version : 1.11.2
+> Latest stable version : 1.11.7
 
 Please contact us if you need any further information. (<support@spaceone.dev>)
 
@@ -192,11 +192,18 @@ authentication privilege for followings:
 
 ## Release Note
 
+### Ver 1.11.6
+* Add attached instances information in Security Groups
+* Add Target Groups, Instances information in Load Balancer
+
+
+### Ver 1.11.6
+* Add exceptions for S3 collecting logic
+
 ### Ver 1.11
 
 * Add is_optional in Cloud Service Type metadata for Dynamic Tables
 * (Fix Bug) Modify region_code for EKS Cluster
-* Add exceptions for S3 collecting logic
 
 ### Ver 1.10
 
