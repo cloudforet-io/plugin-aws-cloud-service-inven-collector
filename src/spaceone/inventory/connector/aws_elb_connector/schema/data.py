@@ -188,6 +188,37 @@ class LoadBalancerAvailabilityZones(Model):
                                        deserialize_from="LoadBalancerAddresses")
 
 
+class InstanceState(Model):
+    code = IntType(deserialize_from="Code")
+    name = StringType(deserialize_from="Name", choices=("pending", "running", "shutting-down",
+                                                        "terminated", "stopping", "stopped"))
+
+
+class InstanceSecurityGroup(Model):
+    group_name = StringType(deserialize_from="GroupName")
+    group_id = StringType(deserialize_from="GroupId")
+
+
+class InstanceTags(Model):
+    key = StringType(deserialize_from="Key")
+    value = StringType(deserialize_from="Value")
+
+
+class Instance(Model):
+    instance_id = StringType(deserialize_from="InstanceId")
+    instance_name = StringType()
+    state = ModelType(InstanceState, deserialize_from="State")
+    subnet_id = StringType(deserialize_from="SubnetId")
+    vpc_id = StringType(deserialize_from="VpcId")
+    private_ip_address = StringType(deserialize_from="PrivateIpAddress")
+    private_dns_name = StringType(deserialize_from="PrivateDnsName")
+    public_ip_address = StringType(deserialize_from="PublicIpAddress")
+    public_dns_name = StringType(deserialize_from="PublicDnsName")
+    architecture = StringType(deserialize_from="Architecture")
+    security_groups = ListType(ModelType(InstanceSecurityGroup), deserialize_from="SecurityGroups")
+    tags = ListType(ModelType(InstanceTags), deserialize_from="Tags", default=[])
+
+
 class LoadBalancer(Model):
     load_balancer_arn = StringType(deserialize_from="LoadBalancerArn")
     dns_name = StringType(deserialize_from="DNSName")
@@ -206,6 +237,7 @@ class LoadBalancer(Model):
     listeners = ListType(ModelType(Listener))
     target_groups = ListType(ModelType(TargetGroup), default=[])
     attributes = ModelType(LoadBalancerAttributes)
+    instances = ListType(ModelType(Instance), default=[])
     cloudwatch = ModelType(CloudWatchModel, serialize_when_none=False)
 
     def reference(self, region_code):
