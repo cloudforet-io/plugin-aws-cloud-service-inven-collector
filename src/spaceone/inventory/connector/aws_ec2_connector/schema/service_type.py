@@ -99,7 +99,9 @@ cst_ami._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Root Device Type', key='data.root_device_type'),
         SearchField.set(name='Virtualization', key='data.virtualization_type'),
         SearchField.set(name='Creation Date', key='data.creation_date', data_type='datetime'),
-        SearchField.set(name='Region', key='data.region_name'),
+        SearchField.set(name='Instance ID', key='data.instances.instance_id'),
+        SearchField.set(name='Instance Name', key='data.instances.instance_name'),
+        SearchField.set(name='Instance State', key='data.instances.state'),
         SearchField.set(name='AWS Account ID', key='data.account_id'),
     ]
 )
