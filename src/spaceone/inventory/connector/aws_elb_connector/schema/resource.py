@@ -74,6 +74,8 @@ lb_instance = TableDynamicLayout.set_fields('Instances', 'data.instances', field
         'disable': ['SHUTTING-DOWN'],
         'alert': ['STOPPED']
     }),
+    TextDyField.data_source('Target Group ARN', 'target_group_arn'),
+    TextDyField.data_source('Target Group Name', 'target_group_name'),
     TextDyField.data_source('VPC ID', 'vpc_id'),
     TextDyField.data_source('Subnet ID', 'subnet_id'),
     TextDyField.data_source('Private IP', 'private_ip_address'),
