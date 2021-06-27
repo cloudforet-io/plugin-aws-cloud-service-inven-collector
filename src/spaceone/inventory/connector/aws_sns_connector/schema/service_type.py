@@ -49,7 +49,6 @@ cst_topic._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Subscription ARN', key='data.subscriptions.subscription_arn'),
         SearchField.set(name='Endpoint', key='data.subscriptions.endpoint'),
         SearchField.set(name='Protocol', key='data.subscriptions.protocol'),
-        SearchField.set(name='Region', key='data.region_name'),
         SearchField.set(name='AWS Account ID', key='data.account_id'),
     ]
 )

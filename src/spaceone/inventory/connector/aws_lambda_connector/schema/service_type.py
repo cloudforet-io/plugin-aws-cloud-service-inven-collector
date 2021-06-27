@@ -100,7 +100,6 @@ cst_function._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='VPC Name', key='data.vpc_config.vpc.name'),
         SearchField.set(name='Subnet Id', key='data.vpc_config.subnets.id'),
         SearchField.set(name='Last Modified Time', key='data.last_modified', data_type='datetime'),
-        SearchField.set(name='Region', key='data.region_name'),
         SearchField.set(name='AWS Account ID', key='data.account_id'),
     ]
 )
@@ -133,7 +132,6 @@ cst_layer._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Compatible Runtimes', key='data.latest_matching_version.compatible_runtimes'),
         SearchField.set(name='Version', key='data.version', data_type='integer'),
         SearchField.set(name='Created Time', key='data.latest_matching_version.created_date', data_type='datetime'),
-        SearchField.set(name='Region', key='data.region_name'),
         SearchField.set(name='AWS Account ID', key='data.account_id'),
     ]
 )

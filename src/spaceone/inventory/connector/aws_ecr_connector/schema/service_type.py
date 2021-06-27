@@ -38,7 +38,6 @@ cst_ecr_repo._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='URI', key='data.repository_uri'),
         SearchField.set(name='Image URI', key='data.images.image_uri'),
         SearchField.set(name='Created Time', key='data.created_at', data_type='datetime'),
-        SearchField.set(name='Region', key='data.region_name'),
         SearchField.set(name='AWS Account ID', key='data.account_id'),
     ]
 )

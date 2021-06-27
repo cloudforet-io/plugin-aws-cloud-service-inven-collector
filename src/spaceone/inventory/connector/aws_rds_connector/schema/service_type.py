@@ -318,7 +318,6 @@ cst_rds_snapshot._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Availability Zone', key='data.availability_zone'),
         SearchField.set(name='VPC ID', key='data.vpc_id'),
         SearchField.set(name='Created Time', key='data.snapshot_create_time', data_type='datetime'),
-        SearchField.set(name='Region', key='data.region_name'),
         SearchField.set(name='AWS Account ID', key='data.account_id'),
     ]
 )
@@ -366,7 +365,6 @@ cst_rds_subnetgrp._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='VPC ID', key='data.vpc_id'),
         SearchField.set(name='Subnet ID', key='data.subnets.subnet_identifier'),
         SearchField.set(name='Availability Zone', key='data.subnets.subnet_availability_zone'),
-        SearchField.set(name='Region', key='data.region_name'),
         SearchField.set(name='AWS Account ID', key='data.account_id'),
     ]
 )
@@ -399,7 +397,6 @@ cst_rds_paramgrp._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Name', key='data.db_parameter_group_name'),
         SearchField.set(name='ARN', key='data.db_parameter_group_arn'),
         SearchField.set(name='Family', key='data.db_parameter_group_family'),
-        SearchField.set(name='Region', key='data.region_name'),
         SearchField.set(name='AWS Account ID', key='data.account_id'),
     ]
 )
@@ -441,7 +438,6 @@ cst_rds_optgrp._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Engine', key='data.engine_name'),
         SearchField.set(name='Major Engine Version', key='data.major_engine_version'),
         SearchField.set(name='VPC ID', key='data.vpc_id'),
-        SearchField.set(name='Region', key='data.region_name'),
         SearchField.set(name='AWS Account ID', key='data.account_id'),
     ]
 )

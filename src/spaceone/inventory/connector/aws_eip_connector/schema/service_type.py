@@ -49,7 +49,6 @@ cst_eip._metadata = CloudServiceTypeMeta.set_meta(
                             'vpc': {'label': 'VPC'},
                             'standard': {'label': 'Standard'},
                         }),
-        SearchField.set(name='Region', key='data.region_name'),
         SearchField.set(name='AWS Account ID', key='data.account_id'),
     ]
 )
