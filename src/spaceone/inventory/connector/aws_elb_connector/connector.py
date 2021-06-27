@@ -83,7 +83,6 @@ class ELBConnector(SchematicAWSConnector):
             all_tags = self.request_tags(lb_arns)
 
         for raw_lb in raw_lbs:
-            # match_target_groups = []
             match_instances = []
 
             match_target_groups = self.match_target_group_from_lb(raw_lb.get('LoadBalancerArn'))
@@ -112,9 +111,7 @@ class ELBConnector(SchematicAWSConnector):
     def match_elb_instance(self, target_group, instances):
         match_instances = []
 
-        target_healths = self.request_target_health(target_group.target_group_arn)
-
-        for target_health in target_healths:
+        for target_health in self.request_target_health(target_group.target_group_arn):
             target_id = target_health.get('Target', {}).get('Id')
 
             for instance in instances:
@@ -268,7 +265,7 @@ class ELBConnector(SchematicAWSConnector):
             if _tg.load_balancer_arns:
                 for _tg_lb_arn in _tg.load_balancer_arns:
                     if _tg_lb_arn == load_balancer_arn:
-                        return match_target_groups.append(_tg)
+                        match_target_groups.append(_tg)
 
         return match_target_groups
 
