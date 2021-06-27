@@ -117,16 +117,27 @@ class ELBConnector(SchematicAWSConnector):
             for instance in instances:
                 if target_group.target_type == 'instance':
                     if instance['InstanceId'] == target_id:
+                        instance.update({
+                            'instance_name': self.get_instance_name_from_tag(instance),
+                            'target_group_arn': target_group.target_group_arn,
+                            'target_group_name': target_group.target_group_name,
+                        })
+
                         match_instances.append(Instance(instance, strict=False))
                 elif target_group.target_type == 'ip':
                     for network_interface in instance.get('NetworkInterfaces', []):
                         for private_ip_addr_info in network_interface.get('PrivateIpAddresses', []):
                             if private_ip_addr_info.get('PrivateIpAddress') == target_id:
+                                instance.update({
+                                    'instance_name': self.get_instance_name_from_tag(instance),
+                                    'target_group_arn': target_group.target_group_arn,
+                                    'target_group_name': target_group.target_group_name,
+                                })
+
                                 match_instances.append(Instance(instance, strict=False))
                                 break
 
         return match_instances
-
 
     def request_loadbalancer(self, region_name):
         load_balancers = []
@@ -297,3 +308,11 @@ class ELBConnector(SchematicAWSConnector):
                 return tag.get('Tags', [])
 
         return []
+
+    @staticmethod
+    def get_instance_name_from_tag(instance):
+        for tag in instance.get('Tags', []):
+            if tag.get('Key') == 'Name':
+                return tag.get('Value')
+
+        return None
