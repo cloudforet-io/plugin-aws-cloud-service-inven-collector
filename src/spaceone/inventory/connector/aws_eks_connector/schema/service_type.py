@@ -92,7 +92,6 @@ cst_eks_cluster._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Cluster Version', key='data.version'),
         SearchField.set(name='Cluster Endpoint', key='data.endpoint'),
         SearchField.set(name='Created Time', key='data.created_at', data_type='datetime'),
-        SearchField.set(name='Region', key='data.region_name'),
         SearchField.set(name='AWS Account ID', key='data.account_id'),
     ]
 )

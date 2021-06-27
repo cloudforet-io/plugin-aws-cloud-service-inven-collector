@@ -106,7 +106,6 @@ cst_ecs_cluster._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Task Definition', key='data.tasks.task_definition'),
         SearchField.set(name='Task Definition ARN', key='data.tasks.task_definition_arn'),
         SearchField.set(name='Container Instance ID', key='data.container_instances.ec2_instance_id'),
-        SearchField.set(name='Region', key='data.region_name'),
         SearchField.set(name='AWS Account ID', key='data.account_id'),
     ]
 )

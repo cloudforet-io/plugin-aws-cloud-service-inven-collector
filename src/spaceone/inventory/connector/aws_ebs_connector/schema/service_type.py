@@ -81,7 +81,6 @@ cst_ebs._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='IOPS', key='data.iops', data_type='integer'),
         SearchField.set(name='Created Time', key='data.create_time', data_type='datetime'),
         SearchField.set(name='Attached Instance ID', key='data.attachments.instance_id'),
-        SearchField.set(name='Region', key='data.region_name'),
         SearchField.set(name='AWS Account ID', key='data.account_id'),
     ]
 )
@@ -140,7 +139,6 @@ cst_snapshot._metadata = CloudServiceTypeMeta.set_meta(
                         }),
         SearchField.set(name='Size (GB)', key='data.volume_size', data_type='integer'),
         SearchField.set(name='Started Time', key='data.start_time', data_type='datetime'),
-        SearchField.set(name='Region', key='data.region_name'),
         SearchField.set(name='AWS Account ID', key='data.account_id'),
     ]
 )

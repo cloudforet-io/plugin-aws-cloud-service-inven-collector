@@ -93,7 +93,6 @@ cst_kms_cluster._metadata = CloudServiceTypeMeta.set_meta(
                             'CUSTOMER': {'label': 'CUSTOMER'},
                         }),
         SearchField.set(name='Created Time', key='data.creation_date', data_type='datetime'),
-        SearchField.set(name='Region', key='data.region_name'),
         SearchField.set(name='AWS Account ID', key='data.account_id'),
     ]
 )
