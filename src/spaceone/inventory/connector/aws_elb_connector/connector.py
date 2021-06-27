@@ -83,16 +83,11 @@ class ELBConnector(SchematicAWSConnector):
             all_tags = self.request_tags(lb_arns)
 
         for raw_lb in raw_lbs:
-            match_target_groups = []
             match_instances = []
 
+            match_target_groups = self.match_target_group_from_lb(raw_lb.get('LoadBalancerArn'))
             match_tags = self.search_tags(all_tags, raw_lb.get('LoadBalancerArn'))
             raw_listeners = self.request_listeners(raw_lb.get('LoadBalancerArn'))
-
-            for _listener in raw_listeners:
-                for default_action in _listener.get('DefaultActions', []):
-                    if match_tg := self.match_target_group(default_action.get('TargetGroupArn')):
-                        match_target_groups.append(match_tg)
 
             for match_tg in match_target_groups:
                 match_instances.extend(self.match_elb_instance(match_tg, instances))
@@ -116,9 +111,7 @@ class ELBConnector(SchematicAWSConnector):
     def match_elb_instance(self, target_group, instances):
         match_instances = []
 
-        target_healths = self.request_target_health(target_group.target_group_arn)
-
-        for target_health in target_healths:
+        for target_health in self.request_target_health(target_group.target_group_arn):
             target_id = target_health.get('Target', {}).get('Id')
 
             for instance in instances:
@@ -265,12 +258,16 @@ class ELBConnector(SchematicAWSConnector):
 
         return all_tags
 
-    def match_target_group(self, taget_group_arn):
-        for _tg in self.target_groups:
-            if _tg.target_group_arn == taget_group_arn:
-                return _tg
+    def match_target_group_from_lb(self, load_balancer_arn):
+        match_target_groups = []
 
-        return None
+        for _tg in self.target_groups:
+            if _tg.load_balancer_arns:
+                for _tg_lb_arn in _tg.load_balancer_arns:
+                    if _tg_lb_arn == load_balancer_arn:
+                        match_target_groups.append(_tg)
+
+        return match_target_groups
 
     def request_instances(self, region_name):
         ec2_client = self.session.client('ec2', region_name=region_name)
