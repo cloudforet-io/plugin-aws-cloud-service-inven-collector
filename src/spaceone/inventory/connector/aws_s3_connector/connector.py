@@ -203,7 +203,6 @@ class S3Connector(SchematicAWSConnector):
             _LOGGER.error(f'[S3 {bucket_name}: Get Request Payment] {e}')
             return None
 
-
     def get_notification_configurations(self, bucket_name):
         try:
             response = self.client.get_bucket_notification_configuration(Bucket=bucket_name)
@@ -283,14 +282,14 @@ class S3Connector(SchematicAWSConnector):
             _LOGGER.error(f'[S3 {bucket_name}: Get Count, Size] {e}')
             return 0, 0
 
-    def get_metric_data(self, params):
+    def get_metric_data(self, client, params):
         metric_id = f'metric_{utils.random_string()[:12]}'
         extra_opts = {}
 
         if params.get('limit'):
             extra_opts['MaxDatapoints'] = params.get('limit')
 
-        response = self.client.get_metric_data(
+        response = client.get_metric_data(
             MetricDataQueries=[{
                 'Id': metric_id,
                 'MetricStat': {
