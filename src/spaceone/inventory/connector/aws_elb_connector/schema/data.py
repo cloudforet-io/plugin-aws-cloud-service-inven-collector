@@ -210,6 +210,8 @@ class Instance(Model):
     state = ModelType(InstanceState, deserialize_from="State")
     subnet_id = StringType(deserialize_from="SubnetId")
     vpc_id = StringType(deserialize_from="VpcId")
+    target_group_arn = StringType()
+    target_group_name = StringType()
     private_ip_address = StringType(deserialize_from="PrivateIpAddress")
     private_dns_name = StringType(deserialize_from="PrivateDnsName")
     public_ip_address = StringType(deserialize_from="PublicIpAddress")

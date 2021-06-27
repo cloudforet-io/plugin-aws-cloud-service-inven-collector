@@ -144,8 +144,12 @@ cst_elb._metadata = CloudServiceTypeMeta.set_meta(
                         data_type='boolean'),
         SearchField.set(name='Security Group ID', key='data.security_groups'),
         SearchField.set(name='Listener ARN', key='data.listeners.listener_arn'),
+        SearchField.set(name='Target Group ARN', key='data.target_groups.target_group_arn'),
+        SearchField.set(name='Target Group Name', key='data.target_groups.target_group_name'),
+        SearchField.set(name='Instance ID', key='data.instances.instance_id'),
+        SearchField.set(name='Instance Name', key='data.instances.instance_name'),
+        SearchField.set(name='Instance State', key='data.instances.state'),
         SearchField.set(name='Created Time', key='data.created_time', data_type='datetime'),
-        SearchField.set(name='Region', key='data.region_name'),
         SearchField.set(name='AWS Account ID', key='data.account_id'),
     ]
 )
