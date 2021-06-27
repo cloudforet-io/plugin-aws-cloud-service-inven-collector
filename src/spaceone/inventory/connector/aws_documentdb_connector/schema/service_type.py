@@ -133,7 +133,6 @@ cst_cluster._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Instance', key='data.instances.db_instance_identifier'),
         SearchField.set(name='Instance Type', key='data.instances.db_instance_class'),
         SearchField.set(name='VPC ID', key='data.instances.db_subnet_group.vpc_id'),
-        SearchField.set(name='Region', key='data.region_name'),
         SearchField.set(name='AWS Account ID', key='data.account_id'),
         SearchField.set(name='Creation Time', key='data.cluster_create_time', data_type='datetime'),
     ]
@@ -175,7 +174,6 @@ cst_subnet_group._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Status', key='data.subnet_group_status'),
         SearchField.set(name='Subnet ID', key='data.subnets.subnet_identifier'),
         SearchField.set(name='Availability Zone', key='data.subnets.subnet_availability_zone'),
-        SearchField.set(name='Region', key='data.region_name'),
         SearchField.set(name='AWS Account ID', key='data.account_id'),
     ]
 )

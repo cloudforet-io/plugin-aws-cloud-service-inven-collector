@@ -139,7 +139,6 @@ cst_vpc._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='VPN Gateway Name', key='data.vpn_gateway.name'),
         SearchField.set(name='Transit Gateway ID', key='data.transit_gateway.transit_gateway_id'),
         SearchField.set(name='Transit Gateway Name', key='data.transit_gateway.name'),
-        SearchField.set(name='Region', key='data.region_name'),
         SearchField.set(name='AWS Account ID', key='data.account_id'),
     ]
 )
@@ -238,7 +237,6 @@ cst_subnet._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Network ACL ID', key='data.network_acl.network_acl_id'),
         SearchField.set(name='Default', key='data.default_for_az', data_type='boolean'),
         SearchField.set(name='Auto-assign Public IP', key='data.map_public_ip_on_launch', data_type='boolean'),
-        SearchField.set(name='Region', key='data.region_name'),
         SearchField.set(name='AWS Account ID', key='data.account_id'),
     ]
 )
@@ -302,7 +300,6 @@ cst_rt._metadata = CloudServiceTypeMeta.set_meta(
                             'No': {'label': 'No'},
                         }),
         SearchField.set(name='VPC ID', key='data.vpc_id'),
-        SearchField.set(name='Region', key='data.region_name'),
         SearchField.set(name='AWS Account ID', key='data.account_id'),
     ]
 )
@@ -351,7 +348,6 @@ cst_igw._metadata = CloudServiceTypeMeta.set_meta(
                             'detached': {'label': 'Detached', 'icon': {'color': 'grey.500'}},
                         }),
         SearchField.set(name='VPC ID', key='data.vpc_id'),
-        SearchField.set(name='Region', key='data.region_name'),
         SearchField.set(name='AWS Account ID', key='data.account_id'),
     ]
 )
@@ -397,7 +393,6 @@ cst_eoigw._metadata = CloudServiceTypeMeta.set_meta(
                             'detached': {'label': 'Detached', 'icon': {'color': 'grey.500'}},
                         }),
         SearchField.set(name='VPC ID', key='data.attachments.vpc_id'),
-        SearchField.set(name='Region', key='data.region_name'),
         SearchField.set(name='AWS Account ID', key='data.account_id'),
     ]
 )
@@ -475,7 +470,6 @@ cst_natgw._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Subnet ID', key='data.subnet_id'),
         SearchField.set(name='Created Time', key='data.create_time', data_type='datetime'),
         SearchField.set(name='VPC ID', key='data.vpc_id'),
-        SearchField.set(name='Region', key='data.region_name'),
         SearchField.set(name='AWS Account ID', key='data.account_id'),
     ]
 )
@@ -533,7 +527,6 @@ cst_peerconn._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Accepter VPC Id', key='data.accepter_vpc_info.vpc_id'),
 
         SearchField.set(name='Expiration Time', key='data.expiration_time', data_type='datetime'),
-        SearchField.set(name='Region', key='data.region_name'),
         SearchField.set(name='AWS Account ID', key='data.account_id'),
     ]
 )
@@ -594,7 +587,6 @@ cst_nacl._metadata = CloudServiceTypeMeta.set_meta(
                             'allow': {'label': 'Allow'},
                             'deny': {'label': 'Deny'},
                         }),
-        SearchField.set(name='Region', key='data.region_name'),
         SearchField.set(name='AWS Account ID', key='data.account_id'),
     ]
 )
@@ -677,7 +669,6 @@ cst_endpoint._metadata = CloudServiceTypeMeta.set_meta(
                         }),
         SearchField.set(name='DNS Name', key='data.dns_entries.dns_name'),
         SearchField.set(name='Private DNS Names enabled', key='data.private_dns_enabled', data_type='boolean'),
-        SearchField.set(name='Region', key='data.region_name'),
         SearchField.set(name='AWS Account ID', key='data.account_id'),
     ]
 )
@@ -765,7 +756,6 @@ cst_transitgw._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='VPN Connection Name', key='data.vpn_connections.name'),
         SearchField.set(name='Customer Gateway ID', key='data.vpn_connections.customer_gateway_id'),
         SearchField.set(name='VPN Gateway ID', key='data.vpn_connections.vpn_gateway_id'),
-        SearchField.set(name='Region', key='data.region_name'),
         SearchField.set(name='AWS Account ID', key='data.account_id'),
     ]
 )
@@ -844,7 +834,6 @@ cst_customgw._metadata = CloudServiceTypeMeta.set_meta(
                             'deleting': {'label': 'Deleting', 'icon': {'color': 'yellow.500'}},
                             'deleted': {'label': 'Deleted', 'icon': {'color': 'grey.500'}},
                         }),
-        SearchField.set(name='Region', key='data.region_name'),
         SearchField.set(name='AWS Account ID', key='data.account_id'),
     ]
 )
@@ -922,7 +911,6 @@ cst_vpnconn._metadata = CloudServiceTypeMeta.set_meta(
                             'UP': {'label': 'UP'},
                             'DOWN': {'label': 'DOWN'},
                         }),
-        SearchField.set(name='Region', key='data.region_name'),
         SearchField.set(name='AWS Account ID', key='data.account_id'),
     ]
 )
@@ -982,7 +970,6 @@ cst_vpngw._metadata = CloudServiceTypeMeta.set_meta(
                             'deleting': {'label': 'Deleting', 'icon': {'color': 'yellow.500'}},
                             'deleted': {'label': 'Deleted', 'icon': {'color': 'grey.500'}},
                         }),
-        SearchField.set(name='Region', key='data.region_name'),
         SearchField.set(name='AWS Account ID', key='data.account_id'),
     ]
 )

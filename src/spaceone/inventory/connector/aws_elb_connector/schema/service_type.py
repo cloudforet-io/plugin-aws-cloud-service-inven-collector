@@ -247,7 +247,6 @@ cst_tg._metadata = CloudServiceTypeMeta.set_meta(
                             'lb_cookie': {'label': 'LB Cookie'},
                             'source_ip': {'label': 'Source IP'}
                         }),
-        SearchField.set(name='Region', key='data.region_name'),
         SearchField.set(name='AWS Account ID', key='data.account_id'),
     ]
 )

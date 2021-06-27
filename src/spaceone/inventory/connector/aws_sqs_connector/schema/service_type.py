@@ -75,7 +75,6 @@ cst_que._metadata = CloudServiceTypeMeta.set_meta(
                         data_type='integer'),
         SearchField.set(name='Created Time', key='data.created_timestamp', data_type='datetime'),
         SearchField.set(name='Last Modified Time', key='data.last_modified_timestamp', data_type='datetime'),
-        SearchField.set(name='Region', key='data.region_name'),
         SearchField.set(name='AWS Account ID', key='data.account_id'),
     ]
 )

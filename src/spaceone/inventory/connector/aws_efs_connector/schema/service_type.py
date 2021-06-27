@@ -93,7 +93,6 @@ cst_filesystem._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Subnet ID', key='data.mount_targets.subnet_id'),
         SearchField.set(name='Security Group ID', key='data.mount_targets.security_groups'),
         SearchField.set(name='Created Time', key='data.creation_time', data_type='datetime'),
-        SearchField.set(name='Region', key='data.region_name'),
         SearchField.set(name='AWS Account ID', key='data.account_id'),
     ]
 )

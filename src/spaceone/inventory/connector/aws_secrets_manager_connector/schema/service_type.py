@@ -60,7 +60,6 @@ cst_secret._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Last Changed Time', key='data.last_changed_date', data_type='datetime'),
         SearchField.set(name='Last Accessed Time', key='data.last_accessed_date', data_type='datetime'),
         SearchField.set(name='Rotation Enabled', key='data.rotation_enabled', data_type='boolean'),
-        SearchField.set(name='Region', key='data.region_name'),
         SearchField.set(name='AWS Account ID', key='data.account_id'),
     ]
 )

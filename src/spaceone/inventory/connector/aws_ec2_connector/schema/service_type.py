@@ -30,7 +30,6 @@ cst_sg._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Outbound Protocol', key='data.ip_permissions_egress.protocol_display'),
         SearchField.set(name='Outbound Port Rage', key='data.ip_permissions_egress.port_display'),
         SearchField.set(name='Outbound Source', key='data.ip_permissions_egress.source_display'),
-        SearchField.set(name='Region', key='data.region_name'),
         SearchField.set(name='AWS Account ID', key='data.account_id'),
     ]
 )

@@ -33,10 +33,10 @@ sg_instance = TableDynamicLayout.set_fields('Instances', 'data.instances', field
     TextDyField.data_source('ID', 'instance_id'),
     TextDyField.data_source('Name', 'instance_name'),
     EnumDyField.data_source('State', 'state.name', default_state={
-        'safe': ['RUNNING'],
-        'warning': ['PENDING', 'STOPPING'],
-        'disable': ['SHUTTING-DOWN'],
-        'alert': ['STOPPED']
+        'safe': ['running'],
+        'warning': ['pending', 'stopping'],
+        'disable': ['shutting-down'],
+        'alert': ['stopped']
     }),
     TextDyField.data_source('VPC ID', 'vpc_id'),
     TextDyField.data_source('Subnet ID', 'subnet_id'),

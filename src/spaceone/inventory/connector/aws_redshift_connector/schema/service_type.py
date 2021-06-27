@@ -132,7 +132,6 @@ cst_redshift_cluster._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='VPC ID', key='data.vpc_id'),
         SearchField.set(name='Availability Zone', key='data.availability_zone'),
         SearchField.set(name='Node Counts', key='data.number_of_nodes', data_type='integer'),
-        SearchField.set(name='Region', key='data.region_name'),
         SearchField.set(name='AWS Account ID', key='data.account_id'),
     ]
 )
