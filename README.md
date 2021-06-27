@@ -199,6 +199,14 @@ authentication privilege for followings:
 ### Ver 1.11.6
 * Add exceptions for S3 collecting logic
 
+### Ver 1.11.7
+* Add attached instances information in Security Groups
+* Add Target Groups, Instances information in Load Balancer
+
+
+### Ver 1.11.6
+* Add exceptions for S3 collecting logic
+
 ### Ver 1.11
 
 * Add is_optional in Cloud Service Type metadata for Dynamic Tables
