@@ -92,6 +92,8 @@ class ELBConnector(SchematicAWSConnector):
             for match_tg in match_target_groups:
                 match_instances.extend(self.match_elb_instance(match_tg, instances))
 
+            print(match_instances)
+
             raw_lb.update({
                 'region_name': region_name,
                 'account_id': self.account_id,
@@ -120,9 +122,10 @@ class ELBConnector(SchematicAWSConnector):
                         match_instances.append(Instance(instance, strict=False))
                 elif target_group.target_type == 'ip':
                     for network_interface in instance.get('NetworkInterfaces', []):
-                        if network_interface.get('PrivateIpAddress') == target_id:
-                            match_instances.append(Instance(instance, strict=False))
-                            break
+                        for private_ip_addr_info in network_interface.get('PrivateIpAddresses', []):
+                            if private_ip_addr_info.get('PrivateIpAddress') == target_id:
+                                match_instances.append(Instance(instance, strict=False))
+                                break
 
         return match_instances
 
