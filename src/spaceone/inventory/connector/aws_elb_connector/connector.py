@@ -92,8 +92,6 @@ class ELBConnector(SchematicAWSConnector):
             for match_tg in match_target_groups:
                 match_instances.extend(self.match_elb_instance(match_tg, instances))
 
-            print(match_instances)
-
             raw_lb.update({
                 'region_name': region_name,
                 'account_id': self.account_id,
