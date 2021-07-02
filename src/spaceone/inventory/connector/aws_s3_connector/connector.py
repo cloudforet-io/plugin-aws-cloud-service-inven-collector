@@ -107,8 +107,8 @@ class S3Connector(SchematicAWSConnector):
                     raw.update({'tags': tags})
 
                 if region_name:
-                    count, size = self.get_count_and_size(bucket_name, raw.get('region_name'))
-
+                    count, size = self.get_count_and_size(bucket_name, region_name)
+                    
                     raw.update({
                         'object_count': count,
                         'object_total_size': size,
@@ -261,7 +261,14 @@ class S3Connector(SchematicAWSConnector):
     def get_bucket_location(self, bucket_name):
         try:
             response = self.client.get_bucket_location(Bucket=bucket_name)
-            return response.get('LocationConstraint')
+
+            location = response.get('LocationConstraint')
+            
+            if location is None:
+                location = 'us-east-1'  # Client response is None when bucket is located in 'us-east-1'
+            
+            return location
+
         except Exception as e:
             _LOGGER.error(f'[S3 {bucket_name}: Get Bucket Location] {e}')
             return ''
