@@ -21,7 +21,7 @@ cluster_base = ItemDynamicLayout.set_fields('Cluster', fields=[
 ])
 
 cluster_node_groups = TableDynamicLayout.set_fields('Node Groups', 'data.node_groups', fields=[
-    TextDyField.data_source('Group Name', 'data.nodegroup_name'),
+    TextDyField.data_source('Group Name', 'nodegroup_name'),
     EnumDyField.data_source('Status', 'status', default_state={
         'safe': ['ACTIVE'],
         'warning': ['CREATING', 'UPDATING', 'DELETING'],
@@ -33,7 +33,7 @@ cluster_node_groups = TableDynamicLayout.set_fields('Node Groups', 'data.node_gr
     ListDyField.data_source('Subnets', 'subnets', options={
         'delimiter': '<br>'
     }),
-    TextDyField.data_source('Disk Size', 'data_size'),
+    TextDyField.data_source('Disk Size', 'disk_size'),
     ListDyField.data_source('Health Issue', 'instance_types', options={
         'delimiter': '<br>'
     }),
