@@ -129,6 +129,7 @@ class CollectorService(BaseService):
                 except Exception as e:
                     _LOGGER.error(f'failed to result {e}')
 
+        ### This code for test without async job
         # for execute_manager in self.execute_managers:
         #     print(f'@@@ {execute_manager} @@@')
         #     _manager = self.locator.get_manager(execute_manager)
@@ -146,13 +147,10 @@ class CollectorService(BaseService):
 
     @staticmethod
     def get_regions(secret_data):
-        if 'region_name' in secret_data:
-            return [secret_data.get('region_name')]
-        else:
-            _session = get_session(secret_data, DEFAULT_REGION)
-            ec2_client = _session.client('ec2')
-            return list(map(lambda region_info: region_info.get('RegionName'),
-                            ec2_client.describe_regions().get('Regions')))
+        _session = get_session(secret_data, DEFAULT_REGION)
+        ec2_client = _session.client('ec2')
+        return list(map(lambda region_info: region_info.get('RegionName'),
+                        ec2_client.describe_regions().get('Regions')))
 
     def get_region_from_result(self, resource):
         region_resource = self.match_region_info(resource.get('data', {}).get('region_name', None))
