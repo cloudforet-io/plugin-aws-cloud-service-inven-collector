@@ -7,7 +7,7 @@
 
 
 Find us also at [Dockerhub](https://hub.docker.com/repository/docker/spaceone/aws-cloud-services)
-> Latest stable version : 1.11.9
+> Latest stable version : 1.11.10
 
 Please contact us if you need any further information. (<support@spaceone.dev>)
 
@@ -191,6 +191,11 @@ authentication privilege for followings:
 ---
 
 ## Release Note
+
+
+### Ver 1.11.10
+* Remove region_name filter in secret_data
+* Fix some bug
 
 ### Ver 1.11.9
 * (Fix bug) Modify get bucket location for S3 (set the default region when bucket was located is us-east-1)
