@@ -85,6 +85,16 @@ class CollectorService(BaseService):
 
         return {}
 
+    def add_account_region_params(self, params):
+        secret_data = params['secret_data']
+
+        params.update({
+            'account_id': self.get_account_id(secret_data),
+            'regions': self.get_regions(secret_data)
+        })
+
+        return params
+
     @transaction
     @check_required(['options', 'secret_data', 'filter'])
     def list_resources(self, params):
@@ -95,14 +105,6 @@ class CollectorService(BaseService):
                 - secret_data
                 - filter
         """
-
-        secret_data = params['secret_data']
-
-        params.update({
-            'account_id': self.get_account_id(secret_data),
-            'regions': self.get_regions(secret_data)
-        })
-
         start_time = time.time()
         resource_regions = []
         collected_region_code = []
