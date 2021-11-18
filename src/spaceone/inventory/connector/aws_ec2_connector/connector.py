@@ -14,11 +14,12 @@ _LOGGER = logging.getLogger(__name__)
 
 class EC2Connector(SchematicAWSConnector):
     service_name = 'ec2'
+    cloud_service_group = 'EC2'
 
     include_vpc_default = False
 
     def get_resources(self) -> List[SecurityGroupResource]:
-        print("** EC2 Manager START **")
+        _LOGGER.debug("[get_resources] START: EC2")
         resources = []
         start_time = time.time()
 
@@ -45,26 +46,33 @@ class EC2Connector(SchematicAWSConnector):
             for collect_resource in collect_resources:
                 resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
 
-        print(f' EC2 Finished {time.time() - start_time} Seconds')
+        _LOGGER.debug(f'[get_resources] FINISHED: EC2 ({time.time() - start_time} sec)')
         return resources
 
     def request_ami_data(self, region_name) -> List[Image]:
+        self.cloud_service_type = 'AMI'
+
         results = self.client.describe_images(Owners=['self'])
 
         for image in results.get('Images', []):
             try:
                 permission_info = self.client.describe_image_attribute(Attribute='launchPermission', ImageId=image['ImageId'])
+
+                if permission_info:
+                    image.update({
+                        'launch_permissions': [LaunchPermission(_permission, strict=False) for _permission in permission_info.get('LaunchPermissions', [])]
+                    })
+
+                yield Image(image, strict=False), image.get('Name', '')
+
             except Exception as e:
-                permission_info = {}
-
-            if permission_info:
-                image.update({
-                    'launch_permissions': [LaunchPermission(_permission, strict=False) for _permission in permission_info.get('LaunchPermissions', [])]
-                })
-
-            yield Image(image, strict=False), image.get('Name', '')
+                resource_id = image.get('ImageId', '')
+                error_resource_response = self.generate_error(region_name, resource_id, e)
+                yield error_resource_response, ''
 
     def request_security_group_data(self, region_name) -> List[SecurityGroup]:
+        self.cloud_service_type = 'SecurityGroup'
+
         # Get default VPC
         default_vpcs = self._get_default_vpc()
 
@@ -82,60 +90,66 @@ class EC2Connector(SchematicAWSConnector):
 
         for data in response_iterator:
             for raw in data.get('SecurityGroups', []):
-                if self.include_vpc_default is False and raw.get('VpcId') in default_vpcs:
-                    continue
+                try:
+                    if self.include_vpc_default is False and raw.get('VpcId') in default_vpcs:
+                        continue
 
-                # Inbound Rules
-                inbound_rules = []
-                for in_rule in raw.get('IpPermissions', []):
-                    for _ip_range in in_rule.get('IpRanges', []):
-                        inbound_rules.append(
-                            SecurityGroupIpPermission(self.custom_security_group_rule_info(in_rule, _ip_range,
-                                                                                           'ip_ranges'),
-                                                      strict=False))
+                    # Inbound Rules
+                    inbound_rules = []
+                    for in_rule in raw.get('IpPermissions', []):
+                        for _ip_range in in_rule.get('IpRanges', []):
+                            inbound_rules.append(
+                                SecurityGroupIpPermission(self.custom_security_group_rule_info(in_rule, _ip_range,
+                                                                                               'ip_ranges'),
+                                                          strict=False))
 
-                    for _user_group_pairs in in_rule.get('UserIdGroupPairs', []):
-                        inbound_rules.append(
-                            SecurityGroupIpPermission(self.custom_security_group_rule_info(in_rule, _user_group_pairs,
-                                                                                           'user_id_group_pairs'),
-                                                      strict=False))
+                        for _user_group_pairs in in_rule.get('UserIdGroupPairs', []):
+                            inbound_rules.append(
+                                SecurityGroupIpPermission(self.custom_security_group_rule_info(in_rule, _user_group_pairs,
+                                                                                               'user_id_group_pairs'),
+                                                          strict=False))
 
-                    for _ip_v6_range in in_rule.get('Ipv6Ranges', []):
-                        inbound_rules.append(
-                            SecurityGroupIpPermission(self.custom_security_group_rule_info(in_rule, _ip_v6_range,
-                                                                                           'ipv6_ranges'),
-                                                      strict=False))
+                        for _ip_v6_range in in_rule.get('Ipv6Ranges', []):
+                            inbound_rules.append(
+                                SecurityGroupIpPermission(self.custom_security_group_rule_info(in_rule, _ip_v6_range,
+                                                                                               'ipv6_ranges'),
+                                                          strict=False))
 
-                # Outbound Rules
-                outbound_rules = []
-                for out_rule in raw.get('IpPermissionsEgress', []):
-                    for _ip_range in out_rule.get('IpRanges', []):
-                        outbound_rules.append(
-                            SecurityGroupIpPermission(self.custom_security_group_rule_info(out_rule, _ip_range,
-                                                                                           'ip_ranges'),
-                                                      strict=False))
+                    # Outbound Rules
+                    outbound_rules = []
+                    for out_rule in raw.get('IpPermissionsEgress', []):
+                        for _ip_range in out_rule.get('IpRanges', []):
+                            outbound_rules.append(
+                                SecurityGroupIpPermission(self.custom_security_group_rule_info(out_rule, _ip_range,
+                                                                                               'ip_ranges'),
+                                                          strict=False))
 
-                    for _user_group_pairs in out_rule.get('UserIdGroupPairs', []):
-                        outbound_rules.append(
-                            SecurityGroupIpPermission(self.custom_security_group_rule_info(out_rule, _user_group_pairs,
-                                                                                           'user_id_group_pairs'),
-                                                      strict=False))
+                        for _user_group_pairs in out_rule.get('UserIdGroupPairs', []):
+                            outbound_rules.append(
+                                SecurityGroupIpPermission(self.custom_security_group_rule_info(out_rule, _user_group_pairs,
+                                                                                               'user_id_group_pairs'),
+                                                          strict=False))
 
-                    for _ip_v6_range in out_rule.get('Ipv6Ranges', []):
-                        outbound_rules.append(
-                            SecurityGroupIpPermission(self.custom_security_group_rule_info(out_rule, _ip_v6_range,
-                                                                                           'ipv6_ranges'),
-                                                      strict=False))
+                        for _ip_v6_range in out_rule.get('Ipv6Ranges', []):
+                            outbound_rules.append(
+                                SecurityGroupIpPermission(self.custom_security_group_rule_info(out_rule, _ip_v6_range,
+                                                                                               'ipv6_ranges'),
+                                                          strict=False))
 
-                raw.update({
-                    'account_id': self.account_id,
-                    'ip_permissions': inbound_rules,
-                    'ip_permissions_egress': outbound_rules,
-                    'instances': self.get_security_group_map_instances(raw, instances)
-                })
+                    raw.update({
+                        'account_id': self.account_id,
+                        'ip_permissions': inbound_rules,
+                        'ip_permissions_egress': outbound_rules,
+                        'instances': self.get_security_group_map_instances(raw, instances)
+                    })
 
-                result = SecurityGroup(raw, strict=False)
-                yield result, result.group_name
+                    result = SecurityGroup(raw, strict=False)
+                    yield result, result.group_name
+
+                except Exception as e:
+                    resource_id = raw.get('GroupId', '')
+                    error_resource_response = self.generate_error(region_name, resource_id, e)
+                    yield error_resource_response, ''
 
     def custom_security_group_rule_info(self, raw_rule, remote, remote_type):
         raw_rule.update({

@@ -13,10 +13,12 @@ _LOGGER = logging.getLogger(__name__)
 
 class DynamoDBConnector(SchematicAWSConnector):
     service_name = 'dynamodb'
+    cloud_service_group = 'DynamoDB'
+    cloud_service_type = 'Table'
 
     def get_resources(self) -> List[TableResource]:
         resources = []
-        print("** DynamoDB START **")
+        _LOGGER.debug("[get_resources] START: DynamoDB")
         start_time = time.time()
 
         collect_resource = {
@@ -30,11 +32,10 @@ class DynamoDBConnector(SchematicAWSConnector):
             resources.append(cst)
 
         for region_name in self.region_names:
-            # print(f"[ DynamoDB {region_name} ]")
             self.reset_region(region_name)
             resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
 
-        print(f' DynamoDB Finished {time.time() - start_time} Seconds')
+        _LOGGER.debug(f'[get_resources] FINISHED: DynamoDB ({time.time() - start_time} sec)')
         return resources
 
     def request_data(self, region_name) -> List[Table]:
@@ -49,33 +50,39 @@ class DynamoDBConnector(SchematicAWSConnector):
 
         for data in response_iterator:
             for table_name in data.get('TableNames', []):
-                response = self.client.describe_table(TableName=table_name)
-                table = response.get('Table')
+                try:
+                    table = {}
+                    response = self.client.describe_table(TableName=table_name)
+                    table = response.get('Table')
 
-                partition_key, sort_key = self._get_key_info(table.get('KeySchema', []),
-                                                             table.get('AttributeDefinitions', []))
+                    partition_key, sort_key = self._get_key_info(table.get('KeySchema', []),
+                                                                 table.get('AttributeDefinitions', []))
 
-                index_count, total_read_capacity, total_write_capacity = self._get_index_info(table.get('GlobalSecondaryIndexes', []))
+                    index_count, total_read_capacity, total_write_capacity = self._get_index_info(table.get('GlobalSecondaryIndexes', []))
 
-                if _auto_scaling_policies is None:
-                    _auto_scaling_policies = self.describe_scaling_policies()
+                    if _auto_scaling_policies is None:
+                        _auto_scaling_policies = self.describe_scaling_policies()
 
-                table.update({
-                    'partition_key_display': partition_key,
-                    'sort_key_display': sort_key,
-                    'auto_scaling_policies': self._get_auto_scaling(_auto_scaling_policies, table_name),
-                    'encryption_type': self._get_encryption_type(table.get('SSEDescription', {})),
-                    'index_count': index_count,
-                    'total_read_capacity': total_read_capacity,
-                    'total_write_capacity': total_write_capacity,
-                    'time_to_live': self._get_time_to_live(table_name),
-                    'continuous_backup': self._get_continuous_backup(table_name),
-                    'contributor_insight': self._get_contributor_insights(table_name),
-                    'tags': self.request_tags(table.get('TableArn')),
-                    'account_id': self.account_id
-                })
-                res = Table(table, strict=False)
-                yield res, res.table_name
+                    table.update({
+                        'partition_key_display': partition_key,
+                        'sort_key_display': sort_key,
+                        'auto_scaling_policies': self._get_auto_scaling(_auto_scaling_policies, table_name),
+                        'encryption_type': self._get_encryption_type(table.get('SSEDescription', {})),
+                        'index_count': index_count,
+                        'total_read_capacity': total_read_capacity,
+                        'total_write_capacity': total_write_capacity,
+                        'time_to_live': self._get_time_to_live(table_name),
+                        'continuous_backup': self._get_continuous_backup(table_name),
+                        'contributor_insight': self._get_contributor_insights(table_name),
+                        'tags': self.request_tags(table.get('TableArn')),
+                        'account_id': self.account_id
+                    })
+                    res = Table(table, strict=False)
+                    yield res, res.table_name
+                except Exception as e:
+                    resource_id = table.get('TableArn', '')
+                    error_resource_response = self.generate_error(region_name, resource_id, e)
+                    yield error_resource_response, ''
 
     def _get_contributor_insights(self, table_name):
         response = self.client.describe_contributor_insights(TableName=table_name)

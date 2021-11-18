@@ -16,9 +16,10 @@ PAGINATOR_PAGE_SIZE = 50
 
 class MSKConnector(SchematicAWSConnector):
     service_name = 'kafka'
+    cloud_service_group = 'MSK'
 
     def get_resources(self):
-        print("** Managed Streaming for Apache Kafka Start **")
+        _LOGGER.debug("[get_resources] START: MSK")
         resources = []
         start_time = time.time()
 
@@ -44,10 +45,14 @@ class MSKConnector(SchematicAWSConnector):
             for collect_resource in collect_resources:
                 resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
 
-        print(f' Managed Streaming for Apache Kafka Finished {time.time() - start_time} Seconds')
+        _LOGGER.debug(f'[get_resources] FINISHED: MSK ({time.time() - start_time} sec)')
         return resources
 
     def request_cluster_data(self, region_name) -> List[Cluster]:
+        cloud_service_group = 'MSK'
+        cloud_service_type = 'Cluster'
+        self.cloud_service_type = cloud_service_type
+
         paginator = self.client.get_paginator('list_clusters')
         response_iterator = paginator.paginate(
             PaginationConfig={
@@ -58,16 +63,25 @@ class MSKConnector(SchematicAWSConnector):
 
         for data in response_iterator:
             for raw in data.get('ClusterInfoList', []):
-                raw.update({
-                    'tags': self.convert_tags(raw.get('Tags', {})),
-                    'node_info_list': self.get_nodes(raw.get('ClusterArn')),
-                    'cluster_operation_info': self.get_operation_cluster(raw.get('ClusterArn'))
-                })
+                try:
+                    raw.update({
+                        'tags': self.convert_tags(raw.get('Tags', {})),
+                        'node_info_list': self.get_nodes(raw.get('ClusterArn')),
+                        'cluster_operation_info': self.get_operation_cluster(raw.get('ClusterArn'))
+                    })
 
-                res = Cluster(raw, strict=False)
-                yield res, res.cluster_name
+                    res = Cluster(raw, strict=False)
+                    yield res, res.cluster_name
+                except Exception as e:
+                    resource_id = raw.get('ClusterArn', '')
+                    error_resource_response = self.generate_error(region_name, resource_id, e)
+                    yield error_resource_response, ''
 
     def request_configuration_data(self, region_name) -> List[Configuration]:
+        cloud_service_group = 'MSK'
+        cloud_service_type = 'ClusterConfiguration'
+        self.cloud_service_type = cloud_service_type
+
         paginator = self.client.get_paginator('list_configurations')
         response_iterator = paginator.paginate(
             PaginationConfig={
@@ -78,11 +92,16 @@ class MSKConnector(SchematicAWSConnector):
 
         for data in response_iterator:
             for raw in data.get('Configurations'):
-                raw.update({
-                    'revisions_configurations': self.get_revisions(raw.get('Arn'))
-                })
-                res = Configuration(raw, strict=False)
-                yield res, res.name
+                try:
+                    raw.update({
+                        'revisions_configurations': self.get_revisions(raw.get('Arn'))
+                    })
+                    res = Configuration(raw, strict=False)
+                    yield res, res.name
+                except Exception as e:
+                    resource_id = raw.get('Arn', '')
+                    error_resource_response = self.generate_error(region_name, resource_id, e)
+                    yield error_resource_response, ''
 
     def get_nodes(self, arn):
         node_response = self.client.list_nodes(ClusterArn=arn)

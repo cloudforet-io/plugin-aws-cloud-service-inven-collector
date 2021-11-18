@@ -14,9 +14,11 @@ _LOGGER = logging.getLogger(__name__)
 
 class EKSConnector(SchematicAWSConnector):
     service_name = 'eks'
+    cloud_service_group = 'EKS'
+    cloud_service_type = 'Cluster'
 
     def get_resources(self):
-        print("** EKS START **")
+        _LOGGER.debug("[get_resources] START: EKS")
         resources = []
         self.node_groups = []
         start_time = time.time()
@@ -35,23 +37,20 @@ class EKSConnector(SchematicAWSConnector):
             self.reset_region(region_name)
             resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
 
-            try:
-                # For Node Group
-                for node_group_vo in self.node_groups:
-                    resources.append(NodeGroupResponse(
-                        {'resource': NodeGroupResource({
-                            'name': node_group_vo.nodegroup_name,
-                            'data': node_group_vo,
-                            'tags': [{'key': tag.key, 'value': tag.value} for tag in node_group_vo.tags],
-                            'region_code': region_name,
-                            'reference': ReferenceModel(node_group_vo.reference(region_name))})}
-                    ))
-            except Exception as e:
-                print(f'[ERROR EKS] REGION : {region_name} {e}')
+            # For Node Group
+            for node_group_vo in self.node_groups:
+                resources.append(NodeGroupResponse(
+                    {'resource': NodeGroupResource({
+                        'name': node_group_vo.nodegroup_name,
+                        'data': node_group_vo,
+                        'tags': [{'key': tag.key, 'value': tag.value} for tag in node_group_vo.tags],
+                        'region_code': region_name,
+                        'reference': ReferenceModel(node_group_vo.reference(region_name))})}
+                ))
 
             self.node_groups = []
 
-        print(f' EKS Finished {time.time() - start_time} Seconds')
+        _LOGGER.debug(f'[get_resources] FINISHED: EKS ({time.time() - start_time} sec)')
         return resources
 
     def request_data(self, region_name) -> List[Cluster]:
@@ -63,29 +62,41 @@ class EKSConnector(SchematicAWSConnector):
             }
         )
 
+        errors = []
+
         for data in response_iterator:
             for _cluster_name in data.get('clusters', []):
-                raw = self.client.describe_cluster(name=_cluster_name)
+                try:
+                    raw = self.client.describe_cluster(name=_cluster_name)
 
-                if cluster := raw.get('cluster'):
-                    cluster.update({
-                        'updates': list(self.list_updates(_cluster_name)),
-                        'account_id': self.account_id,
-                        'tags': list(map(lambda tag: Tags(tag, strict=False),
-                                         self.convert_tags(cluster.get('tags', {}))))
-                    })
+                    if cluster := raw.get('cluster'):
+                        cluster.update({
+                            'updates': list(self.list_updates(_cluster_name)),
+                            'account_id': self.account_id,
+                            'tags': list(map(lambda tag: Tags(tag, strict=False),
+                                             self.convert_tags(cluster.get('tags', {}))))
+                        })
 
-                    node_groups = list(self.list_node_groups(_cluster_name, cluster.get('arn')))
+                        node_groups, node_group_errors = self.list_node_groups(_cluster_name, cluster.get('arn'))
 
-                    cluster.update({
-                        'node_groups': node_groups
-                    })
+                        cluster.update({
+                            'node_groups': node_groups
+                        })
 
-                    self.node_groups.extend(node_groups)
+                        self.node_groups.extend(node_groups)
+                        errors.extend(node_group_errors)
 
-                    yield Cluster(cluster, strict=False), cluster.get('name', '')
+                        yield Cluster(cluster, strict=False), cluster.get('name', '')
+                except Exception as e:
+                    resource_id = _cluster_name
+                    errors.append(self.generate_error(region_name, resource_id, e))
+
+        for error in errors:
+            yield error, ''
 
     def list_node_groups(self, cluster_name, cluster_arn):
+        self.cloud_service_type = 'NodeGroup'
+
         asgs = self.get_auto_scaling_groups()
         paginator = self.client.get_paginator('list_nodegroups')
         response_iterator = paginator.paginate(
@@ -96,21 +107,31 @@ class EKSConnector(SchematicAWSConnector):
             }
         )
 
+        node_groups = []
+        errors = []
+
         for data in response_iterator:
             for node_group in data.get('nodegroups', []):
-                node_group_response = self.client.describe_nodegroup(clusterName=cluster_name, nodegroupName=node_group)
-                node_group = node_group_response.get('nodegroup', {})
-                node_group.update({
-                    'cluster_arn': cluster_arn,
-                    'account_id': self.account_id,
-                    'tags': list(map(lambda tag: Tags(tag, strict=False),
-                                     self.convert_tags(node_group.get('tags', {}))))
-                })
-                asg_names = [asg.get("name", "") for asg in
-                             node_group.get("resources", "").get("autoScalingGroups", [])]
-                if len(asg_names) > 0:
-                    node_group["resources"]["autoScalingGroups"] = self.get_matched_auto_scaling_groups(asgs, asg_names)
-                yield NodeGroup(node_group, strict=False)
+                try:
+                    node_group_response = self.client.describe_nodegroup(clusterName=cluster_name, nodegroupName=node_group)
+                    node_group = node_group_response.get('nodegroup', {})
+                    node_group.update({
+                        'cluster_arn': cluster_arn,
+                        'account_id': self.account_id,
+                        'tags': list(map(lambda tag: Tags(tag, strict=False),
+                                         self.convert_tags(node_group.get('tags', {}))))
+                    })
+                    asg_names = [asg.get("name", "") for asg in
+                                 node_group.get("resources", "").get("autoScalingGroups", [])]
+                    if len(asg_names) > 0:
+                        node_group["resources"]["autoScalingGroups"] = self.get_matched_auto_scaling_groups(asgs, asg_names)
+                    node_groups.append(NodeGroup(node_group, strict=False))
+
+                except Exception as e:
+                    resource_id = node_group.get('nodegroupArn', '')
+                    errors.append(self.generate_error(region_name, resource_id, e))
+
+        return node_groups, errors
 
     def list_updates(self, cluster_name):
         paginator = self.client.get_paginator('list_updates')

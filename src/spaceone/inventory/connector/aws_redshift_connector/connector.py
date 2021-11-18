@@ -14,9 +14,11 @@ _LOGGER = logging.getLogger(__name__)
 
 class RedshiftConnector(SchematicAWSConnector):
     service_name = 'redshift'
+    cloud_service_group = 'Redshift'
+    cloud_service_type = 'Cluster'
 
     def get_resources(self) -> List[ClusterResource]:
-        print("** Redshift START **")
+        _LOGGER.debug("[get_resources] START: Redshift")
         resources = []
         start_time = time.time()
 
@@ -34,7 +36,7 @@ class RedshiftConnector(SchematicAWSConnector):
             self.reset_region(region_name)
             resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
 
-        print(f' Redshift Finished {time.time() - start_time} Seconds')
+        _LOGGER.debug(f'[get_resources] FINISHED: Redshift ({time.time() - start_time} sec)')
         return resources
 
     def request_data(self, region_name) -> List[Cluster]:
@@ -47,21 +49,25 @@ class RedshiftConnector(SchematicAWSConnector):
         )
         for data in response_iterator:
             for raw in data.get('Clusters', []):
+                try:
+                    raw.update({
+                        'region_name': region_name,
+                        'account_id': self.account_id,
+                        'arn': self.generate_arn(service=self.service_name, region=region_name,
+                                                 account_id=self.account_id, resource_type='cluster',
+                                                 resource_id=raw.get('ClusterIdentifier')),
+                        'tags': list(self.describe_tags({"service": self.service_name,
+                                                         "region": region_name,
+                                                         "account_id": self.account_id,
+                                                         "resource_id": raw.get('ClusterIdentifier', '')}))
+                    })
 
-                raw.update({
-                    'region_name': region_name,
-                    'account_id': self.account_id,
-                    'arn': self.generate_arn(service=self.service_name, region=region_name,
-                                             account_id=self.account_id, resource_type='cluster',
-                                             resource_id=raw.get('ClusterIdentifier')),
-                    'tags': list(self.describe_tags({"service": self.service_name,
-                                                     "region": region_name,
-                                                     "account_id": self.account_id,
-                                                     "resource_id": raw.get('ClusterIdentifier', '')}))
-                })
-
-                res = Cluster(raw, strict=False)
-                yield res, res.cluster_identifier
+                    res = Cluster(raw, strict=False)
+                    yield res, res.cluster_identifier
+                except Exception as e:
+                    resource_id = raw.get('ClusterIdentifier', '')
+                    error_resource_response = self.generate_error(region_name, resource_id, e)
+                    yield error_resource_response, ''
 
     def describe_tags(self, arn_vo):
         response = {}

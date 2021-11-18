@@ -14,9 +14,11 @@ _LOGGER = logging.getLogger(__name__)
 class CloudTrailConnector(SchematicAWSConnector):
     service_name = 'cloudtrail'
     trails = []
+    cloud_service_group = 'CloudTrail'
+    cloud_service_type = 'Trail'
 
     def get_resources(self) -> List[TrailResource]:
-        print("** Cloud Trail START **")
+        _LOGGER.debug("[get_resources] START: CloudTrail")
         resources = []
         start_time = time.time()
 
@@ -35,7 +37,7 @@ class CloudTrailConnector(SchematicAWSConnector):
             self.reset_region(region_name)
             resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
 
-        print(f' Cloud Trail Finished {time.time() - start_time} Seconds')
+        _LOGGER.debug(f'[get_resources] FINISHED: CloudTrail ({time.time() - start_time} sec)')
         return resources
 
     def request_data(self, region_name) -> List[Trail]:
@@ -45,23 +47,29 @@ class CloudTrailConnector(SchematicAWSConnector):
         tags = self._list_tags(trails)
 
         for raw in trails:
-            if raw['TrailARN'] not in self.trails:
-                raw['event_selectors'] = list(map(lambda event_selector: EventSelector(event_selector, strict=False),
-                                                  self._get_event_selector(raw['Name'])))
+            try:
+                if raw['TrailARN'] not in self.trails:
+                    raw['event_selectors'] = list(map(lambda event_selector: EventSelector(event_selector, strict=False),
+                                                      self._get_event_selector(raw['Name'])))
 
-                if raw['HasInsightSelectors']:
-                    insight_selectors = self._get_insight_selectors(raw.get('Name'))
-                    if insight_selectors is not None:
-                        raw['insight_selectors'] = InsightSelector(insight_selectors, strict=False)
+                    if raw['HasInsightSelectors']:
+                        insight_selectors = self._get_insight_selectors(raw.get('Name'))
+                        if insight_selectors is not None:
+                            raw['insight_selectors'] = InsightSelector(insight_selectors, strict=False)
 
-                raw.update({
-                    'account_id': self.account_id,
-                    'tags': self._match_tags(raw.get('TrailARN'), tags)
-                })
+                    raw.update({
+                        'account_id': self.account_id,
+                        'tags': self._match_tags(raw.get('TrailARN'), tags)
+                    })
 
-                res = Trail(raw, strict=False)
-                self.trails.append(raw['TrailARN'])
-                yield res, res.name
+                    res = Trail(raw, strict=False)
+                    self.trails.append(raw['TrailARN'])
+                    yield res, res.name
+
+            except Exception as e:
+                resource_id = raw.get('TrailARN', '')
+                error_resource_response = self.generate_error(region_name, resource_id, e)
+                yield error_resource_response, ''
 
     def _get_event_selector(self, trail_name):
         response = self.client.get_event_selectors(TrailName=trail_name)

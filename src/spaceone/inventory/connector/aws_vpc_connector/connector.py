@@ -46,6 +46,7 @@ PROTOCOL_NUMBER_INFO = {'0': 'HOPOPT', '1': 'ICMP', '2': 'IGMP', '3': 'GGP', '4'
 
 class VPCConnector(SchematicAWSConnector):
     service_name = 'ec2'
+    cloud_service_group = 'VPC'
 
     customer_gateways = None
     vpn_gateways = None
@@ -166,52 +167,59 @@ class VPCConnector(SchematicAWSConnector):
             for collect_resource in collect_resources:
                 resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
 
-        print(f' VPC Finished {time.time() - start_time} Seconds')
+        _LOGGER.debug(f'[get_resources] FINISHED: VPC ({time.time() - start_time} sec)')
         return resources
 
     def request_vpc_data(self, region_name) -> List[VPC]:
+        self.cloud_service_type = 'VPC'
+
         if len(self.dhcp_options) > 0:
             self.dhcp_options = self.describe_dhcp_options()
 
         for vpc in self.vpcs:
-            route_tables = self._match_vpc_object(self.route_tables, vpc.get('VpcId'))
+            try:
+                route_tables = self._match_vpc_object(self.route_tables, vpc.get('VpcId'))
 
-            vpc.update({
-                'arn': self.generate_arn(service=self.service_name,
-                                         region=region_name, account_id=self.account_id,
-                                         resource_type="vpc", resource_id=vpc.get('VpcId')),
-                'subnets': self._match_vpc_object(self.subnets, vpc.get('VpcId')),
-                'route_tables': route_tables,
-                'main_route_table_id': self._get_main_route_table(route_tables),
-                'main_network_acl_id': self._get_main_network_acl(self._match_vpc_object(self.network_acls,
-                                                                                         vpc.get('VpcId'))),
-                'endpoints': self._match_vpc_object(self.endpoints, vpc.get('VpcId')),
-                'peering_connections': self._match_vpc_peering_connection(vpc.get('VpcId')),
-                'nat_gateways': self._match_vpc_object(self.nat_gateways, vpc.get('VpcId')),
-                'transit_gateway': self._match_transit_gateway(vpc.get('VpcId')),
-                'vpn_gateway': self._match_vpn_gateway(vpc.get('VpcId')),
-                'region_name': region_name,
-                'account_id': self.account_id,
-                'internet_gateway': self._match_internet_gateway(vpc.get('VpcId')),
-                'enable_dns_support': self.describe_vpc_attribute(vpc.get('VpcId'), 'enableDnsSupport'),
-                'enable_dns_hostnames': self.describe_vpc_attribute(vpc.get('VpcId'), 'enableDnsHostnames'),
-                'name': self._get_name_from_tags(vpc.get('Tags', []))
-            })
-
-            match_eoigw = self._match_egress_only_internet_gateway(vpc.get('VpcId'))
-            if match_eoigw is not None:
                 vpc.update({
-                    'egress_only_internet_gateway': match_eoigw
+                    'arn': self.generate_arn(service=self.service_name,
+                                             region=region_name, account_id=self.account_id,
+                                             resource_type="vpc", resource_id=vpc.get('VpcId')),
+                    'subnets': self._match_vpc_object(self.subnets, vpc.get('VpcId')),
+                    'route_tables': route_tables,
+                    'main_route_table_id': self._get_main_route_table(route_tables),
+                    'main_network_acl_id': self._get_main_network_acl(self._match_vpc_object(self.network_acls,
+                                                                                             vpc.get('VpcId'))),
+                    'endpoints': self._match_vpc_object(self.endpoints, vpc.get('VpcId')),
+                    'peering_connections': self._match_vpc_peering_connection(vpc.get('VpcId')),
+                    'nat_gateways': self._match_vpc_object(self.nat_gateways, vpc.get('VpcId')),
+                    'transit_gateway': self._match_transit_gateway(vpc.get('VpcId')),
+                    'vpn_gateway': self._match_vpn_gateway(vpc.get('VpcId')),
+                    'region_name': region_name,
+                    'account_id': self.account_id,
+                    'internet_gateway': self._match_internet_gateway(vpc.get('VpcId')),
+                    'enable_dns_support': self.describe_vpc_attribute(vpc.get('VpcId'), 'enableDnsSupport'),
+                    'enable_dns_hostnames': self.describe_vpc_attribute(vpc.get('VpcId'), 'enableDnsHostnames'),
+                    'name': self._get_name_from_tags(vpc.get('Tags', []))
                 })
 
-            match_dhcp_option = self._match_dhcp_options(vpc.get('DhcpOptionsId'))
-            if match_dhcp_option is not None:
-                vpc.update({
-                    'dhcp_option': match_dhcp_option
-                })
+                match_eoigw = self._match_egress_only_internet_gateway(vpc.get('VpcId'))
+                if match_eoigw is not None:
+                    vpc.update({
+                        'egress_only_internet_gateway': match_eoigw
+                    })
 
-            vpc = VPC(vpc, strict=False)
-            yield vpc, vpc.name
+                match_dhcp_option = self._match_dhcp_options(vpc.get('DhcpOptionsId'))
+                if match_dhcp_option is not None:
+                    vpc.update({
+                        'dhcp_option': match_dhcp_option
+                    })
+
+                vpc_vo = VPC(vpc, strict=False)
+                yield vpc_vo, vpc_vo.name
+            except Exception as e:
+                resource_id = vpc.get('VpcId', '')
+                error_resource_response = self.generate_error(region_name, resource_id, e)
+                yield error_resource_response, ''
 
     def describe_vpc_attribute(self, vpc_id, attribute):
         response = self.client.describe_vpc_attribute(VpcId=vpc_id, Attribute=attribute)
@@ -222,6 +230,8 @@ class VPCConnector(SchematicAWSConnector):
             return "Disabled"
 
     def request_peering_connection_data(self, region_name):
+        self.cloud_service_type = 'PeeringConnection'
+
         response = {}
         if self.include_default:
             response = self.client.describe_vpc_peering_connections()
@@ -231,20 +241,27 @@ class VPCConnector(SchematicAWSConnector):
             response = self.client.describe_vpc_peering_connections(Filters=_filters)
 
         for peerx in response.get('VpcPeeringConnections', []):
-            peerx.update({
-                'arn': self.generate_arn(service=self.service_name, region=region_name, account_id=self.account_id,
-                                         resource_type="vpc-peering-connection",
-                                         resource_id=peerx.get('VpcPeeringConnectionId')),
-                'region_name': region_name,
-                'account_id': self.account_id,
-                'name': self._get_name_from_tags(peerx.get('Tags', []))
-            })
+            try:
+                peerx.update({
+                    'arn': self.generate_arn(service=self.service_name, region=region_name, account_id=self.account_id,
+                                             resource_type="vpc-peering-connection",
+                                             resource_id=peerx.get('VpcPeeringConnectionId')),
+                    'region_name': region_name,
+                    'account_id': self.account_id,
+                    'name': self._get_name_from_tags(peerx.get('Tags', []))
+                })
 
-            peer_connect = PeeringConnection(peerx, strict=False)
-            self.peering_connections.append(peer_connect)
-            yield peer_connect, peer_connect.name
+                peer_connect = PeeringConnection(peerx, strict=False)
+                self.peering_connections.append(peer_connect)
+                yield peer_connect, peer_connect.name
+            except Exception as e:
+                resource_id = peerx.get('VpcPeeringConnectionId', '')
+                error_resource_response = self.generate_error(region_name, resource_id, e)
+                yield error_resource_response, ''
 
     def request_nat_gateway_data(self, region_name):
+        self.cloud_service_type = 'NATGateway'
+
         response = {}
         if self.include_default:
             response = self.client.describe_nat_gateways()
@@ -253,19 +270,26 @@ class VPCConnector(SchematicAWSConnector):
             response = self.client.describe_nat_gateways(Filters=_filters)
 
         for ngw in response.get('NatGateways', []):
-            ngw.update({
-                'arn': self.generate_arn(service=self.service_name, region=region_name, account_id=self.account_id,
-                                         resource_type="nat-gateway", resource_id=ngw.get('NatGatewayId')),
-                'region_name': region_name,
-                'account_id': self.account_id,
-                'name': self._get_name_from_tags(ngw.get('Tags', []))
-            })
+            try:
+                ngw.update({
+                    'arn': self.generate_arn(service=self.service_name, region=region_name, account_id=self.account_id,
+                                             resource_type="nat-gateway", resource_id=ngw.get('NatGatewayId')),
+                    'region_name': region_name,
+                    'account_id': self.account_id,
+                    'name': self._get_name_from_tags(ngw.get('Tags', []))
+                })
 
-            nat_gateway = NATGateway(ngw, strict=False)
-            self.nat_gateways.append(nat_gateway)
-            yield nat_gateway, nat_gateway.name
+                nat_gateway = NATGateway(ngw, strict=False)
+                self.nat_gateways.append(nat_gateway)
+                yield nat_gateway, nat_gateway.name
+            except Exception as e:
+                resource_id = ngw.get('NatGatewayId', '')
+                error_resource_response = self.generate_error(region_name, resource_id, e)
+                yield error_resource_response, ''
 
     def request_network_acl_data(self, region_name):
+        self.cloud_service_type = 'NetworkACL'
+
         response = {}
         if self.include_default:
             response = self.client.describe_network_acls()
@@ -274,24 +298,31 @@ class VPCConnector(SchematicAWSConnector):
             response = self.client.describe_network_acls(Filters=_filters)
 
         for nacl in response.get('NetworkAcls', []):
-            inbound_rules, outbound_rules, total_rules = self._get_rules_from_rules(nacl.get('Entries', []))
+            try:
+                inbound_rules, outbound_rules, total_rules = self._get_rules_from_rules(nacl.get('Entries', []))
 
-            nacl.update({
-                'arn': self.generate_arn(service=self.service_name, region=region_name, account_id=self.account_id,
-                                         resource_type="network-acl", resource_id=nacl.get('NetworkAclId')),
-                'inbound_entries': inbound_rules,
-                'outbound_entries': outbound_rules,
-                'entries': total_rules,
-                'region_name': region_name,
-                'account_id': self.account_id,
-                'name': self._get_name_from_tags(nacl.get('Tags', []))
-            })
+                nacl.update({
+                    'arn': self.generate_arn(service=self.service_name, region=region_name, account_id=self.account_id,
+                                             resource_type="network-acl", resource_id=nacl.get('NetworkAclId')),
+                    'inbound_entries': inbound_rules,
+                    'outbound_entries': outbound_rules,
+                    'entries': total_rules,
+                    'region_name': region_name,
+                    'account_id': self.account_id,
+                    'name': self._get_name_from_tags(nacl.get('Tags', []))
+                })
 
-            network_acl = NetworkACL(nacl, strict=False)
-            self.network_acls.append(network_acl)
-            yield network_acl, network_acl.name
+                network_acl = NetworkACL(nacl, strict=False)
+                self.network_acls.append(network_acl)
+                yield network_acl, network_acl.name
+            except Exception as e:
+                resource_id = nacl.get('NetworkAclId', '')
+                error_resource_response = self.generate_error(region_name, resource_id, e)
+                yield error_resource_response, ''
 
     def request_endpoint_data(self, region_name):
+        self.cloud_service_type = 'Endpoint'
+
         response = {}
         if self.include_default:
             response = self.client.describe_vpc_endpoints()
@@ -300,19 +331,26 @@ class VPCConnector(SchematicAWSConnector):
             response = self.client.describe_vpc_endpoints(Filters=_filters)
 
         for endp in response.get('VpcEndpoints', []):
-            endp.update({
-                'arn': self.generate_arn(service=self.service_name, region=region_name, account_id=self.account_id,
-                                         resource_type="vpc-endpoint", resource_id=endp.get('VpcEndpointId')),
-                'region_name': region_name,
-                'account_id': self.account_id,
-                'name': self._get_name_from_tags(endp.get('Tags', []))
-            })
+            try:
+                endp.update({
+                    'arn': self.generate_arn(service=self.service_name, region=region_name, account_id=self.account_id,
+                                             resource_type="vpc-endpoint", resource_id=endp.get('VpcEndpointId')),
+                    'region_name': region_name,
+                    'account_id': self.account_id,
+                    'name': self._get_name_from_tags(endp.get('Tags', []))
+                })
 
-            endpoint = Endpoint(endp, strict=False)
-            self.endpoints.append(endpoint)
-            yield endpoint, endpoint.name
+                endpoint = Endpoint(endp, strict=False)
+                self.endpoints.append(endpoint)
+                yield endpoint, endpoint.name
+            except Exception as e:
+                resource_id = endp.get('VpcEndpointId', '')
+                error_resource_response = self.generate_error(region_name, resource_id, e)
+                yield error_resource_response, ''
 
     def request_egress_only_internet_gateway_data(self, region_name):
+        self.cloud_service_type = 'EgressOnlyInternetGateway'
+
         response = {}
         if self.include_default:
             response = self.client.describe_egress_only_internet_gateways()
@@ -321,20 +359,27 @@ class VPCConnector(SchematicAWSConnector):
             response = self.client.describe_egress_only_internet_gateways(Filters=_filters)
 
         for eoigw in response.get('EgressOnlyInternetGateways', []):
-            eoigw.update({
-                'arn': self.generate_arn(service=self.service_name, region=region_name, account_id=self.account_id,
-                                         resource_type="egress-only-internet-gateway",
-                                         resource_id=eoigw.get('EgressOnlyInternetGatewayId')),
-                'region_name': region_name,
-                'account_id': self.account_id,
-                'name': self._get_name_from_tags(eoigw.get('Tags', []))
-            })
+            try:
+                eoigw.update({
+                    'arn': self.generate_arn(service=self.service_name, region=region_name, account_id=self.account_id,
+                                             resource_type="egress-only-internet-gateway",
+                                             resource_id=eoigw.get('EgressOnlyInternetGatewayId')),
+                    'region_name': region_name,
+                    'account_id': self.account_id,
+                    'name': self._get_name_from_tags(eoigw.get('Tags', []))
+                })
 
-            egress_only_internet_gateway = EgressOnlyInternetGateway(eoigw, strict=False)
-            self.egress_only_internet_gateways.append(egress_only_internet_gateway)
-            yield egress_only_internet_gateway, egress_only_internet_gateway.name
+                egress_only_internet_gateway = EgressOnlyInternetGateway(eoigw, strict=False)
+                self.egress_only_internet_gateways.append(egress_only_internet_gateway)
+                yield egress_only_internet_gateway, egress_only_internet_gateway.name
+            except Exception as e:
+                resource_id = eoigw.get('EgressOnlyInternetGatewayId', '')
+                error_resource_response = self.generate_error(region_name, resource_id, e)
+                yield error_resource_response, ''
 
     def request_internet_gateway_data(self, region_name):
+        self.cloud_service_type = 'InternetGateway'
+
         response = {}
         if self.include_default:
             response = self.client.describe_internet_gateways()
@@ -343,30 +388,37 @@ class VPCConnector(SchematicAWSConnector):
             response = self.client.describe_internet_gateways(Filters=_filters)
 
         for igw in response.get('InternetGateways', []):
-            state = None
-            _attachments = igw.get('Attachments', [])
-            if len(_attachments) > 0:
-                state = _attachments[0]['State']
+            try:
+                state = None
+                _attachments = igw.get('Attachments', [])
+                if len(_attachments) > 0:
+                    state = _attachments[0]['State']
 
-            igw.update({
-                'arn': self.generate_arn(service=self.service_name, region=region_name, account_id=self.account_id,
-                                         resource_type="internet-gateway",
-                                         resource_id=igw.get('InternetGatewayId')),
-                'region_name': region_name,
-                'account_id': self.account_id,
-                'name': self._get_name_from_tags(igw.get('Tags', []))
-            })
-
-            if state is not None:
                 igw.update({
-                    'state': state
+                    'arn': self.generate_arn(service=self.service_name, region=region_name, account_id=self.account_id,
+                                             resource_type="internet-gateway",
+                                             resource_id=igw.get('InternetGatewayId')),
+                    'region_name': region_name,
+                    'account_id': self.account_id,
+                    'name': self._get_name_from_tags(igw.get('Tags', []))
                 })
 
-            internet_gateway = InternetGateway(igw, strict=False)
-            self.internet_gateways.append(internet_gateway)
-            yield internet_gateway, internet_gateway.name
+                if state is not None:
+                    igw.update({
+                        'state': state
+                    })
+
+                internet_gateway = InternetGateway(igw, strict=False)
+                self.internet_gateways.append(internet_gateway)
+                yield internet_gateway, internet_gateway.name
+            except Exception as e:
+                resource_id = igw.get('InternetGatewayId', '')
+                error_resource_response = self.generate_error(region_name, resource_id, e)
+                yield error_resource_response, ''
 
     def request_route_table_data(self, region_name):
+        self.cloud_service_type = 'RouteTable'
+
         response = {}
         if self.include_default:
             response = self.client.describe_route_tables()
@@ -375,26 +427,33 @@ class VPCConnector(SchematicAWSConnector):
             response = self.client.describe_route_tables(Filters=_filters)
 
         for rt in response.get('RouteTables', []):
-            subnet_associations, edge_associations, main = self._get_association(rt.get('Associations', []))
+            try:
+                subnet_associations, edge_associations, main = self._get_association(rt.get('Associations', []))
 
-            rt.update({
-                'arn': self.generate_arn(service=self.service_name, region=region_name, account_id=self.account_id,
-                                         resource_type="route-table",
-                                         resource_id=rt.get('RouteTableId')),
-                'routes': self._get_route(rt.get('Routes', [])),
-                'subnet_associations':  subnet_associations,
-                'edge_associations': edge_associations,
-                'main': main,
-                'region_name': region_name,
-                'account_id': self.account_id,
-                'name': self._get_name_from_tags(rt.get('Tags', []))
-            })
+                rt.update({
+                    'arn': self.generate_arn(service=self.service_name, region=region_name, account_id=self.account_id,
+                                             resource_type="route-table",
+                                             resource_id=rt.get('RouteTableId')),
+                    'routes': self._get_route(rt.get('Routes', [])),
+                    'subnet_associations':  subnet_associations,
+                    'edge_associations': edge_associations,
+                    'main': main,
+                    'region_name': region_name,
+                    'account_id': self.account_id,
+                    'name': self._get_name_from_tags(rt.get('Tags', []))
+                })
 
-            route_table = RouteTable(rt, strict=False)
-            self.route_tables.append(route_table)
-            yield route_table, route_table.name
+                route_table = RouteTable(rt, strict=False)
+                self.route_tables.append(route_table)
+                yield route_table, route_table.name
+            except Exception as e:
+                resource_id = rt.get('RouteTableId', '')
+                error_resource_response = self.generate_error(region_name, resource_id, e)
+                yield error_resource_response, ''
 
     def request_subnet_data(self, region_name):
+        self.cloud_service_type = 'RouteTable'
+
         response = {}
         if self.include_default:
             response = self.client.describe_subnets()
@@ -403,102 +462,135 @@ class VPCConnector(SchematicAWSConnector):
             response = self.client.describe_subnets(Filters=_filters)
 
         for subnet in response.get('Subnets', []):
-            subnet.update({
-                'region_name': region_name,
-                'account_id': self.account_id,
-                'name': self._get_name_from_tags(subnet.get('Tags', []))
-            })
+            try:
+                subnet.update({
+                    'region_name': region_name,
+                    'account_id': self.account_id,
+                    'name': self._get_name_from_tags(subnet.get('Tags', []))
+                })
 
-            if match_route_table := self._match_route_table(subnet.get('SubnetId')):
-                # Match subnet type: public or private
-                for route in match_route_table.routes:
-                    if route.gateway_id is not None and 'igw' in route.gateway_id:
-                        subnet.update({'subnet_type': 'public'})
+                if match_route_table := self._match_route_table(subnet.get('SubnetId')):
+                    # Match subnet type: public or private
+                    for route in match_route_table.routes:
+                        if route.gateway_id is not None and 'igw' in route.gateway_id:
+                            subnet.update({'subnet_type': 'public'})
 
-                subnet.update({'route_table': match_route_table})
+                    subnet.update({'route_table': match_route_table})
 
-            if match_network_acl := self._match_network_acl(subnet.get('SubnetId')):
-                subnet.update({'network_acl': match_network_acl})
+                if match_network_acl := self._match_network_acl(subnet.get('SubnetId')):
+                    subnet.update({'network_acl': match_network_acl})
 
-            if match_nat_gateways := self._match_nat_gateways(subnet.get('SubnetId')):
-                subnet.update({'nat_gateways': match_nat_gateways})
+                if match_nat_gateways := self._match_nat_gateways(subnet.get('SubnetId')):
+                    subnet.update({'nat_gateways': match_nat_gateways})
 
-            subnet = Subnet(subnet, strict=False)
-            self.subnets.append(subnet)
-            yield subnet, subnet.name
+                subnet_vo = Subnet(subnet, strict=False)
+                self.subnets.append(subnet_vo)
+                yield subnet_vo, subnet_vo.name
+            except Exception as e:
+                resource_id = subnet.get('SubnetArn', '')
+                error_resource_response = self.generate_error(region_name, resource_id, e)
+                yield error_resource_response, ''
 
     def request_transit_gateway_data(self, region_name):
+        self.cloud_service_type = 'CustomerGateway'
+
         response = self.client.describe_transit_gateways()
 
         for transit_gateway in response.get('TransitGateways', []):
-            transit_gateway.update({
-                'region_name': region_name,
-                'account_id': self.account_id,
-                'name': self._get_name_from_tags(transit_gateway.get('Tags', [])),
-                'vpn_connections': self._match_vpn_connection('transit_gateway', transit_gateway.get('TransitGatewayId'))
-            })
+            try:
+                transit_gateway.update({
+                    'region_name': region_name,
+                    'account_id': self.account_id,
+                    'name': self._get_name_from_tags(transit_gateway.get('Tags', [])),
+                    'vpn_connections': self._match_vpn_connection('transit_gateway', transit_gateway.get('TransitGatewayId'))
+                })
 
-            tgw = TransitGateway(transit_gateway, strict=False)
-            self.transit_gateways.append(tgw)
-            yield tgw, tgw.name
+                tgw = TransitGateway(transit_gateway, strict=False)
+                self.transit_gateways.append(tgw)
+                yield tgw, tgw.name
+            except Exception as e:
+                resource_id = transit_gateway.get('TransitGatewayArn', '')
+                error_resource_response = self.generate_error(region_name, resource_id, e)
+                yield error_resource_response, ''
 
     def request_customer_gateway_data(self, region_name):
+        self.cloud_service_type = 'CustomerGateway'
+
         response = self.client.describe_customer_gateways()
 
         for customer_gateway in response.get('CustomerGateways', []):
-            customer_gateway.update({
-                'region_name': region_name,
-                'account_id': self.account_id,
-                'name': self._get_name_from_tags(customer_gateway.get('Tags', [])),
-            })
-
-            _match_vpn_conn = self._match_vpn_connection('customer_gateway', customer_gateway.get('CustomerGatewayId'))
-
-            if len(_match_vpn_conn) > 0:
+            try:
                 customer_gateway.update({
-                    'vpn_connection': _match_vpn_conn[0]
+                    'region_name': region_name,
+                    'account_id': self.account_id,
+                    'name': self._get_name_from_tags(customer_gateway.get('Tags', [])),
                 })
 
-            customer_gw = CustomerGateway(customer_gateway, strict=False)
-            self.customer_gateways.append(customer_gw)
+                _match_vpn_conn = self._match_vpn_connection('customer_gateway', customer_gateway.get('CustomerGatewayId'))
 
-            yield customer_gw, customer_gw.name
+                if len(_match_vpn_conn) > 0:
+                    customer_gateway.update({
+                        'vpn_connection': _match_vpn_conn[0]
+                    })
+
+                customer_gw = CustomerGateway(customer_gateway, strict=False)
+                self.customer_gateways.append(customer_gw)
+
+                yield customer_gw, customer_gw.name
+            except Exception as e:
+                resource_id = customer_gateway.get('CustomerGatewayId', '')
+                error_resource_response = self.generate_error(region_name, resource_id, e)
+                yield error_resource_response, ''
 
     def request_vpn_gateway_data(self, region_name):
+        self.cloud_service_type = 'VPNGateway'
+
         response = self.client.describe_vpn_gateways()
 
         for vpn_gateway in response.get('VpnGateways', []):
-            vpn_gateway.update({
-                'region_name': region_name,
-                'account_id': self.account_id,
-                'name': self._get_name_from_tags(vpn_gateway.get('Tags', []))
-            })
-
-            _match_vpn_conn = self._match_vpn_connection('vpn_gateway', vpn_gateway.get('VpnGatewayId'))
-
-            if len(_match_vpn_conn) > 0:
+            try:
                 vpn_gateway.update({
-                    'vpn_connection': _match_vpn_conn[0]
+                    'region_name': region_name,
+                    'account_id': self.account_id,
+                    'name': self._get_name_from_tags(vpn_gateway.get('Tags', []))
                 })
 
-            vpn_gw = VPNGateway(vpn_gateway, strict=False)
-            self.vpn_gateways.append(vpn_gw)
+                _match_vpn_conn = self._match_vpn_connection('vpn_gateway', vpn_gateway.get('VpnGatewayId'))
 
-            yield vpn_gw, vpn_gw.name
+                if len(_match_vpn_conn) > 0:
+                    vpn_gateway.update({
+                        'vpn_connection': _match_vpn_conn[0]
+                    })
+
+                vpn_gw = VPNGateway(vpn_gateway, strict=False)
+                self.vpn_gateways.append(vpn_gw)
+
+                yield vpn_gw, vpn_gw.name
+            except Exception as e:
+                resource_id = vpn_gateway.get('VpnGatewayId', '')
+                error_resource_response = self.generate_error(region_name, resource_id, e)
+                yield error_resource_response, ''
 
     def request_vpn_connection_data(self, region_name):
+        self.cloud_service_type = 'VPNConnection'
+
         response = self.client.describe_vpn_connections()
 
         for vpn_connection in response.get('VpnConnections', []):
-            vpn_connection.update({
-                'region_name': region_name,
-                'account_id': self.account_id,
-                'name': self._get_name_from_tags(vpn_connection.get('Tags', []))
-            })
+            try:
+                vpn_connection.update({
+                    'region_name': region_name,
+                    'account_id': self.account_id,
+                    'name': self._get_name_from_tags(vpn_connection.get('Tags', []))
+                })
 
-            vpn_conn = VPNConnection(vpn_connection, strict=False)
-            self.vpn_connections.append(vpn_conn)
-            yield vpn_conn, vpn_conn.name
+                vpn_conn = VPNConnection(vpn_connection, strict=False)
+                self.vpn_connections.append(vpn_conn)
+                yield vpn_conn, vpn_conn.name
+            except Exception as e:
+                resource_id = vpn_connection.get('VpnConnectionId', '')
+                error_resource_response = self.generate_error(region_name, resource_id, e)
+                yield error_resource_response, ''
 
     @staticmethod
     def _get_name_from_tags(tags):

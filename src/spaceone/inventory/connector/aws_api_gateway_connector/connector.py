@@ -15,9 +15,11 @@ _LOGGER = logging.getLogger(__name__)
 class APIGatewayConnector(SchematicAWSConnector):
     rest_service_name = 'apigateway'
     websocket_service_name = 'apigatewayv2'
+    cloud_service_group = 'APIGateway'
+    cloud_service_type = 'API'
 
     def get_resources(self):
-        print("** API Gateway START **")
+        _LOGGER.debug("[get_resources] START: API Gateway")
         resources = []
         start_time = time.time()
 
@@ -40,7 +42,6 @@ class APIGatewayConnector(SchematicAWSConnector):
             resources.append(cst)
 
         for region_name in self.region_names:
-            # print(f'[ APIGateway {region_name} ]')
             self.reset_region(region_name)
 
             for collect_resource in collect_resources:
@@ -48,7 +49,7 @@ class APIGatewayConnector(SchematicAWSConnector):
                                                              region_name,
                                                              collect_resource))
 
-        print(f' API Gateway Finished {time.time() - start_time} Seconds')
+        _LOGGER.debug(f'[get_resources] FINISHED: API Gateway ({time.time() - start_time} sec)')
         return resources
 
     def request_rest_api_data(self, region_name) -> List[RestAPI]:
@@ -65,22 +66,28 @@ class APIGatewayConnector(SchematicAWSConnector):
 
         for data in response_iterator:
             for raw in data.get('items', []):
-                _res = self.client.get_resources(restApiId=raw.get('id'), limit=500)
-                raw.update({
-                    'protocol': 'REST',
-                    'endpoint_type': self.get_endpoint_type(raw.get('endpointConfiguration', {}).get('types')),
-                    'resources': list(map(lambda _resource_raw: self.set_rest_api_resource(_resource_raw),
-                                          _res.get('items', []))),
-                    'account_id': self.account_id,
-                    'arn': self.generate_arn(service=self.rest_service_name, region=region_name,
-                                             account_id="", resource_type='restapis',
-                                             resource_id=f"{raw.get('id')}/*"),
-                    'tags': list(map(lambda tag: Tags(tag, strict=False),
-                                     self.convert_tags(raw.get('tags', {}))))
-                })
+                try:
+                    _res = self.client.get_resources(restApiId=raw.get('id'), limit=500)
+                    raw.update({
+                        'protocol': 'REST',
+                        'endpoint_type': self.get_endpoint_type(raw.get('endpointConfiguration', {}).get('types')),
+                        'resources': list(map(lambda _resource_raw: self.set_rest_api_resource(_resource_raw),
+                                              _res.get('items', []))),
+                        'account_id': self.account_id,
+                        'arn': self.generate_arn(service=self.rest_service_name, region=region_name,
+                                                 account_id="", resource_type='restapis',
+                                                 resource_id=f"{raw.get('id')}/*"),
+                        'tags': list(map(lambda tag: Tags(tag, strict=False),
+                                         self.convert_tags(raw.get('tags', {}))))
+                    })
+    
+                    yield RestAPI(raw, strict=False), raw.get('name', '')
 
-                yield RestAPI(raw, strict=False), raw.get('name', '')
-
+                except Exception as e:
+                    resource_id = raw.get('id', '')
+                    error_resource_response = self.generate_error(region_name, resource_id, e)
+                    yield error_resource_response, ''
+            
     def request_websocket_data(self, region_name) -> List[HTTPWebsocket]:
         # Get HTTP or WebSocket
         websocket_client = self.set_client(self.websocket_service_name)
@@ -95,18 +102,24 @@ class APIGatewayConnector(SchematicAWSConnector):
 
         for data in response_iterator:
             for raw in data.get('Items', []):
-                raw.update({
-                    'protocol': raw.get('ProtocolType'),
-                    'endpoint_type': 'Regional',
-                    'account_id': self.account_id,
-                    'arn': self.generate_arn(service=self.websocket_service_name, region=region_name,
-                                             account_id="", resource_type='api',
-                                             resource_id=raw.get('ApiId')),
-                    'tags': self.convert_tags(raw.get('tags', {}))
-                })
-
-                yield HTTPWebsocket(raw, strict=False), raw.get('Name', '')
-
+                try:
+                    raw.update({
+                        'protocol': raw.get('ProtocolType'),
+                        'endpoint_type': 'Regional',
+                        'account_id': self.account_id,
+                        'arn': self.generate_arn(service=self.websocket_service_name, region=region_name,
+                                                 account_id="", resource_type='api',
+                                                 resource_id=raw.get('ApiId')),
+                        'tags': self.convert_tags(raw.get('tags', {}))
+                    })
+    
+                    yield HTTPWebsocket(raw, strict=False), raw.get('Name', '')
+                
+                except Exception as e:
+                    resource_id = raw.get('ApiId', '')
+                    error_resource_response = self.generate_error(region_name, resource_id, e)
+                    yield error_resource_response, ''
+            
     def set_rest_api_resource(self, resource):
         resource.update({
             'display_methods': self.get_methods_in_resources(resource.get('resourceMethods', {}))

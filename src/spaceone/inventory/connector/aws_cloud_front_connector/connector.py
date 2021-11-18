@@ -15,9 +15,11 @@ _LOGGER = logging.getLogger(__name__)
 class CFConnector(SchematicAWSConnector):
     response_schema = CloudFrontResponse
     service_name = 'cloudfront'
+    cloud_service_group = 'CloudFront'
+    cloud_service_type = 'Distribution'
 
     def get_resources(self):
-        print("** Cloud Front START **")
+        _LOGGER.debug("[get_resources] START: Cloudfront")
         resources = []
         start_time = time.time()
 
@@ -26,7 +28,6 @@ class CFConnector(SchematicAWSConnector):
 
         try:
             for data in self.request_data():
-                # print(f"[ CloudFront DATA ]")
                 if getattr(data, 'set_cloudwatch', None):
                     data.cloudwatch = CloudWatchModel(data.set_cloudwatch())
 
@@ -38,9 +39,10 @@ class CFConnector(SchematicAWSConnector):
                         'region_code': 'global'})
                     }))
         except Exception as e:
-            print(f'[ERROR {self.service_name}] {e}')
+            resource_id = ''
+            resources.append(self.generate_error('global', resource_id, e))
 
-        print(f' Cloud Front Finished {time.time() - start_time} Seconds')
+        _LOGGER.debug(f'[get_resources] Cloud Front Finished {time.time() - start_time} Seconds')
         return resources
 
     def request_data(self) -> List[DistributionData]:
@@ -53,13 +55,18 @@ class CFConnector(SchematicAWSConnector):
         )
         for data in response_iterator:
             for raw in data.get('DistributionList', {}).get('Items', []):
-                raw.update({
-                    'state_display': self.get_state_display(raw.get('Enabled')),
-                    'account_id': self.account_id,
-                    'tags': list(self.list_tags_for_resource(raw.get('ARN')))
-                })
-                res = DistributionData(raw, strict=False)
-                yield res
+                try:
+                    raw.update({
+                        'state_display': self.get_state_display(raw.get('Enabled')),
+                        'account_id': self.account_id,
+                        'tags': list(self.list_tags_for_resource(raw.get('ARN')))
+                    })
+                    res = DistributionData(raw, strict=False)
+                    yield res
+                except Exception as e:
+                    resource_id = raw.get('ARN', '')
+                    error_resource_response = self.generate_error('global', resource_id, e)
+                    yield error_resource_response, ''
 
     def list_tags_for_resource(self, arn):
         response = self.client.list_tags_for_resource(Resource=arn)

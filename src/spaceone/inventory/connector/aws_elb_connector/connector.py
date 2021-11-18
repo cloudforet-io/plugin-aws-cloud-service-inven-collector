@@ -1,7 +1,7 @@
+import json
 import time
 import logging
 import traceback
-
 from typing import List
 
 from spaceone.inventory.connector.aws_elb_connector.schema.data import LoadBalancer, TargetGroup, Tags, \
@@ -10,19 +10,17 @@ from spaceone.inventory.connector.aws_elb_connector.schema.resource import LoadB
     LoadBalancerResponse, TargetGroupResponse
 from spaceone.inventory.connector.aws_elb_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
-from spaceone.inventory.libs.schema.resource import ReferenceModel
+from spaceone.inventory.libs.schema.resource import ReferenceModel, ErrorResourceResponse
 
 _LOGGER = logging.getLogger(__name__)
 
 
 class ELBConnector(SchematicAWSConnector):
-    lb_response_schema = LoadBalancerResponse
-    tg_response_schema = TargetGroupResponse
-
     service_name = 'elbv2'
+    cloud_service_group = 'ELB'
 
     def get_resources(self):
-        print("** ELB START **")
+        _LOGGER.debug("[get_resources] START: ELB")
         resources = []
         start_time = time.time()
 
@@ -48,10 +46,14 @@ class ELBConnector(SchematicAWSConnector):
             for collect_resource in collect_resources:
                 resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
 
-        print(f' ELB Finished {time.time() - start_time} Seconds')
+        _LOGGER.debug(f'[get_resources] FINISHED: ELB ({time.time() - start_time} sec)')
         return resources
 
     def request_target_group_data(self, region_name):
+        cloud_service_group = 'ELB'
+        cloud_service_type = 'TargetGroup'
+        self.cloud_service_type = cloud_service_type
+
         raw_tgs = self.request_target_group(region_name)
         tg_arns = [raw_tg.get('TargetGroupArn') for raw_tg in raw_tgs if raw_tg.get('TargetGroupArn')]
 
@@ -59,18 +61,41 @@ class ELBConnector(SchematicAWSConnector):
             all_tags = self.request_tags(tg_arns)
 
         for raw_tg in raw_tgs:
-            match_tags = self.search_tags(all_tags, raw_tg.get('TargetGroupArn'))
-            raw_tg.update({
-                'region_name': region_name,
-                'account_id': self.account_id,
-                'tags': list(map(lambda match_tag: Tags(match_tag, strict=False), match_tags))
-            })
+            try:
+                match_tags = self.search_tags(all_tags, raw_tg.get('TargetGroupArn'))
+                raw_tg.update({
+                    'region_name': region_name,
+                    'account_id': self.account_id,
+                    'tags': list(map(lambda match_tag: Tags(match_tag, strict=False), match_tags))
+                })
 
-            target_group = TargetGroup(raw_tg, strict=False)
-            self.target_groups.append(target_group)
-            yield target_group, target_group.target_group_name
+                target_group = TargetGroup(raw_tg, strict=False)
+                self.target_groups.append(target_group)
+                yield target_group, target_group.target_group_name
+
+            except Exception as e:
+                _LOGGER.error(f'[request_target_group_data] [{self.service_name}] [{region_name}] {e}')
+
+                if type(e) is dict:
+                    error_resource_response = ErrorResourceResponse(
+                        {'message': json.dumps(e),
+                         'resource': {'resource_id': raw_tg.get('TargetGroupArn', ''),
+                                      'cloud_service_group': cloud_service_group,
+                                      'cloud_service_type': cloud_service_type}})
+                else:
+                    error_resource_response = ErrorResourceResponse(
+                        {'message': str(e),
+                         'resource': {'resource_id': raw_tg.get('TargetGroupArn', ''),
+                                      'cloud_service_group': cloud_service_group,
+                                      'cloud_service_type': cloud_service_type}})
+
+                yield error_resource_response, ''
 
     def request_load_balancer_data(self, region_name):
+        cloud_service_group = 'ELB'
+        cloud_service_type = 'LoadBalancer'
+        self.cloud_service_type = cloud_service_type
+
         all_tags = []
         raw_lbs = self.request_loadbalancer(region_name)
 
@@ -83,30 +108,49 @@ class ELBConnector(SchematicAWSConnector):
             all_tags = self.request_tags(lb_arns)
 
         for raw_lb in raw_lbs:
-            match_instances = []
+            try:
+                match_instances = []
 
-            match_target_groups = self.match_target_group_from_lb(raw_lb.get('LoadBalancerArn'))
-            match_tags = self.search_tags(all_tags, raw_lb.get('LoadBalancerArn'))
-            raw_listeners = self.request_listeners(raw_lb.get('LoadBalancerArn'))
+                match_target_groups = self.match_target_group_from_lb(raw_lb.get('LoadBalancerArn'))
+                match_tags = self.search_tags(all_tags, raw_lb.get('LoadBalancerArn'))
+                raw_listeners = self.request_listeners(raw_lb.get('LoadBalancerArn'))
 
-            for match_tg in match_target_groups:
-                match_instances.extend(self.match_elb_instance(match_tg, instances))
+                for match_tg in match_target_groups:
+                    match_instances.extend(self.match_elb_instance(match_tg, instances))
 
-            raw_lb.update({
-                'region_name': region_name,
-                'account_id': self.account_id,
-                'listeners': list(map(lambda _listener: Listener(_listener, strict=False), raw_listeners)),
-                'tags': list(map(lambda match_tag: Tags(match_tag, strict=False), match_tags)),
-                'target_groups': match_target_groups,
-                'instances': match_instances
-            })
+                raw_lb.update({
+                    'region_name': region_name,
+                    'account_id': self.account_id,
+                    'listeners': list(map(lambda _listener: Listener(_listener, strict=False), raw_listeners)),
+                    'tags': list(map(lambda match_tag: Tags(match_tag, strict=False), match_tags)),
+                    'target_groups': match_target_groups,
+                    'instances': match_instances
+                })
 
-            load_balancer = LoadBalancer(raw_lb, strict=False)
-            self.load_balancers.append(load_balancer)
-            yield load_balancer, load_balancer.load_balancer_name
+                load_balancer = LoadBalancer(raw_lb, strict=False)
+                self.load_balancers.append(load_balancer)
+                yield load_balancer, load_balancer.load_balancer_name
 
-            # for avoid to API Rate limitation.
-            time.sleep(0.5)
+                # for avoid to API Rate limitation.
+                time.sleep(0.5)
+
+            except Exception as e:
+                _LOGGER.error(f'[request_load_balancer_data] [{self.service_name}] [{region_name}] {e}')
+
+                if type(e) is dict:
+                    error_resource_response = ErrorResourceResponse(
+                        {'message': json.dumps(e),
+                         'resource': {'resource_id': raw_lb.get('LoadBalancerArn', ''),
+                                      'cloud_service_group': cloud_service_group,
+                                      'cloud_service_type': cloud_service_type}})
+                else:
+                    error_resource_response = ErrorResourceResponse(
+                        {'message': str(e),
+                         'resource': {'resource_id': raw_lb.get('LoadBalancerArn', ''),
+                                      'cloud_service_group': cloud_service_group,
+                                      'cloud_service_type': cloud_service_type}})
+
+                yield error_resource_response, ''
 
     def match_elb_instance(self, target_group, instances):
         match_instances = []

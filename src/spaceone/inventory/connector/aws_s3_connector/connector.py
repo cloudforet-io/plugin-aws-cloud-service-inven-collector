@@ -18,9 +18,11 @@ _LOGGER = logging.getLogger(__name__)
 class S3Connector(SchematicAWSConnector):
     response_schema = BucketResponse
     service_name = 's3'
+    cloud_service_group = 'S3'
+    cloud_service_type = 'Bucket'
 
     def get_resources(self) -> List[BucketResource]:
-        print("** S3 START **")
+        _LOGGER.debug("[get_resources] START: S3")
         resources = []
         start_time = time.time()
 
@@ -49,9 +51,10 @@ class S3Connector(SchematicAWSConnector):
                 resources.append(self.response_schema({'resource': BucketResource(bucket_resource)}))
 
         except Exception as e:
-            print(f'[ERROR {self.service_name}] {e}')
+            resource_id = ''
+            resources.append(self.generate_error('global', resource_id, e))
 
-        print(f' S3 Finished {time.time() - start_time} Seconds')
+        _LOGGER.debug(f'[get_resources] FINISHED: S3 ({time.time() - start_time} sec)')
         return resources
 
     def request_data(self) -> List[Bucket]:
@@ -116,7 +119,9 @@ class S3Connector(SchematicAWSConnector):
                 yield res, res.name
 
             except Exception as e:
-                _LOGGER.error(f'[S3 Bucket Error: {bucket_name}] {e}')
+                resource_id = raw.get('Name', '')
+                error_resource_response = self.generate_error('global', resource_id, e)
+                yield error_resource_response, ''
 
     def get_bucket_versioning(self, bucket_name):
         try:
@@ -187,7 +192,6 @@ class S3Connector(SchematicAWSConnector):
                 return_value = TransferAcceleration({'transfer_acceleration': transfer_acceleration}, strict=False)
         except Exception as e:
             _LOGGER.error(f'[S3 {bucket_name}: Get Transfer Acceleration] {e}')
-            pass
 
         return return_value
 

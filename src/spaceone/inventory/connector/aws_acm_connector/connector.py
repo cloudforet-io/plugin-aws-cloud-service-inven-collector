@@ -7,14 +7,17 @@ from spaceone.inventory.connector.aws_acm_connector.schema.resource import ACMRe
 from spaceone.inventory.connector.aws_acm_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
 
+
 _LOGGER = logging.getLogger(__name__)
 
 
 class ACMConnector(SchematicAWSConnector):
     service_name = 'acm'
+    cloud_service_group = 'CertificateManager'
+    cloud_service_type = 'Certificate'
 
     def get_resources(self):
-        print("** Certificate Manager Start **")
+        _LOGGER.debug("[get_resources] START: Certificate Manager")
         resources = []
         start_time = time.time()
 
@@ -35,7 +38,7 @@ class ACMConnector(SchematicAWSConnector):
             for collect_resource in collect_resources:
                 resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
 
-        print(f' Certificate Manager Finished {time.time() - start_time} Seconds')
+        _LOGGER.debug(f'[get_resources] FINISHED: Certificate Manager ({time.time() - start_time} sec)')
         return resources
 
     def request_data(self, region_name) -> List[Certificate]:
@@ -49,22 +52,28 @@ class ACMConnector(SchematicAWSConnector):
         
         for data in response_iterator:
             for raw in data.get('CertificateSummaryList', []):
-                certificate_response = self.client.describe_certificate(CertificateArn=raw.get('CertificateArn'))
-                certificate_info = certificate_response.get('Certificate', {})
-
-                certificate_info.update({
-                    'type_display': self.get_string_title(certificate_info.get('Type')),
-                    'renewal_eligibility_display': self.get_string_title(certificate_info.get('RenewalEligibility')),
-                    'identifier': self.get_identifier(certificate_info.get('CertificateArn')),
-                    'additional_names_display': self.get_additional_names_display(certificate_info.get('SubjectAlternativeNames')),
-                    'in_use_display': self.get_in_use_display(certificate_info.get('InUseBy')),
-                    'tags': self.get_tags(certificate_info.get('CertificateArn')),
-                    'account_id': self.account_id
-                })
-
-                res = Certificate(certificate_info, strict=False)
-                yield res, res.domain_name
-
+                try:
+                    certificate_response = self.client.describe_certificate(CertificateArn=raw.get('CertificateArn'))
+                    certificate_info = certificate_response.get('Certificate', {})
+    
+                    certificate_info.update({
+                        'type_display': self.get_string_title(certificate_info.get('Type')),
+                        'renewal_eligibility_display': self.get_string_title(certificate_info.get('RenewalEligibility')),
+                        'identifier': self.get_identifier(certificate_info.get('CertificateArn')),
+                        'additional_names_display': self.get_additional_names_display(certificate_info.get('SubjectAlternativeNames')),
+                        'in_use_display': self.get_in_use_display(certificate_info.get('InUseBy')),
+                        'tags': self.get_tags(certificate_info.get('CertificateArn')),
+                        'account_id': self.account_id
+                    })
+    
+                    res = Certificate(certificate_info, strict=False)
+                    yield res, res.domain_name
+                    
+                except Exception as e:
+                    resource_id = certificate_info.get('CertificateArn', '')
+                    error_resource_response = self.generate_error(region_name, resource_id, e)
+                    yield error_resource_response, ''
+                    
     def get_tags(self, arn):
         tag_response = self.client.list_tags_for_certificate(CertificateArn=arn)
         return tag_response.get('Tags', [])

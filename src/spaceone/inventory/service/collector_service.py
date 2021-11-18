@@ -1,11 +1,10 @@
 import concurrent.futures
 import logging
 import time
-
+import json
 from spaceone.core.service import *
-
 from spaceone.inventory.libs.connector import *
-from spaceone.inventory.libs.schema.resource import RegionResource, RegionResponse
+from spaceone.inventory.libs.schema.resource import RegionResource, RegionResponse, ErrorResourceResponse
 
 _LOGGER = logging.getLogger(__name__)
 MAX_WORKER = 20
@@ -110,34 +109,43 @@ class CollectorService(BaseService):
         collected_region_code = []
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKER) as executor:
-            print("[ EXECUTOR START ]")
             future_executors = []
 
             for execute_manager in self.execute_managers:
-                print(f'@@@ {execute_manager} @@@')
                 _manager = self.locator.get_manager(execute_manager)
                 future_executors.append(executor.submit(_manager.collect_resources, **params))
 
             for future in concurrent.futures.as_completed(future_executors):
-                try:
-                    for result in future.result():
-                        collected_region = self.get_region_from_result(result.get('resource', {}))
-                        if collected_region is not None and \
-                                collected_region.get('resource', {}).get('region_code') not in collected_region_code:
-                            resource_regions.append(collected_region)
-                            collected_region_code.append(collected_region.get('resource', {}).get('region_code'))
+                for result in future.result():
+                    try:
+                        if getattr(result, 'resource', None) and getattr(result.resource, 'region_code', None):
+                            collected_region = self.get_region_from_result(result.resource.region_code)
 
-                        yield result
-                except Exception as e:
-                    _LOGGER.error(f'failed to result {e}')
+                            if collected_region and collected_region.resource.region_code not in collected_region_code:
+                                resource_regions.append(collected_region)
+                                collected_region_code.append(collected_region.resource.region_code)
 
-        ### This code for test without async job
+                    except Exception as e:
+                        _LOGGER.error(f'[collect] {e}')
+
+                        if type(e) is dict:
+                            error_resource_response = ErrorResourceResponse(
+                                {'message': json.dumps(e), 'resource': {'resource_type': 'inventory.Region'}})
+                        else:
+                            error_resource_response = ErrorResourceResponse(
+                                {'message': str(e), 'resource': {'resource_type': 'inventory.Region'}})
+
+                        yield error_resource_response
+
+                    yield result
+
+        # ## This code for test without async job
         # for execute_manager in self.execute_managers:
         #     print(f'@@@ {execute_manager} @@@')
         #     _manager = self.locator.get_manager(execute_manager)
         #     result = _manager.collect_resources(**params)
 
-        print(f'TOTAL TIME : {time.time() - start_time} Seconds')
+        _LOGGER.debug(f'[collect] TOTAL FINISHED TIME : {time.time() - start_time} Seconds')
         for resource_region in resource_regions:
             yield resource_region
 
@@ -154,11 +162,11 @@ class CollectorService(BaseService):
         return list(map(lambda region_info: region_info.get('RegionName'),
                         ec2_client.describe_regions().get('Regions')))
 
-    def get_region_from_result(self, resource):
-        region_resource = self.match_region_info(resource.get('data', {}).get('region_name', None))
+    def get_region_from_result(self, region_code):
+        region_resource = self.match_region_info(region_code)
 
-        if region_resource is not None:
-            return RegionResponse({'resource': region_resource}).to_primitive(())
+        if region_resource:
+            return RegionResponse({'resource': region_resource})
 
         return None
 

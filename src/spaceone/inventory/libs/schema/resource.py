@@ -24,11 +24,12 @@ class BaseMetaData(Model):
 
 class BaseResponse(Model):
     state = StringType(default='SUCCESS', choices=('SUCCESS', 'FAILURE', 'TIMEOUT'))
+    message = StringType(default='')
     resource_type = StringType(required=True)
-    match_rules = DictType(ListType(StringType), default={})
+    match_rules = DictType(ListType(StringType), serialize_when_none=False)
     resource = PolyModelType(Model, default={})
-
-
+    
+    
 class ReferenceModel(Model):
     class Option:
         serialize_when_none = False
@@ -130,3 +131,17 @@ class RegionResponse(BaseResponse):
     resource_type = StringType(default='inventory.Region')
     match_rules = DictType(ListType(StringType), default={'1': ['provider', 'region_code']})
     resource = PolyModelType(RegionResource)
+
+
+class ErrorResource(Model):
+    resource_type = StringType(default='inventory.CloudService')
+    provider = StringType(default='aws')
+    cloud_service_group = StringType(serialize_when_none=False)
+    cloud_service_type = StringType(serialize_when_none=False)
+    resource_id = StringType(serialize_when_none=False)
+
+
+class ErrorResourceResponse(BaseResponse):
+    state = StringType(default='FAILURE')
+    resource_type = StringType(default='inventory.ErrorResource')
+    resource = ModelType(ErrorResource, default={})

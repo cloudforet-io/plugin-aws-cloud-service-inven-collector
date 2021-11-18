@@ -12,6 +12,8 @@ _LOGGER = logging.getLogger(__name__)
 
 class ECRConnector(SchematicAWSConnector):
     service_name = 'ecr'
+    cloud_service_group = 'EC2'
+    cloud_service_type = 'Repository'
 
     @staticmethod
     def _set_image_uri(images, repository_uri):
@@ -21,7 +23,7 @@ class ECRConnector(SchematicAWSConnector):
         return images
 
     def get_resources(self) -> List[ECRRepositoryResource]:
-        print("** ECR START **")
+        _LOGGER.debug("[get_resources] START: ECR")
         resources = []
         start_time = time.time()
 
@@ -40,7 +42,7 @@ class ECRConnector(SchematicAWSConnector):
             self.reset_region(region_name)
             resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
 
-        print(f' ECR Finished {time.time() - start_time} Seconds')
+        _LOGGER.debug(f'[get_resources] FINISHED: ECR ({time.time() - start_time} sec)')
         return resources
 
     def request_data(self, region_name) -> List[Repository]:
@@ -53,14 +55,19 @@ class ECRConnector(SchematicAWSConnector):
         )
         for data in response_iterator:
             for raw in data.get('repositories', []):
-                raw.update({
-                    'images': list(self._describe_images(raw)),
-                    'tags': self.request_tags(raw.get('repositoryArn')),
-                    'account_id': self.account_id
-                })
-                res = Repository(raw, strict=False)
+                try:
+                    raw.update({
+                        'images': list(self._describe_images(raw)),
+                        'tags': self.request_tags(raw.get('repositoryArn')),
+                        'account_id': self.account_id
+                    })
+                    res = Repository(raw, strict=False)
 
-                yield res, res.repository_name
+                    yield res, res.repository_name
+                except Exception as e:
+                    resource_id = raw.get('repositoryArn', '')
+                    error_resource_response = self.generate_error(region_name, resource_id, e)
+                    yield error_resource_response, ''
 
     def _describe_images(self, repo):
         paginator = self.client.get_paginator('describe_images')

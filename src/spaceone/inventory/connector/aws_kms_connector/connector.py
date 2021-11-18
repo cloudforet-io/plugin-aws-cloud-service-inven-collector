@@ -13,9 +13,11 @@ _LOGGER = logging.getLogger(__name__)
 
 class KMSConnector(SchematicAWSConnector):
     service_name = 'kms'
+    cloud_service_group = 'KMS'
+    cloud_service_type = 'Key'
 
     def get_resources(self) -> List[KeyResource]:
-        print("** KMS START **")
+        _LOGGER.debug("[get_resources] START: KMS")
         resources = []
         start_time = time.time()
 
@@ -33,7 +35,7 @@ class KMSConnector(SchematicAWSConnector):
             self.reset_region(region_name)
             resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
 
-        print(f' KMS Finished {time.time() - start_time} Seconds')
+        _LOGGER.debug(f'[get_resources] FINISHED: KMS ({time.time() - start_time} sec)')
         return resources
 
     def request_data(self, region_name) -> List[Key]:
@@ -41,25 +43,30 @@ class KMSConnector(SchematicAWSConnector):
         alias_list = self.list_aliases()
 
         for raw in kms_keys:
-            response = self.client.describe_key(KeyId=raw.get('KeyId'))
-            key = response.get('KeyMetadata')
-            alias_info = next((alias for alias in alias_list if alias.get('TargetKeyId', '') == key.get('KeyId')), None)
+            try:
+                response = self.client.describe_key(KeyId=raw.get('KeyId'))
+                key = response.get('KeyMetadata')
+                alias_info = next((alias for alias in alias_list if alias.get('TargetKeyId', '') == key.get('KeyId')), None)
 
-            key.update({
-                'key_type_path': self._set_key_type_path(key.get('KeyManager')),
-                'region_name': region_name,
-                'account_id': self.account_id,
-                'key_rotated': self._set_key_rotated(key.get('KeyId'), key.get('KeyManager'))
-            })
-
-            if alias_info is not None:
                 key.update({
-                    'alias_arn': alias_info['AliasArn'],
-                    'alias_name': alias_info['AliasName']
+                    'key_type_path': self._set_key_type_path(key.get('KeyManager')),
+                    'region_name': region_name,
+                    'account_id': self.account_id,
+                    'key_rotated': self._set_key_rotated(key.get('KeyId'), key.get('KeyManager'))
                 })
 
-            res = Key(key, strict=False)
-            yield res, res.alias_name
+                if alias_info is not None:
+                    key.update({
+                        'alias_arn': alias_info['AliasArn'],
+                        'alias_name': alias_info['AliasName']
+                    })
+
+                res = Key(key, strict=False)
+                yield res, res.alias_name
+            except Exception as e:
+                resource_id = raw.get('KeyId', '')
+                error_resource_response = self.generate_error(region_name, resource_id, e)
+                yield error_resource_response, ''
 
     def list_keys(self):
         paginator = self.client.get_paginator('list_keys')
