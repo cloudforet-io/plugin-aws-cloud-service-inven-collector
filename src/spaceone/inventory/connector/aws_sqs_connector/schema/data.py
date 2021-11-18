@@ -1,7 +1,7 @@
 import logging
 
 from schematics import Model
-from schematics.types import IntType, ModelType, StringType, serializable
+from schematics.types import IntType, ModelType, StringType, BooleanType, serializable
 from spaceone.inventory.libs.schema.resource import CloudWatchModel, CloudWatchDimensionModel
 
 _LOGGER = logging.getLogger(__name__)
@@ -33,6 +33,7 @@ class QueData(Model):
     content_based_duplication = StringType(deserialize_from="ContentBasedDeduplication")
     kms_master_key_id = StringType(deserialize_from="KmsMasterKeyId")
     kms_data_key_reuse_period_seconds = StringType(deserialize_from="KmsDataKeyReusePeriodSeconds")
+    sqs_managed_sse_enabled = BooleanType(deserialize_from="SqsManagedSseEnabled")
     account_id = StringType()
     policy = StringType(deserialize_from="Policy")
     cloudwatch = ModelType(CloudWatchModel, serialize_when_none=False)
