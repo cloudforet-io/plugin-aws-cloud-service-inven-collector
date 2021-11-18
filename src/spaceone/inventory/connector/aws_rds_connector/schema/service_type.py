@@ -369,6 +369,9 @@ cst_rds_subnetgrp._metadata = CloudServiceTypeMeta.set_meta(
     ]
 )
 
+'''
+Parameter Group
+'''
 cst_rds_paramgrp = CloudServiceTypeResource()
 cst_rds_paramgrp.name = 'ParameterGroup'
 cst_rds_paramgrp.provider = 'aws'
