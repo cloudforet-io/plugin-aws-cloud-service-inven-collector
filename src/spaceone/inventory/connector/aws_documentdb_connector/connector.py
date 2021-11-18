@@ -15,12 +15,13 @@ EXCLUDE_REGION = ['us-west-1', 'ap-east-1', 'eu-north-1', 'me-south-1', 'sa-east
 
 class DocumentDBConnector(SchematicAWSConnector):
     service_name = 'docdb'
+    cloud_service_group = 'DocumentDB'
 
     _parameter_groups = []
     _subnet_groups = []
 
     def get_resources(self):
-        print("** DocumentDB START **")
+        _LOGGER.debug("[get_resources] START: DocumentDB")
         resources = []
         start_time = time.time()
 
@@ -59,10 +60,12 @@ class DocumentDBConnector(SchematicAWSConnector):
             for collect_resource in collect_resources:
                 resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
 
-        print(f' DocumentDB Finished {time.time() - start_time} Seconds')
+        _LOGGER.debug(f'[get_resources] FINISHED: DocumentDB ({time.time() - start_time} sec)')
         return resources
 
     def request_cluster_data(self, region_name, **kwargs) -> List[Cluster]:
+        self.cloud_service_type = 'Cluster'
+
         raw_instances = kwargs.get('raw_instances', [])
         raw_snapshots = kwargs.get('raw_snapshots', [])
 
@@ -76,27 +79,34 @@ class DocumentDBConnector(SchematicAWSConnector):
         )
         for data in response_iterator:
             for raw in data.get('DBClusters', []):
-                instances = self._match_instances(raw_instances, raw.get('DBClusterIdentifier'))
-                raw.update({
-                    'instances': instances,
-                    'instance_count': len(instances),
-                    'snapshots': self._match_snapshots(raw_snapshots, raw.get('DBClusterIdentifier')),
-                    'subnet_group': self._match_subnet_group(raw.get('DBSubnetGroup')),
-                    'parameter_group': self._match_parameter_group(raw.get('DBClusterParameterGroup')),
-                    'account_id': self.account_id,
-                    'tags': self.request_tags(raw['DBClusterArn'])
-                })
+                try:
+                    instances = self._match_instances(raw_instances, raw.get('DBClusterIdentifier'))
+                    raw.update({
+                        'instances': instances,
+                        'instance_count': len(instances),
+                        'snapshots': self._match_snapshots(raw_snapshots, raw.get('DBClusterIdentifier')),
+                        'subnet_group': self._match_subnet_group(raw.get('DBSubnetGroup')),
+                        'parameter_group': self._match_parameter_group(raw.get('DBClusterParameterGroup')),
+                        'account_id': self.account_id,
+                        'tags': self.request_tags(raw['DBClusterArn'])
+                    })
 
-                if subnet_group := self._match_subnet_group(raw.get('DBSubnetGroup')):
-                    raw.update({'subnet_group': subnet_group})
+                    if subnet_group := self._match_subnet_group(raw.get('DBSubnetGroup')):
+                        raw.update({'subnet_group': subnet_group})
 
-                if parameter_group := self._match_parameter_group(raw.get('DBClusterParameterGroup')):
-                    raw.update({'parameter_group': parameter_group})
+                    if parameter_group := self._match_parameter_group(raw.get('DBClusterParameterGroup')):
+                        raw.update({'parameter_group': parameter_group})
 
-                res = Cluster(raw, strict=False)
-                yield res, res.db_cluster_identifier
+                    res = Cluster(raw, strict=False)
+                    yield res, res.db_cluster_identifier
+                except Exception as e:
+                    resource_id = raw.get('DBClusterArn', '')
+                    error_resource_response = self.generate_error(region_name, resource_id, e)
+                    yield error_resource_response, ''
 
     def request_subnet_group_data(self, region_name) -> List[SubnetGroup]:
+        self.cloud_service_type = 'SubnetGroup'
+
         paginator = self.client.get_paginator('describe_db_subnet_groups')
         response_iterator = paginator.paginate(
             PaginationConfig={
@@ -106,24 +116,37 @@ class DocumentDBConnector(SchematicAWSConnector):
         )
         for data in response_iterator:
             for raw in data.get('DBSubnetGroups', []):
-                raw.update({
-                    'account_id': self.account_id,
-                    'tags': self.request_tags(raw['DBSubnetGroupArn'])
-                })
-                res = SubnetGroup(raw, strict=False)
-                yield res, res.db_subnet_group_name
+                try:
+                    raw.update({
+                        'account_id': self.account_id,
+                        'tags': self.request_tags(raw['DBSubnetGroupArn'])
+                    })
+                    res = SubnetGroup(raw, strict=False)
+                    yield res, res.db_subnet_group_name
+                except Exception as e:
+                    resource_id = raw.get('DBSubnetGroupName', '')
+                    error_resource_response = self.generate_error(region_name, resource_id, e)
+                    yield error_resource_response, ''
 
     def request_parameter_group_data(self, region_name) -> List[ParameterGroup]:
+        self.cloud_service_type = 'ParameterGroup'
+
         res_pgs = self.client.describe_db_cluster_parameter_groups()
 
         for pg_data in res_pgs.get('DBClusterParameterGroups', []):
-            pg_data.update({
-                'account_id': self.account_id,
-                'parameters': self.request_parameter_data(pg_data['DBClusterParameterGroupName']),
-                'tags': self.request_tags(pg_data['DBClusterParameterGroupArn'])
-            })
-            param_group = ParameterGroup(pg_data, strict=False)
-            yield param_group, param_group.db_cluster_parameter_group_name
+            try:
+                pg_data.update({
+                    'account_id': self.account_id,
+                    'parameters': self.request_parameter_data(pg_data['DBClusterParameterGroupName']),
+                    'tags': self.request_tags(pg_data['DBClusterParameterGroupArn'])
+                })
+                param_group = ParameterGroup(pg_data, strict=False)
+                yield param_group, param_group.db_cluster_parameter_group_name
+
+            except Exception as e:
+                resource_id = pg_data.get('DBClusterParameterGroupName', '')
+                error_resource_response = self.generate_error(region_name, resource_id, e)
+                yield error_resource_response, ''
 
     def request_parameter_data(self, pg_name) -> List[Parameter]:
         res_params = self.client.describe_db_cluster_parameters(DBClusterParameterGroupName=pg_name)

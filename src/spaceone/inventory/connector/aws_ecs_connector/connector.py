@@ -7,15 +7,16 @@ from spaceone.inventory.connector.aws_ecs_connector.schema.resource import Clust
 from spaceone.inventory.connector.aws_ecs_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
 
-
 _LOGGER = logging.getLogger(__name__)
 
 
 class ECSConnector(SchematicAWSConnector):
     service_name = 'ecs'
+    cloud_service_group = 'ECS'
+    cloud_service_type = 'Cluster'
 
     def get_resources(self) -> List[ClusterResource]:
-        print("** ECS START **")
+        _LOGGER.debug("[get_resources] START: ECS")
         resources = []
         start_time = time.time()
 
@@ -34,7 +35,7 @@ class ECSConnector(SchematicAWSConnector):
             self.reset_region(region_name)
             resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
 
-        print(f' ECS Finished {time.time() - start_time} Seconds')
+        _LOGGER.debug(f'[get_resources] FINISHED: ECS ({time.time() - start_time} sec)')
         return resources
 
     def request_data(self, region_name) -> List[Cluster]:
@@ -42,14 +43,19 @@ class ECSConnector(SchematicAWSConnector):
         response = self.client.describe_clusters(clusters=list(cluster_arns))
 
         for raw in response.get('clusters', []):
-            raw.update({
-                'services': self.set_services(raw['clusterArn']),
-                'tasks': self.set_tasks(raw['clusterArn']),
-                'container_instances': self.set_container_instances(raw['clusterArn']),
-                'account_id': self.account_id
-            })
-            res = Cluster(raw, strict=False)
-            yield res, res.cluster_name
+            try:
+                raw.update({
+                    'services': self.set_services(raw['clusterArn']),
+                    'tasks': self.set_tasks(raw['clusterArn']),
+                    'container_instances': self.set_container_instances(raw['clusterArn']),
+                    'account_id': self.account_id
+                })
+                res = Cluster(raw, strict=False)
+                yield res, res.cluster_name
+            except Exception as e:
+                resource_id = raw.get('clusterArn', '')
+                error_resource_response = self.generate_error(region_name, resource_id, e)
+                yield error_resource_response, ''
 
     def list_clusters(self):
         paginator = self.client.get_paginator('list_clusters')

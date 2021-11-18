@@ -14,9 +14,11 @@ class SNSConnector(SchematicAWSConnector):
     service_name = 'sns'
     _kms_client = None
     kms_keys = None
+    cloud_service_group = 'SNS'
+    cloud_service_type = 'Topic'
 
     def get_resources(self) -> List[TopicResource]:
-        print("** SNS START **")
+        _LOGGER.debug("[get_resources] START: SNS")
         resources = []
         start_time = time.time()
 
@@ -35,7 +37,7 @@ class SNSConnector(SchematicAWSConnector):
             self.reset_region(region_name)
             resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
 
-        print(f' SNS Finished {time.time() - start_time} Seconds')
+        _LOGGER.debug(f'[get_resources] FINISHED: SNS ({time.time() - start_time} sec)')
         return resources
 
     def request_data(self, region_name) -> List[Topic]:
@@ -48,28 +50,33 @@ class SNSConnector(SchematicAWSConnector):
 
         for data in response_iterator:
             for raw in data.get('Topics', []):
-                topic_arn = raw.get('TopicArn')
-                topic_response = self.client.get_topic_attributes(TopicArn=topic_arn)
-                topic = topic_response.get('Attributes')
+                try:
+                    topic_arn = raw.get('TopicArn')
+                    topic_response = self.client.get_topic_attributes(TopicArn=topic_arn)
+                    topic = topic_response.get('Attributes')
 
-                subscription_response = self.client.list_subscriptions_by_topic(TopicArn=topic_arn)
-                tags_response = self.client.list_tags_for_resource(ResourceArn=topic_arn)
+                    subscription_response = self.client.list_subscriptions_by_topic(TopicArn=topic_arn)
+                    tags_response = self.client.list_tags_for_resource(ResourceArn=topic_arn)
 
-                topic['subscriptions'] = list(map(lambda subscription: Subscription(subscription, strict=False),
-                                                  subscription_response.get('Subscriptions', [])))
+                    topic['subscriptions'] = list(map(lambda subscription: Subscription(subscription, strict=False),
+                                                      subscription_response.get('Subscriptions', [])))
 
-                topic['tags'] = list(map(lambda tag: Tags(tag, strict=False), tags_response.get('Tags', [])))
-                topic['name'] = self._get_name_from_arn(topic_arn)
-                topic['region_name'] = region_name
-                topic['account_id'] = self.account_id
+                    topic['tags'] = list(map(lambda tag: Tags(tag, strict=False), tags_response.get('Tags', [])))
+                    topic['name'] = self._get_name_from_arn(topic_arn)
+                    topic['region_name'] = region_name
+                    topic['account_id'] = self.account_id
 
-                if topic.get('KmsMasterKeyId', None) is not None:
-                    kms = self.request_kms(topic.get('KmsMasterKeyId'))
-                    if kms is not None:
-                        topic['kms'] = kms
+                    if topic.get('KmsMasterKeyId', None) is not None:
+                        kms = self.request_kms(topic.get('KmsMasterKeyId'))
+                        if kms is not None:
+                            topic['kms'] = kms
 
-                res = Topic(topic, strict=False)
-                yield res, res.name
+                    res = Topic(topic, strict=False)
+                    yield res, res.name
+                except Exception as e:
+                    resource_id = raw.get('TopicArn', '')
+                    error_resource_response = self.generate_error(region_name, resource_id, e)
+                    yield error_resource_response, ''
 
     @property
     def kms_client(self):

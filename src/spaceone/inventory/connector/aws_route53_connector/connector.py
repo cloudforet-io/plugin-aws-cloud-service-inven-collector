@@ -14,9 +14,11 @@ _LOGGER = logging.getLogger(__name__)
 class Route53Connector(SchematicAWSConnector):
     response_schema = HostedZoneResponse
     service_name = 'route53'
+    cloud_service_group = 'Route53'
+    cloud_service_type = 'HostedZone'
 
     def get_resources(self) -> List[HostedZoneResource]:
-        print("** Route53 START **")
+        _LOGGER.debug("[get_resources] START: Route53")
         resources = []
         start_time = time.time()
 
@@ -39,9 +41,10 @@ class Route53Connector(SchematicAWSConnector):
                     })}))
 
         except Exception as e:
-            print(f'[ERROR {self.service_name}] {e}')
+            resource_id = ''
+            resources.append(self.generate_error('global', resource_id, e))
 
-        print(f' Route53 Finished {time.time() - start_time} Seconds')
+        _LOGGER.debug(f'[get_resources] FINISHED: Route53 ({time.time() - start_time} sec)')
         return resources
 
     def request_data(self) -> List[HostedZone]:
@@ -55,17 +58,22 @@ class Route53Connector(SchematicAWSConnector):
 
         for data in response_iterator:
             for raw in data.get('HostedZones', []):
-                raw.update({
-                    'type': self.set_hosted_zone_type(raw['Config']['PrivateZone']),
-                    'hosted_zone_id': self.get_hosted_zone_id(raw['Id']),
-                    'record_sets': list(self.describe_record_sets(raw['Id'])),
-                    'account_id': self.account_id,
-                    'arn': self.generate_arn(service=self.service_name, region="", account_id="",
-                                             resource_type="hostedzone", resource_id=raw['Id'])
-                })
+                try:
+                    raw.update({
+                        'type': self.set_hosted_zone_type(raw['Config']['PrivateZone']),
+                        'hosted_zone_id': self.get_hosted_zone_id(raw['Id']),
+                        'record_sets': list(self.describe_record_sets(raw['Id'])),
+                        'account_id': self.account_id,
+                        'arn': self.generate_arn(service=self.service_name, region="", account_id="",
+                                                 resource_type="hostedzone", resource_id=raw['Id'])
+                    })
 
-                res = HostedZone(raw, strict=False)
-                yield res, res.name
+                    res = HostedZone(raw, strict=False)
+                    yield res, res.name
+                except Exception as e:
+                    resource_id = raw.get('Id', '')
+                    error_resource_response = self.generate_error('global', resource_id, e)
+                    yield error_resource_response, ''
 
     def describe_record_sets(self, host_zone_id):
         paginator = self.client.get_paginator('list_resource_record_sets')

@@ -1,17 +1,13 @@
 import time
 import logging
 from typing import List
-import traceback
-from pprint import pprint
 from datetime import date, datetime, timezone
 
 from spaceone.inventory.connector.aws_iam_connector.schema.data import Policy, AccessKeyLastUsed, User, Group, Role, \
     IdentityProvider
-
 from spaceone.inventory.connector.aws_iam_connector.schema.resource import GroupResource, GroupResponse, \
     UserResource, UserResponse, RoleResource, RoleResponse, PolicyResource, PolicyResponse, IdentityProviderResource, \
     IdentityProviderResponse
-
 from spaceone.inventory.connector.aws_iam_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
 from spaceone.inventory.libs.schema.resource import ReferenceModel
@@ -30,9 +26,10 @@ class IAMConnector(SchematicAWSConnector):
     identity_provider_response_schema = IdentityProviderResponse
 
     service_name = 'iam'
+    cloud_service_group = 'IAM'
 
     def get_resources(self):
-        print("** IAM START **")
+        _LOGGER.debug("[get_resources] START: IAM")
         start_time = time.time()
         resources = []
 
@@ -41,57 +38,82 @@ class IAMConnector(SchematicAWSConnector):
             resources.append(cst)
 
         try:
-            policies = self.list_local_managed_policies()
-            users = self.request_user_data(policies)
+            policies, policy_errors = self.list_local_managed_policies()
+            users, user_errors = self.request_user_data(policies)
 
-            for data in self.request_role_data(policies):
-                resources.append(self.role_response_schema(
-                    {'resource': RoleResource({
-                        'name': data.role_name,
-                        'data': data,
-                        'reference': ReferenceModel(data.reference()),
-                        'region_code': 'global'})}))
+            for role in self.request_role_data(policies):
+                if getattr(role, 'resource_type', None) and role.resource_type == 'inventory.ErrorResource':
+                    # Error Resource
+                    resources.append(role)
+                else:
+                    resources.append(self.role_response_schema(
+                        {'resource': RoleResource({
+                            'name': role.role_name,
+                            'data': role,
+                            'reference': ReferenceModel(role.reference()),
+                            'region_code': 'global'})}))
 
-            for data in users:
-                resources.append(self.user_response_schema(
-                    {'resource': UserResource({
-                        'name': data.user_name,
-                        'data': data,
-                        'reference': ReferenceModel(data.reference()),
-                        'region_code': 'global'})}))
+            for user in users:
+                if getattr(user, 'resource_type', None) and user.resource_type == 'inventory.ErrorResource':
+                    # Error Resource
+                    resources.append(user)
+                else:
+                    resources.append(self.user_response_schema(
+                        {'resource': UserResource({
+                            'name': user.user_name,
+                            'data': user,
+                            'reference': ReferenceModel(user.reference()),
+                            'region_code': 'global'})}))
 
-            for data in self.request_group_data(users, policies):
-                resources.append(self.group_response_schema(
-                    {'resource': GroupResource({
-                        'name': data.group_name,
-                        'data': data,
-                        'reference': ReferenceModel(data.reference()),
-                        'region_code': 'global'})}))
+            for group in self.request_group_data(users, policies):
+                if getattr(group, 'resource_type', None) and group.resource_type == 'inventory.ErrorResource':
+                    # Error Resource
+                    resources.append(group)
+                else:
+                    resources.append(self.group_response_schema(
+                        {'resource': GroupResource({
+                            'name': group.group_name,
+                            'data': group,
+                            'reference': ReferenceModel(group.reference()),
+                            'region_code': 'global'})}))
 
-            for data in policies:
-                resources.append(self.policy_response_schema(
-                    {'resource': PolicyResource({
-                        'name': data.policy_name,
-                        'data': data,
-                        'reference': ReferenceModel(data.reference()),
-                        'region_code': 'global'})}))
+            for policy in policies:
+                if getattr(policy, 'resource_type', None) and policy.resource_type == 'inventory.ErrorResource':
+                    # Error Resource
+                    resources.append(policy)
+                else:
+                    resources.append(self.policy_response_schema(
+                        {'resource': PolicyResource({
+                            'name': policy.policy_name,
+                            'data': policy,
+                            'reference': ReferenceModel(policy.reference()),
+                            'region_code': 'global'})}))
 
-            for data in self.request_identity_provider_data():
-                resources.append(self.identity_provider_response_schema(
-                    {'resource': IdentityProviderResource({
-                        'name': data.url,
-                        'data': data,
-                        'reference': ReferenceModel(data.reference()),
-                        'region_code': 'global'})}))
+            for identity_provider in self.request_identity_provider_data():
+                if getattr(identity_provider, 'resource_type', None) and identity_provider.resource_type == 'inventory.ErrorResource':
+                    # Error Resource
+                    resources.append(identity_provider)
+                else:
+                    resources.append(self.identity_provider_response_schema(
+                        {'resource': IdentityProviderResource({
+                            'name': identity_provider.url,
+                            'data': identity_provider,
+                            'reference': ReferenceModel(identity_provider.reference()),
+                            'region_code': 'global'})}))
 
         except Exception as e:
-            print(traceback.format_exc())
-            print(f'[ERROR {self.service_name}] {e}')
+            resource_id = ''
+            resources.append(self.generate_error('global', resource_id, e))
 
-        print(f' IAM Finished {time.time() - start_time} Seconds')
+        resources.extend(policy_errors)
+        resources.extend(user_errors)
+
+        _LOGGER.debug(f'[get_resources] FINISHED: IAM ({time.time() - start_time} sec)')
         return resources
 
     def request_group_data(self, users, policies) -> List[Group]:
+        self.cloud_service_type = 'Group'
+
         paginator = self.client.get_paginator('list_groups')
         response_iterator = paginator.paginate(
             PaginationConfig={
@@ -102,126 +124,139 @@ class IAMConnector(SchematicAWSConnector):
 
         for data in response_iterator:
             for group in data.get('Groups', []):
-                group_name = group.get('GroupName')
-                group_user_info = self.list_user_with_group_name(group_name)
-                matched_users = self._get_matched_users_with_attached_user_info(users, group_user_info)
-                policy_infos = self.list_policy_with_group_name(group_name)
-                matched_policies = self.get_matched_policies_with_attached_policy_info(policies, policy_infos)
+                try:
+                    group_name = group.get('GroupName')
+                    group_user_info = self.list_user_with_group_name(group_name)
+                    matched_users = self._get_matched_users_with_attached_user_info(users, group_user_info)
+                    policy_infos = self.list_policy_with_group_name(group_name)
+                    matched_policies = self.get_matched_policies_with_attached_policy_info(policies, policy_infos)
 
-                group.update({
-                    'users': matched_users,
-                    'user_count': len(group_user_info),
-                    'attached_permission': matched_policies
-                })
-                # print('-------Group---------')
-                # print()
-                # pprint(group)
-                # print()
-                # print('----------------------')
-                yield Group(group, strict=False)
+                    group.update({
+                        'users': matched_users,
+                        'user_count': len(group_user_info),
+                        'attached_permission': matched_policies
+                    })
+
+                    yield Group(group, strict=False)
+                except Exception as e:
+                    resource_id = group.get('Arn', '')
+                    error_resource_response = self.generate_error('global', resource_id, e)
+                    yield error_resource_response
 
     def request_user_data(self, policies) -> List[User]:
+        self.cloud_service_type = 'User'
+
         paginator = self.client.get_paginator('list_users')
         query = self._generate_default_query()
         response_iterator = paginator.paginate(**query)
 
         users = []
+        errors = []
+
         for data in response_iterator:
             for user in data.get('Users', []):
-                user_name = user.get('UserName')
-                user_info = self.get_user_info(user_name)
-                mfa_devices = self.list_mfa_devices(user_name)
-                access_keys = self.list_access_keys(user_name)
-                login_profile = self.get_login_profile(user_name)
-                groups = self.list_groups_with_user_name(user_name)
+                try:
+                    user_name = user.get('UserName')
+                    user_info = self.get_user_info(user_name)
+                    mfa_devices = self.list_mfa_devices(user_name)
+                    access_keys = self.list_access_keys(user_name)
+                    login_profile = self.get_login_profile(user_name)
+                    groups = self.list_groups_with_user_name(user_name)
 
-                self._conditional_update_for_password_last_used(user, user_info)
-                self.conditional_update_for_access_key_age_and_access_key_age_display(user, access_keys)
-                code_commit_credential, cassandra_credential = self.list_service_specific_credentials(user_name)
-                last_active_age, last_activity = self._get_age_and_age_display(user_info.get('PasswordLastUsed', None))
-                sign_in_link = self._get_sign_in_link(user_info.get('Arn'))
+                    self._conditional_update_for_password_last_used(user, user_info)
+                    self.conditional_update_for_access_key_age_and_access_key_age_display(user, access_keys)
+                    code_commit_credential, cassandra_credential = self.list_service_specific_credentials(user_name)
+                    last_active_age, last_activity = self._get_age_and_age_display(user_info.get('PasswordLastUsed', None))
+                    sign_in_link = self._get_sign_in_link(user_info.get('Arn'))
 
-                attached_policies = self.list_attached_policy_to_user(user_name)
-                matching_policies = self.get_matched_policies_with_attached_policy_info(policies, attached_policies)
+                    attached_policies = self.list_attached_policy_to_user(user_name)
+                    matching_policies = self.get_matched_policies_with_attached_policy_info(policies, attached_policies)
 
-                user.update({
-                    'access_key': self.list_access_keys(user_name),
-                    'ssh_public_key': self.list_ssh_keys(user_name),
-                    'code_commit_credential': code_commit_credential,
-                    'cassandra_credential': cassandra_credential,
-                    'mfa_device': 'Virtual' if len(mfa_devices) > 0 else 'Not enabled',
-                    'last_active_age': last_active_age,
-                    'last_activity': last_activity,
-                    'policies': matching_policies,
-                    'groups_display': groups[0].get('GroupName', '') if len(groups) > 0 else '',
-                    'groups': self.get_groups_for_user(groups),
-                    'sign_in_credential': {
-                        'summary': self._get_summary_with_login_profile(login_profile, sign_in_link, mfa_devices),
-                        'console_password': 'Enabled' if login_profile is not None else 'Disabled',
-                        'assigned_mfa_device': user_info.get('Arn') if len(mfa_devices) > 0 else 'Not assigned'
-                    },
-                    'tags': user_info.get('Tags', [])
-                })
-                # print('-------User---------')
-                # print()
-                # pprint(user)
-                # print()
-                # print('----------------------')
-                users.append(User(user, strict=False))
+                    user.update({
+                        'access_key': self.list_access_keys(user_name),
+                        'ssh_public_key': self.list_ssh_keys(user_name),
+                        'code_commit_credential': code_commit_credential,
+                        'cassandra_credential': cassandra_credential,
+                        'mfa_device': 'Virtual' if len(mfa_devices) > 0 else 'Not enabled',
+                        'last_active_age': last_active_age,
+                        'last_activity': last_activity,
+                        'policies': matching_policies,
+                        'groups_display': groups[0].get('GroupName', '') if len(groups) > 0 else '',
+                        'groups': self.get_groups_for_user(groups),
+                        'sign_in_credential': {
+                            'summary': self._get_summary_with_login_profile(login_profile, sign_in_link, mfa_devices),
+                            'console_password': 'Enabled' if login_profile is not None else 'Disabled',
+                            'assigned_mfa_device': user_info.get('Arn') if len(mfa_devices) > 0 else 'Not assigned'
+                        },
+                        'tags': user_info.get('Tags', [])
+                    })
+                    users.append(User(user, strict=False))
 
-        return users
+                except Exception as e:
+                    resource_id = user.get('Arn', '')
+                    errors.append(self.generate_error('global', resource_id, e))
+
+        return users, errors
 
     def request_role_data(self, policies) -> List[Role]:
+        self.cloud_service_type = 'Role'
+
         paginator = self.client.get_paginator('list_roles')
         query = self._generate_default_query()
         response_iterator = paginator.paginate(**query)
 
         for response in response_iterator:
             for role in response.get('Roles', []):
-                role_name = role.get('RoleName')
-                role_info = self.list_role_info_with_role_name(role_name)
-                role_last_used, last_activity = self._get_role_last_used_and_activity(role_info)
+                try:
+                    role_name = role.get('RoleName')
+                    role_info = self.list_role_info_with_role_name(role_name)
+                    role_last_used, last_activity = self._get_role_last_used_and_activity(role_info)
 
-                attached_policies = self.list_attached_policy_to_role(role_name)
-                matched_policies = self.get_matched_policies_with_attached_policy_info(policies, attached_policies)
-                assume_role_policy_document, trust_entities, trusted_relationship, conditions = \
-                    self._get_role_policy_doc_and_trusted_entities_and_relationship_meta(role)
+                    attached_policies = self.list_attached_policy_to_role(role_name)
+                    matched_policies = self.get_matched_policies_with_attached_policy_info(policies, attached_policies)
+                    assume_role_policy_document, trust_entities, trusted_relationship, conditions = \
+                        self._get_role_policy_doc_and_trusted_entities_and_relationship_meta(role)
 
-                role.update({
-                    'AssumeRolePolicyDocument': assume_role_policy_document,
-                    'trust_relationship': [{
-                        'trusted_entities': trusted_relationship,
-                        'condition_name': conditions.get('condition_name', []),
-                        'condition_key': conditions.get('condition_key', []),
-                        'condition_value': conditions.get('condition_value', [])
-                    }],
-                    'trusted_entities': trust_entities,
-                    'policies': matched_policies,
-                    'role_last_used': role_last_used,
-                    'last_activity': last_activity,
-                    'tags': role_info.get('Tags', [])
-                })
+                    role.update({
+                        'AssumeRolePolicyDocument': assume_role_policy_document,
+                        'trust_relationship': [{
+                            'trusted_entities': trusted_relationship,
+                            'condition_name': conditions.get('condition_name', []),
+                            'condition_key': conditions.get('condition_key', []),
+                            'condition_value': conditions.get('condition_value', [])
+                        }],
+                        'trusted_entities': trust_entities,
+                        'policies': matched_policies,
+                        'role_last_used': role_last_used,
+                        'last_activity': last_activity,
+                        'tags': role_info.get('Tags', [])
+                    })
 
-                # print('-------Role---------')
-                # print()
-                # pprint(role)
-                # print()
-                # print('--------------------')
-
-                yield Role(role, strict=False)
+                    yield Role(role, strict=False)
+                except Exception as e:
+                    resource_id = role.get('Arn', '')
+                    error_resource_response = self.generate_error('global', resource_id, e)
+                    yield error_resource_response
 
     def request_identity_provider_data(self) -> List[IdentityProvider]:
+        self.cloud_service_type = 'IdentityProvider'
+
         response = self.client.list_open_id_connect_providers()
 
         for arn_dict in response.get('OpenIDConnectProviderList', []):
-            arn = arn_dict.get('Arn')
-            identity_provider = self.list_open_id_connect_provider_info_with_arn(arn)
-            identity_provider.update({
-                'arn': arn,
-                'provider_type': self._get_provider_type(identity_provider.get('Url', ''))
-            })
+            try:
+                arn = arn_dict.get('Arn')
+                identity_provider = self.get_open_id_connect_provider_info_with_arn(arn)
+                identity_provider.update({
+                    'arn': arn,
+                    'provider_type': self._get_provider_type(identity_provider.get('Url', ''))
+                })
 
-            yield IdentityProvider(identity_provider, strict=False)
+                yield IdentityProvider(identity_provider, strict=False)
+            except Exception as e:
+                resource_id = arn_dict.get('Arn', '')
+                error_resource_response = self.generate_error('global', resource_id, e)
+                yield error_resource_response
 
     # For Users list_service_specific_credentials
     def conditional_update_for_access_key_age_and_access_key_age_display(self, user, access_keys):
@@ -250,7 +285,11 @@ class IAMConnector(SchematicAWSConnector):
         return login_profile
 
     def list_local_managed_policies(self, **query):
+        self.cloud_service_type = 'Policy'
+
         policies = []
+        errors = []
+
         policy_paginator = self.client.get_paginator('list_policies')
 
         query = self._generate_key_query('Scope', 'Local', '', is_paginate=True, **query)
@@ -258,29 +297,25 @@ class IAMConnector(SchematicAWSConnector):
 
         for data in response_iterator_local:
             for policy in data.get('Policies', []):
-                policy_arn = policy.get('Arn')
-                description = self.list_policy_description(policy_arn)
-                query = self._generate_key_query('PolicyArn', policy_arn, 'Scope', is_paginate=True, **query)
-
-                permission_summary = self.list_policy_summary(policy_arn, policy.get('DefaultVersionId'))
-                policy.update({'description': description,
-                               'policy_usage': self.list_policy_usage(policy_arn),
-                               'permission': permission_summary,
-                               'permission_versions': self.list_policy_versions(policy_arn),
-                               'policy_type': 'Custom Managed'})
-
-                # print('-------Policy---------')
-                # print()
-                # pprint(policy)
-                # print()
-                # print('----------------------')
                 try:
+                    policy_arn = policy.get('Arn')
+                    description = self.list_policy_description(policy_arn)
+                    query = self._generate_key_query('PolicyArn', policy_arn, 'Scope', is_paginate=True, **query)
+
+                    permission_summary = self.list_policy_summary(policy_arn, policy.get('DefaultVersionId'))
+                    policy.update({'description': description,
+                                   'policy_usage': self.list_policy_usage(policy_arn),
+                                   'permission': permission_summary,
+                                   'permission_versions': self.list_policy_versions(policy_arn),
+                                   'policy_type': 'Custom Managed'})
+
                     policies.append(Policy(policy, strict=False))
 
                 except Exception as e:
-                    _LOGGER.debug(f'[IAM: Policy details]: {policy}')
+                    resource_id = policy.get('Arn', '')
+                    errors.append(self.generate_error('global', resource_id, e))
 
-        return policies
+        return policies, errors
 
     def list_access_keys(self, user_name, **query):
         access_keys = []
@@ -397,7 +432,7 @@ class IAMConnector(SchematicAWSConnector):
         response = self.client.list_attached_role_policies(RoleName=role_name)
         return response.get('AttachedPolicies', [])
 
-    def list_open_id_connect_provider_info_with_arn(self, oidcp_arn):
+    def get_open_id_connect_provider_info_with_arn(self, oidcp_arn):
         response = self.client.get_open_id_connect_provider(OpenIDConnectProviderArn=oidcp_arn)
         return response
 

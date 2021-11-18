@@ -12,9 +12,11 @@ _LOGGER = logging.getLogger(__name__)
 
 class EIPConnector(SchematicAWSConnector):
     service_name = 'ec2'
+    cloud_service_group = 'EC2'
+    cloud_service_type = 'EIP'
 
     def get_resources(self) -> List[EIPResource]:
-        print("** EIP START **")
+        _LOGGER.debug("[get_resources] START: EIP")
         resources = []
         start_time = time.time()
 
@@ -32,7 +34,7 @@ class EIPConnector(SchematicAWSConnector):
             self.reset_region(region_name)
             resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
 
-        print(f' EIP Finished {time.time() - start_time} Seconds')
+        _LOGGER.debug(f'[get_resources] FINISHED: EIP ({time.time() - start_time} sec)')
         return resources
 
     def request_data(self, region_name) -> List[ElasticIPAddress]:
@@ -46,21 +48,26 @@ class EIPConnector(SchematicAWSConnector):
             network_interfaces = self._describe_network_interfaces([eip.get('NetworkInterfaceId') for eip in eips if eip.get('NetworkInterfaceId')])
 
         for _ip in eips:
-            public_ip = _ip.get('PublicIp')
+            try:
+                public_ip = _ip.get('PublicIp')
 
-            if public_ip is not None:
-                if nat_gw_id := self._match_nat_gw(public_ip, nat_gateways):
-                    _ip['nat_gateway_id'] = nat_gw_id
+                if public_ip is not None:
+                    if nat_gw_id := self._match_nat_gw(public_ip, nat_gateways):
+                        _ip['nat_gateway_id'] = nat_gw_id
 
-                if public_dns := self._match_network_interface_public_dns(public_ip, network_interfaces):
-                    _ip['public_dns'] = public_dns
+                    if public_dns := self._match_network_interface_public_dns(public_ip, network_interfaces):
+                        _ip['public_dns'] = public_dns
 
-            _ip.update({
-                'account_id': self.account_id,
-                'name': self._get_name_from_tags(_ip.get('Tags', []))
-            })
-            result = ElasticIPAddress(_ip, strict=False)
-            yield result, result.name
+                _ip.update({
+                    'account_id': self.account_id,
+                    'name': self._get_name_from_tags(_ip.get('Tags', []))
+                })
+                result = ElasticIPAddress(_ip, strict=False)
+                yield result, result.name
+            except Exception as e:
+                resource_id = _ip.get('PublicIp', '')
+                error_resource_response = self.generate_error(region_name, resource_id, e)
+                yield error_resource_response, ''
 
     def _describe_nat_gateways(self):
         response = self.client.describe_nat_gateways()

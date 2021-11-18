@@ -12,9 +12,11 @@ _LOGGER = logging.getLogger(__name__)
 
 class EFSConnector(SchematicAWSConnector):
     service_name = 'efs'
+    cloud_service_group = 'EFS'
+    cloud_service_type = 'FileSystem'
 
     def get_resources(self) -> List[FileSystemResource]:
-        print("** EFS START **")
+        _LOGGER.debug("[get_resources] START: EFS")
         resources = []
         start_time = time.time()
 
@@ -33,7 +35,7 @@ class EFSConnector(SchematicAWSConnector):
             self.reset_region(region_name)
             resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
 
-        print(f' EFS Finished {time.time() - start_time} Seconds')
+        _LOGGER.debug(f'[get_resources] FINISHED: EFS ({time.time() - start_time} sec)')
         return resources
 
     def request_data(self, region_name) -> List[FileSystem]:
@@ -47,18 +49,23 @@ class EFSConnector(SchematicAWSConnector):
 
         for data in response_iterator:
             for raw in data.get('FileSystems', []):
-                size = raw.get('SizeInBytes', {})
-                raw.update({
-                    'size': float(size.get('Value', 0.0)),
-                    'life_cycle_policies': self.describe_lifecycle_configuration(raw['FileSystemId']),
-                    'mount_targets': list(self.describe_mount_targets(raw['FileSystemId'])),
-                    'account_id': self.account_id,
-                    'arn': self.generate_arn(service="elasticfilesystem", region=region_name,
-                                             account_id=self.account_id, resource_type='file-system',
-                                             resource_id=raw['FileSystemId'])
-                })
-                res = FileSystem(raw, strict=False)
-                yield res, res.name
+                try:
+                    size = raw.get('SizeInBytes', {})
+                    raw.update({
+                        'size': float(size.get('Value', 0.0)),
+                        'life_cycle_policies': self.describe_lifecycle_configuration(raw['FileSystemId']),
+                        'mount_targets': list(self.describe_mount_targets(raw['FileSystemId'])),
+                        'account_id': self.account_id,
+                        'arn': self.generate_arn(service="elasticfilesystem", region=region_name,
+                                                 account_id=self.account_id, resource_type='file-system',
+                                                 resource_id=raw['FileSystemId'])
+                    })
+                    res = FileSystem(raw, strict=False)
+                    yield res, res.name
+                except Exception as e:
+                    resource_id = raw.get('FileSystemId', '')
+                    error_resource_response = self.generate_error(region_name, resource_id, e)
+                    yield error_resource_response, ''
 
     def describe_lifecycle_configuration(self, file_system_id):
         response = self.client.describe_lifecycle_configuration(FileSystemId=file_system_id)

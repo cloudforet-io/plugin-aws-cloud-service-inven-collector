@@ -15,15 +15,11 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class DirectConnectConnector(SchematicAWSConnector):
-    connection_response_schema = ConnectionResponse
-    dcgw_response_schema = DirectConnectGatewayResponse
-    vpgw_response_schema = VirtualPrivateGatewayResponse
-    lag_response_schema = LAGResponse
-
     service_name = 'directconnect'
+    cloud_service_group = 'DirectConnect'
 
     def get_resources(self):
-        print("** Direct Connect START **")
+        _LOGGER.debug("[get_resources] START: Direct Connect")
         resources = []
         start_time = time.time()
 
@@ -32,6 +28,11 @@ class DirectConnectConnector(SchematicAWSConnector):
                 'request_method': self.connection_request_data,
                 'resource': ConnectionResource,
                 'response_schema': ConnectionResponse
+            },
+            {
+                'request_method': self.direct_connect_gateway_request_data,
+                'resource': DirectConnectGatewayResource,
+                'response_schema': DirectConnectGatewayResponse
             },
             {
                 'request_method': self.virtual_private_gateway_request_data,
@@ -56,51 +57,70 @@ class DirectConnectConnector(SchematicAWSConnector):
             for collect_resource in collect_resources:
                 resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
 
-        try:
-            for data in self.direct_connect_gateway_request_data():
-                resources.append(self.dcgw_response_schema(
-                    {'resource': DirectConnectGatewayResource({
-                        'name': data.direct_connect_gateway_name,
-                        'data': data,
-                        'reference': ReferenceModel(data.reference)})}))
-        except Exception as e:
-            print(f'[ERROR {self.service_name}] {e}')
-
-        print(f' Direct Connect Finished {time.time() - start_time} Seconds')
+        _LOGGER.debug(f'[get_resources] FINISHED: Direct Connect ({time.time() - start_time} sec)')
         return resources
 
     def connection_request_data(self, region_name) -> List[Connection]:
+        self.cloudservice_type = 'Connection'
+
         response = self.client.describe_connections()
 
         for raw in response.get('connections', []):
-            raw.update({
-                'account_id': self.account_id
-            })
-            yield Connection(raw, strict=False), raw.get('connectionName', '')
+            try:
+                raw.update({
+                    'account_id': self.account_id
+                })
+                yield Connection(raw, strict=False), raw.get('connectionName', '')
 
-    def direct_connect_gateway_request_data(self) -> List[Connection]:
+            except Exception as e:
+                resource_id = raw.get('connectionId', '')
+                error_resource_response = self.generate_error(region_name, resource_id, e)
+                yield error_resource_response, ''
+
+    def direct_connect_gateway_request_data(self, region_name) -> List[Connection]:
+        self.cloudservice_type = 'DirectConnectGateway'
+
         response = self.client.describe_direct_connect_gateways()
 
         for raw in response.get('directConnectGateways', []):
-            raw.update({
-                'account_id': self.account_id
-            })
-            yield DirectConnecGateway(raw, strict=False)
+            try:
+                raw.update({
+                    'account_id': self.account_id
+                })
+                yield DirectConnecGateway(raw, strict=False), raw.get('directConnectGatewayName', '')
+            except Exception as e:
+                resource_id = raw.get('directConnectGatewayId', '')
+                error_resource_response = self.generate_error(region_name, resource_id, e)
+                yield error_resource_response, ''
 
     def virtual_private_gateway_request_data(self, region_name) -> List[Connection]:
+        self.cloudservice_type = 'VirtualPrivateGateway'
+
         response = self.client.describe_virtual_gateways()
 
         for raw in response.get('virtualGateways', []):
-            raw.update({
-                'account_id': self.account_id
-            })
-            yield VirtualPrivateGateway(raw, strict=False), ''
+            try:
+                raw.update({
+                    'account_id': self.account_id
+                })
+                yield VirtualPrivateGateway(raw, strict=False), ''
+            except Exception as e:
+                resource_id = raw.get('virtualGatewayId', '')
+                error_resource_response = self.generate_error(region_name, resource_id, e)
+                yield error_resource_response, ''
 
     def lag_request_data(self, region_name) -> List[Connection]:
+        self.cloudservice_type = 'LAG'
+
         response = self.client.describe_lags()
 
         for raw in response.get('lags', []):
-            raw.update({
-                'account_id': self.account_id
-            })
-            yield LAG(raw, strict=False), raw.get('lagName', '')
+            try:
+                raw.update({
+                    'account_id': self.account_id
+                })
+                yield LAG(raw, strict=False), raw.get('lagName', '')
+            except Exception as e:
+                resource_id = raw.get('lagId', '')
+                error_resource_response = self.generate_error(region_name, resource_id, e)
+                yield error_resource_response, ''

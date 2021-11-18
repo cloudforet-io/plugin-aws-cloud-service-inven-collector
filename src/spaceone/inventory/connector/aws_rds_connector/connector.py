@@ -12,7 +12,6 @@ from spaceone.inventory.connector.aws_rds_connector.schema.service_type import C
 from spaceone.inventory.libs.connector import SchematicAWSConnector
 from spaceone.inventory.libs.schema.resource import ReferenceModel, CloudWatchModel
 
-
 _LOGGER = logging.getLogger(__name__)
 DEFAULT_RDS_FILTER = ['aurora', 'aurora-mysql', 'mysql', 'mariadb', 'postgres',
                       'oracle-ee', 'oracle-se1', 'oracle-se2', 'oracle-se',
@@ -21,9 +20,10 @@ DEFAULT_RDS_FILTER = ['aurora', 'aurora-mysql', 'mysql', 'mariadb', 'postgres',
 
 class RDSConnector(SchematicAWSConnector):
     service_name = 'rds'
+    cloud_service_group = 'RDS'
 
     def get_resources(self):
-        print("** RDS START **")
+        _LOGGER.debug("[get_resources] START: RDS")
         resources = []
         start_time = time.time()
 
@@ -60,12 +60,14 @@ class RDSConnector(SchematicAWSConnector):
             resources.append(cst)
 
         for region_name in self.region_names:
-            # print(f'[ {region_name} ]')
             self.reset_region(region_name)
 
-            try:
-                # For Database
-                for database_vo, resource, identifier in self.db_cluster_data(region_name):
+            # For Database
+            for database_vo, resource, identifier in self.db_cluster_data(region_name):
+                if getattr(database_vo, 'resource_type', None) and database_vo.resource_type == 'inventory.ErrorResource':
+                    # Error Resource
+                    resources.append(database_vo)
+                else:
                     if getattr(database_vo, 'set_cloudwatch', None):
                         database_vo.cloudwatch = CloudWatchModel(database_vo.set_cloudwatch(region_name))
 
@@ -77,51 +79,61 @@ class RDSConnector(SchematicAWSConnector):
                             'region_code': region_name,
                             'reference': ReferenceModel(database_vo.reference(region_name))})}
                     ))
-            except Exception as e:
-                print(f'[ERROR RDS] REGION : {region_name} {e}')
 
             # For All except Database
             for collect_resource in collect_resources:
                 resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
-        print(f' RDS Finished {time.time() - start_time} Seconds')
+
+        _LOGGER.debug(f'[get_resources] FINISHED: RDS ({time.time() - start_time} sec)')
         return resources
 
     def db_cluster_data(self, region_name) -> List[Database]:
+        self.cloud_service_type = 'Database'
+
         # Cluster
         for cluster, cluster_identifier in self.describe_clusters(region_name):
-            db = {
-                'arn': cluster.db_cluster_arn,
-                'db_identifier': cluster.db_cluster_identifier,
-                'status': cluster.status,
-                'role': 'cluster',
-                'engine': cluster.engine,
-                'availability_zone': self.get_region(cluster.availability_zones),
-                'size': f'{len(cluster.db_cluster_members)} instances',
-                'multi_az': cluster.multi_az,
-                'account_id': self.account_id,
-                'cluster': cluster,
-                'tags': cluster.tags
-            }
-
-            yield Database(db, strict=False), DBClusterResource, cluster_identifier
+            try:
+                db = {
+                    'arn': cluster.db_cluster_arn,
+                    'db_identifier': cluster.db_cluster_identifier,
+                    'status': cluster.status,
+                    'role': 'cluster',
+                    'engine': cluster.engine,
+                    'availability_zone': self.get_region(cluster.availability_zones),
+                    'size': f'{len(cluster.db_cluster_members)} instances',
+                    'multi_az': cluster.multi_az,
+                    'account_id': self.account_id,
+                    'cluster': cluster,
+                    'tags': cluster.tags
+                }
+                yield Database(db, strict=False), DBClusterResource, cluster_identifier
+            except Exception as e:
+                resource_id = cluster.db_cluster_arn
+                error_resource_response = self.generate_error(region_name, resource_id, e)
+                yield error_resource_response, '', ''
 
         # Instance Only
         for instance, instance_identifier in self.describe_instances(region_name):
-            if not instance.db_cluster_identifier:
-                db = {
-                    'arn': instance.db_instance_arn,
-                    'db_identifier': instance.db_instance_identifier,
-                    'status': instance.db_instance_status,
-                    'role': 'instance',
-                    'engine': instance.engine,
-                    'availability_zone': instance.availability_zone,
-                    'size': instance.db_instance_class,
-                    'multi_az': instance.multi_az,
-                    'account_id': self.account_id,
-                    'instance': instance,
-                    'tags': instance.tags
-                }
-                yield Database(db, strict=False), DBInstanceResource, instance_identifier
+            try:
+                if not instance.db_cluster_identifier:
+                    db = {
+                        'arn': instance.db_instance_arn,
+                        'db_identifier': instance.db_instance_identifier,
+                        'status': instance.db_instance_status,
+                        'role': 'instance',
+                        'engine': instance.engine,
+                        'availability_zone': instance.availability_zone,
+                        'size': instance.db_instance_class,
+                        'multi_az': instance.multi_az,
+                        'account_id': self.account_id,
+                        'instance': instance,
+                        'tags': instance.tags
+                    }
+                    yield Database(db, strict=False), DBInstanceResource, instance_identifier
+            except Exception as e:
+                resource_id = instance.db_instance_arn
+                error_resource_response = self.generate_error(region_name, resource_id, e)
+                yield error_resource_response, '', ''
 
     def describe_clusters(self, region_name) -> List[Cluster]:
         paginator = self.client.get_paginator('describe_db_clusters')
@@ -143,6 +155,8 @@ class RDSConnector(SchematicAWSConnector):
                     yield res, res.db_cluster_identifier
 
     def instance_data(self, region_name) -> List[Instance]:
+        self.cloud_service_type = 'Instance'
+
         for instance, instance_identifier in self.describe_instances(region_name):
             yield instance, instance_identifier
 
@@ -163,6 +177,8 @@ class RDSConnector(SchematicAWSConnector):
                     yield Instance(raw, strict=False), raw.get('DBInstanceIdentifier', '')
 
     def snapshot_request_data(self, region_name) -> List[Snapshot]:
+        self.cloud_service_type = 'Snapshot'
+
         paginator = self.client.get_paginator('describe_db_snapshots')
         response_iterator = paginator.paginate(
             PaginationConfig={
@@ -172,15 +188,22 @@ class RDSConnector(SchematicAWSConnector):
         )
         for data in response_iterator:
             for raw in data.get('DBSnapshots', []):
-                if raw.get('Engine') in DEFAULT_RDS_FILTER:
-                    raw.update({
-                        'region_name': region_name,
-                        'account_id': self.account_id,
-                        'tags': self.list_tags_for_resource(raw['DBSnapshotArn'])
-                    })
-                    yield Snapshot(raw, strict=False), raw.get('DBSnapshotIdentifier', '')
+                try:
+                    if raw.get('Engine') in DEFAULT_RDS_FILTER:
+                        raw.update({
+                            'region_name': region_name,
+                            'account_id': self.account_id,
+                            'tags': self.list_tags_for_resource(raw['DBSnapshotArn'])
+                        })
+                        yield Snapshot(raw, strict=False), raw.get('DBSnapshotIdentifier', '')
+                except Exception as e:
+                    resource_id = raw.get('DBSnapshotArn', '')
+                    error_resource_response = self.generate_error(region_name, resource_id, e)
+                    yield error_resource_response, ''
 
     def subnet_group_request_data(self, region_name) -> List[SubnetGroup]:
+        self.cloud_service_type = 'SubnetGroup'
+
         paginator = self.client.get_paginator('describe_db_subnet_groups')
         response_iterator = paginator.paginate(
             PaginationConfig={
@@ -190,14 +213,21 @@ class RDSConnector(SchematicAWSConnector):
         )
         for data in response_iterator:
             for raw in data.get('DBSubnetGroups', []):
-                raw.update({
-                    'region_name': region_name,
-                    'account_id': self.account_id,
-                    'tags': self.list_tags_for_resource(raw['DBSubnetGroupArn'])
-                })
-                yield SubnetGroup(raw, strict=False), raw.get('DBSubnetGroupName', '')
+                try:
+                    raw.update({
+                        'region_name': region_name,
+                        'account_id': self.account_id,
+                        'tags': self.list_tags_for_resource(raw['DBSubnetGroupArn'])
+                    })
+                    yield SubnetGroup(raw, strict=False), raw.get('DBSubnetGroupName', '')
+                except Exception as e:
+                    resource_id = raw.get('DBSubnetGroupArn', '')
+                    error_resource_response = self.generate_error(region_name, resource_id, e)
+                    yield error_resource_response, ''
 
     def parameter_group_request_data(self, region_name) -> List[ParameterGroup]:
+        self.cloud_service_type = 'ParameterGroup'
+
         paginator = self.client.get_paginator('describe_db_parameter_groups')
         response_iterator = paginator.paginate(
             PaginationConfig={
@@ -207,16 +237,23 @@ class RDSConnector(SchematicAWSConnector):
         )
         for data in response_iterator:
             for raw in data.get('DBParameterGroups', []):
-                raw.update({
-                    'region_name': region_name,
-                    'account_id': self.account_id,
-                    'db_parameter_group_type': 'DbParameterGroup',
-                    'parameters': list(self.describe_db_parameters(raw.get('DBParameterGroupName'))),
-                    'tags': self.list_tags_for_resource(raw['DBParameterGroupArn'])
-                })
-                yield ParameterGroup(raw, strict=False), raw.get('DBParameterGroupName', '')
+                try:
+                    raw.update({
+                        'region_name': region_name,
+                        'account_id': self.account_id,
+                        'db_parameter_group_type': 'DbParameterGroup',
+                        'parameters': list(self.describe_db_parameters(raw.get('DBParameterGroupName'))),
+                        'tags': self.list_tags_for_resource(raw['DBParameterGroupArn'])
+                    })
+                    yield ParameterGroup(raw, strict=False), raw.get('DBParameterGroupName', '')
+                except Exception as e:
+                    resource_id = raw.get('DBParameterGroupArn', '')
+                    error_resource_response = self.generate_error(region_name, resource_id, e)
+                    yield error_resource_response, ''
 
     def option_group_request_data(self, region_name) -> List[OptionGroup]:
+        self.cloud_service_type = 'OptionGroup'
+
         paginator = self.client.get_paginator('describe_option_groups')
         response_iterator = paginator.paginate(
             PaginationConfig={
@@ -226,12 +263,17 @@ class RDSConnector(SchematicAWSConnector):
         )
         for data in response_iterator:
             for raw in data.get('OptionGroupsList', []):
-                raw.update({
-                    'region_name': region_name,
-                    'account_id': self.account_id,
-                    'tags': self.list_tags_for_resource(raw['OptionGroupArn'])
-                })
-                yield OptionGroup(raw, strict=False), raw.get('OptionGroupName', '')
+                try:
+                    raw.update({
+                        'region_name': region_name,
+                        'account_id': self.account_id,
+                        'tags': self.list_tags_for_resource(raw['OptionGroupArn'])
+                    })
+                    yield OptionGroup(raw, strict=False), raw.get('OptionGroupName', '')
+                except Exception as e:
+                    resource_id = raw.get('OptionGroupArn', '')
+                    error_resource_response = self.generate_error(region_name, resource_id, e)
+                    yield error_resource_response, ''
 
     def describe_db_parameters(self, db_parameter_group_name) -> List[Parameter]:
         paginator = self.client.get_paginator('describe_db_parameters')

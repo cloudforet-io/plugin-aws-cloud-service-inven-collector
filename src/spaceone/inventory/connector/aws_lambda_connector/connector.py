@@ -1,7 +1,6 @@
 import time
 import logging
 from typing import List
-
 from botocore.exceptions import ClientError
 
 from spaceone.inventory.connector.aws_lambda_connector.schema.data import LambdaFunctionData, \
@@ -36,9 +35,10 @@ class VpcDataLoader(DataLoader):
 
 class LambdaConnector(SchematicAWSConnector):
     service_name = 'lambda'
+    cloud_service_group = 'Lambda'
 
     def get_resources(self):
-        print("** Lambda START **")
+        _LOGGER.debug("[get_resources] START: Lambda")
         resources = []
         start_time = time.time()
 
@@ -60,13 +60,12 @@ class LambdaConnector(SchematicAWSConnector):
             resources.append(cst)
 
         for region_name in self.region_names:
-            # print(f'[ Lambda {region_name} ]')
             self.reset_region(region_name)
 
             for collect_resource in collect_resources:
                 resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
 
-        print(f' Lambda Finished {time.time() - start_time} Seconds')
+        _LOGGER.debug(f'[get_resources] FINISHED: Lambda ({time.time() - start_time} sec)')
         return resources
 
     @property
@@ -93,6 +92,10 @@ class LambdaConnector(SchematicAWSConnector):
         return vpc_data
 
     def request_functions_data(self, region_name) -> List[LambdaFunctionData]:
+        cloud_service_group = 'Lambda'
+        cloud_service_type = 'Function'
+        self.cloud_service_type = cloud_service_type
+
         paginator = self.client.get_paginator('list_functions')
         response_iterator = paginator.paginate(
             PaginationConfig={
@@ -102,35 +105,44 @@ class LambdaConnector(SchematicAWSConnector):
         )
         for data in response_iterator:
             for raw in data['Functions']:
-                func = LambdaFunctionData(raw, strict=False)
-                func.region_name = region_name
-                func.account_id = self.account_id
+                try:
+                    func = LambdaFunctionData(raw, strict=False)
+                    func.region_name = region_name
+                    func.account_id = self.account_id
 
-                if raw.get('State'):
-                    func.state = LambdaState({
-                        'type': raw.get('State'),
-                        'reason': raw.get('StateReason'),
-                        'reason_code': raw.get('StateReasonCode'),
-                    })
-                if raw.get('LastUpdateStatus'):
-                    func.last_update = LastUpdateStatus({
-                        'type': raw.get('LastUpdateStatus'),
-                        'reason': raw.get('LastUpdateStatusReason'),
-                        'reason_code': raw.get('LastUpdateStatusReasonCode'),
-                    })
-                if vpc_config := raw.get('VpcConfig'):
-                    if vpc_data := self.get_vpc(vpc_config):
-                        func.vpc_config = vpc_data
-                if env := raw.get('Environment'):
-                    if not func.environment:
-                        func.environment = Environment()
-                    func.environment.variables = [
-                        EnvironmentVariable({'key': k, 'value': v}) for k, v in env.get('Variables', {}).items()
-                    ]
+                    if raw.get('State'):
+                        func.state = LambdaState({
+                            'type': raw.get('State'),
+                            'reason': raw.get('StateReason'),
+                            'reason_code': raw.get('StateReasonCode'),
+                        })
+                    if raw.get('LastUpdateStatus'):
+                        func.last_update = LastUpdateStatus({
+                            'type': raw.get('LastUpdateStatus'),
+                            'reason': raw.get('LastUpdateStatusReason'),
+                            'reason_code': raw.get('LastUpdateStatusReasonCode'),
+                        })
+                    if vpc_config := raw.get('VpcConfig'):
+                        if vpc_data := self.get_vpc(vpc_config):
+                            func.vpc_config = vpc_data
+                    if env := raw.get('Environment'):
+                        if not func.environment:
+                            func.environment = Environment()
+                        func.environment.variables = [
+                            EnvironmentVariable({'key': k, 'value': v}) for k, v in env.get('Variables', {}).items()
+                        ]
 
-                yield func, func.name
+                    yield func, func.name
+                except Exception as e:
+                    resource_id = raw.get('FunctionArn', '')
+                    error_resource_response = self.generate_error(region_name, resource_id, e)
+                    yield error_resource_response, ''
 
     def request_layer_data(self, region_name) -> List[Layer]:
+        cloud_service_group = 'Lambda'
+        cloud_service_type = 'Layer'
+        self.cloud_service_type = cloud_service_type
+
         paginator = self.client.get_paginator('list_layers')
         response_iterator = paginator.paginate(
             PaginationConfig={
@@ -140,15 +152,20 @@ class LambdaConnector(SchematicAWSConnector):
         )
         for data in response_iterator:
             for raw in data['Layers']:
-                latest_matching_version = raw.get('LatestMatchingVersion', {})
-                if 'Version' in latest_matching_version:
+                try:
+                    latest_matching_version = raw.get('LatestMatchingVersion', {})
+                    if 'Version' in latest_matching_version:
+                        raw.update({
+                            'version': latest_matching_version.get('Version')
+                        })
+
                     raw.update({
-                        'version': latest_matching_version.get('Version')
+                        'region_name': region_name,
+                        'account_id': self.account_id
                     })
 
-                raw.update({
-                    'region_name': region_name,
-                    'account_id': self.account_id
-                })
-
-                yield Layer(raw, strict=False), raw.get('LayerName', '')
+                    yield Layer(raw, strict=False), raw.get('LayerName', '')
+                except Exception as e:
+                    resource_id = raw.get('LayerArn', '')
+                    error_resource_response = self.generate_error(region_name, resource_id, e)
+                    yield error_resource_response, ''

@@ -2,17 +2,9 @@ import logging
 import time
 from typing import List
 
-from spaceone.inventory.connector.aws_kinesis_data_stream_connector.schema.data import (
-    StreamDescription,
-    Consumers,
-)
-from spaceone.inventory.connector.aws_kinesis_data_stream_connector.schema.resource import (
-    StreamResource,
-    KDSResponse,
-)
-from spaceone.inventory.connector.aws_kinesis_data_stream_connector.schema.service_type import (
-    CLOUD_SERVICE_TYPES,
-)
+from spaceone.inventory.connector.aws_kinesis_data_stream_connector.schema.data import StreamDescription, Consumers
+from spaceone.inventory.connector.aws_kinesis_data_stream_connector.schema.resource import StreamResource, KDSResponse
+from spaceone.inventory.connector.aws_kinesis_data_stream_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
 
 _LOGGER = logging.getLogger(__name__)
@@ -20,9 +12,11 @@ _LOGGER = logging.getLogger(__name__)
 
 class KinesisDataStreamConnector(SchematicAWSConnector):
     service_name = "kinesis"
+    cloud_service_group = 'KinesisDataStream'
+    cloud_service_type = 'DataStream'
 
     def get_resources(self):
-        print("** kinesis Data Stream Manager Start **")
+        _LOGGER.debug("[get_resources] START: Kinesis Data Stream")
         resources = []
         start_time = time.time()
 
@@ -47,7 +41,7 @@ class KinesisDataStreamConnector(SchematicAWSConnector):
                     )
                 )
 
-        print(f" kinesis Data Stream Manager Finished {time.time() - start_time} Seconds")
+        _LOGGER.debug(f'[get_resources] FINISHED: Kinesis Data Stream ({time.time() - start_time} sec)')
         return resources
 
     def request_data(self, region_name) -> List[StreamDescription]:
@@ -60,44 +54,50 @@ class KinesisDataStreamConnector(SchematicAWSConnector):
         )
         for data in response_iterator:
             for stream_name in data.get("StreamNames", []):
-                stream_response = self.client.describe_stream(StreamName=stream_name)
+                try:
+                    stream_response = self.client.describe_stream(StreamName=stream_name)
 
-                stream_info = stream_response.get("StreamDescription", {})
-                num_of_con, consumers = self.get_consumers(stream_info.get("StreamARN"))
-                stream_info.update(
-                    {
-                        "stream_status_display": self.get_stream_status_display(
-                            stream_info.get("StreamStatus")
-                        ),
-                        "retention_period_days": self.get_retention_period_days(
-                            stream_info.get("RetentionPeriodHours")
-                        ),
-                        "retention_period_display": self.get_retention_period_display(
-                            stream_info.get("RetentionPeriodHours")
-                        ),
-                        "retention_period_display_hours": f"{stream_info.get('RetentionPeriodHours')} hours",
-                        "encryption_display": self.get_encryption_display(
-                            stream_info.get("EncryptionType")
-                        ),
-                        "shard_level_metrics_display": self.get_shard_level_metrics_display(
-                            stream_info.get("EnhancedMonitoring")
-                        ),
-                        "open_shards_num": self.get_open_shards_num(
-                            stream_info.get("Shards")
-                        ),
-                        "closed_shards_num": self.get_closed_shards_num(
-                            stream_info.get("Shards")
-                        ),
-                        "consumers_vo": {
-                            "num_of_consumers": num_of_con,
-                            "consumers": consumers,
-                        },
-                        "tags": self.get_tags(stream_info.get("StreamName")),
-                        "account_id": self.account_id,
-                    }
-                )
-                res = StreamDescription(stream_info, strict=False)
-                yield res, res.stream_name
+                    stream_info = stream_response.get("StreamDescription", {})
+                    num_of_con, consumers = self.get_consumers(stream_info.get("StreamARN"))
+                    stream_info.update(
+                        {
+                            "stream_status_display": self.get_stream_status_display(
+                                stream_info.get("StreamStatus")
+                            ),
+                            "retention_period_days": self.get_retention_period_days(
+                                stream_info.get("RetentionPeriodHours")
+                            ),
+                            "retention_period_display": self.get_retention_period_display(
+                                stream_info.get("RetentionPeriodHours")
+                            ),
+                            "retention_period_display_hours": f"{stream_info.get('RetentionPeriodHours')} hours",
+                            "encryption_display": self.get_encryption_display(
+                                stream_info.get("EncryptionType")
+                            ),
+                            "shard_level_metrics_display": self.get_shard_level_metrics_display(
+                                stream_info.get("EnhancedMonitoring")
+                            ),
+                            "open_shards_num": self.get_open_shards_num(
+                                stream_info.get("Shards")
+                            ),
+                            "closed_shards_num": self.get_closed_shards_num(
+                                stream_info.get("Shards")
+                            ),
+                            "consumers_vo": {
+                                "num_of_consumers": num_of_con,
+                                "consumers": consumers,
+                            },
+                            "tags": self.get_tags(stream_info.get("StreamName")),
+                            "account_id": self.account_id,
+                        }
+                    )
+                    res = StreamDescription(stream_info, strict=False)
+                    yield res, res.stream_name
+
+                except Exception as e:
+                    resource_id = stream_name
+                    error_resource_response = self.generate_error(region_name, resource_id, e)
+                    yield error_resource_response, ''
 
     def get_tags(self, name):
         tag_response = self.client.list_tags_for_stream(StreamName=name)

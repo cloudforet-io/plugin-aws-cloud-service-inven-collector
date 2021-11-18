@@ -13,9 +13,11 @@ _LOGGER = logging.getLogger(__name__)
 
 class SQSConnector(SchematicAWSConnector):
     service_name = 'sqs'
+    cloud_service_group = 'SQS'
+    cloud_service_type = 'Queue'
 
     def get_resources(self) -> List[SQSResponse]:
-        print("** SQS START **")
+        _LOGGER.debug("[get_resources] START: SQS")
         resources = []
         start_time = time.time()
 
@@ -34,20 +36,24 @@ class SQSConnector(SchematicAWSConnector):
             self.reset_region(region_name)
             resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
 
-        print(f' SQS Finished {time.time() - start_time} Seconds')
+        _LOGGER.debug(f'[get_resources] FINISHED: SQS ({time.time() - start_time} sec)')
         return resources
 
     def request_data(self, region_name) -> List[QueData]:
         resource = self.session.resource('sqs')
 
         for que in resource.queues.all():
-            attr = que.attributes
-            if 'RedrivePolicy' in attr:
-                attr['RedrivePolicy'] = RedrivePolicy(json.loads(attr.get('RedrivePolicy')), strict=False)
+            try:
+                attr = que.attributes
+                if 'RedrivePolicy' in attr:
+                    attr['RedrivePolicy'] = RedrivePolicy(json.loads(attr.get('RedrivePolicy')), strict=False)
 
-            result = QueData(attr)
-            result.region_name = region_name
-            result.url = que.url
-            result.account_id = self.account_id
-            yield result, result.name
-
+                result = QueData(attr)
+                result.region_name = region_name
+                result.url = que.url
+                result.account_id = self.account_id
+                yield result, result.name
+            except Exception as e:
+                resource_id = ''
+                error_resource_response = self.generate_error(region_name, resource_id, e)
+                yield error_resource_response, ''

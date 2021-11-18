@@ -1,11 +1,14 @@
+import json
+import logging
 from functools import partial
 from typing import List
 from boto3.session import Session
 from spaceone.core import utils
 from spaceone.core.connector import BaseConnector
 from spaceone.inventory.libs.schema.resource import CloudServiceResponse, ReferenceModel, CloudWatchModel, \
-    CloudServiceResourceTags
+    CloudServiceResourceTags, ErrorResourceResponse
 
+_LOGGER = logging.getLogger(__name__)
 
 DEFAULT_REGION = 'us-east-1'
 ARN_DEFAULT_PARTITION = 'aws'
@@ -96,24 +99,19 @@ class AWSConnector(BaseConnector):
         self._client = self.session.client(self.service_name)
         return self._client
 
+
 class SchematicAWSConnector(AWSConnector):
     function_response_schema = CloudServiceResponse
+    
+    cloud_service_group = ''
+    cloud_service_type = ''
 
     def get_resources(self) -> List[CloudServiceResponse]:
         yield None
         raise NotImplementedError()
 
     def collect_data(self):
-        collect_data = (resource.to_primitive() for resource in self.get_resources())
-
-        # import pprint
-        # for resource in collect_data:
-        #     print("-------------")
-        #     # pprint.pprint(resource.get('resource', {}).get('data', {}))
-        #     pprint.pprint(resource.get('resource', {}))
-        #     print("-------------")
-
-        return collect_data
+        return self.get_resources()
 
     def collect_data_by_region(self, service_name, region_name, collect_resource_info):
         '''
@@ -127,8 +125,12 @@ class SchematicAWSConnector(AWSConnector):
 
         resources = []
 
-        try:
-            for data, name in collect_resource_info['request_method'](region_name, **collect_resource_info.get('kwargs', {})):
+        for data, name in collect_resource_info['request_method'](region_name, **collect_resource_info.get('kwargs', {})):
+            if getattr(data, 'resource_type', None) and data.resource_type == 'inventory.ErrorResource':
+                # Error Resource
+                resources.append(data)
+            else:
+                # Cloud Service Resource
                 if getattr(data, 'set_cloudwatch', None):
                     data.cloudwatch = CloudWatchModel(data.set_cloudwatch(region_name))
 
@@ -143,15 +145,30 @@ class SchematicAWSConnector(AWSConnector):
                         }
                     )
                 }))
-
-        except Exception as e:
-            print(f'[ERROR {service_name}] REGION : {region_name} {e}')
-
+                
         return resources
+
+    def get_resource_tags(self, tags_obj):
+        return [CloudServiceResourceTags({'key': tag.key, 'value': tag.value}, strict=False) for tag in tags_obj]
+
+    def generate_error(self, region_name, resource_id, error_message):
+        _LOGGER.error(f'[generate_error] [{self.service_name}] [{region_name}] {error_message}')
+
+        if type(error_message) is dict:
+            error_resource_response = ErrorResourceResponse(
+                {'message': json.dumps(error_message),
+                 'resource': {'resource_id': resource_id,
+                              'cloud_service_group': self.cloud_service_group,
+                              'cloud_service_type': self.cloud_service_type}})
+        else:
+            error_resource_response = ErrorResourceResponse(
+                {'message': str(error_message),
+                 'resource': {'resource_id': resource_id,
+                              'cloud_service_group': self.cloud_service_group,
+                              'cloud_service_type': self.cloud_service_type}})
+
+        return error_resource_response
 
     @staticmethod
     def convert_tags(tags):
         return [{'key': tag, 'value': tags[tag]} for tag in tags]
-
-    def get_resource_tags(self, tags_obj):
-        return [CloudServiceResourceTags({'key': tag.key, 'value': tag.value}, strict=False) for tag in tags_obj]

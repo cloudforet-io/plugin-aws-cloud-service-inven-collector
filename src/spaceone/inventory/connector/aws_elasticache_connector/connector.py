@@ -14,9 +14,10 @@ _LOGGER = logging.getLogger(__name__)
 
 class ElastiCacheConnector(SchematicAWSConnector):
     service_name = 'elasticache'
+    cloud_service_group = 'ElastiCache'
 
     def get_resources(self):
-        print("** ElastiCache START **")
+        _LOGGER.debug("[get_resources] START: ElastiCache")
         resources = []
         start_time = time.time()
 
@@ -25,13 +26,14 @@ class ElastiCacheConnector(SchematicAWSConnector):
             resources.append(cst)
 
         for region_name in self.region_names:
-            # print(f'[ {region_name} ]')
             self.reset_region(region_name)
+            cache_clusters = [cluster for cluster in self.describe_clusters()]
 
-            try:
-                cache_clusters = [cluster for cluster in self.describe_clusters()]
-
-                for memcached_vo in self.get_memcached_data(region_name, cache_clusters):
+            for memcached_vo in self.get_memcached_data(region_name, cache_clusters):
+                if getattr(memcached_vo, 'resource_type', None) and memcached_vo.resource_type == 'inventory.ErrorResource':
+                    # Error Resource
+                    resources.append(memcached_vo)
+                else:
                     if getattr(memcached_vo, 'set_cloudwatch', None):
                         memcached_vo.cloudwatch = CloudWatchModel(memcached_vo.set_cloudwatch(region_name))
 
@@ -44,7 +46,11 @@ class ElastiCacheConnector(SchematicAWSConnector):
                                 'reference': ReferenceModel(memcached_vo.reference(region_name))})}
                     ))
 
-                for redis_vo in self.get_redis_data(region_name, cache_clusters):
+            for redis_vo in self.get_redis_data(region_name, cache_clusters):
+                if getattr(redis_vo, 'resource_type', None) and redis_vo.resource_type == 'inventory.ErrorResource':
+                    # Error Resource
+                    resources.append(redis_vo)
+                else:
                     if getattr(redis_vo, 'set_cloudwatch', None):
                         redis_vo.cloudwatch = CloudWatchModel(redis_vo.set_cloudwatch(region_name))
 
@@ -55,50 +61,67 @@ class ElastiCacheConnector(SchematicAWSConnector):
                              'reference': ReferenceModel(redis_vo.reference(region_name))})}
                     ))
 
-            except Exception as e:
-                print(f'[ERROR ElastiCache] REGION : {region_name} {e}')
-
-        print(f' ElastiCache Finished {time.time() - start_time} Seconds')
+        _LOGGER.debug(f'[get_resources] FINISHED: ElastiCache ({time.time() - start_time} sec)')
         return resources
 
     def get_memcached_data(self, region_name, cache_clusters):
-        for cluster in cache_clusters:
-            if cluster.get('Engine') == 'memcached':
-                cluster.update({
-                    'configuration_endpoint_display': self.set_configuration_endpoint_display(cluster.get('ConfigurationEndpoint')),
-                    'nodes': self.get_memcached_nodes(cluster),
-                    'tags': self.list_tags(cluster['ARN']),
-                    'account_id': self.account_id,
-                })
+        cloud_service_group = 'ElastiCache'
+        cloud_service_type = 'Memcached'
+        self.cloud_service_type = cloud_service_type
 
-                yield Memcached(cluster, strict=False)
+        for cluster in cache_clusters:
+            try:
+                if cluster.get('Engine') == 'memcached':
+                    cluster.update({
+                        'configuration_endpoint_display': self.set_configuration_endpoint_display(cluster.get('ConfigurationEndpoint')),
+                        'nodes': self.get_memcached_nodes(cluster),
+                        'tags': self.list_tags(cluster['ARN']),
+                        'account_id': self.account_id,
+                    })
+
+                    yield Memcached(cluster, strict=False)
+
+            except Exception as e:
+                resource_id = cluster.get('ARN', '')
+                error_resource_response = self.generate_error(region_name, resource_id, e)
+                yield error_resource_response
 
     def get_redis_data(self, region_name, cache_clusters):
+        cloud_service_group = 'ElastiCache'
+        cloud_service_type = 'Redis'
+        self.cloud_service_type = cloud_service_type
+
         for replication_group in self.describe_replication_groups():
-            replication_group.update({
-                'mode': self.set_redis_mode(replication_group.get('ClusterEnabled')),
-                'engine': 'redis',
-                'engine_version': self.get_engine_version(replication_group, cache_clusters),
-                'shard_count': self.get_shard_count(replication_group.get('NodeGroups', [])),
-                'availability_zones': self.get_redis_availability_zones(replication_group.get('NodeGroups', [])),
-                'subnet_group_name': self.get_redis_subnet_group_name(replication_group, cache_clusters),
-                'parameter_group_name': self.get_redis_parameter_group_name(replication_group, cache_clusters),
-                'node_count': self.get_node_count(replication_group.get('MemberClusters', [])),
-                'nodes': self.get_redis_nodes_info(replication_group, cache_clusters),
-                'account_id': self.account_id
-            })
-
-            if replication_group.get('mode') == 'Redis':
+            try:
                 replication_group.update({
-                    'primary_endpoint': self.get_redis_primary_endpoint(replication_group),
-                    'reader_endpoint': self.get_redis_reader_endpoint(replication_group)
-                })
-            elif replication_group.get('mode') == 'Clustered Redis':
-                replication_group.update({
-                    'shards': self.get_redis_shards_info(replication_group, cache_clusters)
+                    'mode': self.set_redis_mode(replication_group.get('ClusterEnabled')),
+                    'engine': 'redis',
+                    'engine_version': self.get_engine_version(replication_group, cache_clusters),
+                    'shard_count': self.get_shard_count(replication_group.get('NodeGroups', [])),
+                    'availability_zones': self.get_redis_availability_zones(replication_group.get('NodeGroups', [])),
+                    'subnet_group_name': self.get_redis_subnet_group_name(replication_group, cache_clusters),
+                    'parameter_group_name': self.get_redis_parameter_group_name(replication_group, cache_clusters),
+                    'node_count': self.get_node_count(replication_group.get('MemberClusters', [])),
+                    'nodes': self.get_redis_nodes_info(replication_group, cache_clusters),
+                    'account_id': self.account_id
                 })
 
-            yield Redis(replication_group, strict=False)
+                if replication_group.get('mode') == 'Redis':
+                    replication_group.update({
+                        'primary_endpoint': self.get_redis_primary_endpoint(replication_group),
+                        'reader_endpoint': self.get_redis_reader_endpoint(replication_group)
+                    })
+                elif replication_group.get('mode') == 'Clustered Redis':
+                    replication_group.update({
+                        'shards': self.get_redis_shards_info(replication_group, cache_clusters)
+                    })
+
+                yield Redis(replication_group, strict=False)
+
+            except Exception as e:
+                resource_id = replication_group.get('ARN', '')
+                error_resource_response = self.generate_error(region_name, resource_id, e)
+                yield error_resource_response
 
     def describe_clusters(self):
         paginator = self.client.get_paginator('describe_cache_clusters')

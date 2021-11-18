@@ -6,9 +6,7 @@ from typing import List
 from spaceone.inventory.connector.aws_kinesis_firehose_connector.schema.data import DeliveryStreamDescription
 from spaceone.inventory.connector.aws_kinesis_firehose_connector.schema.resource import DeliveryStreamResource, \
     FirehoseResponse
-from spaceone.inventory.connector.aws_kinesis_firehose_connector.schema.service_type import (
-    CLOUD_SERVICE_TYPES,
-)
+from spaceone.inventory.connector.aws_kinesis_firehose_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
 
 _LOGGER = logging.getLogger(__name__)
@@ -16,9 +14,11 @@ _LOGGER = logging.getLogger(__name__)
 
 class KinesisFirehoseConnector(SchematicAWSConnector):
     service_name = "firehose"
+    cloud_service_group = 'KinesisFirehose'
+    cloud_service_type = 'DeliveryStream'
 
     def get_resources(self):
-        print("** Kinesis Firehose Manager Start **")
+        _LOGGER.debug("[get_resources] START: Kinesis Firehose")
         resources = []
         start_time = time.time()
 
@@ -28,7 +28,6 @@ class KinesisFirehoseConnector(SchematicAWSConnector):
                 "resource": DeliveryStreamResource,
                 "response_schema": FirehoseResponse,
             }
-
         ]
 
         for cst in CLOUD_SERVICE_TYPES:
@@ -44,7 +43,7 @@ class KinesisFirehoseConnector(SchematicAWSConnector):
                     )
                 )
 
-        print(f" Kinesis Firehose Manager Finished {time.time() - start_time} Seconds")
+        _LOGGER.debug(f'[get_resources] FINISHED: Kinesis Firehose ({time.time() - start_time} sec)')
         return resources
 
     def list_delivery_streams(self):
@@ -53,20 +52,25 @@ class KinesisFirehoseConnector(SchematicAWSConnector):
 
     def request_data(self, region_name) -> List[DeliveryStreamDescription]:
         for stream_name in self.list_delivery_streams():
-            stream_response = self.client.describe_delivery_stream(DeliveryStreamName=stream_name)
-            delivery_stream_info = stream_response.get("DeliveryStreamDescription", {})
-            destinations_ref, additional_tabs = self.get_destinations_ref(delivery_stream_info["Destinations"])
-            delivery_stream_info.update(
-                {
-                    "source": self.get_source(delivery_stream_info.get("Source", {})),
-                    "delivery_stream_status_display": self.get_delivery_stream_status_display(
-                        (delivery_stream_info["DeliveryStreamStatus"])),
-                    "destinations_ref": destinations_ref,
-                    "additional_tabs": additional_tabs
-                }
-            )
-            res = DeliveryStreamDescription(delivery_stream_info, strict=False)
-            yield res, res.delivery_stream_name
+            try:
+                stream_response = self.client.describe_delivery_stream(DeliveryStreamName=stream_name)
+                delivery_stream_info = stream_response.get("DeliveryStreamDescription", {})
+                destinations_ref, additional_tabs = self.get_destinations_ref(delivery_stream_info["Destinations"])
+                delivery_stream_info.update(
+                    {
+                        "source": self.get_source(delivery_stream_info.get("Source", {})),
+                        "delivery_stream_status_display": self.get_delivery_stream_status_display(
+                            (delivery_stream_info["DeliveryStreamStatus"])),
+                        "destinations_ref": destinations_ref,
+                        "additional_tabs": additional_tabs
+                    }
+                )
+                res = DeliveryStreamDescription(delivery_stream_info, strict=False)
+                yield res, res.delivery_stream_name
+            except Exception as e:
+                resource_id = stream_name
+                error_resource_response = self.generate_error(region_name, resource_id, e)
+                yield error_resource_response, ''
 
     def get_tags(self, name):
         tag_response = self.client.list_tags_for_delivery_stream(DeliveryStreamName=name)
