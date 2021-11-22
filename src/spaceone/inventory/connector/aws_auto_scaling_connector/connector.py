@@ -145,13 +145,18 @@ class AutoScalingConnector(SchematicAWSConnector):
                             'load_balancer_arns': match_lb_arns
                         })
 
-                    res = AutoScalingGroup(raw, strict=False)
-                    yield res, res.auto_scaling_group_name
+                    auto_scaling_group_vo = AutoScalingGroup(raw, strict=False)
+                    yield {
+                        'data': auto_scaling_group_vo,
+                        'name': auto_scaling_group_vo.auto_scaling_group_name,
+                        'account': self.account_id,
+                        'launched_at': auto_scaling_group_vo.created_time
+                    }
 
                 except Exception as e:
                     resource_id = raw.get('AutoScalingGroupARN', '')
                     error_resource_response = self.generate_error(region_name, resource_id, e)
-                    yield error_resource_response, ''
+                    yield {'data': error_resource_response}
 
     def request_launch_configuration_data(self, region_name) -> List[LaunchConfiguration]:
         self.cloud_service_type = 'LaunchConfiguration'
@@ -170,13 +175,20 @@ class AutoScalingConnector(SchematicAWSConnector):
                     raw.update({
                         'account_id': self.account_id
                     })
-                    res = LaunchConfiguration(raw, strict=False)
-                    self._launch_configurations.append(res)
-                    yield res, res.launch_configuration_name
+                    launch_configuration_vo = LaunchConfiguration(raw, strict=False)
+                    self._launch_configurations.append(launch_configuration_vo)
+
+                    yield {
+                        'data': launch_configuration_vo,
+                        'name': launch_configuration_vo.launch_configuration_name,
+                        'account': self.account_id,
+                        'launched_at': launch_configuration_vo.created_time
+                    }
+
                 except Exception as e:
                     resource_id = raw.get('LaunchConfigurationARN', '')
                     error_resource_response = self.generate_error(region_name, resource_id, e)
-                    yield error_resource_response, ''
+                    yield {'data': error_resource_response}
 
     def request_launch_template_data(self, region_name) -> List[LaunchTemplateDetail]:
         self.cloud_service_type = 'LaunchConfiguration'
@@ -208,13 +220,20 @@ class AutoScalingConnector(SchematicAWSConnector):
                                                      match_lt_version.get('VersionNumber')))
                     })
 
-                    res = LaunchTemplateDetail(raw, strict=False)
-                    self._launch_templates.append(res)
-                    yield res, res.launch_template_name
+                    launch_template_vo = LaunchTemplateDetail(raw, strict=False)
+                    self._launch_templates.append(launch_template_vo)
+
+                    yield {
+                        'data': launch_template_vo,
+                        'name': launch_template_vo.launch_template_name,
+                        'account': self.account_id,
+                        'launched_at': launch_template_vo.create_time
+                    }
+
                except Exception as e:
                     resource_id = raw.get('LaunchTemplateId', '')
                     error_resource_response = self.generate_error(region_name, resource_id, e)
-                    yield error_resource_response, ''
+                    yield {'data': error_resource_response}
 
     def get_asg_instances(self, instances):
         ec2_client = self.session.client('ec2')

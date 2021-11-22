@@ -18,7 +18,7 @@ cst_cluster.tags = {
 
 cst_cluster._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Cluster name', 'data.cluster_name'),
+        TextDyField.data_source('Cluster name', 'name'),
         EnumDyField.data_source('Status', 'data.state', default_state={
             'safe': ['ACTIVE'],
             'warning': ['CREATING', 'DELETING', 'HEALING', 'MAINTENANCE', 'REBOOTING_BROKER'],
@@ -27,7 +27,7 @@ cst_cluster._metadata = CloudServiceTypeMeta.set_meta(
         TextDyField.data_source('Kafka Version', 'data.current_broker_software_info.kafka_version'),
         TextDyField.data_source('Broker Type', 'data.broker_node_group_info.instance_type'),
         TextDyField.data_source('Number Of  Broker Nodes', 'data.number_of_broker_nodes'),
-        DateTimeDyField.data_source('Creation time', 'data.creation_time'),
+        DateTimeDyField.data_source('Creation time', 'launched_at'),
         TextDyField.data_source('ARN', 'data.cluster_arn', options={
             'is_optional': True
         }),
@@ -76,18 +76,14 @@ cst_cluster._metadata = CloudServiceTypeMeta.set_meta(
         }),
         TextDyField.data_source('Logging (Cloudwatch)', 'data.logging_info.broker_logs.cloud_watch_logs', options={
             'is_optional': True
-        }),
-        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
-            'is_optional': True
         })
     ],
     search=[
-        SearchField.set(name='Cluster name', key='data.cluster_name'),
+        SearchField.set(name='Cluster name', key='name'),
         SearchField.set(name='Cluster ARN', key='data.cluster_arn'),
         SearchField.set(name='Kafka Version', key='data.current_broker_software_info.kafka_version'),
         SearchField.set(name='Broker Type', key='data.broker_node_group_info.instance_type'),
-        SearchField.set(name='Status', key='data.state'),
-        SearchField.set(name='Creation Time', key='data.creation_time', data_type='datetime'),
+        SearchField.set(name='Status', key='data.state')
     ]
 )
 
@@ -104,14 +100,14 @@ cst_config.tags = {
 
 cst_config._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Configuration name', 'data.name'),
+        TextDyField.data_source('Configuration name', 'name'),
         EnumDyField.data_source('Status', 'data.state', default_state={
             'safe': ['ACTIVE'],
             'warning': ['DELETING'],
             'alert': ['DELETE_FAILED']
         }),
         TextDyField.data_source('Latest Revision', 'data.latest_revision.revision'),
-        DateTimeDyField.data_source('Creation time', 'data.creation_time'),
+        DateTimeDyField.data_source('Creation time', 'launched_at'),
         TextDyField.data_source('ARN', 'data.arn', options={
             'is_optional': True
         }),
@@ -120,15 +116,11 @@ cst_config._metadata = CloudServiceTypeMeta.set_meta(
         }),
         TextDyField.data_source('Kafka Version', 'data.kafka_versions', options={
             'is_optional': True
-        }),
-        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
-            'is_optional': True
         })
     ],
     search=[
-        SearchField.set(name='Configuration name', key='data.name'),
+        SearchField.set(name='Configuration name', key='name'),
         SearchField.set(name='Status', key='data.state'),
-        SearchField.set(name='Creation time', key='data.creation_time', data_type='datetime'),
         SearchField.set(name='Configuration ARN', key='data.arn'),
     ]
 )

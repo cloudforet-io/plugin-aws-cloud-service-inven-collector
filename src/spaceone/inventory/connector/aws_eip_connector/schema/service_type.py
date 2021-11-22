@@ -15,7 +15,7 @@ cst_eip.tags = {
 
 cst_eip._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'data.name'),
+        TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('Public IP', 'data.public_ip'),
         TextDyField.data_source('Private IP', 'data.private_ip_address'),
         TextDyField.data_source('Address Pool', 'data.public_ipv4_pool'),
@@ -32,14 +32,10 @@ cst_eip._metadata = CloudServiceTypeMeta.set_meta(
         }),
         TextDyField.data_source('Allocation ID', 'data.allocation_id', options={
             'is_optional': True
-        }),
-        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
-            'is_optional': True
         })
     ],
     search=[
         SearchField.set(name='IP Address', key='data.public_ip'),
-        SearchField.set(name='Name', key='data.name'),
         SearchField.set(name='Associated Instance ID', key='data.instance_id'),
         SearchField.set(name='Public DNS', key='data.public_dns'),
         SearchField.set(name='Private IP', key='data.private_ip_address'),
@@ -48,8 +44,7 @@ cst_eip._metadata = CloudServiceTypeMeta.set_meta(
                         enums={
                             'vpc': {'label': 'VPC'},
                             'standard': {'label': 'Standard'},
-                        }),
-        SearchField.set(name='AWS Account ID', key='data.account_id'),
+                        })
     ]
 )
 

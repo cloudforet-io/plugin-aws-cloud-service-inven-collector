@@ -61,13 +61,18 @@ class ECRConnector(SchematicAWSConnector):
                         'tags': self.request_tags(raw.get('repositoryArn')),
                         'account_id': self.account_id
                     })
-                    res = Repository(raw, strict=False)
+                    repository_vo = Repository(raw, strict=False)
+                    yield {
+                        'data': repository_vo,
+                        'name': repository_vo.repository_name,
+                        'launched_at': repository_vo.created_at,
+                        'account': self.account_id
+                    }
 
-                    yield res, res.repository_name
                 except Exception as e:
                     resource_id = raw.get('repositoryArn', '')
                     error_resource_response = self.generate_error(region_name, resource_id, e)
-                    yield error_resource_response, ''
+                    yield {'data': error_resource_response}
 
     def _describe_images(self, repo):
         paginator = self.client.get_paginator('describe_images')

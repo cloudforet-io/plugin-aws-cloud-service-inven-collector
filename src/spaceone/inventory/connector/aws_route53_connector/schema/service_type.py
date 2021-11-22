@@ -14,8 +14,8 @@ cst_hostedzone.tags = {
 
 cst_hostedzone._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Domain Name', 'data.name'),
-        EnumDyField.data_source('Type', 'data.type', default_badge={
+        TextDyField.data_source('Domain Name', 'name'),
+        EnumDyField.data_source('Type', 'type', default_badge={
             'indigo.500': ['Public'], 'coral.600': ['Private']
         }),
         TextDyField.data_source('Record Set Count', 'data.resource_record_set_count'),
@@ -39,19 +39,15 @@ cst_hostedzone._metadata = CloudServiceTypeMeta.set_meta(
             'sub_key': 'ttl',
             'delimiter': '<br>',
             'is_optional': True
-        }),
-        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
-            'is_optional': True
         })
     ],
     search=[
-        SearchField.set(name='Name', key='data.name'),
+        SearchField.set(name='Name', key='name'),
         SearchField.set(name='ARN', key='data.arn'),
-        SearchField.set(name='Type', key='data.type'),
+        SearchField.set(name='Type', key='type'),
         SearchField.set(name='Host Zone ID', key='data.hosted_zone_id'),
         SearchField.set(name='Record Set Count', key='data.resource_record_set_count', data_type='integer'),
-        SearchField.set(name='Record Name', key='data.record_sets.name'),
-        SearchField.set(name='AWS Account ID', key='data.account_id'),
+        SearchField.set(name='Record Name', key='data.record_sets.name')
     ]
 )
 

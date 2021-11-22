@@ -67,6 +67,8 @@ class VPCConnector(SchematicAWSConnector):
     include_default = False
 
     def get_resources(self):
+        _LOGGER.debug("[get_resources] START: VPC")
+
         resources = []
         start_time = time.time()
 
@@ -215,11 +217,16 @@ class VPCConnector(SchematicAWSConnector):
                     })
 
                 vpc_vo = VPC(vpc, strict=False)
-                yield vpc_vo, vpc_vo.name
+                yield {
+                    'data': vpc_vo,
+                    'name': vpc_vo.name,
+                    'account': self.account_id
+                }
+                
             except Exception as e:
                 resource_id = vpc.get('VpcId', '')
                 error_resource_response = self.generate_error(region_name, resource_id, e)
-                yield error_resource_response, ''
+                yield {'data': error_resource_response}
 
     def describe_vpc_attribute(self, vpc_id, attribute):
         response = self.client.describe_vpc_attribute(VpcId=vpc_id, Attribute=attribute)
@@ -251,13 +258,18 @@ class VPCConnector(SchematicAWSConnector):
                     'name': self._get_name_from_tags(peerx.get('Tags', []))
                 })
 
-                peer_connect = PeeringConnection(peerx, strict=False)
-                self.peering_connections.append(peer_connect)
-                yield peer_connect, peer_connect.name
+                peer_connect_vo = PeeringConnection(peerx, strict=False)
+                self.peering_connections.append(peer_connect_vo)
+                yield {
+                    'data': peer_connect_vo,
+                    'name': peer_connect_vo.name,
+                    'account': self.account_id
+                }
+                
             except Exception as e:
                 resource_id = peerx.get('VpcPeeringConnectionId', '')
                 error_resource_response = self.generate_error(region_name, resource_id, e)
-                yield error_resource_response, ''
+                yield {'data': error_resource_response}
 
     def request_nat_gateway_data(self, region_name):
         self.cloud_service_type = 'NATGateway'
@@ -279,13 +291,19 @@ class VPCConnector(SchematicAWSConnector):
                     'name': self._get_name_from_tags(ngw.get('Tags', []))
                 })
 
-                nat_gateway = NATGateway(ngw, strict=False)
-                self.nat_gateways.append(nat_gateway)
-                yield nat_gateway, nat_gateway.name
+                nat_gateway_vo = NATGateway(ngw, strict=False)
+                self.nat_gateways.append(nat_gateway_vo)
+                yield {
+                    'data': nat_gateway_vo,
+                    'name': nat_gateway_vo.name,
+                    'launched_at': nat_gateway_vo.create_time,
+                    'account': self.account_id
+                }
+                
             except Exception as e:
                 resource_id = ngw.get('NatGatewayId', '')
                 error_resource_response = self.generate_error(region_name, resource_id, e)
-                yield error_resource_response, ''
+                yield {'data': error_resource_response}
 
     def request_network_acl_data(self, region_name):
         self.cloud_service_type = 'NetworkACL'
@@ -312,13 +330,18 @@ class VPCConnector(SchematicAWSConnector):
                     'name': self._get_name_from_tags(nacl.get('Tags', []))
                 })
 
-                network_acl = NetworkACL(nacl, strict=False)
-                self.network_acls.append(network_acl)
-                yield network_acl, network_acl.name
+                network_acl_vo = NetworkACL(nacl, strict=False)
+                self.network_acls.append(network_acl_vo)
+                yield {
+                    'data': network_acl_vo,
+                    'name': network_acl_vo.name,
+                    'account': self.account_id
+                }
+                
             except Exception as e:
                 resource_id = nacl.get('NetworkAclId', '')
                 error_resource_response = self.generate_error(region_name, resource_id, e)
-                yield error_resource_response, ''
+                yield {'data': error_resource_response}
 
     def request_endpoint_data(self, region_name):
         self.cloud_service_type = 'Endpoint'
@@ -340,13 +363,20 @@ class VPCConnector(SchematicAWSConnector):
                     'name': self._get_name_from_tags(endp.get('Tags', []))
                 })
 
-                endpoint = Endpoint(endp, strict=False)
-                self.endpoints.append(endpoint)
-                yield endpoint, endpoint.name
+                endpoint_vo = Endpoint(endp, strict=False)
+                self.endpoints.append(endpoint_vo)
+                yield {
+                    'data': endpoint_vo,
+                    'name': endpoint_vo.name,
+                    'type': endpoint_vo.vpc_endpoint_type,
+                    'launched_at': endpoint_vo.creation_timestamp,
+                    'account': self.account_id
+                }
+                
             except Exception as e:
                 resource_id = endp.get('VpcEndpointId', '')
                 error_resource_response = self.generate_error(region_name, resource_id, e)
-                yield error_resource_response, ''
+                yield {'data': error_resource_response}
 
     def request_egress_only_internet_gateway_data(self, region_name):
         self.cloud_service_type = 'EgressOnlyInternetGateway'
@@ -369,13 +399,18 @@ class VPCConnector(SchematicAWSConnector):
                     'name': self._get_name_from_tags(eoigw.get('Tags', []))
                 })
 
-                egress_only_internet_gateway = EgressOnlyInternetGateway(eoigw, strict=False)
-                self.egress_only_internet_gateways.append(egress_only_internet_gateway)
-                yield egress_only_internet_gateway, egress_only_internet_gateway.name
+                egress_only_internet_gateway_vo = EgressOnlyInternetGateway(eoigw, strict=False)
+                self.egress_only_internet_gateways.append(egress_only_internet_gateway_vo)
+                yield {
+                    'data': egress_only_internet_gateway_vo,
+                    'name': egress_only_internet_gateway_vo.name,
+                    'account': self.account_id
+                }
+                
             except Exception as e:
                 resource_id = eoigw.get('EgressOnlyInternetGatewayId', '')
                 error_resource_response = self.generate_error(region_name, resource_id, e)
-                yield error_resource_response, ''
+                yield {'data': error_resource_response}
 
     def request_internet_gateway_data(self, region_name):
         self.cloud_service_type = 'InternetGateway'
@@ -408,13 +443,18 @@ class VPCConnector(SchematicAWSConnector):
                         'state': state
                     })
 
-                internet_gateway = InternetGateway(igw, strict=False)
-                self.internet_gateways.append(internet_gateway)
-                yield internet_gateway, internet_gateway.name
+                internet_gateway_vo = InternetGateway(igw, strict=False)
+                self.internet_gateways.append(internet_gateway_vo)
+                yield {
+                    'data': internet_gateway_vo,
+                    'name': internet_gateway_vo.name,
+                    'account': self.account_id
+                }
+                
             except Exception as e:
                 resource_id = igw.get('InternetGatewayId', '')
                 error_resource_response = self.generate_error(region_name, resource_id, e)
-                yield error_resource_response, ''
+                yield {'data': error_resource_response}
 
     def request_route_table_data(self, region_name):
         self.cloud_service_type = 'RouteTable'
@@ -443,16 +483,21 @@ class VPCConnector(SchematicAWSConnector):
                     'name': self._get_name_from_tags(rt.get('Tags', []))
                 })
 
-                route_table = RouteTable(rt, strict=False)
-                self.route_tables.append(route_table)
-                yield route_table, route_table.name
+                route_table_vo = RouteTable(rt, strict=False)
+                self.route_tables.append(route_table_vo)
+                yield {
+                    'data': route_table_vo,
+                    'name': route_table_vo.name,
+                    'account': self.account_id
+                }
+                
             except Exception as e:
                 resource_id = rt.get('RouteTableId', '')
                 error_resource_response = self.generate_error(region_name, resource_id, e)
-                yield error_resource_response, ''
+                yield {'data': error_resource_response}
 
     def request_subnet_data(self, region_name):
-        self.cloud_service_type = 'RouteTable'
+        self.cloud_service_type = 'Subnet'
 
         response = {}
         if self.include_default:
@@ -485,14 +530,20 @@ class VPCConnector(SchematicAWSConnector):
 
                 subnet_vo = Subnet(subnet, strict=False)
                 self.subnets.append(subnet_vo)
-                yield subnet_vo, subnet_vo.name
+                yield {
+                    'data': subnet_vo,
+                    'name': subnet_vo.name,
+                    'type': subnet_vo.subnet_type,
+                    'account': self.account_id
+                }
+                
             except Exception as e:
                 resource_id = subnet.get('SubnetArn', '')
                 error_resource_response = self.generate_error(region_name, resource_id, e)
-                yield error_resource_response, ''
+                yield {'data': error_resource_response}
 
     def request_transit_gateway_data(self, region_name):
-        self.cloud_service_type = 'CustomerGateway'
+        self.cloud_service_type = 'TransitGateway'
 
         response = self.client.describe_transit_gateways()
 
@@ -505,13 +556,19 @@ class VPCConnector(SchematicAWSConnector):
                     'vpn_connections': self._match_vpn_connection('transit_gateway', transit_gateway.get('TransitGatewayId'))
                 })
 
-                tgw = TransitGateway(transit_gateway, strict=False)
-                self.transit_gateways.append(tgw)
-                yield tgw, tgw.name
+                tgw_vo = TransitGateway(transit_gateway, strict=False)
+                self.transit_gateways.append(tgw_vo)
+                yield {
+                    'data': tgw_vo,
+                    'name': tgw_vo.name,
+                    'launched_at': tgw_vo.creation_time,
+                    'account': self.account_id
+                }
+                
             except Exception as e:
                 resource_id = transit_gateway.get('TransitGatewayArn', '')
                 error_resource_response = self.generate_error(region_name, resource_id, e)
-                yield error_resource_response, ''
+                yield {'data': error_resource_response}
 
     def request_customer_gateway_data(self, region_name):
         self.cloud_service_type = 'CustomerGateway'
@@ -533,14 +590,19 @@ class VPCConnector(SchematicAWSConnector):
                         'vpn_connection': _match_vpn_conn[0]
                     })
 
-                customer_gw = CustomerGateway(customer_gateway, strict=False)
-                self.customer_gateways.append(customer_gw)
-
-                yield customer_gw, customer_gw.name
+                customer_gw_vo = CustomerGateway(customer_gateway, strict=False)
+                self.customer_gateways.append(customer_gw_vo)
+                yield {
+                    'data': customer_gw_vo,
+                    'name': customer_gw_vo.name,
+                    'type': customer_gw_vo.type,
+                    'account': self.account_id
+                }
+                
             except Exception as e:
                 resource_id = customer_gateway.get('CustomerGatewayId', '')
                 error_resource_response = self.generate_error(region_name, resource_id, e)
-                yield error_resource_response, ''
+                yield {'data': error_resource_response}
 
     def request_vpn_gateway_data(self, region_name):
         self.cloud_service_type = 'VPNGateway'
@@ -562,14 +624,19 @@ class VPCConnector(SchematicAWSConnector):
                         'vpn_connection': _match_vpn_conn[0]
                     })
 
-                vpn_gw = VPNGateway(vpn_gateway, strict=False)
-                self.vpn_gateways.append(vpn_gw)
-
-                yield vpn_gw, vpn_gw.name
+                vpn_gw_vo = VPNGateway(vpn_gateway, strict=False)
+                self.vpn_gateways.append(vpn_gw_vo)
+                yield {
+                    'data': vpn_gw_vo,
+                    'name': vpn_gw_vo.name,
+                    'type': vpn_gw_vo.type,
+                    'account': self.account_id
+                }
+                
             except Exception as e:
                 resource_id = vpn_gateway.get('VpnGatewayId', '')
                 error_resource_response = self.generate_error(region_name, resource_id, e)
-                yield error_resource_response, ''
+                yield {'data': error_resource_response}
 
     def request_vpn_connection_data(self, region_name):
         self.cloud_service_type = 'VPNConnection'
@@ -584,13 +651,19 @@ class VPCConnector(SchematicAWSConnector):
                     'name': self._get_name_from_tags(vpn_connection.get('Tags', []))
                 })
 
-                vpn_conn = VPNConnection(vpn_connection, strict=False)
-                self.vpn_connections.append(vpn_conn)
-                yield vpn_conn, vpn_conn.name
+                vpn_conn_vo = VPNConnection(vpn_connection, strict=False)
+                self.vpn_connections.append(vpn_conn_vo)
+                yield {
+                    'data': vpn_conn_vo,
+                    'name': vpn_conn_vo.name,
+                    'type': vpn_conn_vo.type,
+                    'account': self.account_id
+                }
+                
             except Exception as e:
                 resource_id = vpn_connection.get('VpnConnectionId', '')
                 error_resource_response = self.generate_error(region_name, resource_id, e)
-                yield error_resource_response, ''
+                yield {'data': error_resource_response}
 
     @staticmethod
     def _get_name_from_tags(tags):

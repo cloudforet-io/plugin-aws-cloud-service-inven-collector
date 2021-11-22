@@ -19,10 +19,10 @@ cst_api.tags = {
 cst_api._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
         TextDyField.data_source('ID', 'data.id'),
-        TextDyField.data_source('Name', 'data.name'),
-        EnumDyField.data_source('Protocol', 'data.protocol', default_outline_badge=['REST', 'WEBSOCKET', 'HTTP']),
+        TextDyField.data_source('Name', 'name'),
+        TextDyField.data_source('Protocol', 'type', default_outline_badge=['REST', 'WEBSOCKET', 'HTTP']),
         TextDyField.data_source('Endpoint Type', 'data.endpoint_type'),
-        DateTimeDyField.data_source('Creation Time', 'data.created_date'),
+        DateTimeDyField.data_source('Creation Time', 'launched_at'),
         # For Dynamic Table
         TextDyField.data_source('ARN', 'data.arn', options={
             'is_optional': True
@@ -36,18 +36,12 @@ cst_api._metadata = CloudServiceTypeMeta.set_meta(
         ListDyField.data_source('Resource Paths', 'data.resources.path', options={
             'is_optional': True,
             'delimiter': '<br>'
-        }),
-        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
-            'is_optional': True
         })
     ],
     search=[
         SearchField.set(name='ID', key='data.id'),
-        SearchField.set(name='Name', key='data.name'),
         SearchField.set(name='ARN', key='data.arn'),
-        SearchField.set(name='Protocol', key='data.protocol'),
         SearchField.set(name='Endpoint Type', key='data.endpoint_type'),
-        SearchField.set(name='AWS Account ID', key='data.account_id')
     ]
 )
 

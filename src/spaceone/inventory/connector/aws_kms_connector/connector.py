@@ -61,12 +61,18 @@ class KMSConnector(SchematicAWSConnector):
                         'alias_name': alias_info['AliasName']
                     })
 
-                res = Key(key, strict=False)
-                yield res, res.alias_name
+                key_vo = Key(key, strict=False)
+                yield {
+                    'data': key_vo,
+                    'name': key_vo.alias_name,
+                    'launched_at': key_vo.creation_date,
+                    'account': self.account_id
+                }
+
             except Exception as e:
                 resource_id = raw.get('KeyId', '')
                 error_resource_response = self.generate_error(region_name, resource_id, e)
-                yield error_resource_response, ''
+                yield {'data': error_resource_response}
 
     def list_keys(self):
         paginator = self.client.get_paginator('list_keys')

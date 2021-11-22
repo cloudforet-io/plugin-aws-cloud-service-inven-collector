@@ -24,7 +24,7 @@ cst_kds.tags = {
 
 cst_kds._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source("Data Stream Name", "data.stream_name"),
+        TextDyField.data_source("Data Stream Name", "name"),
         EnumDyField.data_source(
             "Status",
             "data.stream_status_display",
@@ -33,7 +33,7 @@ cst_kds._metadata = CloudServiceTypeMeta.set_meta(
                 "warning": ["Creating", "Deleting", "Updating"],
             },
         ),
-        TextDyField.data_source("Open shards", "data.open_shards_num"),
+        TextDyField.data_source("Open shards", "size"),
         TextDyField.data_source(
             "Data retention period", "data.retention_period_display"
         ),
@@ -57,13 +57,10 @@ cst_kds._metadata = CloudServiceTypeMeta.set_meta(
             'delimiter': '<br>',
             'sub_key': 'shard_id',
             'is_optional': True
-        }),
-        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
-            'is_optional': True
-        }),
+        })
     ],
     search=[
-        SearchField.set(name="Stream Name", key="data.stream_name"),
+        SearchField.set(name="Stream Name", key="name"),
         SearchField.set(name="Stream ARN", key="data.stream_arn"),
         SearchField.set(name="Stream Status", key="data.stream_status"),
         SearchField.set(name="Consumer Name", key="data.consumers_vo.consumer_name"),
@@ -80,7 +77,7 @@ cst_kds._metadata = CloudServiceTypeMeta.set_meta(
         ),
         SearchField.set(
             name="Number of Open Shards",
-            key="data.open_shards_num",
+            key="size",
             data_type="Integer",
         ),
         SearchField.set(

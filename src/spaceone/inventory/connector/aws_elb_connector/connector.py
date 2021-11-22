@@ -50,9 +50,7 @@ class ELBConnector(SchematicAWSConnector):
         return resources
 
     def request_target_group_data(self, region_name):
-        cloud_service_group = 'ELB'
-        cloud_service_type = 'TargetGroup'
-        self.cloud_service_type = cloud_service_type
+        self.cloud_service_type = 'TargetGroup'
 
         raw_tgs = self.request_target_group(region_name)
         tg_arns = [raw_tg.get('TargetGroupArn') for raw_tg in raw_tgs if raw_tg.get('TargetGroupArn')]
@@ -69,32 +67,23 @@ class ELBConnector(SchematicAWSConnector):
                     'tags': list(map(lambda match_tag: Tags(match_tag, strict=False), match_tags))
                 })
 
-                target_group = TargetGroup(raw_tg, strict=False)
-                self.target_groups.append(target_group)
-                yield target_group, target_group.target_group_name
+                target_group_vo = TargetGroup(raw_tg, strict=False)
+                self.target_groups.append(target_group_vo)
+
+                yield {
+                    'data': target_group_vo,
+                    'type': target_group_vo.target_type,
+                    'name': target_group_vo.target_group_name,
+                    'account': self.account_id
+                }
 
             except Exception as e:
-                _LOGGER.error(f'[request_target_group_data] [{self.service_name}] [{region_name}] {e}')
-
-                if type(e) is dict:
-                    error_resource_response = ErrorResourceResponse(
-                        {'message': json.dumps(e),
-                         'resource': {'resource_id': raw_tg.get('TargetGroupArn', ''),
-                                      'cloud_service_group': cloud_service_group,
-                                      'cloud_service_type': cloud_service_type}})
-                else:
-                    error_resource_response = ErrorResourceResponse(
-                        {'message': str(e),
-                         'resource': {'resource_id': raw_tg.get('TargetGroupArn', ''),
-                                      'cloud_service_group': cloud_service_group,
-                                      'cloud_service_type': cloud_service_type}})
-
-                yield error_resource_response, ''
+                resource_id = raw_tg.get('TargetGroupArn', '')
+                error_resource_response = self.generate_error(region_name, resource_id, e)
+                yield {'data': error_resource_response}
 
     def request_load_balancer_data(self, region_name):
-        cloud_service_group = 'ELB'
-        cloud_service_type = 'LoadBalancer'
-        self.cloud_service_type = cloud_service_type
+        self.cloud_service_type = 'LoadBalancer'
 
         all_tags = []
         raw_lbs = self.request_loadbalancer(region_name)
@@ -127,30 +116,24 @@ class ELBConnector(SchematicAWSConnector):
                     'instances': match_instances
                 })
 
-                load_balancer = LoadBalancer(raw_lb, strict=False)
-                self.load_balancers.append(load_balancer)
-                yield load_balancer, load_balancer.load_balancer_name
+                load_balancer_vo = LoadBalancer(raw_lb, strict=False)
+                self.load_balancers.append(load_balancer_vo)
+
+                yield {
+                    'name': load_balancer_vo.load_balancer_name,
+                    'data': load_balancer_vo,
+                    'type': load_balancer_vo.type,
+                    'launched_at': load_balancer_vo.created_time,
+                    'account': self.account_id
+                }
 
                 # for avoid to API Rate limitation.
                 time.sleep(0.5)
 
             except Exception as e:
-                _LOGGER.error(f'[request_load_balancer_data] [{self.service_name}] [{region_name}] {e}')
-
-                if type(e) is dict:
-                    error_resource_response = ErrorResourceResponse(
-                        {'message': json.dumps(e),
-                         'resource': {'resource_id': raw_lb.get('LoadBalancerArn', ''),
-                                      'cloud_service_group': cloud_service_group,
-                                      'cloud_service_type': cloud_service_type}})
-                else:
-                    error_resource_response = ErrorResourceResponse(
-                        {'message': str(e),
-                         'resource': {'resource_id': raw_lb.get('LoadBalancerArn', ''),
-                                      'cloud_service_group': cloud_service_group,
-                                      'cloud_service_type': cloud_service_type}})
-
-                yield error_resource_response, ''
+                resource_id = raw_lb.get('LoadBalancerArn', '')
+                error_resource_response = self.generate_error(region_name, resource_id, e)
+                yield {'data': error_resource_response}
 
     def match_elb_instance(self, target_group, instances):
         match_instances = []

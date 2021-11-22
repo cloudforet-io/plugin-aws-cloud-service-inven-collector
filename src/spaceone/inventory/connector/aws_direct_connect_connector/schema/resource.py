@@ -1,7 +1,7 @@
 from schematics.types import ModelType, StringType, PolyModelType, DictType, ListType
 
 from spaceone.inventory.connector.aws_direct_connect_connector.schema.data import Connection, LAG, \
-    DirectConnecGateway, VirtualPrivateGateway
+    DirectConnectGateway, VirtualPrivateGateway
 from spaceone.inventory.libs.schema.resource import CloudServiceResource, CloudServiceResponse, CloudServiceMeta
 from spaceone.inventory.libs.schema.dynamic_field import TextDyField, BadgeDyField, EnumDyField, BadgeItemDyField
 from spaceone.inventory.libs.schema.dynamic_layout import ItemDynamicLayout, TableDynamicLayout, SimpleTableDynamicLayout
@@ -97,7 +97,7 @@ class ConnectionResponse(CloudServiceResponse):
 # DIRECT CONNECT GATEWAY
 class DirectConnectGatewayResource(DirectConnectResource):
     cloud_service_type = StringType(default='DirectConnectGateway')
-    data = ModelType(DirectConnecGateway)
+    data = ModelType(DirectConnectGateway)
     _metadata = ModelType(CloudServiceMeta, default=dcgw_metadata, serialized_name='metadata')
 
 

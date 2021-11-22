@@ -50,6 +50,7 @@ class IAMConnector(SchematicAWSConnector):
                         {'resource': RoleResource({
                             'name': role.role_name,
                             'data': role,
+                            'account': self.account_id,
                             'reference': ReferenceModel(role.reference()),
                             'region_code': 'global'})}))
 
@@ -62,6 +63,7 @@ class IAMConnector(SchematicAWSConnector):
                         {'resource': UserResource({
                             'name': user.user_name,
                             'data': user,
+                            'account': self.account_id,
                             'reference': ReferenceModel(user.reference()),
                             'region_code': 'global'})}))
 
@@ -74,6 +76,7 @@ class IAMConnector(SchematicAWSConnector):
                         {'resource': GroupResource({
                             'name': group.group_name,
                             'data': group,
+                            'account': self.account_id,
                             'reference': ReferenceModel(group.reference()),
                             'region_code': 'global'})}))
 
@@ -86,6 +89,7 @@ class IAMConnector(SchematicAWSConnector):
                         {'resource': PolicyResource({
                             'name': policy.policy_name,
                             'data': policy,
+                            'account': self.account_id,
                             'reference': ReferenceModel(policy.reference()),
                             'region_code': 'global'})}))
 
@@ -98,6 +102,7 @@ class IAMConnector(SchematicAWSConnector):
                         {'resource': IdentityProviderResource({
                             'name': identity_provider.url,
                             'data': identity_provider,
+                            'account': self.account_id,
                             'reference': ReferenceModel(identity_provider.reference()),
                             'region_code': 'global'})}))
 

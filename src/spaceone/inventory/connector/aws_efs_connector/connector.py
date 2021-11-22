@@ -60,12 +60,20 @@ class EFSConnector(SchematicAWSConnector):
                                                  account_id=self.account_id, resource_type='file-system',
                                                  resource_id=raw['FileSystemId'])
                     })
-                    res = FileSystem(raw, strict=False)
-                    yield res, res.name
+                    filesystem_vo = FileSystem(raw, strict=False)
+
+                    yield {
+                        'data': filesystem_vo,
+                        'name': filesystem_vo.name,
+                        'size': int(filesystem_vo.size),
+                        'launched_at': filesystem_vo.creation_time,
+                        'account': self.account_id
+                    }
+
                 except Exception as e:
                     resource_id = raw.get('FileSystemId', '')
                     error_resource_response = self.generate_error(region_name, resource_id, e)
-                    yield error_resource_response, ''
+                    yield {'data': error_resource_response}
 
     def describe_lifecycle_configuration(self, file_system_id):
         response = self.client.describe_lifecycle_configuration(FileSystemId=file_system_id)

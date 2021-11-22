@@ -42,6 +42,8 @@ class EKSConnector(SchematicAWSConnector):
                 resources.append(NodeGroupResponse(
                     {'resource': NodeGroupResource({
                         'name': node_group_vo.nodegroup_name,
+                        'account': self.account_id,
+                        'launched_at': node_group_vo.created_at,
                         'data': node_group_vo,
                         'tags': [{'key': tag.key, 'value': tag.value} for tag in node_group_vo.tags],
                         'region_code': region_name,
@@ -54,6 +56,8 @@ class EKSConnector(SchematicAWSConnector):
         return resources
 
     def request_data(self, region_name) -> List[Cluster]:
+        self.cloud_service_type = 'Cluster'
+
         paginator = self.client.get_paginator('list_clusters')
         response_iterator = paginator.paginate(
             PaginationConfig={
@@ -86,13 +90,21 @@ class EKSConnector(SchematicAWSConnector):
                         self.node_groups.extend(node_groups)
                         errors.extend(node_group_errors)
 
-                        yield Cluster(cluster, strict=False), cluster.get('name', '')
+                        cluster_vo = Cluster(cluster, strict=False)
+
+                        yield {
+                            'data': cluster_vo,
+                            'name': cluster_vo.name,
+                            'launched_at': cluster_vo.created_at,
+                            'account': self.account_id
+                        }
+
                 except Exception as e:
                     resource_id = _cluster_name
                     errors.append(self.generate_error(region_name, resource_id, e))
 
         for error in errors:
-            yield error, ''
+            yield {'data': error}
 
     def list_node_groups(self, cluster_name, cluster_arn):
         self.cloud_service_type = 'NodeGroup'

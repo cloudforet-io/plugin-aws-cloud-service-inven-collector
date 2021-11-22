@@ -62,12 +62,18 @@ class EIPConnector(SchematicAWSConnector):
                     'account_id': self.account_id,
                     'name': self._get_name_from_tags(_ip.get('Tags', []))
                 })
-                result = ElasticIPAddress(_ip, strict=False)
-                yield result, result.name
+                eip_vo = ElasticIPAddress(_ip, strict=False)
+
+                yield {
+                    'data': eip_vo,
+                    'name': eip_vo.name,
+                    'account': self.account_id
+                }
+
             except Exception as e:
                 resource_id = _ip.get('PublicIp', '')
                 error_resource_response = self.generate_error(region_name, resource_id, e)
-                yield error_resource_response, ''
+                yield {'data': error_resource_response}
 
     def _describe_nat_gateways(self):
         response = self.client.describe_nat_gateways()

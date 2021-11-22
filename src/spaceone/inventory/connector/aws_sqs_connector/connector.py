@@ -52,8 +52,14 @@ class SQSConnector(SchematicAWSConnector):
                 result.region_name = region_name
                 result.url = que.url
                 result.account_id = self.account_id
-                yield result, result.name
+                yield {
+                    'data': result,
+                    'name': result.name,
+                    'launched_at': result.created_timestamp,
+                    'account': self.account_id
+                }
+                
             except Exception as e:
                 resource_id = ''
                 error_resource_response = self.generate_error(region_name, resource_id, e)
-                yield error_resource_response, ''
+                yield {'data': error_resource_response}

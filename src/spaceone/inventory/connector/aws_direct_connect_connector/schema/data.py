@@ -82,7 +82,7 @@ class VirtualPrivateGateway(Model):
 '''
 DIRECT CONNECT GATEWAY
 '''
-class DirectConnecGateway(Model):
+class DirectConnectGateway(Model):
     direct_connect_gateway_id = StringType(deserialize_from="directConnectGatewayId")
     direct_connect_gateway_name = StringType(deserialize_from="directConnectGatewayName")
     amazon_side_asn = IntType(deserialize_from="amazonSideAsn")

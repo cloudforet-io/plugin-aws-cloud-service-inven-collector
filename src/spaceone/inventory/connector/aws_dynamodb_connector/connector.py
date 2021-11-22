@@ -77,12 +77,19 @@ class DynamoDBConnector(SchematicAWSConnector):
                         'tags': self.request_tags(table.get('TableArn')),
                         'account_id': self.account_id
                     })
-                    res = Table(table, strict=False)
-                    yield res, res.table_name
+                    table_vo = Table(table, strict=False)
+
+                    yield {
+                        'data': table_vo,
+                        'name': table_vo.table_name,
+                        'size': table_vo.table_size_bytes,
+                        'account': self.account_id
+                    }
+
                 except Exception as e:
                     resource_id = table.get('TableArn', '')
                     error_resource_response = self.generate_error(region_name, resource_id, e)
-                    yield error_resource_response, ''
+                    yield {'data': error_resource_response}
 
     def _get_contributor_insights(self, table_name):
         response = self.client.describe_contributor_insights(TableName=table_name)

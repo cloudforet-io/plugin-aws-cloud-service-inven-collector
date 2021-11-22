@@ -15,9 +15,8 @@ cst_ecr_repo.tags = {
 
 cst_ecr_repo._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Repository name', 'data.repository_name'),
+        TextDyField.data_source('Repository name', 'name'),
         TextDyField.data_source('URI', 'data.repository_uri'),
-        DateTimeDyField.data_source('Created', 'data.created_at'),
         TextDyField.data_source('Registry ARN ', 'data.repository_arn', options={
             'is_optional': True
         }),
@@ -26,19 +25,14 @@ cst_ecr_repo._metadata = CloudServiceTypeMeta.set_meta(
         }),
         TextDyField.data_source('Image Scanning on Push ', 'data.image_scanning_configuration.scan_on_push', options={
             'is_optional': True
-        }),
-        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
-            'is_optional': True
-        }),
+        })
     ],
     search=[
         SearchField.set(name='Repository ID', key='data.registry_id'),
-        SearchField.set(name='Name', key='data.repository_name'),
+        SearchField.set(name='Name', key='name'),
         SearchField.set(name='ARN', key='data.repository_arn'),
         SearchField.set(name='URI', key='data.repository_uri'),
-        SearchField.set(name='Image URI', key='data.images.image_uri'),
-        SearchField.set(name='Created Time', key='data.created_at', data_type='datetime'),
-        SearchField.set(name='AWS Account ID', key='data.account_id'),
+        SearchField.set(name='Image URI', key='data.images.image_uri')
     ]
 )
 

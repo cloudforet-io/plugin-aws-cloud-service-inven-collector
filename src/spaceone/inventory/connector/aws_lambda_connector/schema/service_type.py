@@ -16,9 +16,9 @@ cst_function.tags = {
 
 cst_function._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'data.name'),
+        TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('Runtime', 'data.runtime'),
-        SizeField.data_source('Code Size', 'data.code_size'),
+        SizeField.data_source('Code Size', 'size'),
         SizeField.data_source('Memory Size', 'data.memory_size', options={
             'source_unit': 'MB'
         }),
@@ -76,13 +76,10 @@ cst_function._metadata = CloudServiceTypeMeta.set_meta(
         }),
         TextDyField.data_source('Master ARN', 'data.master_arn', options={
             'is_optional': True
-        }),
-        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
-            'is_optional': True
         })
     ],
     search=[
-        SearchField.set(name='Name', key='data.name'),
+        SearchField.set(name='Name', key='name'),
         SearchField.set(name='ARN', key='data.arn'),
         SearchField.set(name='Runtime', key='data.runtime'),
         SearchField.set(name='State', key='data.state.type',
@@ -93,14 +90,12 @@ cst_function._metadata = CloudServiceTypeMeta.set_meta(
                             "Failed": {'label': 'Failed', 'icon': {'color': 'red.500'}},
                         }),
         SearchField.set(name='Handler', key='data.handler'),
-        SearchField.set(name='Code Sizem (Bytes)', key='data.code_size', data_type='integer'),
         SearchField.set(name='Memory Size (MB)', key='data.memory_size', data_type='integer'),
         SearchField.set(name='Timeout', key='data.time_out', data_type='integer'),
         SearchField.set(name='VPC ID', key='data.vpc_config.vpc.id'),
         SearchField.set(name='VPC Name', key='data.vpc_config.vpc.name'),
         SearchField.set(name='Subnet Id', key='data.vpc_config.subnets.id'),
         SearchField.set(name='Last Modified Time', key='data.last_modified', data_type='datetime'),
-        SearchField.set(name='AWS Account ID', key='data.account_id'),
     ]
 )
 
@@ -116,23 +111,18 @@ cst_layer.tags = {
 
 cst_layer._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'data.layer_name'),
+        TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('Version', 'data.latest_matching_version.version'),
         TextDyField.data_source('Description', 'data.latest_matching_version.description'),
         ListDyField.data_source('Compatible Runtimes', 'data.latest_matching_version.compatible_runtimes', options={
             'delimiter': '<br>'
-        }),
-        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
-            'is_optional': True
         })
     ],
     search=[
-        SearchField.set(name='Name', key='data.layer_name'),
+        SearchField.set(name='Name', key='name'),
         SearchField.set(name='ARN', key='data.layer_arn'),
         SearchField.set(name='Compatible Runtimes', key='data.latest_matching_version.compatible_runtimes'),
-        SearchField.set(name='Version', key='data.version', data_type='integer'),
-        SearchField.set(name='Created Time', key='data.latest_matching_version.created_date', data_type='datetime'),
-        SearchField.set(name='AWS Account ID', key='data.account_id'),
+        SearchField.set(name='Version', key='data.version', data_type='integer')
     ]
 )
 

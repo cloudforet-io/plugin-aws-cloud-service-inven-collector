@@ -14,7 +14,7 @@ cst_asg.tags = {
 
 cst_asg._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'data.auto_scaling_group_name'),
+        TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('Desired', 'data.desired_capacity'),
         TextDyField.data_source('Min', 'data.min_size'),
         TextDyField.data_source('Max', 'data.max_size'),
@@ -79,21 +79,16 @@ cst_asg._metadata = CloudServiceTypeMeta.set_meta(
         ListDyField.data_source('Policy Names', 'data.policies.policy_name', options={
             'delimiter': '<br>',
             'is_optional': True
-        }),
-        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
-            'is_optional': True
-        }),
+        })
     ],
     search=[
-        SearchField.set(name='Name', key='data.auto_scaling_group_name'),
         SearchField.set(name='ARN', key='data.auto_scaling_group_arn'),
         SearchField.set(name='Launch Configuration Name', key='data.launch_configuration_name'),
         SearchField.set(name='Launch Configuration ARN', key='data.launch_configuration.launch_configuration_arn'),
         SearchField.set(name='Launch Template Name', key='data.launch_template.launch_template_name'),
         SearchField.set(name='Launch Template ID', key='data.launch_template.launch_template_id'),
         SearchField.set(name='Availability Zone', key='data.availability_zones'),
-        SearchField.set(name='Instance ID', key='data.instances.instance_id'),
-        SearchField.set(name='AWS Account ID', key='data.account_id'),
+        SearchField.set(name='Instance ID', key='data.instances.instance_id')
     ]
 )
 
@@ -109,11 +104,11 @@ launch_configuration.tags = {
 
 launch_configuration._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'data.launch_configuration_name'),
+        TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('AMI ID', 'data.image_id'),
         TextDyField.data_source('Instance Type', 'data.instance_type'),
         TextDyField.data_source('Spot Price', 'data.spot_price'),
-        DateTimeDyField.data_source('Creation Time', 'data.created_time'),
+        DateTimeDyField.data_source('Creation Time', 'launched_at'),
         # For Dynamic Table
         TextDyField.data_source('ARN', 'data.arn', options={
             'is_optional': True
@@ -133,20 +128,14 @@ launch_configuration._metadata = CloudServiceTypeMeta.set_meta(
         }),
         TextDyField.data_source('Image ID', 'data.image_id', options={
             'is_optional': True
-        }),
-        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
-            'is_optional': True
-        }),
+        })
     ],
     search=[
-        SearchField.set(name='Name', key='data.launch_configuration_name'),
         SearchField.set(name='ARN', key='data.launch_configuration_arn'),
         SearchField.set(name='AMI ID', key='data.image_id'),
         SearchField.set(name='Instance Type', key='data.instance_type'),
         SearchField.set(name='Monitoring', key='data.instance_monitoring.enabled', data_type='boolean'),
-        SearchField.set(name='Security Group ID', key='data.security_groups'),
-        SearchField.set(name='Created Time', key='data.created_time', data_type='datetime'),
-        SearchField.set(name='AWS Account ID', key='data.account_id'),
+        SearchField.set(name='Security Group ID', key='data.security_groups')
     ]
 )
 
@@ -163,7 +152,7 @@ launch_template.tags = {
 
 launch_template._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'data.launch_template_name'),
+        TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('AMI ID', 'data.launch_template_data.image_id'),
         TextDyField.data_source('Owner', 'data.created_by'),
         EnumDyField.data_source('Default Version', 'data.default_version', default_badge={
@@ -190,13 +179,9 @@ launch_template._metadata = CloudServiceTypeMeta.set_meta(
         ListDyField.data_source('Security Groups', 'data.launch_template_data.security_group_ids', options={
             'delimiter': '<br>',
             'is_optional': True
-        }),
-        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
-            'is_optional': True
-        }),
+        })
     ],
     search=[
-        SearchField.set(name='Name', key='data.launch_template_name'),
         SearchField.set(name='ID', key='data.launch_template_id'),
         SearchField.set(name='AMI ID', key='data.launch_template_data.image_id'),
         SearchField.set(name='Owner', key='data.created_by'),
@@ -205,8 +190,6 @@ launch_template._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Instance Type', key='data.launch_template_data.instance_type'),
         SearchField.set(name='Monitoring', key='data.launch_template_data.monitoring.enabled', data_type='boolean'),
         SearchField.set(name='Security Group ID', key='data.launch_template_data.security_group_ids'),
-        SearchField.set(name='Created Time', key='data.create_time', data_type='datetime'),
-        SearchField.set(name='AWS Account ID', key='data.account_id'),
     ]
 )
 

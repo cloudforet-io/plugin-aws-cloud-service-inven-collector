@@ -66,13 +66,19 @@ class ACMConnector(SchematicAWSConnector):
                         'account_id': self.account_id
                     })
     
-                    res = Certificate(certificate_info, strict=False)
-                    yield res, res.domain_name
+                    certificate_vo = Certificate(certificate_info, strict=False)
+                    yield {
+                        'data': certificate_vo,
+                        'name': certificate_vo.domain_name,
+                        'type': certificate_vo.type_display,
+                        'account': self.account_id,
+                        'launched_at': certificate_vo.created_at
+                    }
                     
                 except Exception as e:
                     resource_id = certificate_info.get('CertificateArn', '')
                     error_resource_response = self.generate_error(region_name, resource_id, e)
-                    yield error_resource_response, ''
+                    yield {'data': error_resource_response}
                     
     def get_tags(self, arn):
         tag_response = self.client.list_tags_for_certificate(CertificateArn=arn)

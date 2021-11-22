@@ -50,12 +50,18 @@ class ECSConnector(SchematicAWSConnector):
                     'container_instances': self.set_container_instances(raw['clusterArn']),
                     'account_id': self.account_id
                 })
-                res = Cluster(raw, strict=False)
-                yield res, res.cluster_name
+
+                cluster_vo = Cluster(raw, strict=False)
+                yield {
+                    'data': cluster_vo,
+                    'name': cluster_vo.cluster_name,
+                    'account': self.account_id
+                }
+
             except Exception as e:
                 resource_id = raw.get('clusterArn', '')
                 error_resource_response = self.generate_error(region_name, resource_id, e)
-                yield error_resource_response, ''
+                yield {'data': error_resource_response}
 
     def list_clusters(self):
         paginator = self.client.get_paginator('list_clusters')

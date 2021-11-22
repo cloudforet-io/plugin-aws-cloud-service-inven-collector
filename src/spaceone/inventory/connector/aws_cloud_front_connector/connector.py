@@ -28,16 +28,21 @@ class CFConnector(SchematicAWSConnector):
 
         try:
             for data in self.request_data():
-                if getattr(data, 'set_cloudwatch', None):
-                    data.cloudwatch = CloudWatchModel(data.set_cloudwatch())
-
-                resources.append(self.response_schema(
-                    {'resource': DistributionResource({
-                        'name': data.domain_name,
-                        'data': data,
-                        'reference': ReferenceModel(data.reference()),
-                        'region_code': 'global'})
-                    }))
+                if getattr(data, 'resource_type', None) and data.resource_type == 'inventory.ErrorResource':
+                    # Error Resource
+                    resources.append(data)
+                else:
+                    if getattr(data, 'set_cloudwatch', None):
+                        data.cloudwatch = CloudWatchModel(data.set_cloudwatch())
+    
+                    resources.append(self.response_schema(
+                        {'resource': DistributionResource({
+                            'name': data.domain_name,
+                            'data': data,
+                            'account': self.account_id,
+                            'reference': ReferenceModel(data.reference()),
+                            'region_code': 'global'})
+                        }))
         except Exception as e:
             resource_id = ''
             resources.append(self.generate_error('global', resource_id, e))
@@ -61,12 +66,13 @@ class CFConnector(SchematicAWSConnector):
                         'account_id': self.account_id,
                         'tags': list(self.list_tags_for_resource(raw.get('ARN')))
                     })
-                    res = DistributionData(raw, strict=False)
-                    yield res
+                    distribution_vo = DistributionData(raw, strict=False)
+                    yield distribution_vo
+
                 except Exception as e:
                     resource_id = raw.get('ARN', '')
                     error_resource_response = self.generate_error('global', resource_id, e)
-                    yield error_resource_response, ''
+                    yield error_resource_response
 
     def list_tags_for_resource(self, arn):
         response = self.client.list_tags_for_resource(Resource=arn)

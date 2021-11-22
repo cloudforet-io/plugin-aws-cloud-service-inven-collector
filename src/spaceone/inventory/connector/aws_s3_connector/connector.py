@@ -32,24 +32,29 @@ class S3Connector(SchematicAWSConnector):
                 resources.append(cst)
 
             # merge data
-            for data, name in self.request_data():
-                # This is Global API, yet set up its region for bucket
-                if getattr(data, 'set_cloudwatch', None):
-                    data.cloudwatch = CloudWatchModel(data.set_cloudwatch())
-
-                bucket_resource = {
-                    'name': name,
-                    'data': data,
-                    'reference': ReferenceModel(data.reference())
-                }
-
-                if data.get('region_name'):
-                    bucket_resource.update({
-                        'region_code': data.get('region_name'),
-                    })
-
-                resources.append(self.response_schema({'resource': BucketResource(bucket_resource)}))
-
+            for data in self.request_data():
+                if getattr(data, 'resource_type', None) and data.resource_type == 'inventory.ErrorResource':
+                    # Error Resource
+                    resources.append(data)
+                else:
+                    # This is Global API, yet set up its region for bucket
+                    if getattr(data, 'set_cloudwatch', None):
+                        data.cloudwatch = CloudWatchModel(data.set_cloudwatch())
+    
+                    bucket_resource = {
+                        'name': data.name,
+                        'data': data,
+                        'account': self.account_id,
+                        'size': int(data.size),
+                        'reference': ReferenceModel(data.reference())
+                    }
+    
+                    if data.get('region_name'):
+                        bucket_resource.update({
+                            'region_code': data.get('region_name'),
+                        })
+    
+                    resources.append(self.response_schema({'resource': BucketResource(bucket_resource)}))
         except Exception as e:
             resource_id = ''
             resources.append(self.generate_error('global', resource_id, e))
@@ -115,13 +120,12 @@ class S3Connector(SchematicAWSConnector):
                         'size': size
                     })
 
-                res = Bucket(raw, strict=False)
-                yield res, res.name
-
+                yield Bucket(raw, strict=False)
+                
             except Exception as e:
                 resource_id = raw.get('Name', '')
                 error_resource_response = self.generate_error('global', resource_id, e)
-                yield error_resource_response, ''
+                yield error_resource_response
 
     def get_bucket_versioning(self, bucket_name):
         try:

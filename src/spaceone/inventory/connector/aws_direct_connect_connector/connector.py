@@ -2,7 +2,7 @@ import time
 import logging
 from typing import List
 
-from spaceone.inventory.connector.aws_direct_connect_connector.schema.data import Connection, DirectConnecGateway, \
+from spaceone.inventory.connector.aws_direct_connect_connector.schema.data import Connection, DirectConnectGateway, \
     VirtualPrivateGateway, LAG
 from spaceone.inventory.connector.aws_direct_connect_connector.schema.resource import ConnectionResource, \
     ConnectionResponse, DirectConnectGatewayResource, DirectConnectGatewayResponse, VirtualPrivateGatewayResource, \
@@ -70,12 +70,18 @@ class DirectConnectConnector(SchematicAWSConnector):
                 raw.update({
                     'account_id': self.account_id
                 })
-                yield Connection(raw, strict=False), raw.get('connectionName', '')
+                connection_vo = Connection(raw, strict=False)
+                yield {
+                    'data': connection_vo,
+                    'name': connection_vo.connection_name,
+                    'type': connection_vo.location,
+                    'account': self.account_id
+                }
 
             except Exception as e:
                 resource_id = raw.get('connectionId', '')
                 error_resource_response = self.generate_error(region_name, resource_id, e)
-                yield error_resource_response, ''
+                yield {'data': error_resource_response}
 
     def direct_connect_gateway_request_data(self, region_name) -> List[Connection]:
         self.cloudservice_type = 'DirectConnectGateway'
@@ -87,11 +93,17 @@ class DirectConnectConnector(SchematicAWSConnector):
                 raw.update({
                     'account_id': self.account_id
                 })
-                yield DirectConnecGateway(raw, strict=False), raw.get('directConnectGatewayName', '')
+                dc_gw_vo = DirectConnectGateway(raw, strict=False)
+                yield {
+                    'data': dc_gw_vo,
+                    'name': dc_gw_vo.direct_connect_gateway_name,
+                    'account': self.account_id
+                }
+
             except Exception as e:
                 resource_id = raw.get('directConnectGatewayId', '')
                 error_resource_response = self.generate_error(region_name, resource_id, e)
-                yield error_resource_response, ''
+                yield {'data': error_resource_response}
 
     def virtual_private_gateway_request_data(self, region_name) -> List[Connection]:
         self.cloudservice_type = 'VirtualPrivateGateway'
@@ -103,11 +115,17 @@ class DirectConnectConnector(SchematicAWSConnector):
                 raw.update({
                     'account_id': self.account_id
                 })
-                yield VirtualPrivateGateway(raw, strict=False), ''
+                virtual_private_gw_vo = VirtualPrivateGateway(raw, strict=False)
+
+                yield {
+                    'data': virtual_private_gw_vo,
+                    'account': self.account_id
+                }
+
             except Exception as e:
                 resource_id = raw.get('virtualGatewayId', '')
                 error_resource_response = self.generate_error(region_name, resource_id, e)
-                yield error_resource_response, ''
+                yield {'data': error_resource_response}
 
     def lag_request_data(self, region_name) -> List[Connection]:
         self.cloudservice_type = 'LAG'
@@ -119,8 +137,14 @@ class DirectConnectConnector(SchematicAWSConnector):
                 raw.update({
                     'account_id': self.account_id
                 })
-                yield LAG(raw, strict=False), raw.get('lagName', '')
+                lag_vo = LAG(raw, strict=False)
+                yield {
+                    'data': lag_vo,
+                    'name': lag_vo.lag_name,
+                    'account': self.account_id
+                }
+
             except Exception as e:
                 resource_id = raw.get('lagId', '')
                 error_resource_response = self.generate_error(region_name, resource_id, e)
-                yield error_resource_response, ''
+                yield {'data': error_resource_response}

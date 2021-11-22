@@ -65,12 +65,18 @@ class KinesisFirehoseConnector(SchematicAWSConnector):
                         "additional_tabs": additional_tabs
                     }
                 )
-                res = DeliveryStreamDescription(delivery_stream_info, strict=False)
-                yield res, res.delivery_stream_name
+                stream_vo = DeliveryStreamDescription(delivery_stream_info, strict=False)
+                yield {
+                    'data': stream_vo,
+                    'name': stream_vo.stream_name,
+                    'launched_at': stream_vo.create_timestamp,
+                    'account': self.account_id
+                }
+
             except Exception as e:
                 resource_id = stream_name
                 error_resource_response = self.generate_error(region_name, resource_id, e)
-                yield error_resource_response, ''
+                yield {'data': error_resource_response}
 
     def get_tags(self, name):
         tag_response = self.client.list_tags_for_delivery_stream(DeliveryStreamName=name)

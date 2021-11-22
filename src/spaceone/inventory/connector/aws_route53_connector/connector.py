@@ -28,17 +28,23 @@ class Route53Connector(SchematicAWSConnector):
                 resources.append(cst)
 
             # merge data
-            for data, name in self.request_data():
-                if getattr(data, 'set_cloudwatch', None):
-                    data.cloudwatch = CloudWatchModel(data.set_cloudwatch())
+            for data in self.request_data():
+                if getattr(data, 'resource_type', None) and data.resource_type == 'inventory.ErrorResource':
+                    # Error Resource
+                    resources.append(data)
+                else:
+                    if getattr(data, 'set_cloudwatch', None):
+                        data.cloudwatch = CloudWatchModel(data.set_cloudwatch())
 
-                resources.append(self.response_schema(
-                    {'resource': HostedZoneResource({
-                        'name': name,
-                        'data': data,
-                        'reference': ReferenceModel(data.reference()),
-                        'region_code': 'global'
-                    })}))
+                    resources.append(self.response_schema(
+                        {'resource': HostedZoneResource({
+                            'name': data.name,
+                            'data': data,
+                            'type': data.type,
+                            'account': self.account_id,
+                            'reference': ReferenceModel(data.reference()),
+                            'region_code': 'global'
+                        })}))
 
         except Exception as e:
             resource_id = ''
@@ -68,12 +74,11 @@ class Route53Connector(SchematicAWSConnector):
                                                  resource_type="hostedzone", resource_id=raw['Id'])
                     })
 
-                    res = HostedZone(raw, strict=False)
-                    yield res, res.name
+                    yield HostedZone(raw, strict=False)
                 except Exception as e:
                     resource_id = raw.get('Id', '')
                     error_resource_response = self.generate_error('global', resource_id, e)
-                    yield error_resource_response, ''
+                    yield error_resource_response
 
     def describe_record_sets(self, host_zone_id):
         paginator = self.client.get_paginator('list_resource_record_sets')

@@ -17,7 +17,7 @@ cst_redshift_cluster.tags = {
 
 cst_redshift_cluster._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Cluster', 'data.cluster_identifier'),
+        TextDyField.data_source('Cluster', 'name'),
         EnumDyField.data_source('Status', 'data.cluster_status', default_state={
             'safe': ['available'],
             'warning': ['prep-for-resize', 'resize-cleanup', 'cancelling-resize', 'creating', 'deleting', 'final-snapshot',
@@ -28,7 +28,7 @@ cst_redshift_cluster._metadata = CloudServiceTypeMeta.set_meta(
         }),
         TextDyField.data_source('Cluster Version', 'data.cluster_version'),
         TextDyField.data_source('Nodes', 'data.number_of_nodes'),
-        TextDyField.data_source('Node Type', 'data.node_type'),
+        TextDyField.data_source('Node Type', 'type'),
         TextDyField.data_source('Endpoint', 'data.endpoint.address', options={
             'is_optional': True
         }),
@@ -90,16 +90,13 @@ cst_redshift_cluster._metadata = CloudServiceTypeMeta.set_meta(
         }),
         TextDyField.data_source('Manual Snapshot Retention Period', 'data.manual_snapshot_retention_period', options={
             'is_optional': True
-        }),
-        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
-            'is_optional': True
         })
     ],
     search=[
-        SearchField.set(name='Cluster Identifier', key='data.cluster_identifier'),
+        SearchField.set(name='Cluster Identifier', key='name'),
         SearchField.set(name='ARN', key='data.arn'),
         SearchField.set(name='Cluster Version', key='data.cluster_version'),
-        SearchField.set(name='Node Type', key='data.node_type'),
+        SearchField.set(name='Node Type', key='type'),
         SearchField.set(name='Status', key='data.cluster_status',
                         enums={
                             "available": {'label': 'Available', 'icon': {'color': 'green.500'}},
@@ -132,7 +129,6 @@ cst_redshift_cluster._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='VPC ID', key='data.vpc_id'),
         SearchField.set(name='Availability Zone', key='data.availability_zone'),
         SearchField.set(name='Node Counts', key='data.number_of_nodes', data_type='integer'),
-        SearchField.set(name='AWS Account ID', key='data.account_id'),
     ]
 )
 

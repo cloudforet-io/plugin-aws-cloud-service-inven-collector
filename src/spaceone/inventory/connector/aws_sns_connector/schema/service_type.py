@@ -14,7 +14,7 @@ cst_topic.tags = {
 
 cst_topic._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'data.name'),
+        TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('ARN', 'data.topic_arn', options={
             'is_optional': True
         }),
@@ -38,18 +38,14 @@ cst_topic._metadata = CloudServiceTypeMeta.set_meta(
         }),
         TextDyField.data_source('KMS Alias', 'data.kms.alias', options={
             'is_optional': True
-        }),
-        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
-            'is_optional': True
-        }),
+        })
     ],
     search=[
-        SearchField.set(name='Topic Name', key='data.name'),
+        SearchField.set(name='Topic Name', key='name'),
         SearchField.set(name='Topic ARN', key='data.topic_arn'),
         SearchField.set(name='Subscription ARN', key='data.subscriptions.subscription_arn'),
         SearchField.set(name='Endpoint', key='data.subscriptions.endpoint'),
-        SearchField.set(name='Protocol', key='data.subscriptions.protocol'),
-        SearchField.set(name='AWS Account ID', key='data.account_id'),
+        SearchField.set(name='Protocol', key='data.subscriptions.protocol')
     ]
 )
 

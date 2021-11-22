@@ -62,12 +62,19 @@ class RedshiftConnector(SchematicAWSConnector):
                                                          "resource_id": raw.get('ClusterIdentifier', '')}))
                     })
 
-                    res = Cluster(raw, strict=False)
-                    yield res, res.cluster_identifier
+                    cluster_vo = Cluster(raw, strict=False)
+                    yield {
+                        'data': cluster_vo,
+                        'name': cluster_vo.cluster_identifier,
+                        'type': cluster_vo.node_type,
+                        'launched_at': cluster_vo.cluster_create_time,
+                        'account': self.account_id
+                    }
+                    
                 except Exception as e:
                     resource_id = raw.get('ClusterIdentifier', '')
                     error_resource_response = self.generate_error(region_name, resource_id, e)
-                    yield error_resource_response, ''
+                    yield {'data': error_resource_response}
 
     def describe_tags(self, arn_vo):
         response = {}

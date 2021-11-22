@@ -17,17 +17,18 @@ cst_filesystem.tags = {
 
 cst_filesystem._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('ID', 'data.file_system_id'),
-        TextDyField.data_source('Name', 'data.name'),
+        TextDyField.data_source('Name', 'name'),
         EnumDyField.data_source('State', 'data.life_cycle_state', default_state={
             'safe': ['available'],
             'warning': ['creating', 'updating', 'deleting'],
             'disable': ['deleted']
         }),
-        SizeField.data_source('Metered Sizes', 'data.size_in_bytes.value'),
+        SizeField.data_source('Metered Sizes', 'size'),
         TextDyField.data_source('Mount Targets', 'data.number_of_mount_targets'),
-        DateTimeDyField.data_source('Creation date', 'data.creation_time'),
 
+        TextDyField.data_source('ID', 'data.file_system_id', options={
+            'is_optional': True
+        }),
         TextDyField.data_source('ARN', 'data.arn', options={
             'is_optional': True
         }),
@@ -58,15 +59,11 @@ cst_filesystem._metadata = CloudServiceTypeMeta.set_meta(
         ListDyField.data_source('Mount Target AZ', 'data.mount_targets', options={
             'sub_key': 'availability_zone_name',
             'is_optional': True
-        }),
-        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
-            'is_optional': True
-        }),
+        })
     ],
     search=[
         SearchField.set(name='File System ID', key='data.file_system_id'),
         SearchField.set(name='ARN', key='data.arn'),
-        SearchField.set(name='Name', key='data.name'),
         SearchField.set(name='State', key='data.life_cycle_state',
                         enums={
                             'available': {'label': 'available', 'icon': {'color': 'green.500'}},
@@ -75,7 +72,7 @@ cst_filesystem._metadata = CloudServiceTypeMeta.set_meta(
                             'deleting': {'label': 'deleting', 'icon': {'color': 'yellow.500'}},
                             'deleted': {'label': 'deleted', 'icon': {'color': 'gray.400'}},
                         }),
-        SearchField.set(name='Metered Size (Bytes)', key='data.size_in_bytes.value', data_type='integer'),
+        SearchField.set(name='Metered Size (Bytes)', key='size', data_type='integer'),
         SearchField.set(name='Performance Mode', key='data.performance_mode',
                         enums={
                             'generalPurpose': {'label': 'General Purpose'},
@@ -91,9 +88,7 @@ cst_filesystem._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='IP Address', key='data.mount_targets.ip_address'),
         SearchField.set(name='Availability Zone', key='data.mount_targets.availability_zone_name'),
         SearchField.set(name='Subnet ID', key='data.mount_targets.subnet_id'),
-        SearchField.set(name='Security Group ID', key='data.mount_targets.security_groups'),
-        SearchField.set(name='Created Time', key='data.creation_time', data_type='datetime'),
-        SearchField.set(name='AWS Account ID', key='data.account_id'),
+        SearchField.set(name='Security Group ID', key='data.mount_targets.security_groups')
     ]
 )
 

@@ -65,9 +65,7 @@ class ElastiCacheConnector(SchematicAWSConnector):
         return resources
 
     def get_memcached_data(self, region_name, cache_clusters):
-        cloud_service_group = 'ElastiCache'
-        cloud_service_type = 'Memcached'
-        self.cloud_service_type = cloud_service_type
+        self.cloud_service_type = 'Memcached'
 
         for cluster in cache_clusters:
             try:
@@ -79,17 +77,23 @@ class ElastiCacheConnector(SchematicAWSConnector):
                         'account_id': self.account_id,
                     })
 
-                    yield Memcached(cluster, strict=False)
+                    memcached_vo = Memcached(cluster, strict=False)
+
+                    yield {
+                        'data': memcached_vo,
+                        'name': memcached_vo.cache_cluster_id,
+                        'type': memcached_vo.cache_node_type,
+                        'launched_at': memcached_vo.cache_cluster_create_time,
+                        'account': self.account_id
+                    }
 
             except Exception as e:
                 resource_id = cluster.get('ARN', '')
                 error_resource_response = self.generate_error(region_name, resource_id, e)
-                yield error_resource_response
+                yield {'data': error_resource_response}
 
     def get_redis_data(self, region_name, cache_clusters):
-        cloud_service_group = 'ElastiCache'
-        cloud_service_type = 'Redis'
-        self.cloud_service_type = cloud_service_type
+        self.cloud_service_type = 'Redis'
 
         for replication_group in self.describe_replication_groups():
             try:
@@ -116,12 +120,19 @@ class ElastiCacheConnector(SchematicAWSConnector):
                         'shards': self.get_redis_shards_info(replication_group, cache_clusters)
                     })
 
-                yield Redis(replication_group, strict=False)
+                redis_vo = Redis(replication_group, strict=False)
+
+                yield {
+                    'data': redis_vo,
+                    'name': redis_vo.replication_group_id,
+                    'type': redis_vo.cache_node_type,
+                    'account': self.account_id
+                }
 
             except Exception as e:
                 resource_id = replication_group.get('ARN', '')
                 error_resource_response = self.generate_error(region_name, resource_id, e)
-                yield error_resource_response
+                yield {'data': error_resource_response}
 
     def describe_clusters(self):
         paginator = self.client.get_paginator('describe_cache_clusters')

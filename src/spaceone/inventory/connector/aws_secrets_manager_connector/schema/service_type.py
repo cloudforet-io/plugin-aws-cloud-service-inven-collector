@@ -15,7 +15,7 @@ cst_secret.tags = {
 
 cst_secret._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'data.name'),
+        TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('Description', 'data.description'),
         DateTimeDyField.data_source('Last Retrieved', 'data.last_accessed_date'),
         TextDyField.data_source('ARN', 'data.arn', options={
@@ -49,18 +49,14 @@ cst_secret._metadata = CloudServiceTypeMeta.set_meta(
         }),
         TextDyField.data_source('Owning Service', 'data.owning_service', options={
             'is_optional': True
-        }),
-        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
-            'is_optional': True
-        }),
+        })
     ],
     search=[
-        SearchField.set(name='Name', key='data.name'),
+        SearchField.set(name='Name', key='name'),
         SearchField.set(name='ARN', key='data.arn'),
         SearchField.set(name='Last Changed Time', key='data.last_changed_date', data_type='datetime'),
         SearchField.set(name='Last Accessed Time', key='data.last_accessed_date', data_type='datetime'),
-        SearchField.set(name='Rotation Enabled', key='data.rotation_enabled', data_type='boolean'),
-        SearchField.set(name='AWS Account ID', key='data.account_id'),
+        SearchField.set(name='Rotation Enabled', key='data.rotation_enabled', data_type='boolean')
     ]
 )
 

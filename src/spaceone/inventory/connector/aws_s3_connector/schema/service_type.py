@@ -15,13 +15,13 @@ cst_bucket.tags = {
 
 cst_bucket._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'data.name'),
+        TextDyField.data_source('Name', 'name'),
         EnumDyField.data_source('Access', 'data.public_access', default_badge={
             'indigo.500': ['Private'],
             'coral.600': ['Public']
         }),
         TextDyField.data_source('Object Total Counts', 'data.object_count'),
-        SizeField.data_source('Object Total Size', 'data.object_total_size'),
+        SizeField.data_source('Object Total Size', 'size'),
         TextDyField.data_source('ARN', 'data.arn', options={
             'is_optional': True
         }),
@@ -67,17 +67,13 @@ cst_bucket._metadata = CloudServiceTypeMeta.set_meta(
             'sub_key': 'arn',
             'delimiter': '<br>',
             'is_optional': True
-        }),
-        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
-            'is_optional': True
         })
     ],
     search=[
-        SearchField.set(name='Bucket Name', key='data.name'),
+        SearchField.set(name='Bucket Name', key='name'),
         SearchField.set(name='ARN', key='data.arn'),
         SearchField.set(name='Object Counts', key='data.object_count', data_type='integer'),
-        SearchField.set(name='Object Total Size (Bytes)', key='data.object_total_size', data_type='integer'),
-        SearchField.set(name='AWS Account ID', key='data.account_id'),
+        SearchField.set(name='Object Total Size (Bytes)', key='size', data_type='integer')
     ]
 )
 
