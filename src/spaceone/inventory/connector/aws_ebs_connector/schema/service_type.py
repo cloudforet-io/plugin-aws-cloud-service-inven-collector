@@ -17,7 +17,7 @@ cst_ebs.tags = {
 }
 cst_ebs._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'data.name'),
+        TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('Volume ID', 'data.volume_id'),
         EnumDyField.data_source('State', 'data.state', default_state={
             'safe': ['in-use'],
@@ -26,8 +26,8 @@ cst_ebs._metadata = CloudServiceTypeMeta.set_meta(
             'disable': ['deleted'],
             'alert': ['error']
         }),
-        SizeField.data_source('Size', 'data.size'),
-        TextDyField.data_source('Volume Type', 'data.volume_type'),
+        SizeField.data_source('Size', 'size'),
+        TextDyField.data_source('Volume Type', 'type'),
         TextDyField.data_source('IOPS', 'data.iops'),
         TextDyField.data_source('From Snapshot', 'data.snapshot_id'),
         TextDyField.data_source('Availablity Zone', 'data.availability_zone'),
@@ -56,7 +56,6 @@ cst_ebs._metadata = CloudServiceTypeMeta.set_meta(
     search=[
         SearchField.set(name='Volume ID', key='data.volume_id'),
         SearchField.set(name='ARN', key='data.arn'),
-        SearchField.set(name='Name', key='data.name'),
         SearchField.set(name='State', key='data.state',
                         enums={
                             'in-use': {'label': 'in-use', 'icon': {'color': 'green.500'}},
@@ -66,9 +65,9 @@ cst_ebs._metadata = CloudServiceTypeMeta.set_meta(
                             'deleted': {'label': 'deleted', 'icon': {'color': 'gray.400'}},
                             'error': {'label': 'error', 'icon': {'color': 'red.500'}},
                         }),
-        SearchField.set(name='Size (Bytes)', key='data.size', data_type='integer'),
+        SearchField.set(name='Size (Bytes)', key='size', data_type='integer'),
         SearchField.set(name='Size (GB)', key='data.size_gb', data_type='integer'),
-        SearchField.set(name='Volume Type', key='data.volume_type',
+        SearchField.set(name='Volume Type', key='type',
                         enums={
                             'gp2': {'label': 'General Purpose SSD (gp2)'},
                             'gp3': {'label': 'General Purpose SSD (gp3)'},
@@ -79,9 +78,7 @@ cst_ebs._metadata = CloudServiceTypeMeta.set_meta(
                         }),
         SearchField.set(name='Availability Zone', key='data.availability_zone'),
         SearchField.set(name='IOPS', key='data.iops', data_type='integer'),
-        SearchField.set(name='Created Time', key='data.create_time', data_type='datetime'),
         SearchField.set(name='Attached Instance ID', key='data.attachments.instance_id'),
-        SearchField.set(name='AWS Account ID', key='data.account_id'),
     ]
 )
 
@@ -97,9 +94,9 @@ cst_snapshot.tags = {
 }
 cst_snapshot._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'data.name'),
+        TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('Snapshot ID', 'data.snapshot_id'),
-        SizeField.data_source('Size', 'data.volume_size', options={
+        SizeField.data_source('Size', 'size', options={
             'source_unit': 'GB',
             'display_unit': 'GB'
         }),
@@ -108,12 +105,10 @@ cst_snapshot._metadata = CloudServiceTypeMeta.set_meta(
             'warning': ['pending'],
             'alert': ['error']
         }),
-        TextDyField.data_source('Description', 'data.description'),
         TextDyField.data_source('Progress', 'data.progress'),
         EnumDyField.data_source('Encryption', 'data.encrypted', default_badge={
             'indigo.500': ['true'], 'coral.600': ['false']
         }),
-        DateTimeDyField.data_source('Start Time', 'data.start_time'),
         TextDyField.data_source('ARN', 'data.arn', options={
             'is_optional': True
         }),
@@ -122,24 +117,18 @@ cst_snapshot._metadata = CloudServiceTypeMeta.set_meta(
         }),
         TextDyField.data_source('KMS Key ID', 'data.kms_key_id', options={
             'is_optional': True
-        }),
-        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
-            'is_optional': True
         })
     ],
     search=[
         SearchField.set(name='Snapshot ID', key='data.snapshot_id'),
         SearchField.set(name='ARN', key='data.arn'),
-        SearchField.set(name='Name', key='data.name'),
         SearchField.set(name='Status', key='data.state',
                         enums={
                             'completed': {'label': 'completed', 'icon': {'color': 'green.500'}},
                             'pending': {'label': 'pending', 'icon': {'color': 'yellow.500'}},
                             'error': {'label': 'error', 'icon': {'color': 'red.500'}},
                         }),
-        SearchField.set(name='Size (GB)', key='data.volume_size', data_type='integer'),
-        SearchField.set(name='Started Time', key='data.start_time', data_type='datetime'),
-        SearchField.set(name='AWS Account ID', key='data.account_id'),
+        SearchField.set(name='Size (GB)', key='size', data_type='integer'),
     ]
 )
 

@@ -63,12 +63,18 @@ class EC2Connector(SchematicAWSConnector):
                         'launch_permissions': [LaunchPermission(_permission, strict=False) for _permission in permission_info.get('LaunchPermissions', [])]
                     })
 
-                yield Image(image, strict=False), image.get('Name', '')
+                image_vo = Image(image, strict=False)
+                yield {
+                    'data': image_vo,
+                    'name': image_vo.name,
+                    'type': image_vo.image_type,
+                    'account': self.account_id
+                }
 
             except Exception as e:
                 resource_id = image.get('ImageId', '')
                 error_resource_response = self.generate_error(region_name, resource_id, e)
-                yield error_resource_response, ''
+                yield {'data': error_resource_response}
 
     def request_security_group_data(self, region_name) -> List[SecurityGroup]:
         self.cloud_service_type = 'SecurityGroup'
@@ -143,13 +149,17 @@ class EC2Connector(SchematicAWSConnector):
                         'instances': self.get_security_group_map_instances(raw, instances)
                     })
 
-                    result = SecurityGroup(raw, strict=False)
-                    yield result, result.group_name
+                    sg_vo = SecurityGroup(raw, strict=False)
+                    yield {
+                        'data': sg_vo,
+                        'name': sg_vo.group_name,
+                        'account': self.account_id
+                    }
 
                 except Exception as e:
                     resource_id = raw.get('GroupId', '')
                     error_resource_response = self.generate_error(region_name, resource_id, e)
-                    yield error_resource_response, ''
+                    yield {'data': error_resource_response}
 
     def custom_security_group_rule_info(self, raw_rule, remote, remote_type):
         raw_rule.update({

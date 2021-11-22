@@ -15,7 +15,7 @@ cst_que.tags = {
 
 cst_que._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('name', 'data.name'),
+        TextDyField.data_source('name', 'name'),
         TextDyField.data_source('url', 'data.url'),
         TextDyField.data_source('ARN', 'data.kms.alias', options={
             'is_optional': True
@@ -61,21 +61,16 @@ cst_que._metadata = CloudServiceTypeMeta.set_meta(
         }),
         TextDyField.data_source('Max Recieve Count', 'data.redrive_policy.max_receive_count', options={
             'is_optional': True
-        }),
-        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
-            'is_optional': True
-        }),
+        })
     ],
     search=[
-        SearchField.set(name='Name', key='data.name'),
+        SearchField.set(name='Name', key='name'),
         SearchField.set(name='ARN', key='data.arn'),
         SearchField.set(name='URL', key='data.url'),
         SearchField.set(name='Maximum Message Size (Bytes)', key='data.maximum_message_size', data_type='integer'),
         SearchField.set(name='Approximate Number of Messages', key='data.approximate_number_of_messages',
                         data_type='integer'),
-        SearchField.set(name='Created Time', key='data.created_timestamp', data_type='datetime'),
         SearchField.set(name='Last Modified Time', key='data.last_modified_timestamp', data_type='datetime'),
-        SearchField.set(name='AWS Account ID', key='data.account_id'),
     ]
 )
 

@@ -15,8 +15,7 @@ cst_distribution.tags = {
 
 cst_distribution._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Id', 'data.id'),
-        TextDyField.data_source('Domain Name', 'data.domain_name'),
+        TextDyField.data_source('Domain Name', 'name'),
         EnumDyField.data_source('Distribution Status', 'data.status', default_state={
             'safe': ['Deployed']
         }),
@@ -28,6 +27,9 @@ cst_distribution._metadata = CloudServiceTypeMeta.set_meta(
             'alert': ['Disabled'],
         }),
         # For Dynamic Table
+        TextDyField.data_source('Id', 'data.id', options={
+            'is_optional': True
+        }),
         TextDyField.data_source('ARN', 'data.arn', options={
             'is_optional': True
         }),
@@ -39,9 +41,6 @@ cst_distribution._metadata = CloudServiceTypeMeta.set_meta(
         }),
         TextDyField.data_source('HTTP Version', 'data.http_version', options={
             'is_optional': True
-        }),
-        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
-            'is_optional': True
         })
     ],
     search=[
@@ -49,9 +48,7 @@ cst_distribution._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='ARN', key='data.arn'),
         SearchField.set(name='Status', key='data.status',
                         enums={'Deployed': {'label': 'Deployed', 'icon': {'color': 'green.500'}}}),
-        SearchField.set(name='Domain Name', key='data.domain_name'),
         SearchField.set(name='CNAME', key='data.alias_icp_recordals.cname'),
-        SearchField.set(name='AWS Account ID', key='data.account_id'),
     ]
 )
 

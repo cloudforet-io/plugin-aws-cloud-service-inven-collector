@@ -17,21 +17,20 @@ cst_elb.tags = {
 
 cst_elb._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'data.load_balancer_name'),
+        TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('DNS Name', 'data.dns_name'),
         EnumDyField.data_source('State', 'data.state.code', default_state={
             'safe': ['active'],
             'warning': ['provisioning'],
             'alert': ['active_impaired', 'failed']
         }),
-        EnumDyField.data_source('Type', 'data.type', default_badge={
+        EnumDyField.data_source('Type', 'type', default_badge={
             'indigo.500': ['network'], 'coral.600': ['application']
         }),
         ListDyField.data_source('Availability Zones', 'data.availability_zones', options={
             'sub_key': 'zone_name',
             'delimiter': '<br>'
         }),
-        DateTimeDyField.data_source('Created At', 'data.created_time'),
         TextDyField.data_source('ARN', 'data.load_balancer_arn', options={
             'is_optional': True
         }),
@@ -104,17 +103,14 @@ cst_elb._metadata = CloudServiceTypeMeta.set_meta(
         TextDyField.data_source('Load Balancing Cross Zone Enabled',
                                 'data.attributes.load_balancing_cross_zone_enabled', options={
                 'is_optional': True
-        }),
-        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
-            'is_optional': True
         })
     ],
     search=[
-        SearchField.set(name='Name', key='data.load_balancer_name'),
+        SearchField.set(name='Name', key='name'),
         SearchField.set(name='ARN', key='data.load_balancer_arn'),
         SearchField.set(name='DNS Name', key='data.dns_name'),
         SearchField.set(name='State', key='data.state'),
-        SearchField.set(name='Type', key='data.type',
+        SearchField.set(name='Type', key='type',
                         enums={
                             'application': {'label': 'Application'},
                             'network': {'label': 'Network'},
@@ -148,9 +144,7 @@ cst_elb._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Target Group Name', key='data.target_groups.target_group_name'),
         SearchField.set(name='Instance ID', key='data.instances.instance_id'),
         SearchField.set(name='Instance Name', key='data.instances.instance_name'),
-        SearchField.set(name='Instance State', key='data.instances.state'),
-        SearchField.set(name='Created Time', key='data.created_time', data_type='datetime'),
-        SearchField.set(name='AWS Account ID', key='data.account_id'),
+        SearchField.set(name='Instance State', key='data.instances.state')
     ]
 )
 
@@ -166,10 +160,10 @@ cst_tg.tags = {
 
 cst_tg._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'data.target_group_name'),
+        TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('Port', 'data.port'),
         TextDyField.data_source('Protocol', 'data.protocol'),
-        TextDyField.data_source('Target Type', 'data.target_type'),
+        TextDyField.data_source('Target Type', 'type'),
         ListDyField.data_source('Load Balancers', 'data.load_balancer_arns', options={
             'delimiter': '<br>'
         }),
@@ -212,13 +206,10 @@ cst_tg._metadata = CloudServiceTypeMeta.set_meta(
             'is_optional': True
         }),
         TextDyField.data_source('Stickiness LB Cookie Duration Seconds', 'data.stickiness_lb_cookie_duration_seconds',
-                                options={'is_optional': True}),
-        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
-            'is_optional': True
-        })
+                                options={'is_optional': True})
     ],
     search=[
-        SearchField.set(name='Name', key='data.target_group_name'),
+        SearchField.set(name='Name', key='name'),
         SearchField.set(name='ARN', key='data.'),
         SearchField.set(name='Protocol', key='data.protocol',
                         enums={
@@ -230,7 +221,7 @@ cst_tg._metadata = CloudServiceTypeMeta.set_meta(
                             'TCP_UDP': {'label': 'TCP/UDP'},
                         }),
         SearchField.set(name='Port', key='data.port', data_type='integer'),
-        SearchField.set(name='Target Type', key='data.target_type',
+        SearchField.set(name='Target Type', key='type',
                         enums={
                             'instance': {'label': 'Instance'},
                             'ip': {'label': 'IP'},
@@ -246,8 +237,7 @@ cst_tg._metadata = CloudServiceTypeMeta.set_meta(
                         enums={
                             'lb_cookie': {'label': 'LB Cookie'},
                             'source_ip': {'label': 'Source IP'}
-                        }),
-        SearchField.set(name='AWS Account ID', key='data.account_id'),
+                        })
     ]
 )
 

@@ -15,7 +15,7 @@ cst_ecs_cluster.tags = {
 
 cst_ecs_cluster._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'data.cluster_name'),
+        TextDyField.data_source('Name', 'name'),
         EnumDyField.data_source('Status', 'data.status', default_state={
             'safe': ['ACTIVE'],
             'warning': ['PROVISIONING', 'DEPROVISIONING'],
@@ -83,13 +83,10 @@ cst_ecs_cluster._metadata = CloudServiceTypeMeta.set_meta(
             'sub_key': 'memory',
             'delimiter': '<br>',
             'is_optional': True
-        }),
-        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
-            'is_optional': True
-        }),
+        })
     ],
     search=[
-        SearchField.set(name='Cluster Name', key='data.cluster_name'),
+        SearchField.set(name='Cluster Name', key='name'),
         SearchField.set(name='ARN', key='data.cluster_arn'),
         SearchField.set(name='Status', key='data.status'),
         SearchField.set(name='Active Services Count', key='data.active_services_count', data_type='integer'),
@@ -106,7 +103,6 @@ cst_ecs_cluster._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Task Definition', key='data.tasks.task_definition'),
         SearchField.set(name='Task Definition ARN', key='data.tasks.task_definition_arn'),
         SearchField.set(name='Container Instance ID', key='data.container_instances.ec2_instance_id'),
-        SearchField.set(name='AWS Account ID', key='data.account_id'),
     ]
 )
 

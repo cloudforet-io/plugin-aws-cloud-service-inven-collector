@@ -15,14 +15,13 @@ cst_sg.tags = {
 cst_sg._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
         TextDyField.data_source('ID', 'data.group_id'),
-        TextDyField.data_source('Name', 'data.group_name'),
+        TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('VPC ID', 'data.vpc_id'),
         TextDyField.data_source('Description', 'data.description'),
-        TextDyField.data_source('Account ID', 'data.owner_id')
+        TextDyField.data_source('Account ID', 'account_id')
     ],
     search=[
         SearchField.set(name='Security Group ID', key='data.group_id'),
-        SearchField.set(name='Name', key='data.group_name'),
         SearchField.set(name='VPC ID', key='data.vpc_id'),
         SearchField.set(name='Inbound Protocol', key='data.ip_permissions.protocol_display'),
         SearchField.set(name='Inbound Port Rage', key='data.ip_permissions.port_display'),
@@ -30,7 +29,6 @@ cst_sg._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Outbound Protocol', key='data.ip_permissions_egress.protocol_display'),
         SearchField.set(name='Outbound Port Rage', key='data.ip_permissions_egress.port_display'),
         SearchField.set(name='Outbound Source', key='data.ip_permissions_egress.source_display'),
-        SearchField.set(name='AWS Account ID', key='data.account_id'),
     ]
 )
 
@@ -47,9 +45,8 @@ cst_ami.tags = {
 cst_ami._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
         TextDyField.data_source('ID', 'data.image_id'),
-        TextDyField.data_source('Name', 'data.name'),
         TextDyField.data_source('Source', 'data.image_location'),
-        TextDyField.data_source('Owner', 'data.owner_id'),
+        TextDyField.data_source('Owner', 'account'),
         EnumDyField.data_source('Is Public', 'data.public', default_badge={
             'indigo.500': ['true'], 'coral.600': ['false']
         }),
@@ -58,7 +55,6 @@ cst_ami._metadata = CloudServiceTypeMeta.set_meta(
             'warning': ['pending', 'transient', 'deregistered', 'invalid'],
             'alert': ['error', 'failed']
         }),
-        DateTimeDyField.data_source('Creation Date', 'data.creation_date'),
         TextDyField.data_source('Platform', 'data.platform'),
         TextDyField.data_source('Root Device Type', 'data.root_device_type'),
         TextDyField.data_source('Virtualization', 'data.virtualization_type'),
@@ -89,19 +85,15 @@ cst_ami._metadata = CloudServiceTypeMeta.set_meta(
     ],
     search=[
         SearchField.set(name='AMI ID', key='data.image_id'),
-        SearchField.set(name='Name', key='data.name'),
         SearchField.set(name='Status', key='data.state'),
         SearchField.set(name='Source', key='data.image_location'),
-        SearchField.set(name='Owner', key='data.owner_id'),
         SearchField.set(name='Is Public', key='data.public', data_type='boolean'),
         SearchField.set(name='Platform', key='data.platform'),
         SearchField.set(name='Root Device Type', key='data.root_device_type'),
         SearchField.set(name='Virtualization', key='data.virtualization_type'),
-        SearchField.set(name='Creation Date', key='data.creation_date', data_type='datetime'),
         SearchField.set(name='Instance ID', key='data.instances.instance_id'),
         SearchField.set(name='Instance Name', key='data.instances.instance_name'),
         SearchField.set(name='Instance State', key='data.instances.state'),
-        SearchField.set(name='AWS Account ID', key='data.account_id'),
     ]
 )
 

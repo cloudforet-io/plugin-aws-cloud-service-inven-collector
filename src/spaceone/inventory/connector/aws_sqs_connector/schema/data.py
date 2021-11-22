@@ -1,7 +1,7 @@
 import logging
 
 from schematics import Model
-from schematics.types import IntType, ModelType, StringType, BooleanType, serializable
+from schematics.types import IntType, ModelType, StringType, BooleanType, serializable, DateTimeType
 from spaceone.inventory.libs.schema.resource import CloudWatchModel, CloudWatchDimensionModel
 
 _LOGGER = logging.getLogger(__name__)
@@ -21,7 +21,7 @@ class QueData(Model):
     approximate_number_of_messages = IntType(deserialize_from="ApproximateNumberOfMessages")
     approximate_number_of_messages_delayed = IntType(deserialize_from="ApproximateNumberOfMessagesDelayed")
     approximate_number_of_messages_not_visible = IntType(deserialize_from="ApproximateNumberOfMessagesNotVisible")
-    created_timestamp = StringType(deserialize_from='CreatedTimestamp')
+    created_timestamp = DateTimeType(deserialize_from='CreatedTimestamp')
     delay_seconds = IntType(deserialize_from="DelaySeconds")
     last_modified_timestamp = StringType(deserialize_from='LastModifiedTimestamp')
     maximum_message_size = IntType(deserialize_from="MaximumMessageSize")

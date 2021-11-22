@@ -14,7 +14,7 @@ cst_table.tags = {
 }
 cst_table._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'data.table_name'),
+        TextDyField.data_source('Name', 'name'),
         EnumDyField.data_source('Status', 'data.table_status', default_state={
             'safe': ['ACTIVE'],
             'warning': ['CREATING', 'UPDATING', 'DELETING', 'ARCHIVING'],
@@ -46,13 +46,9 @@ cst_table._metadata = CloudServiceTypeMeta.set_meta(
         }),
         TextDyField.data_source('Billing Mode', 'data.billing_mode_summary.billing_mode', options={
             'is_optional': True
-        }),
-        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
-            'is_optional': True
-        }),
+        })
     ],
     search=[
-        SearchField.set(name='Table Name', key='data.table_name'),
         SearchField.set(name='Table ARN', key='data.table_arn'),
         SearchField.set(name='Table Status', key='data.table_status',
                         enums={
@@ -65,9 +61,8 @@ cst_table._metadata = CloudServiceTypeMeta.set_meta(
                                                                     'icon': {'color': 'red.500'}},
                             'ARCHIVED': {'label': 'ARCHIVED', 'icon': {'color': 'red.500'}}
                         }),
-        SearchField.set(name='Storage Size (Bytes)', key='data.table_size_bytes', data_type='integer'),
+        SearchField.set(name='Storage Size (Bytes)', key='size', data_type='integer'),
         SearchField.set(name='Item Count', key='data.item_count', data_type='integer'),
-        SearchField.set(name='AWS Account ID', key='data.account_id'),
     ]
 )
 

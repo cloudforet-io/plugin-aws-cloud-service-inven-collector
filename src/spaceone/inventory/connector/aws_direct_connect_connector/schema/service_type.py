@@ -19,8 +19,7 @@ cst_connection.tags = {
 
 cst_connection_meta = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('ID', 'data.connection_id'),
-        TextDyField.data_source('Name', 'data.connection_name'),
+        TextDyField.data_source('Name', 'name'),
         EnumDyField.data_source('State', 'data.connection_state', default_state={
             'safe': ['available'],
             'available': ['requested'],
@@ -32,6 +31,9 @@ cst_connection_meta = CloudServiceTypeMeta.set_meta(
         TextDyField.data_source('Location', 'data.location'),
         TextDyField.data_source('Bandwidth', 'data.bandwidth'),
         # For Dynamic Table
+        TextDyField.data_source('ID', 'data.connection_id', options={
+            'is_optional': True
+        }),
         TextDyField.data_source('Logical Redundancy', 'data.has_logical_redundancy', options={
             'is_optional': True
         }),
@@ -52,14 +54,10 @@ cst_connection_meta = CloudServiceTypeMeta.set_meta(
         }),
         TextDyField.data_source('AWS Device V2', 'data.aws_device_v2', options={
             'is_optional': True
-        }),
-        TextDyField.data_source('AWS Account ID', 'data.owner_account', options={
-            'is_optional': True
-        }),
+        })
     ],
     search=[
         SearchField.set(name='Connection ID', key='data.connection_id'),
-        SearchField.set(name='Name', key='data.connection_name'),
         SearchField.set(name='State', key='data.connection_state',
                         enums={'available': {'label': 'Available', 'icon': {'color': 'green.500'}},
                                'requested': {'label': 'Requested', 'icon': {'color': 'blue.400'}},
@@ -76,8 +74,7 @@ cst_connection_meta = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Partner Name', key='data.partner_name'),
         SearchField.set(name='Lag ID', key='data.lag_id'),
         SearchField.set(name='AWS Device', key='data.aws_device'),
-        SearchField.set(name='Provider Name', key='data.provider_name'),
-        SearchField.set(name='AWS Account ID', key='data.account_id'),
+        SearchField.set(name='Provider Name', key='data.provider_name')
     ]
 )
 cst_connection._metadata = cst_connection_meta
@@ -96,8 +93,8 @@ cst_dc_gw.tags = {
 }
 cst_dc_gw_meta = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Id', 'data.direct_connect_gateway_id'),
-        TextDyField.data_source('Name', 'data.direct_connect_gateway_name'),
+        TextDyField.data_source('ID', 'data.direct_connect_gateway_id'),
+        TextDyField.data_source('Name', 'name'),
         EnumDyField.data_source('State', 'data.direct_connect_gateway_state', default_state={
             'safe': ['available'],
             'disable': ['deleted'],
@@ -110,13 +107,12 @@ cst_dc_gw_meta = CloudServiceTypeMeta.set_meta(
         TextDyField.data_source('State Change Error', 'data.state_change_error', options={
             'is_optional': True
         }),
-        TextDyField.data_source('AWS Account ID', 'data.owner_account', options={
+        TextDyField.data_source('AWS Account ID', 'account', options={
             'is_optional': True
         }),
     ],
     search=[
         SearchField.set(name='Direct Connect Gateway ID', key='data.direct_connect_gateway_id'),
-        SearchField.set(name='Name', key='data.direct_connect_gateway_name'),
         SearchField.set(name='State', key='data.direct_connect_gateway_state',
                         enums={
                             'available': {'label': 'Available', 'icon': {'color': 'green.500'}},
@@ -124,8 +120,7 @@ cst_dc_gw_meta = CloudServiceTypeMeta.set_meta(
                             'pending': {'label': 'Pending', 'icon': {'color': 'yellow.500'}},
                             'deleting': {'label': 'Deleting', 'icon': {'color': 'yellow.500'}}
                         }),
-        SearchField.set(name='Amazon Side ASN', key='data.amazon_side_asn'),
-        SearchField.set(name='AWS Account ID', key='data.account_id'),
+        SearchField.set(name='Amazon Side ASN', key='data.amazon_side_asn')
     ]
 )
 cst_dc_gw._metadata = cst_dc_gw_meta
@@ -145,7 +140,7 @@ cst_vp_gw.tags = {
 }
 cst_vp_gw_meta = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Id', 'data.virtual_gateway_id'),
+        TextDyField.data_source('ID', 'data.virtual_gateway_id'),
         EnumDyField.data_source('State', 'data.virtual_gateway_state', default_state={
             'safe': ['available'],
             'warning': ['pending', 'deleting'],
@@ -164,8 +159,7 @@ cst_vp_gw_meta = CloudServiceTypeMeta.set_meta(
                             'deleted': {'label': 'Deleted', 'icon': {'color': 'gray.400'}},
                             'pending': {'label': 'Pending', 'icon': {'color': 'yellow.500'}},
                             'deleting': {'label': 'Deleting', 'icon': {'color': 'yellow.500'}}
-                        }),
-        SearchField.set(name='AWS Account ID', key='data.account_id'),
+                        })
     ]
 )
 cst_vp_gw._metadata = cst_vp_gw_meta
@@ -186,7 +180,7 @@ cst_lags.tags = {
 cst_lags_meta = CloudServiceTypeMeta.set_meta(
     fields=[
         TextDyField.data_source('ID', 'data.lag_id'),
-        TextDyField.data_source('Name', 'data.lag_name'),
+        TextDyField.data_source('Name', 'name'),
         EnumDyField.data_source('State', 'data.lag_state', default_state={
             'available': ['requested'],
             'safe': ['available'],
@@ -252,7 +246,6 @@ cst_lags_meta = CloudServiceTypeMeta.set_meta(
     ],
     search=[
         SearchField.set(name='Lag ID', key='data.lag_id'),
-        SearchField.set(name='Name', key='data.log_name'),
         SearchField.set(name='State', key='data.lag_state',
                         enums={
                             'available': {'label': 'Available', 'icon': {'color': 'green.500'}},
@@ -265,8 +258,7 @@ cst_lags_meta = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Connection Count', key='data.number_of_connections', data_type='integer'),
         SearchField.set(name='Bandwidth', key='data.connections_bandwidth'),
         SearchField.set(name='Minimum Links', key='data.minimum_links', data_type='integer'),
-        SearchField.set(name='AWS Device', key='data.aws_device'),
-        SearchField.set(name='AWS Account ID', key='data.account_id'),
+        SearchField.set(name='AWS Device', key='data.aws_device')
     ]
 )
 cst_lags._metadata = cst_lags_meta

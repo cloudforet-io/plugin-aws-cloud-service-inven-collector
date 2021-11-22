@@ -81,12 +81,19 @@ class APIGatewayConnector(SchematicAWSConnector):
                                          self.convert_tags(raw.get('tags', {}))))
                     })
     
-                    yield RestAPI(raw, strict=False), raw.get('name', '')
+                    rest_api_vo = RestAPI(raw, strict=False)
+                    yield {
+                        'data': rest_api_vo,
+                        'name': rest_api_vo.name,
+                        'type': rest_api_vo.protocol,
+                        'account': self.account_id,
+                        'launched_at': rest_api_vo.created_date
+                    }
 
                 except Exception as e:
                     resource_id = raw.get('id', '')
                     error_resource_response = self.generate_error(region_name, resource_id, e)
-                    yield error_resource_response, ''
+                    yield {'data': error_resource_response}
             
     def request_websocket_data(self, region_name) -> List[HTTPWebsocket]:
         # Get HTTP or WebSocket
@@ -113,13 +120,20 @@ class APIGatewayConnector(SchematicAWSConnector):
                         'tags': self.convert_tags(raw.get('tags', {}))
                     })
     
-                    yield HTTPWebsocket(raw, strict=False), raw.get('Name', '')
-                
+                    http_websocket_vo = HTTPWebsocket(raw, strict=False)
+                    yield {
+                        'data': http_websocket_vo,
+                        'name': http_websocket_vo.name,
+                        'type': http_websocket_vo.protocol,
+                        'account': self.account_id,
+                        'launched_at': http_websocket_vo.created_date
+                    }
+
                 except Exception as e:
                     resource_id = raw.get('ApiId', '')
                     error_resource_response = self.generate_error(region_name, resource_id, e)
-                    yield error_resource_response, ''
-            
+                    yield {'data': error_resource_response}
+
     def set_rest_api_resource(self, resource):
         resource.update({
             'display_methods': self.get_methods_in_resources(resource.get('resourceMethods', {}))

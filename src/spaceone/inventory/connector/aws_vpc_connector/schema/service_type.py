@@ -16,7 +16,7 @@ cst_vpc.tags = {
 
 cst_vpc._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'data.name'),
+        TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('VPC ID', 'data.vpc_id'),
         EnumDyField.data_source('State', 'data.state', default_state={
             'safe': ['available'],
@@ -117,7 +117,7 @@ cst_vpc._metadata = CloudServiceTypeMeta.set_meta(
     ],
     search=[
         SearchField.set(name='VPC ID', key='data.vpc_id'),
-        SearchField.set(name='Name', key='data.name'),
+        SearchField.set(name='Name', key='name'),
         SearchField.set(name='State', key='data.state',
                         enums={
                             'available': {'label': 'Available', 'icon': {'color': 'green.500'}},
@@ -139,7 +139,6 @@ cst_vpc._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='VPN Gateway Name', key='data.vpn_gateway.name'),
         SearchField.set(name='Transit Gateway ID', key='data.transit_gateway.transit_gateway_id'),
         SearchField.set(name='Transit Gateway Name', key='data.transit_gateway.name'),
-        SearchField.set(name='AWS Account ID', key='data.account_id'),
     ]
 )
 
@@ -155,7 +154,7 @@ cst_subnet.tags = {
 
 cst_subnet._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'data.name'),
+        TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('Subnet ID', 'data.subnet_id'),
         EnumDyField.data_source('State', 'data.state', default_state={
             'safe': ['available'],
@@ -163,7 +162,7 @@ cst_subnet._metadata = CloudServiceTypeMeta.set_meta(
         }),
         TextDyField.data_source('CIDR', 'data.cidr_block'),
         TextDyField.data_source('AZ', 'data.availability_zone'),
-        EnumDyField.data_source('Type', 'data.subnet_type', default_badge={
+        EnumDyField.data_source('Type', 'type', default_badge={
             'indigo.500': ['public'], 'coral.600': ['private']
         }),
         TextDyField.data_source('VPC', 'data.vpc_id'),
@@ -211,20 +210,17 @@ cst_subnet._metadata = CloudServiceTypeMeta.set_meta(
         }),
         TextDyField.data_source('Public IP on Launch', 'data.map_public_ip_on_launch', options={
             'is_optional': True
-        }),
-        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
-            'is_optional': True
         })
     ],
     search=[
         SearchField.set(name='Subnet ID', key='data.subnet_id'),
-        SearchField.set(name='Name', key='data.name'),
+        SearchField.set(name='Name', key='name'),
         SearchField.set(name='State', key='data.state',
                         enums={
                             'available': {'label': 'Available', 'icon': {'color': 'green.500'}},
                             'pending': {'label': 'Pending', 'icon': {'color': 'yellow.500'}},
                         }),
-        SearchField.set(name='Subnet Type', key='data.subnet_type',
+        SearchField.set(name='Subnet Type', key='type',
                         enums={
                             'public': {'label': 'Public'},
                             'private': {'label': 'Private'},
@@ -237,7 +233,6 @@ cst_subnet._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Network ACL ID', key='data.network_acl.network_acl_id'),
         SearchField.set(name='Default', key='data.default_for_az', data_type='boolean'),
         SearchField.set(name='Auto-assign Public IP', key='data.map_public_ip_on_launch', data_type='boolean'),
-        SearchField.set(name='AWS Account ID', key='data.account_id'),
     ]
 )
 
@@ -254,7 +249,7 @@ cst_rt.tags = {
 
 cst_rt._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'data.name'),
+        TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('Route Table ID', 'data.route_table_id'),
         ListDyField.data_source('Subnet associations', 'data.subnet_associations', options={
             'sub_key': 'subnet_id',
@@ -285,22 +280,18 @@ cst_rt._metadata = CloudServiceTypeMeta.set_meta(
             'sub_key': 'destination_cidr_block',
             'delimiter': '<br>',
             'is_optional': True
-        }),
-        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
-            'is_optional': True
         })
     ],
     search=[
         SearchField.set(name='Route Table ID', key='data.route_table_id'),
-        SearchField.set(name='Name', key='data.name'),
+        SearchField.set(name='Name', key='name'),
         SearchField.set(name='Associated Subnet ID', key='data.subnet_associations.subnet_id'),
         SearchField.set(name='Main', key='data.main',
                         enums={
                             'Yes': {'label': 'Yes'},
                             'No': {'label': 'No'},
                         }),
-        SearchField.set(name='VPC ID', key='data.vpc_id'),
-        SearchField.set(name='AWS Account ID', key='data.account_id'),
+        SearchField.set(name='VPC ID', key='data.vpc_id')
     ]
 )
 
@@ -317,7 +308,7 @@ cst_igw.tags = {
 
 cst_igw._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'data.name'),
+        TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('Internet Gateway ID', 'data.internet_gateway_id'),
         EnumDyField.data_source('State', 'data.state', default_state={
             'available': ['available'],
@@ -331,14 +322,11 @@ cst_igw._metadata = CloudServiceTypeMeta.set_meta(
         }),
         TextDyField.data_source('ARN', 'data.arn', options={
             'is_optional': True
-        }),
-        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
-            'is_optional': True
         })
     ],
     search=[
         SearchField.set(name='Internet Gateway ID', key='data.internet_gateway_id'),
-        SearchField.set(name='Name', key='data.name'),
+        SearchField.set(name='Name', key='name'),
         SearchField.set(name='State', key='data.state',
                         enums={
                             'available': {'label': 'Available', 'icon': {'color': 'blue.400'}},
@@ -347,8 +335,7 @@ cst_igw._metadata = CloudServiceTypeMeta.set_meta(
                             'detaching': {'label': 'Detaching', 'icon': {'color': 'yellow.500'}},
                             'detached': {'label': 'Detached', 'icon': {'color': 'grey.500'}},
                         }),
-        SearchField.set(name='VPC ID', key='data.vpc_id'),
-        SearchField.set(name='AWS Account ID', key='data.account_id'),
+        SearchField.set(name='VPC ID', key='data.vpc_id')
     ]
 )
 
@@ -364,7 +351,7 @@ cst_eoigw.tags = {
 }
 cst_eoigw._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'data.name'),
+        TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('Egress Only Internet Gateway ID', 'data.egress_only_internet_gateway_id'),
         ListDyField.data_source('State', 'data.attachments', options={
             'delimiter': '<br>',
@@ -376,14 +363,11 @@ cst_eoigw._metadata = CloudServiceTypeMeta.set_meta(
         }),
         TextDyField.data_source('ARN', 'data.arn', options={
             'is_optional': True
-        }),
-        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
-            'is_optional': True
         })
     ],
     search=[
         SearchField.set(name='Egress Only Gateway ID', key='data.egress_only_internet_gateway_id'),
-        SearchField.set(name='Name', key='data.name'),
+        SearchField.set(name='Name', key='name'),
         SearchField.set(name='State', key='data.attachments.state',
                         enums={
                             'available': {'label': 'Available', 'icon': {'color': 'blue.400'}},
@@ -392,8 +376,7 @@ cst_eoigw._metadata = CloudServiceTypeMeta.set_meta(
                             'detaching': {'label': 'Detaching', 'icon': {'color': 'yellow.500'}},
                             'detached': {'label': 'Detached', 'icon': {'color': 'grey.500'}},
                         }),
-        SearchField.set(name='VPC ID', key='data.attachments.vpc_id'),
-        SearchField.set(name='AWS Account ID', key='data.account_id'),
+        SearchField.set(name='VPC ID', key='data.attachments.vpc_id')
     ]
 )
 
@@ -409,7 +392,7 @@ cst_natgw.tags = {
 }
 cst_natgw._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'data.name'),
+        TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('NAT Gateway ID', 'data.nat_gateway_id'),
         EnumDyField.data_source('Status', 'data.state', default_state={
             'safe': ['available'],
@@ -431,7 +414,9 @@ cst_natgw._metadata = CloudServiceTypeMeta.set_meta(
         }),
         TextDyField.data_source('VPC ID', 'data.vpc_id'),
         TextDyField.data_source('Subnet', 'data.subnet_id'),
-        DateTimeDyField.data_source('Created', 'data.create_time'),
+        DateTimeDyField.data_source('Created', 'launched_at', options={
+            'is_optional': True
+        }),
         TextDyField.data_source('ARN', 'data.arn', options={
             'is_optional': True
         }),
@@ -449,9 +434,6 @@ cst_natgw._metadata = CloudServiceTypeMeta.set_meta(
             'sub_key': 'network_interface_id',
             'delimiter': '<br>',
             'is_optional': True
-        }),
-        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
-            'is_optional': True
         })
     ],
     search=[
@@ -468,9 +450,7 @@ cst_natgw._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Private IP', key='data.nat_gateway_addresses.private_ip'),
         SearchField.set(name='Network Interface ID', key='data.nat_gateway_addresses.network_interface_id'),
         SearchField.set(name='Subnet ID', key='data.subnet_id'),
-        SearchField.set(name='Created Time', key='data.create_time', data_type='datetime'),
-        SearchField.set(name='VPC ID', key='data.vpc_id'),
-        SearchField.set(name='AWS Account ID', key='data.account_id'),
+        SearchField.set(name='VPC ID', key='data.vpc_id')
     ]
 )
 
@@ -486,7 +466,7 @@ cst_peerconn.tags = {
 }
 cst_peerconn._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'data.name'),
+        TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('Peering Connection ID', 'data.vpc_peering_connection_id'),
         EnumDyField.data_source('Status', 'data.status.code', default_state={
             'safe': ['active'],
@@ -502,14 +482,11 @@ cst_peerconn._metadata = CloudServiceTypeMeta.set_meta(
         TextDyField.data_source('Accepter Owner', 'data.accepter_vpc_info.owner_id'),
         TextDyField.data_source('ARN', 'data.arn', options={
             'is_optional': True
-        }),
-        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
-            'is_optional': True
         })
     ],
     search=[
         SearchField.set(name='Peering Connection ID', key='data.vpc_peering_connection_id'),
-        SearchField.set(name='Name', key='data.name'),
+        SearchField.set(name='Name', key='name'),
         SearchField.set(name='ARN', key='data.arn'),
         SearchField.set(name='Status', key='data.status.code',
                         enums={
@@ -526,8 +503,7 @@ cst_peerconn._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Requester VPC ID', key='data.requester_vpc_info.vpc_id'),
         SearchField.set(name='Accepter VPC Id', key='data.accepter_vpc_info.vpc_id'),
 
-        SearchField.set(name='Expiration Time', key='data.expiration_time', data_type='datetime'),
-        SearchField.set(name='AWS Account ID', key='data.account_id'),
+        SearchField.set(name='Expiration Time', key='data.expiration_time', data_type='datetime')
     ]
 )
 
@@ -543,7 +519,7 @@ cst_nacl.tags = {
 }
 cst_nacl._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'data.name'),
+        TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('Network ACL ID', 'data.network_acl_id'),
         EnumDyField.data_source('Default', 'data.is_default', default_badge={
             'indigo.500': ['true'], 'coral.600': ['false']
@@ -559,14 +535,11 @@ cst_nacl._metadata = CloudServiceTypeMeta.set_meta(
             'sub_key': 'subnet_id',
             'delimiter': '<br>',
             'is_optional': True
-        }),
-        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
-            'is_optional': True
         })
     ],
     search=[
         SearchField.set(name='Network ACL ID', key='data.network_acl_id'),
-        SearchField.set(name='Name', key='data.name'),
+        SearchField.set(name='Name', key='name'),
         SearchField.set(name='Default', key='data.is_default', data_type='boolean'),
         SearchField.set(name='VPC ID', key='data.vpc_id'),
         SearchField.set(name='Inbound Protocol', key='data.inbound_entries.protocol'),
@@ -586,8 +559,7 @@ cst_nacl._metadata = CloudServiceTypeMeta.set_meta(
                         enums={
                             'allow': {'label': 'Allow'},
                             'deny': {'label': 'Deny'},
-                        }),
-        SearchField.set(name='AWS Account ID', key='data.account_id'),
+                        })
     ]
 )
 
@@ -602,7 +574,7 @@ cst_endpoint.tags = {
 }
 cst_endpoint._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'data.name'),
+        TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('Endpoint ID', 'data.vpc_endpoint_id'),
         EnumDyField.data_source('Status', 'data.state', default_state={
             'safe': ['available'],
@@ -612,8 +584,10 @@ cst_endpoint._metadata = CloudServiceTypeMeta.set_meta(
         }),
         TextDyField.data_source('VPC ID', 'data.vpc_id'),
         TextDyField.data_source('Service Name', 'data.service_name'),
-        TextDyField.data_source('Endpoint Type', 'data.vpc_endpoint_type'),
-        DateTimeDyField.data_source('Creation Time', 'data.creation_timestamp'),
+        TextDyField.data_source('Endpoint Type', 'type'),
+        DateTimeDyField.data_source('Creation Time', 'launched_at', options={
+            'is_optional': True
+        }),
         TextDyField.data_source('ARN', 'data.arn', options={
             'is_optional': True
         }),
@@ -641,14 +615,11 @@ cst_endpoint._metadata = CloudServiceTypeMeta.set_meta(
             'sub_key': 'hosted_zone_id',
             'delimiter': '<br>',
             'is_optional': True
-        }),
-        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
-            'is_optional': True
         })
     ],
     search=[
         SearchField.set(name='Endpoint ID', key='data.vpc_endpoint_id'),
-        SearchField.set(name='Name', key='data.name'),
+        SearchField.set(name='Name', key='name'),
         SearchField.set(name='Status', key='data.state',
                         enums={
                             'available': {'label': 'Available', 'icon': {'color': 'green.500'}},
@@ -662,14 +633,13 @@ cst_endpoint._metadata = CloudServiceTypeMeta.set_meta(
                         }),
         SearchField.set(name='VPC ID', key='data.vpc_id'),
         SearchField.set(name='Service Name', key='data.service_name'),
-        SearchField.set(name='Endpoint Type', key='data.vpc_endpoint_type',
+        SearchField.set(name='Type', key='type',
                         enums={
                             'Interface': {'label': 'Interface'},
                             'Gateway': {'label': 'Gateway'}
                         }),
         SearchField.set(name='DNS Name', key='data.dns_entries.dns_name'),
-        SearchField.set(name='Private DNS Names enabled', key='data.private_dns_enabled', data_type='boolean'),
-        SearchField.set(name='AWS Account ID', key='data.account_id'),
+        SearchField.set(name='Private DNS Names enabled', key='data.private_dns_enabled', data_type='boolean')
     ]
 )
 
@@ -684,7 +654,7 @@ cst_transitgw.tags = {
 }
 cst_transitgw._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'data.name'),
+        TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('Transit Gateway ID', 'data.transit_gateway_id'),
         TextDyField.data_source('Owner ID', 'data.owner_id'),
         EnumDyField.data_source('State', 'data.state', default_state={
@@ -734,14 +704,11 @@ cst_transitgw._metadata = CloudServiceTypeMeta.set_meta(
             'sub_key': 'customer_gateway_id',
             'delimiter': '<br>',
             'is_optional': True
-        }),
-        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
-            'is_optional': True
         })
     ],
     search=[
         SearchField.set(name='Transit Gateway ID', key='data.transit_gateway_id'),
-        SearchField.set(name='Name', key='data.name'),
+        SearchField.set(name='Name', key='name'),
         SearchField.set(name='State', key='data.state',
                         enums={
                             'available': {'label': 'Available', 'icon': {'color': 'green.500'}},
@@ -756,7 +723,6 @@ cst_transitgw._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='VPN Connection Name', key='data.vpn_connections.name'),
         SearchField.set(name='Customer Gateway ID', key='data.vpn_connections.customer_gateway_id'),
         SearchField.set(name='VPN Gateway ID', key='data.vpn_connections.vpn_gateway_id'),
-        SearchField.set(name='AWS Account ID', key='data.account_id'),
     ]
 )
 
@@ -771,14 +737,14 @@ cst_customgw.tags = {
 }
 cst_customgw._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'data.name'),
+        TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('ID', 'data.customer_gateway_id'),
         EnumDyField.data_source('State', 'data.state', default_state={
             'safe': ['available'],
             'warning': ['pending', 'deleting'],
             'disable': ['deleted']
         }),
-        TextDyField.data_source('Type', 'data.type'),
+        TextDyField.data_source('Type', 'type'),
         TextDyField.data_source('IP Address', 'data.ip_address'),
         TextDyField.data_source('BGP ASN', 'data.bgp_asn'),
         TextDyField.data_source('Certificate ARN', 'data.certificate_arn', options={
@@ -806,14 +772,11 @@ cst_customgw._metadata = CloudServiceTypeMeta.set_meta(
         TextDyField.data_source('VPN Connection Transit Gateway ID', 'data.vpn_connection.transit_gateway_id',
                                 options={
                                     'is_optional': True
-                                }),
-        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
-            'is_optional': True
-        })
+                                })
     ],
     search=[
         SearchField.set(name='Customer Gateway ID', key='data.customer_gateway_id'),
-        SearchField.set(name='Name', key='data.name'),
+        SearchField.set(name='Name', key='name'),
         SearchField.set(name='State', key='data.state',
                         enums={
                             'available': {'label': 'Available', 'icon': {'color': 'green.500'}},
@@ -821,7 +784,7 @@ cst_customgw._metadata = CloudServiceTypeMeta.set_meta(
                             'deleting': {'label': 'Deleting', 'icon': {'color': 'yellow.500'}},
                             'deleted': {'label': 'Deleted', 'icon': {'color': 'grey.500'}},
                         }),
-        SearchField.set(name='Type', key='data.type'),
+        SearchField.set(name='Type', key='type'),
         SearchField.set(name='IP Address', key='data.ip_address'),
         SearchField.set(name='BGP ASN', key='data.bgp_asn'),
         SearchField.set(name='Device', key='data.device_name'),
@@ -833,8 +796,7 @@ cst_customgw._metadata = CloudServiceTypeMeta.set_meta(
                             'pending': {'label': 'Pending', 'icon': {'color': 'yellow.500'}},
                             'deleting': {'label': 'Deleting', 'icon': {'color': 'yellow.500'}},
                             'deleted': {'label': 'Deleted', 'icon': {'color': 'grey.500'}},
-                        }),
-        SearchField.set(name='AWS Account ID', key='data.account_id'),
+                        })
     ]
 )
 
@@ -849,7 +811,7 @@ cst_vpnconn.tags = {
 }
 cst_vpnconn._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'data.name'),
+        TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('VPN ID', 'data.vpn_connection_id'),
         EnumDyField.data_source('State', 'data.state', default_state={
             'safe': ['available'],
@@ -860,7 +822,7 @@ cst_vpnconn._metadata = CloudServiceTypeMeta.set_meta(
         TextDyField.data_source('Transit Gateway', 'data.transit_gateway_id'),
         TextDyField.data_source('Customer Gateway', 'data.customer_gateway_id'),
         TextDyField.data_source('Customer Gateway Address', 'data.customer_gateway_address'),
-        TextDyField.data_source('Type', 'data.type'),
+        TextDyField.data_source('Type', 'type'),
         EnumDyField.data_source('Category', 'data.category', default_badge={
             'indigo.500': ['VPN'], 'coral.500': ['VPN-Classic']
         }),
@@ -881,14 +843,11 @@ cst_vpnconn._metadata = CloudServiceTypeMeta.set_meta(
             'sub_key': 'destination_cidr_block',
             'delimiter': '<br>',
             'is_optional': True
-        }),
-        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
-            'is_optional': True
         })
     ],
     search=[
         SearchField.set(name='VPN Connection ID', key='data.vpn_connection_id'),
-        SearchField.set(name='Name', key='data.name'),
+        SearchField.set(name='Name', key='name'),
         SearchField.set(name='State', key='data.state',
                         enums={
                             'available': {'label': 'Available', 'icon': {'color': 'green.500'}},
@@ -899,7 +858,7 @@ cst_vpnconn._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Virtual Private Gateway ID', key='data.vpn_gateway_id'),
         SearchField.set(name='Customer Gateway ID', key='data.customer_gateway_id'),
         SearchField.set(name='Transit Gateway ID', key='data.transit_gateway_id'),
-        SearchField.set(name='Type', key='data.type'),
+        SearchField.set(name='Type', key='type'),
         SearchField.set(name='Category', key='data.category',
                         enums={
                             'VPN': {'label': 'VPN'},
@@ -910,8 +869,7 @@ cst_vpnconn._metadata = CloudServiceTypeMeta.set_meta(
                         enums={
                             'UP': {'label': 'UP'},
                             'DOWN': {'label': 'DOWN'},
-                        }),
-        SearchField.set(name='AWS Account ID', key='data.account_id'),
+                        })
     ]
 )
 
@@ -926,10 +884,10 @@ cst_vpngw.tags = {
 }
 cst_vpngw._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'data.name'),
+        TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('ID', 'data.vpn_gateway_id'),
         TextDyField.data_source('State', 'data.state'),
-        TextDyField.data_source('Type', 'data.type'),
+        TextDyField.data_source('Type', 'type'),
         ListDyField.data_source('VPC', 'data.vpc_attachments', options={
             'sub_key': 'vpc_id',
             'delimiter': '<br>'
@@ -943,14 +901,11 @@ cst_vpngw._metadata = CloudServiceTypeMeta.set_meta(
         }),
         TextDyField.data_source('VPN Connection Name', 'data.vpn_connection.name', options={
             'is_optional': True
-        }),
-        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
-            'is_optional': True
         })
     ],
     search=[
         SearchField.set(name='Virtual Private Gateway ID', key='data.vpn_gateway_id'),
-        SearchField.set(name='Name', key='data.name'),
+        SearchField.set(name='Name', key='name'),
         SearchField.set(name='State', key='data.state',
                         enums={
                             'available': {'label': 'Available', 'icon': {'color': 'green.500'}},
@@ -958,7 +913,7 @@ cst_vpngw._metadata = CloudServiceTypeMeta.set_meta(
                             'deleting': {'label': 'Deleting', 'icon': {'color': 'yellow.500'}},
                             'deleted': {'label': 'Deleted', 'icon': {'color': 'grey.500'}},
                         }),
-        SearchField.set(name='Type', key='data.type'),
+        SearchField.set(name='Type', key='type'),
         SearchField.set(name='VPC ID', key='data.vpc_attachments.vpc_id'),
         SearchField.set(name='ASN', key='data.amazon_side_asn'),
         SearchField.set(name='VPN Connection ID', key='data.vpn_connection.vpn_connection_id'),
@@ -969,8 +924,7 @@ cst_vpngw._metadata = CloudServiceTypeMeta.set_meta(
                             'pending': {'label': 'Pending', 'icon': {'color': 'yellow.500'}},
                             'deleting': {'label': 'Deleting', 'icon': {'color': 'yellow.500'}},
                             'deleted': {'label': 'Deleted', 'icon': {'color': 'grey.500'}},
-                        }),
-        SearchField.set(name='AWS Account ID', key='data.account_id'),
+                        })
     ]
 )
 

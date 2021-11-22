@@ -57,9 +57,14 @@ class SecretsManagerConnector(SchematicAWSConnector):
                     raw['region_name'] = region_name
                     raw['account_id'] = self.account_id
 
-                    result = Secret(raw, strict=False)
-                    yield result, result.name
+                    secret_vo = Secret(raw, strict=False)
+                    yield {
+                        'data': secret_vo,
+                        'name': secret_vo.name,
+                        'account': self.account_id
+                    }
+                    
                 except Exception as e:
                     resource_id = raw.get('ARN', '')
                     error_resource_response = self.generate_error(region_name, resource_id, e)
-                    yield error_resource_response, ''
+                    yield {'data': error_resource_response}

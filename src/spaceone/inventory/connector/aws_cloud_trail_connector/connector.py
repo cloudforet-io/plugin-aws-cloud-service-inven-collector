@@ -62,14 +62,19 @@ class CloudTrailConnector(SchematicAWSConnector):
                         'tags': self._match_tags(raw.get('TrailARN'), tags)
                     })
 
-                    res = Trail(raw, strict=False)
+                    trail_vo = Trail(raw, strict=False)
                     self.trails.append(raw['TrailARN'])
-                    yield res, res.name
+
+                    yield {
+                        'data': trail_vo,
+                        'name': trail_vo.name,
+                        'account': self.account_id
+                    }
 
             except Exception as e:
                 resource_id = raw.get('TrailARN', '')
                 error_resource_response = self.generate_error(region_name, resource_id, e)
-                yield error_resource_response, ''
+                yield {'data': error_resource_response}
 
     def _get_event_selector(self, trail_name):
         response = self.client.get_event_selectors(TrailName=trail_name)

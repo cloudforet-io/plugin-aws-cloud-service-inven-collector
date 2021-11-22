@@ -16,7 +16,7 @@ cst_eks_cluster.tags = {
 
 cst_eks_cluster._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'data.name'),
+        TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('Version', 'data.version'),
         EnumDyField.data_source('Status', 'data.status', default_state={
             'safe': ['ACTIVE'],
@@ -73,13 +73,10 @@ cst_eks_cluster._metadata = CloudServiceTypeMeta.set_meta(
         }),
         TextDyField.data_source('Platform Version', 'data.platform_version', options={
             'is_optional': True
-        }),
-        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
-            'is_optional': True
         })
     ],
     search=[
-        SearchField.set(name='Cluster Name', key='data.name'),
+        SearchField.set(name='Cluster Name', key='name'),
         SearchField.set(name='ARN', key='data.arn'),
         SearchField.set(name='Status', key='data.status',
                         enums={
@@ -90,9 +87,7 @@ cst_eks_cluster._metadata = CloudServiceTypeMeta.set_meta(
                             'FAILED': {'label': 'FAILED', 'icon': {'color': 'red.500'}},
                         }),
         SearchField.set(name='Cluster Version', key='data.version'),
-        SearchField.set(name='Cluster Endpoint', key='data.endpoint'),
-        SearchField.set(name='Created Time', key='data.created_at', data_type='datetime'),
-        SearchField.set(name='AWS Account ID', key='data.account_id'),
+        SearchField.set(name='Cluster Endpoint', key='data.endpoint')
     ]
 )
 
@@ -108,7 +103,7 @@ cst_eks_nodegrp.tags = {
 
 cst_eks_nodegrp._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Node Group Name', 'data.nodegroup_name'),
+        TextDyField.data_source('Node Group Name', 'name'),
         TextDyField.data_source('EKS Cluster Name', 'data.cluster_name'),
         TextDyField.data_source('Version', 'data.version'),
         EnumDyField.data_source('Status', 'data.status', default_state={
@@ -166,13 +161,9 @@ cst_eks_nodegrp._metadata = CloudServiceTypeMeta.set_meta(
         }),
         TextDyField.data_source('Release Version', 'data.release_version', options={
             'is_optional': True
-        }),
-        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
-            'is_optional': True
         })
     ],
     search=[
-        SearchField.set(name='Node Group Name', key='data.nodegroup_name'),
         SearchField.set(name='Node Group ARN', key='data.nodegroup_arn'),
         SearchField.set(name='Status', key='data.status'),
         SearchField.set(name='EKS Cluster Name', key='data.cluster_name'),
@@ -182,7 +173,6 @@ cst_eks_nodegrp._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Subnet', key='data.subnets'),
         SearchField.set(name='Node Role', key='data.node_role'),
         SearchField.set(name='Disk Size', key='data.disk_size', data_type='integer'),
-        SearchField.set(name='Creation Time', key='data.created_at', data_type='datetime'),
         SearchField.set(name='Modification Time', key='data.modified_at', data_type='datetime'),
     ]
 )

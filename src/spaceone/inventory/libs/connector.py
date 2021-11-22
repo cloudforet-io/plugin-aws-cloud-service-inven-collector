@@ -107,7 +107,6 @@ class SchematicAWSConnector(AWSConnector):
     cloud_service_type = ''
 
     def get_resources(self) -> List[CloudServiceResponse]:
-        yield None
         raise NotImplementedError()
 
     def collect_data(self):
@@ -122,30 +121,40 @@ class SchematicAWSConnector(AWSConnector):
                 'kwargs': {}
         }
         '''
-
         resources = []
+        additional_data = ['name', 'type', 'size', 'avaiablity_zone', 'launched_at']
 
-        for data, name in collect_resource_info['request_method'](region_name, **collect_resource_info.get('kwargs', {})):
-            if getattr(data, 'resource_type', None) and data.resource_type == 'inventory.ErrorResource':
-                # Error Resource
-                resources.append(data)
-            else:
-                # Cloud Service Resource
-                if getattr(data, 'set_cloudwatch', None):
-                    data.cloudwatch = CloudWatchModel(data.set_cloudwatch(region_name))
-
-                resources.append(collect_resource_info['response_schema']({
-                    'resource': collect_resource_info['resource'](
-                        {
-                            'name': name,
-                            'data': data,
-                            'tags': self.get_resource_tags(getattr(data, 'tags', [])),
-                            'region_code': region_name,
-                            'reference': ReferenceModel(data.reference(region_name))
-                        }
-                    )
-                }))
-                
+        try:
+            for collected_dict in collect_resource_info['request_method'](region_name, **collect_resource_info.get('kwargs', {})):
+                data = collected_dict['data']
+    
+                if getattr(data, 'resource_type', None) and data.resource_type == 'inventory.ErrorResource':
+                    # Error Resource
+                    resources.append(data)
+                else:
+                    # Cloud Service Resource
+                    if getattr(data, 'set_cloudwatch', None):
+                        data.cloudwatch = CloudWatchModel(data.set_cloudwatch(region_name))
+    
+                    resource_dict = {
+                        'data': data,
+                        'account': collected_dict.get('account'),
+                        'tags': self.get_resource_tags(getattr(data, 'tags', [])),
+                        'region_code': region_name,
+                        'reference': ReferenceModel(data.reference(region_name))
+                    }
+    
+                    for add_field in additional_data:
+                        if add_field in collected_dict:
+                            resource_dict.update({add_field: collected_dict[add_field]})
+    
+                    resources.append(collect_resource_info['response_schema'](
+                        {'resource': collect_resource_info['resource'](resource_dict)}))
+        except Exception as e:
+            resource_id = ''
+            error_resource_response = self.generate_error(region_name, resource_id, e)
+            resources.append(error_resource_response)
+            
         return resources
 
     def get_resource_tags(self, tags_obj):

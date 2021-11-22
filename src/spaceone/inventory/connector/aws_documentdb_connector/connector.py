@@ -97,12 +97,19 @@ class DocumentDBConnector(SchematicAWSConnector):
                     if parameter_group := self._match_parameter_group(raw.get('DBClusterParameterGroup')):
                         raw.update({'parameter_group': parameter_group})
 
-                    res = Cluster(raw, strict=False)
-                    yield res, res.db_cluster_identifier
+                    cluster_vo = Cluster(raw, strict=False)
+                    yield {
+                        'data': cluster_vo,
+                        'name': cluster_vo.db_cluster_identifier,
+                        'type': cluster_vo.engine_version,
+                        'size': cluster_vo.instance_count,
+                        'account': self.account_id
+                    }
+
                 except Exception as e:
                     resource_id = raw.get('DBClusterArn', '')
                     error_resource_response = self.generate_error(region_name, resource_id, e)
-                    yield error_resource_response, ''
+                    yield {'data': error_resource_response}
 
     def request_subnet_group_data(self, region_name) -> List[SubnetGroup]:
         self.cloud_service_type = 'SubnetGroup'
@@ -121,12 +128,17 @@ class DocumentDBConnector(SchematicAWSConnector):
                         'account_id': self.account_id,
                         'tags': self.request_tags(raw['DBSubnetGroupArn'])
                     })
-                    res = SubnetGroup(raw, strict=False)
-                    yield res, res.db_subnet_group_name
+                    subnet_grp_vo = SubnetGroup(raw, strict=False)
+                    yield {
+                        'data': subnet_grp_vo,
+                        'name': subnet_grp_vo.db_subnet_group_name,
+                        'account': self.account_id
+                    }
+
                 except Exception as e:
                     resource_id = raw.get('DBSubnetGroupName', '')
                     error_resource_response = self.generate_error(region_name, resource_id, e)
-                    yield error_resource_response, ''
+                    yield {'data': error_resource_response}
 
     def request_parameter_group_data(self, region_name) -> List[ParameterGroup]:
         self.cloud_service_type = 'ParameterGroup'
@@ -140,13 +152,18 @@ class DocumentDBConnector(SchematicAWSConnector):
                     'parameters': self.request_parameter_data(pg_data['DBClusterParameterGroupName']),
                     'tags': self.request_tags(pg_data['DBClusterParameterGroupArn'])
                 })
-                param_group = ParameterGroup(pg_data, strict=False)
-                yield param_group, param_group.db_cluster_parameter_group_name
+                param_group_vo = ParameterGroup(pg_data, strict=False)
+                yield {
+                    'data': param_group_vo,
+                    'name': param_group_vo.db_cluster_parameter_group_name,
+                    'type': param_group_vo.db_parameter_group_family,
+                    'account': self.account_id
+                }
 
             except Exception as e:
                 resource_id = pg_data.get('DBClusterParameterGroupName', '')
                 error_resource_response = self.generate_error(region_name, resource_id, e)
-                yield error_resource_response, ''
+                yield {'data': error_resource_response}
 
     def request_parameter_data(self, pg_name) -> List[Parameter]:
         res_params = self.client.describe_db_cluster_parameters(DBClusterParameterGroupName=pg_name)

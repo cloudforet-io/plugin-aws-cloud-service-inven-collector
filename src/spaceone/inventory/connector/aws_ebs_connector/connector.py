@@ -79,11 +79,21 @@ class EBSConnector(SchematicAWSConnector):
                             'kms_key_id': self._get_kms_key_id(kms_arn)
                         })
 
-                    yield Volume(raw, strict=False), raw.get('name', '')
+                    volume_vo = Volume(raw, strict=False)
+
+                    yield {
+                        'data': volume_vo,
+                        'name': volume_vo.name,
+                        'size': int(volume_vo.size),
+                        'type': volume_vo.volume_type,
+                        'launched_at': volume_vo.create_time,
+                        'account': self.account_id
+                    }
+
                 except Exception as e:
                     resource_id = raw.get('VolumeId', '')
                     error_resource_response = self.generate_error(region_name, resource_id, e)
-                    yield error_resource_response, ''
+                    yield {'data': error_resource_response}
 
     def request_snapshot_data(self, region_name) -> List[Snapshot]:
         self.cloud_service_type = 'Snapshot'
@@ -116,11 +126,19 @@ class EBSConnector(SchematicAWSConnector):
                             'kms_key_id': self._get_kms_key_id(kms_arn)
                         })
 
-                    yield Snapshot(raw, strict=False), raw.get('name', '')
+                    snapshot_vo = Snapshot(raw, strict=False)
+                    yield {
+                        'data': snapshot_vo,
+                        'name': snapshot_vo.name,
+                        'size': int(snapshot_vo.volume_size),
+                        'launched_at': snapshot_vo.start_time,
+                        'account': self.account_id
+                    }
+
                 except Exception as e:
                     resource_id = raw.get('SnapshotId', '')
                     error_resource_response = self.generate_error(region_name, resource_id, e)
-                    yield error_resource_response, ''
+                    yield {'data': error_resource_response}
 
     @staticmethod
     def _get_name_from_tags(tags):

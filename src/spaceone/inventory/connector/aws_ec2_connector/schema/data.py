@@ -47,9 +47,10 @@ class LaunchPermission(Model):
 
 
 class Image(Model):
+    image_id = StringType(deserialize_from="ImageId")
+    name = StringType(deserialize_from="Name")
     architecture = StringType(deserialize_from="Architecture", choices=("i386", "x86_64", "arm64"))
     creation_date = StringType(deserialize_from="CreationDate")
-    image_id = StringType(deserialize_from="ImageId")
     image_location = StringType(deserialize_from="ImageLocation")
     image_type = StringType(deserialize_from="ImageType", choices=("machine", "kernel", "ramdisk"))
     public = BooleanType(deserialize_from="Public")
@@ -67,7 +68,6 @@ class Image(Model):
     ena_support = BooleanType(deserialize_from="EnaSupport")
     hypervisor = StringType(deserialize_from="Hypervisor", choices=("ovm", "xen"))
     image_owner_alias = StringType(deserialize_from="ImageOwnerAlias")
-    name = StringType(deserialize_from="Name")
     root_device_name = StringType(deserialize_from="RootDeviceName")
     root_device_type = StringType(deserialize_from="RootDeviceType", choices=("ebs", "instance-store"))
     sriov_net_support = StringType(deserialize_from="SriovNetSupport")

@@ -71,12 +71,17 @@ class SNSConnector(SchematicAWSConnector):
                         if kms is not None:
                             topic['kms'] = kms
 
-                    res = Topic(topic, strict=False)
-                    yield res, res.name
+                    topic_vo = Topic(topic, strict=False)
+                    yield {
+                        'data': topic_vo,
+                        'name': topic_vo.name,
+                        'account': self.account_id
+                    }
+                    
                 except Exception as e:
                     resource_id = raw.get('TopicArn', '')
                     error_resource_response = self.generate_error(region_name, resource_id, e)
-                    yield error_resource_response, ''
+                    yield {'data': error_resource_response}
 
     @property
     def kms_client(self):

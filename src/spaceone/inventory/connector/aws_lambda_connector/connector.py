@@ -132,11 +132,17 @@ class LambdaConnector(SchematicAWSConnector):
                             EnvironmentVariable({'key': k, 'value': v}) for k, v in env.get('Variables', {}).items()
                         ]
 
-                    yield func, func.name
+                    yield {
+                        'data': func,
+                        'name': func.name,
+                        'size': func.code_size,
+                        'account': self.account_id
+                    }
+                    
                 except Exception as e:
                     resource_id = raw.get('FunctionArn', '')
                     error_resource_response = self.generate_error(region_name, resource_id, e)
-                    yield error_resource_response, ''
+                    yield {'data': error_resource_response}
 
     def request_layer_data(self, region_name) -> List[Layer]:
         cloud_service_group = 'Lambda'
@@ -164,8 +170,15 @@ class LambdaConnector(SchematicAWSConnector):
                         'account_id': self.account_id
                     })
 
-                    yield Layer(raw, strict=False), raw.get('LayerName', '')
+                    layer_vo = Layer(raw, strict=False)
+                    yield {
+                        'data': layer_vo,
+                        'name': layer_vo.layer_name,
+                        'launched_at': layer_vo.latest_matching_version.created_date,
+                        'account': self.account_id
+                    }
+                    
                 except Exception as e:
                     resource_id = raw.get('LayerArn', '')
                     error_resource_response = self.generate_error(region_name, resource_id, e)
-                    yield error_resource_response, ''
+                    yield {'data': error_resource_response}

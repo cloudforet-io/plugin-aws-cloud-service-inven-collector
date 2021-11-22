@@ -138,8 +138,6 @@ class AutoScalingPolicy(Model):
 '''
 LAUNCH CONFIGURATION
 '''
-
-
 class Ebs(Model):
     snapshot_id = StringType(deserialize_from="SnapshotId", serialize_when_none=False)
     volume_size = IntType(deserialize_from="VolumeSize", serialize_when_none=False)
@@ -197,8 +195,6 @@ class LaunchConfiguration(Model):
 '''
 LAUNCH TEMPLATE
 '''
-
-
 class LicenseSpecification(Model):
     license_configuration_arn = StringType(deserialize_from="LicenseConfigurationArn", serialize_when_none=False)
 
@@ -426,7 +422,6 @@ class AutoScalingGroup(Model):
     scheduled_actions = ListType(ModelType(ScheduledAction), default=[])
     lifecycle_hooks = ListType(ModelType(LifecycleHook), default=[])
     notification_configurations = ListType(ModelType(NotificationConfiguration), default=[])
-    # launch_template = ModelType(LaunchTemplate, deserialize_from="LaunchTemplate", serialize_when_none=False)
     launch_template = ModelType(LaunchTemplateDetail, serialize_when_none=False)
     display_launch_configuration_template = StringType(default="")
     mixed_instances_policy = ModelType(MixedInstancesPolicy,

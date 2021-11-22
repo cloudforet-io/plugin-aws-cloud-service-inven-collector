@@ -16,7 +16,7 @@ cst_cluster.tags = {
 }
 cst_cluster._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Cluster', 'data.db_cluster_identifier'),
+        TextDyField.data_source('Cluster', 'name'),
         EnumDyField.data_source('Status', 'data.status', default_state={
             'safe': ['available'],
             'warning': ['maintenance', 'backing-up', 'creating', 'migrating', 'modifying', 'renaming',
@@ -112,13 +112,10 @@ cst_cluster._metadata = CloudServiceTypeMeta.set_meta(
             'delimiter': '<br>',
             'sub_key': 'vpc_security_group_id',
             'is_optional': True
-        }),
-        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
-            'is_optional': True
-        }),
+        })
     ],
     search=[
-        SearchField.set(name='Cluster', key='data.db_cluster_identifier'),
+        SearchField.set(name='Cluster Identifier', key='data.db_cluster_identifier'),
         SearchField.set(name='ARN', key='data.db_cluster_arn'),
         SearchField.set(name='Status', key='data.status'),
         SearchField.set(name='Engine', key='data.engine'),
@@ -133,8 +130,6 @@ cst_cluster._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Instance', key='data.instances.db_instance_identifier'),
         SearchField.set(name='Instance Type', key='data.instances.db_instance_class'),
         SearchField.set(name='VPC ID', key='data.instances.db_subnet_group.vpc_id'),
-        SearchField.set(name='AWS Account ID', key='data.account_id'),
-        SearchField.set(name='Creation Time', key='data.cluster_create_time', data_type='datetime'),
     ]
 )
 
@@ -150,7 +145,7 @@ cst_subnet_group.tags = {
 }
 cst_subnet_group._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'data.db_subnet_group_name'),
+        TextDyField.data_source('Name', 'name'),
         EnumDyField.data_source('Status', 'data.subnet_group_status', default_state={
             'safe': ['Complete']
         }),
@@ -163,18 +158,13 @@ cst_subnet_group._metadata = CloudServiceTypeMeta.set_meta(
             'delimiter': '<br>',
             'sub_key': 'subnet_identifier',
             'is_optional': True
-        }),
-        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
-            'is_optional': True
         })
     ],
     search=[
-        SearchField.set(name='Name', key='data.db_subnet_group_name'),
         SearchField.set(name='ARN', key='data.db_subnet_group_arn'),
         SearchField.set(name='Status', key='data.subnet_group_status'),
         SearchField.set(name='Subnet ID', key='data.subnets.subnet_identifier'),
         SearchField.set(name='Availability Zone', key='data.subnets.subnet_availability_zone'),
-        SearchField.set(name='AWS Account ID', key='data.account_id'),
     ]
 )
 
@@ -190,22 +180,17 @@ cst_parameter_group.tags = {
 }
 cst_parameter_group._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'data.db_cluster_parameter_group_name'),
+        TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('Family', 'data.db_parameter_group_family'),
         TextDyField.data_source('Description', 'data.description'),
         TextDyField.data_source('Parameter Group ARN', 'data.db_cluster_parameter_group_arn', options={
             'is_optional': True
-        }),
-        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
-            'is_optional': True
         })
     ],
     search=[
-        SearchField.set(name='Name', key='data.db_cluster_parameter_group_name'),
         SearchField.set(name='ARN', key='data.db_cluster_parameter_group_arn'),
         SearchField.set(name='Family', key='data.db_parameter_group_family'),
         SearchField.set(name='Region', key='data.region_name'),
-        SearchField.set(name='AWS Account ID', key='data.account_id'),
     ]
 )
 

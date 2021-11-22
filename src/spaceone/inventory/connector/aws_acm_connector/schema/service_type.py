@@ -14,7 +14,7 @@ cst_certi.tags = {
 
 cst_certi._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Domain Name', 'data.domain_name'),
+        TextDyField.data_source('Domain Name', 'name'),
         ListDyField.data_source('Additional Names', 'data.additional_names_display', options={
             "delimiter": "<br>"
         }),
@@ -23,7 +23,7 @@ cst_certi._metadata = CloudServiceTypeMeta.set_meta(
             'warning': ['PENDING_VALIDATION', 'INACTIVE', 'VALIDATION_TIMED_OUT', 'REVOKED'],
             'alert': ['EXPIRED', 'FAILED']
         }),
-        TextDyField.data_source('Type', 'data.type_display'),
+        TextDyField.data_source('Type', 'type'),
         TextDyField.data_source('In use?', 'data.in_use_display'),
         TextDyField.data_source('Renewal Eligibility', 'data.renewal_eligibility_display'),
         # For Dynamic Table
@@ -48,19 +48,13 @@ cst_certi._metadata = CloudServiceTypeMeta.set_meta(
         TextDyField.data_source('Key Algorithm', 'data.key_algorithm', options={
             'is_optional': True
         }),
-        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
-            'is_optional': True
-        })
     ],
     search=[
-        SearchField.set(name='Domain Name', key='data.domain_name'),
         SearchField.set(name='ARN', key='data.certificate_arn'),
         SearchField.set(name='Status', key='data.status'),
-        SearchField.set(name='Type', key='data.type'),
         SearchField.set(name='In use?', key='data.in_use_display'),
         SearchField.set(name='Renewal Eligibility', key='data.renewal_eligibility'),
         SearchField.set(name='Associated Resources', key='data.in_use_by'),
-        SearchField.set(name='AWS Account ID', key='data.account_id'),
     ]
 )
 

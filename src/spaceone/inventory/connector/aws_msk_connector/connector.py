@@ -70,12 +70,18 @@ class MSKConnector(SchematicAWSConnector):
                         'cluster_operation_info': self.get_operation_cluster(raw.get('ClusterArn'))
                     })
 
-                    res = Cluster(raw, strict=False)
-                    yield res, res.cluster_name
+                    cluster_vo = Cluster(raw, strict=False)
+                    yield {
+                        'data': cluster_vo,
+                        'name': cluster_vo.cluster_name,
+                        'launched_at': cluster_vo.creation_time,
+                        'account': self.account_id
+                    }
+                    
                 except Exception as e:
                     resource_id = raw.get('ClusterArn', '')
                     error_resource_response = self.generate_error(region_name, resource_id, e)
-                    yield error_resource_response, ''
+                    yield {'data': error_resource_response}
 
     def request_configuration_data(self, region_name) -> List[Configuration]:
         cloud_service_group = 'MSK'
@@ -96,12 +102,17 @@ class MSKConnector(SchematicAWSConnector):
                     raw.update({
                         'revisions_configurations': self.get_revisions(raw.get('Arn'))
                     })
-                    res = Configuration(raw, strict=False)
-                    yield res, res.name
+                    configuration_vo = Configuration(raw, strict=False)
+                    yield {
+                        'data': configuration_vo,
+                        'name': configuration_vo.name,
+                        'account': self.account_id
+                    }
+                    
                 except Exception as e:
                     resource_id = raw.get('Arn', '')
                     error_resource_response = self.generate_error(region_name, resource_id, e)
-                    yield error_resource_response, ''
+                    yield {'data': error_resource_response}
 
     def get_nodes(self, arn):
         node_response = self.client.list_nodes(ClusterArn=arn)

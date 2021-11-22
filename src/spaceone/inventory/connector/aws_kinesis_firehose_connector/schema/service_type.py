@@ -16,7 +16,7 @@ cst_firehose.tags = {
 
 cst_firehose._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source("Name", "data.delivery_stream_name"),
+        TextDyField.data_source("Name", "name"),
         EnumDyField.data_source(
             "Status",
             "data.delivery_stream_status",
@@ -59,13 +59,10 @@ TextDyField.data_source('ARN', 'data.delivery_stream_arn', options={
                                 options={'is_optional': True}),
         TextDyField.data_source('Failure Description', 'data.failure_description', options={
             'is_optional': True
-        }),
-        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
-            'is_optional': True
         })
     ],
     search=[
-        SearchField.set(name="Stream Name", key="data.delivery_stream_name"),
+        SearchField.set(name="Stream Name", key="name"),
         SearchField.set(name="Stream ARN", key="data.delivery_stream_arn"),
         SearchField.set(name="Stream Status", key="data.delivery_stream_status"),
         SearchField.set(name="Source Name", key="data.source.source_name"),
