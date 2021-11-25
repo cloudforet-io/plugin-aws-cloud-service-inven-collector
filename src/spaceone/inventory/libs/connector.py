@@ -122,7 +122,7 @@ class SchematicAWSConnector(AWSConnector):
         }
         '''
         resources = []
-        additional_data = ['name', 'type', 'size', 'avaiablity_zone', 'launched_at']
+        additional_data = ['name', 'type', 'size', 'launched_at']
 
         try:
             for collected_dict in collect_resource_info['request_method'](region_name, **collect_resource_info.get('kwargs', {})):

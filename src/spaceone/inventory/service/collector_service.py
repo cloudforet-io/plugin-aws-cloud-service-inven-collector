@@ -3,57 +3,17 @@ import logging
 import time
 import json
 from spaceone.core.service import *
+from spaceone.inventory.conf.cloud_service_conf import *
 from spaceone.inventory.libs.connector import *
 from spaceone.inventory.libs.schema.resource import RegionResource, RegionResponse, ErrorResourceResponse
 
 _LOGGER = logging.getLogger(__name__)
-MAX_WORKER = 20
-SUPPORTED_FEATURES = ['garbage_collection']
-SUPPORTED_SCHEDULES = ['hours']
-SUPPORTED_RESOURCE_TYPE = ['inventory.CloudService', 'inventory.CloudServiceType', 'inventory.Region']
-DEFAULT_REGION = 'ap-northeast-2'
-FILTER_FORMAT = []
 
 
 @authentication_handler
 class CollectorService(BaseService):
     def __init__(self, metadata):
         super().__init__(metadata)
-
-        self.execute_managers = [
-            'IAMConnectorManager',
-            'DynamoDBConnectorManager',
-            'LambdaConnectorManager',
-            'CloudFrontConnectorManager',
-            'RDSConnectorManager',
-            'Route53ConnectorManager',
-            'S3ConnectorManager',
-            'AutoScalingConnectorManager',
-            'ElastiCacheConnectorManager',
-            'APIGatewayConnectorManager',
-            'DirectConnectConnectorManager',
-            # 'WorkSpaceConnectorManager',
-            'EFSConnectorManager',
-            'DocumentDBConnectorManager',
-            'ECSConnectorManager',
-            'RedshiftConnectorManager',
-            'EKSConnectorManager',
-            'SQSConnectorManager',
-            'KMSConnectorManager',
-            'ECRConnectorManager',
-            'CloudTrailConnectorManager',
-            'SNSConnectorManager',
-            'SecretsManagerConnectorManager',
-            'ELBConnectorManager',
-            'EIPConnectorManager',
-            'EBSConnectorManager',
-            'VPCConnectorManager',
-            'EC2ConnectorManager',
-            'ACMConnectorManager',
-            'KinesisDataStreamConnectorManager',
-            'MSKConnectorManager',
-            'KinesisFirehoseConnectorManager'
-        ]
 
     @check_required(['options'])
     def init(self, params):
@@ -94,6 +54,18 @@ class CollectorService(BaseService):
 
         return params
 
+    def _match_execute_manager(self, cloud_service_groups):
+        return [CLOUD_SERVICE_GROUP_MAP[_cloud_service_group] for _cloud_service_group in cloud_service_groups
+                if _cloud_service_group in CLOUD_SERVICE_GROUP_MAP]
+
+    def _get_target_execute_manger(self, options):
+        if 'cloud_service_types' in options:
+            execute_managers = self._match_execute_manager(options['cloud_service_types'])
+        else:
+            execute_managers = list(CLOUD_SERVICE_GROUP_MAP.values())
+
+        return execute_managers
+
     @transaction
     @check_required(['options', 'secret_data', 'filter'])
     def collect(self, params):
@@ -107,11 +79,12 @@ class CollectorService(BaseService):
         start_time = time.time()
         resource_regions = []
         collected_region_code = []
+        target_execute_managers = self._get_target_execute_manger(params.get('options', {}))
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKER) as executor:
             future_executors = []
 
-            for execute_manager in self.execute_managers:
+            for execute_manager in target_execute_managers:
                 _manager = self.locator.get_manager(execute_manager)
                 future_executors.append(executor.submit(_manager.collect_resources, **params))
 

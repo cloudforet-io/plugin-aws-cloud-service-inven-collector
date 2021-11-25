@@ -191,7 +191,7 @@ class AutoScalingConnector(SchematicAWSConnector):
                     yield {'data': error_resource_response}
 
     def request_launch_template_data(self, region_name) -> List[LaunchTemplateDetail]:
-        self.cloud_service_type = 'LaunchConfiguration'
+        self.cloud_service_type = 'LaunchTemplate'
 
         ec2_client = self.session.client('ec2')
         paginator = ec2_client.get_paginator('describe_launch_templates')
