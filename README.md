@@ -189,8 +189,60 @@ authentication privilege for followings:
 
 
 ---
+## Options
+
+### Cloud Service Type : Specify what to collect
+
+If cloud_service_types is added to the list elements in options, only the specified cloud service type is collected.
+By default, if cloud_service_types is not specified in options, all services are collected.
+
+The cloud_service_types items that can be specified are as follows.
+
+<pre>
+<code>
+{
+    "cloud_service_type": [
+        'IAM',          
+        'DynamoDB',     
+        'Lambda',       
+        'CloudFront',
+        'RDS',
+        'Route53',
+        'S3',
+        'AutoScalingGroup',
+        'ElastiCache',
+        'APIGateway',
+        'DirectConnect',
+        'EFS',
+        'DocumentDB',
+        'ECS',
+        'Redshift',
+        'EKS',
+        'SQS',
+        'KMS',
+        'ECR',
+        'CloudTrail',
+        'SNS',
+        'SecretsManager',
+        'ELB',
+        'EIP',
+        'EBS',
+        'VPC',
+        'EC2',
+        'ACM',
+        'KinesisDataStream',
+        'KinesisFirehose',
+        'MSK'
+    ]
+}
+</code>
+</pre>
+
 
 ## Release Note
+
+### Ver 1.13
+* Add feature to specify the Cloud Service Type and collect it.
 
 ### Ver 1.12
 * Separated to setting the parameter and collecting resources.
