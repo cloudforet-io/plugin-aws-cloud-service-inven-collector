@@ -238,6 +238,28 @@ The cloud_service_types items that can be specified are as follows.
 </code>
 </pre>
 
+How to update plugin information using spacectl is as follows.
+First, create a yaml file to set options.
+
+<pre>
+<code>
+> cat update_collector.yaml
+---
+collector_id: collector-xxxxxxx
+options:
+  cloud_service_type:
+    - EC2
+    - RDS
+    - ELB
+</code>
+</pre>
+
+Update plugin through spacectl command with the created yaml file.
+
+<pre><code>
+> spacectl exec update_plugin inventory.Collector -f update_collector.yaml
+</code></pre>
+
 
 ## Release Note
 
