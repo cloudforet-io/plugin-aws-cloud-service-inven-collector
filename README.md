@@ -201,7 +201,7 @@ The cloud_service_types items that can be specified are as follows.
 <pre>
 <code>
 {
-    "cloud_service_type": [
+    "cloud_service_types": [
         'IAM',          
         'DynamoDB',     
         'Lambda',       
