@@ -74,7 +74,7 @@ class DirectConnectConnector(SchematicAWSConnector):
                 yield {
                     'data': connection_vo,
                     'name': connection_vo.connection_name,
-                    'type': connection_vo.location,
+                    'instance_type': connection_vo.location,
                     'account': self.account_id
                 }
 

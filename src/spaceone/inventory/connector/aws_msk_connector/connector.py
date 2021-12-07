@@ -1,6 +1,8 @@
 import time
 import logging
 from typing import List
+
+from spaceone.core.utils import *
 from spaceone.inventory.connector.aws_msk_connector.schema.data import Cluster, Configuration
 from spaceone.inventory.connector.aws_msk_connector.schema.resource import MSKResource, ClusterResource, ClusterResponse,\
                                                                             ConfigurationResource, ConfigurationResponse
@@ -74,7 +76,7 @@ class MSKConnector(SchematicAWSConnector):
                     yield {
                         'data': cluster_vo,
                         'name': cluster_vo.cluster_name,
-                        'launched_at': cluster_vo.creation_time,
+                        'launched_at': datetime_to_iso8601(cluster_vo.creation_time),
                         'account': self.account_id
                     }
                     

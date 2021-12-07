@@ -76,8 +76,8 @@ class RDSConnector(SchematicAWSConnector):
                             {'resource': resource({
                                 'name': identifier,
                                 'data': database_vo,
-                                'size': database_vo.size,
-                                'type': database_vo.engine,
+                                'size': float(database_vo.size),
+                                'instance_type': database_vo.engine,
                                 'tags': [{'key':tag.key, 'value': tag.value} for tag in database_vo.tags],
                                 'region_code': region_name,
                                 'reference': ReferenceModel(database_vo.reference(region_name))})}
@@ -205,7 +205,7 @@ class RDSConnector(SchematicAWSConnector):
                         yield {
                             'data': snapshot_vo,
                             'name': snapshot_vo.db_snapshot_identifier,
-                            'type': snapshot_vo.engine,
+                            'instance_type': snapshot_vo.engine,
                             'account': self.account_id
                         }
 
@@ -268,7 +268,7 @@ class RDSConnector(SchematicAWSConnector):
                     yield {
                         'data': param_group_vo,
                         'name': param_group_vo.db_parameter_group_name,
-                        'type': param_group_vo.db_parameter_group_family,
+                        'instance_type': param_group_vo.db_parameter_group_family,
                         'account': self.account_id
                     }
 
@@ -299,7 +299,7 @@ class RDSConnector(SchematicAWSConnector):
                     yield {
                         'data': option_group_vo,
                         'name': option_group_vo.option_group_name,
-                        'type': option_group_vo.engine_name,
+                        'instance_type': option_group_vo.engine_name,
                         'account': self.account_id
                     }
                     

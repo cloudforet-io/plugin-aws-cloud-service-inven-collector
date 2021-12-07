@@ -67,7 +67,7 @@ class EC2Connector(SchematicAWSConnector):
                 yield {
                     'data': image_vo,
                     'name': image_vo.name,
-                    'type': image_vo.image_type,
+                    'instance_type': image_vo.image_type,
                     'account': self.account_id
                 }
 

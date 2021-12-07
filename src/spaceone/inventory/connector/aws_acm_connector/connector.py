@@ -2,6 +2,7 @@ import time
 import logging
 from typing import List
 
+from spaceone.core.utils import *
 from spaceone.inventory.connector.aws_acm_connector.schema.data import Certificate, Tags
 from spaceone.inventory.connector.aws_acm_connector.schema.resource import ACMResource, CertificateResource, ACMResponse
 from spaceone.inventory.connector.aws_acm_connector.schema.service_type import CLOUD_SERVICE_TYPES
@@ -70,9 +71,9 @@ class ACMConnector(SchematicAWSConnector):
                     yield {
                         'data': certificate_vo,
                         'name': certificate_vo.domain_name,
-                        'type': certificate_vo.type_display,
+                        'instance_type': certificate_vo.type_display,
                         'account': self.account_id,
-                        'launched_at': certificate_vo.created_at
+                        'launched_at': datetime_to_iso8601(certificate_vo.created_at)
                     }
                     
                 except Exception as e:

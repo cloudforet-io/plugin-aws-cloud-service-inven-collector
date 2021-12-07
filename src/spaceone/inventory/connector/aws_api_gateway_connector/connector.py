@@ -2,6 +2,7 @@ import time
 import logging
 from typing import List
 
+from spaceone.core.utils import *
 from spaceone.inventory.connector.aws_api_gateway_connector.schema.data import RestAPI, Resource, HTTPWebsocket, Tags
 from spaceone.inventory.connector.aws_api_gateway_connector.schema.resource import RestAPIResource, \
     HTTPWebsocketResource, RestAPIResponse, HTTPWebsocketResponse
@@ -85,9 +86,9 @@ class APIGatewayConnector(SchematicAWSConnector):
                     yield {
                         'data': rest_api_vo,
                         'name': rest_api_vo.name,
-                        'type': rest_api_vo.protocol,
+                        'instance_type': rest_api_vo.protocol,
                         'account': self.account_id,
-                        'launched_at': rest_api_vo.created_date
+                        'launched_at': datetime_to_iso8601(rest_api_vo.created_date)
                     }
 
                 except Exception as e:
@@ -124,9 +125,9 @@ class APIGatewayConnector(SchematicAWSConnector):
                     yield {
                         'data': http_websocket_vo,
                         'name': http_websocket_vo.name,
-                        'type': http_websocket_vo.protocol,
+                        'instance_type': http_websocket_vo.protocol,
                         'account': self.account_id,
-                        'launched_at': http_websocket_vo.created_date
+                        'launched_at': datetime_to_iso8601(http_websocket_vo.created_date)
                     }
 
                 except Exception as e:

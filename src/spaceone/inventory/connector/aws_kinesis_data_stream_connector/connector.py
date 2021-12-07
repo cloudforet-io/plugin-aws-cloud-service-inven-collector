@@ -2,6 +2,7 @@ import logging
 import time
 from typing import List
 
+from spaceone.core.utils import *
 from spaceone.inventory.connector.aws_kinesis_data_stream_connector.schema.data import StreamDescription, Consumers
 from spaceone.inventory.connector.aws_kinesis_data_stream_connector.schema.resource import StreamResource, KDSResponse
 from spaceone.inventory.connector.aws_kinesis_data_stream_connector.schema.service_type import CLOUD_SERVICE_TYPES
@@ -94,8 +95,8 @@ class KinesisDataStreamConnector(SchematicAWSConnector):
                     stream_vo = StreamDescription(stream_info, strict=False)
                     yield {
                         'data': stream_vo,
-                        'size': int(stream_vo.open_shards_num),
-                        'launched_at': stream_creation_timestamp,
+                        'size': float(stream_vo.open_shards_num),
+                        'launched_at': datetime_to_iso8601(stream_creation_timestamp),
                         'name': stream_vo.stream_name,
                         'account': self.account_id
                     }

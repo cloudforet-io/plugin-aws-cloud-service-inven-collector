@@ -2,6 +2,7 @@ import time
 import logging
 from typing import List
 
+from spaceone.core.utils import *
 from spaceone.inventory.connector.aws_redshift_connector.schema.data import Cluster, Snapshot, SnapshotSchedule, \
     ScheduledAction, Tags
 from spaceone.inventory.connector.aws_redshift_connector.schema.resource import ClusterResource, ClusterResponse
@@ -66,8 +67,8 @@ class RedshiftConnector(SchematicAWSConnector):
                     yield {
                         'data': cluster_vo,
                         'name': cluster_vo.cluster_identifier,
-                        'type': cluster_vo.node_type,
-                        'launched_at': cluster_vo.cluster_create_time,
+                        'instance_type': cluster_vo.node_type,
+                        'launched_at': datetime_to_iso8601(cluster_vo.cluster_create_time),
                         'account': self.account_id
                     }
                     

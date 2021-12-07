@@ -2,6 +2,7 @@ import time
 import logging
 from typing import List
 
+from spaceone.core.utils import *
 from spaceone.inventory.connector.aws_efs_connector.schema.data import FileSystem, MountTarget, LifecyclePolicy
 from spaceone.inventory.connector.aws_efs_connector.schema.resource import FileSystemResource, FileSystemResponse
 from spaceone.inventory.connector.aws_efs_connector.schema.service_type import CLOUD_SERVICE_TYPES
@@ -65,8 +66,8 @@ class EFSConnector(SchematicAWSConnector):
                     yield {
                         'data': filesystem_vo,
                         'name': filesystem_vo.name,
-                        'size': int(filesystem_vo.size),
-                        'launched_at': filesystem_vo.creation_time,
+                        'size': float(filesystem_vo.size),
+                        'launched_at': datetime_to_iso8601(filesystem_vo.creation_time),
                         'account': self.account_id
                     }
 

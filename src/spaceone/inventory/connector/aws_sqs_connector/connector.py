@@ -3,6 +3,7 @@ import logging
 from typing import List
 import json
 
+from spaceone.core.utils import *
 from spaceone.inventory.connector.aws_sqs_connector.schema.data import QueData, RedrivePolicy
 from spaceone.inventory.connector.aws_sqs_connector.schema.resource import SQSResponse, QueResource
 from spaceone.inventory.connector.aws_sqs_connector.schema.service_type import CLOUD_SERVICE_TYPES
@@ -55,7 +56,7 @@ class SQSConnector(SchematicAWSConnector):
                 yield {
                     'data': result,
                     'name': result.name,
-                    'launched_at': result.created_timestamp,
+                    'launched_at': datetime_to_iso8601(result.created_timestamp),
                     'account': self.account_id
                 }
                 

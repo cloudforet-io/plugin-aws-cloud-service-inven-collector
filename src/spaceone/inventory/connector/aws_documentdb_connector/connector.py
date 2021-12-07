@@ -101,8 +101,8 @@ class DocumentDBConnector(SchematicAWSConnector):
                     yield {
                         'data': cluster_vo,
                         'name': cluster_vo.db_cluster_identifier,
-                        'type': cluster_vo.engine_version,
-                        'size': cluster_vo.instance_count,
+                        'instance_type': cluster_vo.engine_version,
+                        'size': float(cluster_vo.instance_count),
                         'account': self.account_id
                     }
 
@@ -156,7 +156,7 @@ class DocumentDBConnector(SchematicAWSConnector):
                 yield {
                     'data': param_group_vo,
                     'name': param_group_vo.db_cluster_parameter_group_name,
-                    'type': param_group_vo.db_parameter_group_family,
+                    'instance_type': param_group_vo.db_parameter_group_family,
                     'account': self.account_id
                 }
 

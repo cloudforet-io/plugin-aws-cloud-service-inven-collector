@@ -2,6 +2,7 @@ import time
 import logging
 from typing import List
 
+from spaceone.core.utils import *
 from spaceone.inventory.connector.aws_vpc_connector.schema.data import VPC, Subnet, RouteTable, \
     RouteTableAssociations, RouteTableRoutes, InternetGateway, EgressOnlyInternetGateway, DHCPOptions, Endpoint, \
     NATGateway, PeeringConnection, NetworkACL, NetworkACLEntries, NetworkACLTotalEntries, TransitGateway, \
@@ -296,7 +297,7 @@ class VPCConnector(SchematicAWSConnector):
                 yield {
                     'data': nat_gateway_vo,
                     'name': nat_gateway_vo.name,
-                    'launched_at': nat_gateway_vo.create_time,
+                    'launched_at': datetime_to_iso8601(nat_gateway_vo.create_time),
                     'account': self.account_id
                 }
                 
@@ -368,8 +369,8 @@ class VPCConnector(SchematicAWSConnector):
                 yield {
                     'data': endpoint_vo,
                     'name': endpoint_vo.name,
-                    'type': endpoint_vo.vpc_endpoint_type,
-                    'launched_at': endpoint_vo.creation_timestamp,
+                    'instance_type': endpoint_vo.vpc_endpoint_type,
+                    'launched_at': datetime_to_iso8601(endpoint_vo.creation_timestamp),
                     'account': self.account_id
                 }
                 
@@ -533,7 +534,7 @@ class VPCConnector(SchematicAWSConnector):
                 yield {
                     'data': subnet_vo,
                     'name': subnet_vo.name,
-                    'type': subnet_vo.subnet_type,
+                    'instance_type': subnet_vo.subnet_type,
                     'account': self.account_id
                 }
                 
@@ -561,7 +562,7 @@ class VPCConnector(SchematicAWSConnector):
                 yield {
                     'data': tgw_vo,
                     'name': tgw_vo.name,
-                    'launched_at': tgw_vo.creation_time,
+                    'launched_at': datetime_to_iso8601(tgw_vo.creation_time),
                     'account': self.account_id
                 }
                 
@@ -595,7 +596,7 @@ class VPCConnector(SchematicAWSConnector):
                 yield {
                     'data': customer_gw_vo,
                     'name': customer_gw_vo.name,
-                    'type': customer_gw_vo.type,
+                    'instance_type': customer_gw_vo.type,
                     'account': self.account_id
                 }
                 
@@ -629,7 +630,7 @@ class VPCConnector(SchematicAWSConnector):
                 yield {
                     'data': vpn_gw_vo,
                     'name': vpn_gw_vo.name,
-                    'type': vpn_gw_vo.type,
+                    'instance_type': vpn_gw_vo.type,
                     'account': self.account_id
                 }
                 
@@ -656,7 +657,7 @@ class VPCConnector(SchematicAWSConnector):
                 yield {
                     'data': vpn_conn_vo,
                     'name': vpn_conn_vo.name,
-                    'type': vpn_conn_vo.type,
+                    'instance_type': vpn_conn_vo.type,
                     'account': self.account_id
                 }
                 
