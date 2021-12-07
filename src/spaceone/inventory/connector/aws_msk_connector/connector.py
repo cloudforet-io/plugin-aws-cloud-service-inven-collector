@@ -14,6 +14,7 @@ _LOGGER = logging.getLogger(__name__)
 
 PAGINATOR_MAX_ITEMS = 10000
 PAGINATOR_PAGE_SIZE = 50
+EXCLUDE_REGION = ['ap-northeast-3']
 
 
 class MSKConnector(SchematicAWSConnector):
@@ -42,6 +43,9 @@ class MSKConnector(SchematicAWSConnector):
             resources.append(cst)
 
         for region_name in self.region_names:
+            if region_name in EXCLUDE_REGION:
+                continue
+                
             self.reset_region(region_name)
 
             for collect_resource in collect_resources:
