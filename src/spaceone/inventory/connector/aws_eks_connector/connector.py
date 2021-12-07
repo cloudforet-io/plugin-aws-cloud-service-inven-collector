@@ -44,7 +44,7 @@ class EKSConnector(SchematicAWSConnector):
                     {'resource': NodeGroupResource({
                         'name': node_group_vo.nodegroup_name,
                         'account': self.account_id,
-                        'launched_at': node_group_vo.created_at,
+                        'launched_at': datetime_to_iso8601(node_group_vo.created_at),
                         'data': node_group_vo,
                         'tags': [{'key': tag.key, 'value': tag.value} for tag in node_group_vo.tags],
                         'region_code': region_name,
