@@ -4,6 +4,7 @@ import logging
 import traceback
 from typing import List
 
+from spaceone.core.utils import *
 from spaceone.inventory.connector.aws_elb_connector.schema.data import LoadBalancer, TargetGroup, Tags, \
     LoadBalancerAttributes, TargetGroupAttributes, Listener, Instance
 from spaceone.inventory.connector.aws_elb_connector.schema.resource import LoadBalancerResource, TargetGroupResource, \
@@ -72,7 +73,7 @@ class ELBConnector(SchematicAWSConnector):
 
                 yield {
                     'data': target_group_vo,
-                    'type': target_group_vo.target_type,
+                    'instance_type': target_group_vo.target_type,
                     'name': target_group_vo.target_group_name,
                     'account': self.account_id
                 }
@@ -122,8 +123,8 @@ class ELBConnector(SchematicAWSConnector):
                 yield {
                     'name': load_balancer_vo.load_balancer_name,
                     'data': load_balancer_vo,
-                    'type': load_balancer_vo.type,
-                    'launched_at': load_balancer_vo.created_time,
+                    'instance_type': load_balancer_vo.type,
+                    'launched_at': datetime_to_iso8601(load_balancer_vo.created_time),
                     'account': self.account_id
                 }
 

@@ -2,6 +2,7 @@ import logging
 import time
 from typing import List
 
+from spaceone.core.utils import *
 from spaceone.inventory.connector.aws_eks_connector.schema.data import Cluster, NodeGroup, Update, Tags
 from spaceone.inventory.connector.aws_eks_connector.schema.resource import ClusterResource, ClusterResponse, \
     NodeGroupResource, NodeGroupResponse
@@ -95,7 +96,7 @@ class EKSConnector(SchematicAWSConnector):
                         yield {
                             'data': cluster_vo,
                             'name': cluster_vo.name,
-                            'launched_at': cluster_vo.created_at,
+                            'launched_at': datetime_to_iso8601(cluster_vo.created_at),
                             'account': self.account_id
                         }
 

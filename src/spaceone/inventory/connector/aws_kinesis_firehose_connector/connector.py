@@ -3,6 +3,7 @@ import re
 import time
 from typing import List
 
+from spaceone.core.utils import *
 from spaceone.inventory.connector.aws_kinesis_firehose_connector.schema.data import DeliveryStreamDescription
 from spaceone.inventory.connector.aws_kinesis_firehose_connector.schema.resource import DeliveryStreamResource, \
     FirehoseResponse
@@ -69,7 +70,7 @@ class KinesisFirehoseConnector(SchematicAWSConnector):
                 yield {
                     'data': stream_vo,
                     'name': stream_vo.stream_name,
-                    'launched_at': stream_vo.create_timestamp,
+                    'launched_at': datetime_to_iso8601(stream_vo.create_timestamp),
                     'account': self.account_id
                 }
 

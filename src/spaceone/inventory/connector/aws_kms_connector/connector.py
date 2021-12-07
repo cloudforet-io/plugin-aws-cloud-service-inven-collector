@@ -3,6 +3,7 @@ import logging
 
 from typing import List
 
+from spaceone.core.utils import *
 from spaceone.inventory.connector.aws_kms_connector.schema.data import Key
 from spaceone.inventory.connector.aws_kms_connector.schema.resource import KeyResource, KeyResponse
 from spaceone.inventory.connector.aws_kms_connector.schema.service_type import CLOUD_SERVICE_TYPES
@@ -65,7 +66,7 @@ class KMSConnector(SchematicAWSConnector):
                 yield {
                     'data': key_vo,
                     'name': key_vo.alias_name,
-                    'launched_at': key_vo.creation_date,
+                    'launched_at': datetime_to_iso8601(key_vo.creation_date),
                     'account': self.account_id
                 }
 

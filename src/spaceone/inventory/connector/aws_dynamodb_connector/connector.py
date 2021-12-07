@@ -82,7 +82,7 @@ class DynamoDBConnector(SchematicAWSConnector):
                     yield {
                         'data': table_vo,
                         'name': table_vo.table_name,
-                        'size': table_vo.table_size_bytes,
+                        'size': float(table_vo.table_size_bytes),
                         'account': self.account_id
                     }
 

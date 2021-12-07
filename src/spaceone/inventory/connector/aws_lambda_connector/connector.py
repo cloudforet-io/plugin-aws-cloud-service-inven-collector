@@ -3,6 +3,7 @@ import logging
 from typing import List
 from botocore.exceptions import ClientError
 
+from spaceone.core.utils import *
 from spaceone.inventory.connector.aws_lambda_connector.schema.data import LambdaFunctionData, \
     EnvironmentVariable, LambdaState, LastUpdateStatus, VPC, VPCConfig, Environment, Subnet, SecurityGroup, Layer
 from spaceone.inventory.connector.aws_lambda_connector.schema.resource import LambdaFunctionResponse, \
@@ -135,7 +136,7 @@ class LambdaConnector(SchematicAWSConnector):
                     yield {
                         'data': func,
                         'name': func.name,
-                        'size': func.code_size,
+                        'size': float(func.code_size),
                         'account': self.account_id
                     }
                     
@@ -174,7 +175,7 @@ class LambdaConnector(SchematicAWSConnector):
                     yield {
                         'data': layer_vo,
                         'name': layer_vo.layer_name,
-                        'launched_at': layer_vo.latest_matching_version.created_date,
+                        'launched_at': datetime_to_iso8601(layer_vo.latest_matching_version.created_date),
                         'account': self.account_id
                     }
                     

@@ -2,6 +2,7 @@ import time
 import logging
 from typing import List
 
+from spaceone.core.utils import *
 from spaceone.inventory.connector.aws_ebs_connector.schema.data import Volume, Attribute, Snapshot
 from spaceone.inventory.connector.aws_ebs_connector.schema.resource import VolumeResource, VolumeResponse, \
     SnapshotResource, SnapshotResponse
@@ -84,9 +85,9 @@ class EBSConnector(SchematicAWSConnector):
                     yield {
                         'data': volume_vo,
                         'name': volume_vo.name,
-                        'size': int(volume_vo.size),
-                        'type': volume_vo.volume_type,
-                        'launched_at': volume_vo.create_time,
+                        'size': float(volume_vo.size),
+                        'instance_type': volume_vo.volume_type,
+                        'launched_at': datetime_to_iso8601(volume_vo.create_time),
                         'account': self.account_id
                     }
 
@@ -130,8 +131,8 @@ class EBSConnector(SchematicAWSConnector):
                     yield {
                         'data': snapshot_vo,
                         'name': snapshot_vo.name,
-                        'size': int(snapshot_vo.volume_size),
-                        'launched_at': snapshot_vo.start_time,
+                        'size': float(snapshot_vo.volume_size),
+                        'launched_at': datetime_to_iso8601(snapshot_vo.start_time),
                         'account': self.account_id
                     }
 

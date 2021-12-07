@@ -1,5 +1,5 @@
 from schematics import Model
-from schematics.types import ListType, StringType, PolyModelType, DictType, ModelType, BooleanType, DateTimeType, IntType
+from schematics.types import ListType, StringType, PolyModelType, DictType, ModelType, BooleanType, DateTimeType, FloatType
 from .dynamic_layout import BaseLayoutField, QuerySearchTableDynamicLayout
 from .dynamic_search import BaseDynamicSearch
 
@@ -104,9 +104,9 @@ class CloudServiceResource(Model):
     name = StringType(default="")
     provider = StringType(default="aws")
     account = StringType()
-    type = StringType(serialize_when_none=False)
-    size = IntType(serialize_when_none=False)
-    launched_at = DateTimeType(serialize_when_none=False)
+    instance_type = StringType(serialize_when_none=False)
+    size = FloatType(serialize_when_none=False)
+    launched_at = StringType(serialize_when_none=False)
     cloud_service_type = StringType()
     cloud_service_group = StringType()
     data = PolyModelType(Model, default=lambda: {})

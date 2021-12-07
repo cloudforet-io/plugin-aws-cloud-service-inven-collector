@@ -2,6 +2,7 @@ import time
 import logging
 from typing import List
 
+from spaceone.core.utils import *
 from spaceone.inventory.connector.aws_elasticache_connector.schema.data import Redis, Memcached
 from spaceone.inventory.connector.aws_elasticache_connector.schema.resource import RedisResource, RedisResponse, \
     MemcachedResource, MemcachedResponse
@@ -82,8 +83,8 @@ class ElastiCacheConnector(SchematicAWSConnector):
                     yield {
                         'data': memcached_vo,
                         'name': memcached_vo.cache_cluster_id,
-                        'type': memcached_vo.cache_node_type,
-                        'launched_at': memcached_vo.cache_cluster_create_time,
+                        'instance_type': memcached_vo.cache_node_type,
+                        'launched_at': datetime_to_iso8601(memcached_vo.cache_cluster_create_time),
                         'account': self.account_id
                     }
 
@@ -125,7 +126,7 @@ class ElastiCacheConnector(SchematicAWSConnector):
                 yield {
                     'data': redis_vo,
                     'name': redis_vo.replication_group_id,
-                    'type': redis_vo.cache_node_type,
+                    'instance_type': redis_vo.cache_node_type,
                     'account': self.account_id
                 }
 

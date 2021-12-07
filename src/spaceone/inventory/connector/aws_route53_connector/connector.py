@@ -40,7 +40,7 @@ class Route53Connector(SchematicAWSConnector):
                         {'resource': HostedZoneResource({
                             'name': data.name,
                             'data': data,
-                            'type': data.type,
+                            'instance_type': data.type,
                             'account': self.account_id,
                             'reference': ReferenceModel(data.reference()),
                             'region_code': 'global'

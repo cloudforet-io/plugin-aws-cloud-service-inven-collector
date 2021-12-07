@@ -2,6 +2,7 @@ import time
 import logging
 from typing import List
 
+from spaceone.core.utils import *
 from spaceone.inventory.connector.aws_ecr_connector.schema.data import Repository, Image, Tag
 from spaceone.inventory.connector.aws_ecr_connector.schema.resource import ECRRepositoryResource, ECRResponse
 from spaceone.inventory.connector.aws_ecr_connector.schema.service_type import CLOUD_SERVICE_TYPES
@@ -65,7 +66,7 @@ class ECRConnector(SchematicAWSConnector):
                     yield {
                         'data': repository_vo,
                         'name': repository_vo.repository_name,
-                        'launched_at': repository_vo.created_at,
+                        'launched_at': datetime_to_iso8601(repository_vo.created_at),
                         'account': self.account_id
                     }
 
