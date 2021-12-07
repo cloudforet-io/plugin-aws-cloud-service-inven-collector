@@ -76,7 +76,7 @@ class RDSConnector(SchematicAWSConnector):
                             {'resource': resource({
                                 'name': identifier,
                                 'data': database_vo,
-                                'size': float(database_vo.size),
+                                'instance_size': float(database_vo.size),
                                 'instance_type': database_vo.engine,
                                 'tags': [{'key':tag.key, 'value': tag.value} for tag in database_vo.tags],
                                 'region_code': region_name,

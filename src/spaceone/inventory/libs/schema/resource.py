@@ -105,7 +105,7 @@ class CloudServiceResource(Model):
     provider = StringType(default="aws")
     account = StringType()
     instance_type = StringType(serialize_when_none=False)
-    size = FloatType(serialize_when_none=False)
+    instance_size = FloatType(serialize_when_none=False)
     launched_at = StringType(serialize_when_none=False)
     cloud_service_type = StringType()
     cloud_service_group = StringType()
