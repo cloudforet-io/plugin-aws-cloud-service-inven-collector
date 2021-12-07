@@ -66,7 +66,7 @@ class EFSConnector(SchematicAWSConnector):
                     yield {
                         'data': filesystem_vo,
                         'name': filesystem_vo.name,
-                        'size': float(filesystem_vo.size),
+                        'instance_size': float(filesystem_vo.size),
                         'launched_at': datetime_to_iso8601(filesystem_vo.creation_time),
                         'account': self.account_id
                     }

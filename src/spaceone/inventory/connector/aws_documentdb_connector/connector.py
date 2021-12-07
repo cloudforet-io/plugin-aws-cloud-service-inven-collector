@@ -102,7 +102,7 @@ class DocumentDBConnector(SchematicAWSConnector):
                         'data': cluster_vo,
                         'name': cluster_vo.db_cluster_identifier,
                         'instance_type': cluster_vo.engine_version,
-                        'size': float(cluster_vo.instance_count),
+                        'instance_size': float(cluster_vo.instance_count),
                         'account': self.account_id
                     }
 

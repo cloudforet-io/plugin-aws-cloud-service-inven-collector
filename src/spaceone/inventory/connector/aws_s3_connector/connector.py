@@ -45,7 +45,7 @@ class S3Connector(SchematicAWSConnector):
                         'name': data.name,
                         'data': data,
                         'account': self.account_id,
-                        'size': float(data.size),
+                        'instance_size': float(data.size),
                         'reference': ReferenceModel(data.reference())
                     }
     

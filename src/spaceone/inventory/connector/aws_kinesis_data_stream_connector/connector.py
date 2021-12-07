@@ -95,7 +95,7 @@ class KinesisDataStreamConnector(SchematicAWSConnector):
                     stream_vo = StreamDescription(stream_info, strict=False)
                     yield {
                         'data': stream_vo,
-                        'size': float(stream_vo.open_shards_num),
+                        'instance_size': float(stream_vo.open_shards_num),
                         'launched_at': datetime_to_iso8601(stream_creation_timestamp),
                         'name': stream_vo.stream_name,
                         'account': self.account_id

@@ -136,7 +136,7 @@ class LambdaConnector(SchematicAWSConnector):
                     yield {
                         'data': func,
                         'name': func.name,
-                        'size': float(func.code_size),
+                        'instance_size': float(func.code_size),
                         'account': self.account_id
                     }
                     

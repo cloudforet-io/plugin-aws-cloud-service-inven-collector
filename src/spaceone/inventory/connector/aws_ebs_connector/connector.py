@@ -85,7 +85,7 @@ class EBSConnector(SchematicAWSConnector):
                     yield {
                         'data': volume_vo,
                         'name': volume_vo.name,
-                        'size': float(volume_vo.size),
+                        'instance_size': float(volume_vo.size),
                         'instance_type': volume_vo.volume_type,
                         'launched_at': datetime_to_iso8601(volume_vo.create_time),
                         'account': self.account_id
@@ -131,7 +131,7 @@ class EBSConnector(SchematicAWSConnector):
                     yield {
                         'data': snapshot_vo,
                         'name': snapshot_vo.name,
-                        'size': float(snapshot_vo.volume_size),
+                        'instance_size': float(snapshot_vo.volume_size),
                         'launched_at': datetime_to_iso8601(snapshot_vo.start_time),
                         'account': self.account_id
                     }
