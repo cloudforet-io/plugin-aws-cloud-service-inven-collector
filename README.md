@@ -247,7 +247,7 @@ First, create a yaml file to set options.
 ---
 collector_id: collector-xxxxxxx
 options:
-  cloud_service_type:
+  cloud_service_types:
     - EC2
     - RDS
     - ELB
