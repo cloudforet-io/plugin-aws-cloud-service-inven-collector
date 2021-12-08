@@ -77,7 +77,7 @@ class ACMConnector(SchematicAWSConnector):
                     }
                     
                 except Exception as e:
-                    resource_id = certificate_info.get('CertificateArn', '')
+                    resource_id = raw.get('CertificateArn', '')
                     error_resource_response = self.generate_error(region_name, resource_id, e)
                     yield {'data': error_resource_response}
                     
