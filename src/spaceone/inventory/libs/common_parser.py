@@ -1,6 +1,7 @@
 import ipaddress
 import logging
 import re
+import yaml
 
 IP_PATTERN = re.compile("^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$")
 
@@ -89,3 +90,10 @@ def is_subnet_bit_mask(bit):
         _LOGGER.error('Error parse cidr_bit string to int')
 
     return result
+
+
+def get_data_from_yaml(file_path):
+    with open(file_path) as f:
+        dict = yaml.load(f, Loader=yaml.FullLoader)
+
+    return dict

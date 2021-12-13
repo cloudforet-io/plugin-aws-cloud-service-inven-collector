@@ -1,0 +1,11 @@
+---
+cloud_service_group: Redshift
+cloud_service_type: Cluster
+name: Cluster Total Count
+query:
+  aggregate:
+    - group:
+        fields:
+          - name: count
+            key: data.number_of_nodes
+            operator: sum

@@ -1,6 +1,14 @@
+import os
+from spaceone.inventory.libs.common_parser import *
+from spaceone.inventory.libs.schema.dynamic_widget import ChartWidget, CardWidget
 from spaceone.inventory.libs.schema.dynamic_field import TextDyField, DateTimeDyField, SearchField, ListDyField
 from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, \
     CloudServiceTypeMeta
+
+current_dir = os.path.abspath(os.path.dirname(__file__))
+
+secret_count_per_region_conf = os.path.join(current_dir, 'widget/secret_count_per_region.yaml')
+secret_count_per_account_conf = os.path.join(current_dir, 'widget/secret_count_per_account_conf.yaml')
 
 cst_secret = CloudServiceTypeResource()
 cst_secret.name = 'Secret'
@@ -57,6 +65,10 @@ cst_secret._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Last Changed Time', key='data.last_changed_date', data_type='datetime'),
         SearchField.set(name='Last Accessed Time', key='data.last_accessed_date', data_type='datetime'),
         SearchField.set(name='Rotation Enabled', key='data.rotation_enabled', data_type='boolean')
+    ],
+    widget=[
+        ChartWidget.set(**get_data_from_yaml(secret_count_per_region_conf)),
+        ChartWidget.set(**get_data_from_yaml(secret_count_per_account_conf)),
     ]
 )
 

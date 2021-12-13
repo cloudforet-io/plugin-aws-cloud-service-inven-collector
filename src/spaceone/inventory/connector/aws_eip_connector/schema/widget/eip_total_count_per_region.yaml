@@ -1,0 +1,15 @@
+---
+cloud_service_group: EC2
+cloud_service_type: EIP
+name: EIP Total Count per Region
+query:
+  aggregate:
+    - group:
+        keys:
+          - name: region
+            key: region_code
+        fields:
+          - name: count
+            operator: count
+options:
+  chart_type: COLUMN

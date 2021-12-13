@@ -1,0 +1,13 @@
+---
+cloud_service_group: DocumentDB
+cloud_service_type: Cluster
+name: Snapshot Total Count
+query:
+  aggregate:
+    - unwind:
+        path: data.snapshots
+    - group:
+        fields:
+          - name: count
+            operator: count
+            key: data.snapshots

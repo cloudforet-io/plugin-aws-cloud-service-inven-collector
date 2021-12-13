@@ -1,0 +1,16 @@
+---
+cloud_service_group: Route53
+cloud_service_type: HostedZone
+name: Record Set per Account
+query:
+  aggregate:
+    - group:
+        keys:
+          - name: account
+            key: account
+        fields:
+          - name: value
+            key: data.resource_record_set_count
+            operator: sum
+options:
+  chart_type: DONUT

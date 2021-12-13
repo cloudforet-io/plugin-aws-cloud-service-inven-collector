@@ -1,0 +1,15 @@
+---
+cloud_service_group: APIGateway
+cloud_service_type: API
+name: API Count per Account
+query:
+  aggregate:
+    - group:
+        keys:
+          - name: account
+            key: account
+        fields:
+          - name: value
+            operator: count
+options:
+  chart_type: DONUT

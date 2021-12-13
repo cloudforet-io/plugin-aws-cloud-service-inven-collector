@@ -1,0 +1,15 @@
+---
+cloud_service_group: APIGateway
+cloud_service_type: API
+name: API Count per Protocol
+query:
+  aggregate:
+    - group:
+        keys:
+          - name: protocol
+            key: data.protocol
+        fields:
+          - name: value
+            operator: count
+options:
+  chart_type: DONUT

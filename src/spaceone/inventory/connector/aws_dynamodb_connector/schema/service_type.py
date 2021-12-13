@@ -1,5 +1,18 @@
+import os
+from spaceone.inventory.libs.common_parser import *
+from spaceone.inventory.libs.schema.dynamic_widget import ChartWidget, CardWidget
 from spaceone.inventory.libs.schema.dynamic_field import TextDyField, ListDyField, EnumDyField, SearchField, SizeField
 from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, CloudServiceTypeMeta
+
+current_dir = os.path.abspath(os.path.dirname(__file__))
+
+storage_total_size_count_conf = os.path.join(current_dir, 'widget/storage_total_size.yaml')
+item_total_count_conf = os.path.join(current_dir, 'widget/item_total_count.yaml')
+read_capacity_total_conf = os.path.join(current_dir, 'widget/read_capacity_total.yaml')
+write_capacity_total_conf = os.path.join(current_dir, 'widget/write_capacity_total.yaml')
+table_count_per_region_conf = os.path.join(current_dir, 'widget/table_count_per_region.yaml')
+table_count_per_account_conf = os.path.join(current_dir, 'widget/table_count_per_account.yaml')
+top_table_size_conf = os.path.join(current_dir, 'widget/top_table_size.yaml')
 
 cst_table = CloudServiceTypeResource()
 cst_table.name = 'Table'
@@ -35,7 +48,7 @@ cst_table._metadata = CloudServiceTypeMeta.set_meta(
         TextDyField.data_source('Encryption Type', 'data.encryption_type', options={
             'is_optional': True
         }),
-        SizeField.data_source('Table Size', 'data.table_size_bytes', options={
+        SizeField.data_source('Table Size', 'instance_size', options={
             'is_optional': True
         }),
         TextDyField.data_source('Item Count', 'data.item_count', options={
@@ -61,8 +74,17 @@ cst_table._metadata = CloudServiceTypeMeta.set_meta(
                                                                     'icon': {'color': 'red.500'}},
                             'ARCHIVED': {'label': 'ARCHIVED', 'icon': {'color': 'red.500'}}
                         }),
-        SearchField.set(name='Storage Size (Bytes)', key='size', data_type='integer'),
+        SearchField.set(name='Storage Size (Bytes)', key='instance_size', data_type='integer'),
         SearchField.set(name='Item Count', key='data.item_count', data_type='integer'),
+    ],
+    widget=[
+        CardWidget.set(**get_data_from_yaml(storage_total_size_count_conf)),
+        CardWidget.set(**get_data_from_yaml(item_total_count_conf)),
+        CardWidget.set(**get_data_from_yaml(read_capacity_total_conf)),
+        CardWidget.set(**get_data_from_yaml(write_capacity_total_conf)),
+        ChartWidget.set(**get_data_from_yaml(table_count_per_region_conf)),
+        ChartWidget.set(**get_data_from_yaml(table_count_per_account_conf)),
+        ChartWidget.set(**get_data_from_yaml(top_table_size_conf)),
     ]
 )
 

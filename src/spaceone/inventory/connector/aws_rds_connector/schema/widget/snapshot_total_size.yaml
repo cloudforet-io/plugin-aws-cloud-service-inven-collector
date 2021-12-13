@@ -1,0 +1,11 @@
+---
+cloud_service_group: RDS
+cloud_service_type: Snapshot
+name: Snapshot Total Size
+query:
+  aggregate:
+    - group:
+        fields:
+          - name: size
+            key: data.allocated_storage
+            operator: sum

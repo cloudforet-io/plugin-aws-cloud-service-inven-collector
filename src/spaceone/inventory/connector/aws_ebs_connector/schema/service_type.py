@@ -1,7 +1,23 @@
+import os
+from spaceone.inventory.libs.common_parser import *
+from spaceone.inventory.libs.schema.dynamic_widget import ChartWidget, CardWidget
 from spaceone.inventory.libs.schema.dynamic_field import TextDyField, EnumDyField, SearchField, DateTimeDyField, \
     SizeField, ListDyField
 from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, \
     CloudServiceTypeMeta
+
+current_dir = os.path.abspath(os.path.dirname(__file__))
+
+
+"""
+VOLUME
+"""
+vol_total_size_conf = os.path.join(current_dir, 'widget/vol_total_size.yaml')
+vol_total_size_per_region_conf = os.path.join(current_dir, 'widget/vol_total_size_per_region.yaml')
+vol_total_size_per_account_conf = os.path.join(current_dir, 'widget/vol_total_size_per_account.yaml')
+vol_total_size_per_az_conf = os.path.join(current_dir, 'widget/vol_total_size_per_az.yaml')
+vol_total_size_per_type_conf = os.path.join(current_dir, 'widget/vol_total_size_per_type.yaml')
+vol_total_size_per_state_conf = os.path.join(current_dir, 'widget/vol_total_size_per_state.yaml')
 
 cst_ebs = CloudServiceTypeResource()
 cst_ebs.name = 'Volume'
@@ -26,8 +42,8 @@ cst_ebs._metadata = CloudServiceTypeMeta.set_meta(
             'disable': ['deleted'],
             'alert': ['error']
         }),
-        SizeField.data_source('Size', 'size'),
-        TextDyField.data_source('Volume Type', 'type'),
+        SizeField.data_source('Size', 'instance_size'),
+        TextDyField.data_source('Volume Type', 'instance_type'),
         TextDyField.data_source('IOPS', 'data.iops'),
         TextDyField.data_source('From Snapshot', 'data.snapshot_id'),
         TextDyField.data_source('Availablity Zone', 'data.availability_zone'),
@@ -65,9 +81,9 @@ cst_ebs._metadata = CloudServiceTypeMeta.set_meta(
                             'deleted': {'label': 'deleted', 'icon': {'color': 'gray.400'}},
                             'error': {'label': 'error', 'icon': {'color': 'red.500'}},
                         }),
-        SearchField.set(name='Size (Bytes)', key='size', data_type='integer'),
+        SearchField.set(name='Size (Bytes)', key='instance_size', data_type='integer'),
         SearchField.set(name='Size (GB)', key='data.size_gb', data_type='integer'),
-        SearchField.set(name='Volume Type', key='type',
+        SearchField.set(name='Volume Type', key='instance_type',
                         enums={
                             'gp2': {'label': 'General Purpose SSD (gp2)'},
                             'gp3': {'label': 'General Purpose SSD (gp3)'},
@@ -79,9 +95,25 @@ cst_ebs._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Availability Zone', key='data.availability_zone'),
         SearchField.set(name='IOPS', key='data.iops', data_type='integer'),
         SearchField.set(name='Attached Instance ID', key='data.attachments.instance_id'),
+    ],
+    widget=[
+        CardWidget.set(**get_data_from_yaml(vol_total_size_conf)),
+        ChartWidget.set(**get_data_from_yaml(vol_total_size_per_region_conf)),
+        ChartWidget.set(**get_data_from_yaml(vol_total_size_per_account_conf)),
+        ChartWidget.set(**get_data_from_yaml(vol_total_size_per_az_conf)),
+        ChartWidget.set(**get_data_from_yaml(vol_total_size_per_type_conf)),
+        ChartWidget.set(**get_data_from_yaml(vol_total_size_per_state_conf))
     ]
 )
 
+"""
+SNAPSHOT
+"""
+snapshot_total_size_conf = os.path.join(current_dir, 'widget/snapshot_total_size.yaml')
+snapshot_total_count_per_region_conf = os.path.join(current_dir, 'widget/snapshot_total_count_per_region.yaml')
+snapshot_total_count_per_account_conf = os.path.join(current_dir, 'widget/snapshot_total_count_per_account.yaml')
+snapshot_total_size_per_region_conf = os.path.join(current_dir, 'widget/snapshot_total_size_per_region.yaml')
+snapshot_total_size_per_account_conf = os.path.join(current_dir, 'widget/snapshot_total_size_per_account.yaml')
 
 cst_snapshot = CloudServiceTypeResource()
 cst_snapshot.name = 'Snapshot'
@@ -96,7 +128,7 @@ cst_snapshot._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
         TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('Snapshot ID', 'data.snapshot_id'),
-        SizeField.data_source('Size', 'size', options={
+        SizeField.data_source('Size', 'instance_size', options={
             'source_unit': 'GB',
             'display_unit': 'GB'
         }),
@@ -128,7 +160,14 @@ cst_snapshot._metadata = CloudServiceTypeMeta.set_meta(
                             'pending': {'label': 'pending', 'icon': {'color': 'yellow.500'}},
                             'error': {'label': 'error', 'icon': {'color': 'red.500'}},
                         }),
-        SearchField.set(name='Size (GB)', key='size', data_type='integer'),
+        SearchField.set(name='Size (GB)', key='instance_size', data_type='integer'),
+    ],
+    widget=[
+        CardWidget.set(**get_data_from_yaml(snapshot_total_size_conf)),
+        ChartWidget.set(**get_data_from_yaml(snapshot_total_count_per_region_conf)),
+        ChartWidget.set(**get_data_from_yaml(snapshot_total_count_per_account_conf)),
+        ChartWidget.set(**get_data_from_yaml(snapshot_total_size_per_region_conf)),
+        ChartWidget.set(**get_data_from_yaml(snapshot_total_size_per_account_conf))
     ]
 )
 

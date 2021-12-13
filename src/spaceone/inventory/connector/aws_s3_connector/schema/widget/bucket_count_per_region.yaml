@@ -1,0 +1,15 @@
+---
+cloud_service_group: S3
+cloud_service_type: Bucket
+name: Bucket count per Region
+query:
+  aggregate:
+    - group:
+        keys:
+          - name: region
+            key: region_code
+        fields:
+          - name: value
+            operator: count
+options:
+  chart_type: COLUMN

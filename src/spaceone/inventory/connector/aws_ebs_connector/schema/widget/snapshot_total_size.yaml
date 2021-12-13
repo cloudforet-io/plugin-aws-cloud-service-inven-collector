@@ -1,0 +1,11 @@
+---
+cloud_service_group: EC2
+cloud_service_type: Snapshot
+name: Snapshot Total Size
+query:
+  aggregate:
+    - group:
+        fields:
+          - name: size
+            key: instance_size
+            operator: sum

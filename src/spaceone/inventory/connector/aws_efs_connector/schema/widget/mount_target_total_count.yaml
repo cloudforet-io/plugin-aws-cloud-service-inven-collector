@@ -1,0 +1,13 @@
+---
+cloud_service_group: EFS
+cloud_service_type: FileSystem
+name: Mount Target Total Count
+query:
+  aggregate:
+    - unwind:
+        path: data.mount_targets
+    - group:
+        fields:
+        - name: count
+          key: data.mount_targets
+          operator: count

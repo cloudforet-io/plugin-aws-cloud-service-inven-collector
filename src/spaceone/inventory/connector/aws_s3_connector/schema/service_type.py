@@ -1,5 +1,19 @@
+import os
+from spaceone.inventory.libs.common_parser import *
+from spaceone.inventory.libs.schema.dynamic_widget import ChartWidget, CardWidget
 from spaceone.inventory.libs.schema.dynamic_field import TextDyField, SearchField, EnumDyField, SizeField, ListDyField
 from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, CloudServiceTypeMeta
+
+current_dir = os.path.abspath(os.path.dirname(__file__))
+
+object_total_count_conf = os.path.join(current_dir, 'widget/object_total_count.yaml')
+object_total_size_conf = os.path.join(current_dir, 'widget/object_total_size.yaml')
+bucket_count_per_region_conf = os.path.join(current_dir, 'widget/bucket_count_per_region.yaml')
+object_count_per_region_conf = os.path.join(current_dir, 'widget/object_count_per_region.yaml')
+object_total_size_per_region_conf = os.path.join(current_dir, 'widget/object_total_size_per_region.yaml')
+bucket_count_per_account_conf = os.path.join(current_dir, 'widget/bucket_count_per_account.yaml')
+object_count_per_account_conf = os.path.join(current_dir, 'widget/object_count_per_account.yaml')
+object_total_size_per_account_conf = os.path.join(current_dir, 'widget/object_total_size_per_account.yaml')
 
 cst_bucket = CloudServiceTypeResource()
 cst_bucket.name = 'Bucket'
@@ -21,7 +35,7 @@ cst_bucket._metadata = CloudServiceTypeMeta.set_meta(
             'coral.600': ['Public']
         }),
         TextDyField.data_source('Object Total Counts', 'data.object_count'),
-        SizeField.data_source('Object Total Size', 'size'),
+        SizeField.data_source('Object Total Size', 'instance_size'),
         TextDyField.data_source('ARN', 'data.arn', options={
             'is_optional': True
         }),
@@ -73,7 +87,17 @@ cst_bucket._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Bucket Name', key='name'),
         SearchField.set(name='ARN', key='data.arn'),
         SearchField.set(name='Object Counts', key='data.object_count', data_type='integer'),
-        SearchField.set(name='Object Total Size (Bytes)', key='size', data_type='integer')
+        SearchField.set(name='Object Total Size (Bytes)', key='instance_size', data_type='integer')
+    ],
+    widget=[
+        CardWidget.set(**get_data_from_yaml(object_total_count_conf)),
+        CardWidget.set(**get_data_from_yaml(object_total_size_conf)),
+        ChartWidget.set(**get_data_from_yaml(bucket_count_per_region_conf)),
+        ChartWidget.set(**get_data_from_yaml(object_count_per_region_conf)),
+        ChartWidget.set(**get_data_from_yaml(object_total_size_per_region_conf)),
+        ChartWidget.set(**get_data_from_yaml(bucket_count_per_account_conf)),
+        ChartWidget.set(**get_data_from_yaml(object_count_per_account_conf)),
+        ChartWidget.set(**get_data_from_yaml(object_total_size_per_account_conf)),
     ]
 )
 

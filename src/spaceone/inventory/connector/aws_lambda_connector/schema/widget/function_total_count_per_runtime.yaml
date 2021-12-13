@@ -1,0 +1,15 @@
+---
+cloud_service_group: Lambda
+cloud_service_type: Function
+name: Function Total Count per Runtime
+query:
+  aggregate:
+    - group:
+        keys:
+          - name: runtime
+            key: data.runtime
+        fields:
+          - name: count
+            operator: count
+options:
+  chart_type: DONUT

@@ -1,0 +1,16 @@
+---
+cloud_service_group: Redshift
+cloud_service_type: Cluster
+name: Snapshot count per Account
+query:
+  aggregate:
+    - group:
+        keys:
+          - name: account
+            key: account
+        fields:
+          - name: count
+            key: data.snapshots
+            operator: size
+options:
+  chart_type: DONUT

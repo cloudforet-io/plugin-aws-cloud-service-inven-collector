@@ -1,0 +1,11 @@
+---
+cloud_service_group: DynamoDB
+cloud_service_type: Table
+name: Snapshot Total Count
+query:
+  aggregate:
+    - group:
+        fields:
+          - name: size
+            operator: sum
+            key: instance_size

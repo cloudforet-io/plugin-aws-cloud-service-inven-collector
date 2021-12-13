@@ -1,0 +1,11 @@
+---
+cloud_service_group: Lambda
+cloud_service_type: Function
+name: Lambda Memory Total Size
+query:
+  aggregate:
+    - group:
+        fields:
+          - name: size
+            key: data.memory_size
+            operator: sum

@@ -1,0 +1,11 @@
+---
+cloud_service_group: EFS
+cloud_service_type: FileSystem
+name: File System Total Size
+query:
+  aggregate:
+    - group:
+        fields:
+        - name: size
+          key: instance_size
+          operator: sum

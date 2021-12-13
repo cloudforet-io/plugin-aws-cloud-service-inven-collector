@@ -1,0 +1,12 @@
+---
+cloud_service_group: Route53
+cloud_service_type: HostedZone
+name: Record Set Total Count
+query:
+  aggregate:
+    - group:
+        fields:
+          - name: value
+            key: data.resource_record_set_count
+            operator: sum
+

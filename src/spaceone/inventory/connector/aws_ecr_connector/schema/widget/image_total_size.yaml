@@ -1,0 +1,13 @@
+---
+cloud_service_group: Repository
+cloud_service_type: ECR
+name: Item Total Size
+query:
+  aggregate:
+    - unwind:
+        path: data.images
+    - group:
+        fields:
+        - name: image_size
+          key: data.images.image_size_in_bytes
+          operator: sum

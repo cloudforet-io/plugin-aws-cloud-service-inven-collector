@@ -1,0 +1,13 @@
+---
+cloud_service_group: EC2
+cloud_service_type: AutoScalingGroup
+name: ELB Total Count
+query:
+  aggregate:
+    - unwind:
+        path: data.load_balancers
+    - group:
+        fields:
+          - name: count
+            key: data.load_balancers
+            operator: count

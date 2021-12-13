@@ -1,0 +1,15 @@
+---
+cloud_service_group: RDS
+cloud_service_type: Snapshot
+name: Snapshot per Availability Zone
+query:
+  aggregate:
+    - group:
+        keys:
+          - name: name
+            key: data.availability_zone
+        fields:
+          - name: value
+            operator: count
+options:
+  chart_type: COLUMN

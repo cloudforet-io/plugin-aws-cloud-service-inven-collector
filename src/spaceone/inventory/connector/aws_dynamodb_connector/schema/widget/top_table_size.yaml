@@ -1,0 +1,15 @@
+---
+cloud_service_group: DynamoDB
+cloud_service_type: Table
+name: Top 5 Table Size
+query:
+  aggregate:
+    - group:
+        keys:
+          - name: table_size
+            key: instance_size
+    - sort:
+        key: table_size
+        desc: true
+options:
+  chart_type: COLUMN

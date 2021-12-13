@@ -1,7 +1,20 @@
+import os
+from spaceone.inventory.libs.common_parser import *
+from spaceone.inventory.libs.schema.dynamic_widget import ChartWidget, CardWidget
 from spaceone.inventory.libs.schema.dynamic_field import TextDyField, EnumDyField, BadgeDyField, SearchField, \
     ListDyField, DateTimeDyField
 from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, \
     CloudServiceTypeMeta
+
+current_dir = os.path.abspath(os.path.dirname(__file__))
+
+node_total_count_conf = os.path.join(current_dir, 'widget/node_total_count.yaml')
+snapshot_total_count_conf = os.path.join(current_dir, 'widget/snapshot_total_count.yaml')
+cluster_count_per_region_conf = os.path.join(current_dir, 'widget/cluster_count_per_region.yaml')
+cluster_count_per_account_conf = os.path.join(current_dir, 'widget/cluster_count_per_account.yaml')
+node_count_per_account_conf = os.path.join(current_dir, 'widget/node_count_per_account.yaml')
+snapshot_count_per_account_conf = os.path.join(current_dir, 'widget/snapshot_count_per_account.yaml')
+snapshot_total_size_per_account_conf = os.path.join(current_dir, 'widget/snapshot_total_size_per_account.yaml')
 
 cst_redshift_cluster = CloudServiceTypeResource()
 cst_redshift_cluster.name = 'Cluster'
@@ -28,7 +41,7 @@ cst_redshift_cluster._metadata = CloudServiceTypeMeta.set_meta(
         }),
         TextDyField.data_source('Cluster Version', 'data.cluster_version'),
         TextDyField.data_source('Nodes', 'data.number_of_nodes'),
-        TextDyField.data_source('Node Type', 'type'),
+        TextDyField.data_source('Node Type', 'instance_type'),
         TextDyField.data_source('Endpoint', 'data.endpoint.address', options={
             'is_optional': True
         }),
@@ -96,7 +109,7 @@ cst_redshift_cluster._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Cluster Identifier', key='name'),
         SearchField.set(name='ARN', key='data.arn'),
         SearchField.set(name='Cluster Version', key='data.cluster_version'),
-        SearchField.set(name='Node Type', key='type'),
+        SearchField.set(name='Node Type', key='instance_type'),
         SearchField.set(name='Status', key='data.cluster_status',
                         enums={
                             "available": {'label': 'Available', 'icon': {'color': 'green.500'}},
@@ -129,6 +142,15 @@ cst_redshift_cluster._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='VPC ID', key='data.vpc_id'),
         SearchField.set(name='Availability Zone', key='data.availability_zone'),
         SearchField.set(name='Node Counts', key='data.number_of_nodes', data_type='integer'),
+    ],
+    widget=[
+        CardWidget.set(**get_data_from_yaml(node_total_count_conf)),
+        CardWidget.set(**get_data_from_yaml(snapshot_total_count_conf)),
+        ChartWidget.set(**get_data_from_yaml(cluster_count_per_region_conf)),
+        ChartWidget.set(**get_data_from_yaml(cluster_count_per_account_conf)),
+        ChartWidget.set(**get_data_from_yaml(node_count_per_account_conf)),
+        ChartWidget.set(**get_data_from_yaml(snapshot_count_per_account_conf)),
+        ChartWidget.set(**get_data_from_yaml(snapshot_total_size_per_account_conf)),
     ]
 )
 

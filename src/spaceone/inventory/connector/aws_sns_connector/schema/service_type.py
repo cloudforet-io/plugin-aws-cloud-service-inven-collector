@@ -1,5 +1,15 @@
+import os
+from spaceone.inventory.libs.common_parser import *
+from spaceone.inventory.libs.schema.dynamic_widget import ChartWidget, CardWidget
 from spaceone.inventory.libs.schema.dynamic_field import TextDyField, SearchField
 from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, CloudServiceTypeMeta
+
+current_dir = os.path.abspath(os.path.dirname(__file__))
+
+subscription_total_count_conf = os.path.join(current_dir, 'widget/subscription_total_count.yaml')
+topic_count_per_region_conf = os.path.join(current_dir, 'widget/topic_count_per_region.yaml')
+topic_count_per_account_conf = os.path.join(current_dir, 'widget/topic_count_per_account.yaml')
+subscription_count_per_account_conf = os.path.join(current_dir, 'widget/subscription_count_per_account.yaml')
 
 cst_topic = CloudServiceTypeResource()
 cst_topic.name = 'Topic'
@@ -46,6 +56,12 @@ cst_topic._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Subscription ARN', key='data.subscriptions.subscription_arn'),
         SearchField.set(name='Endpoint', key='data.subscriptions.endpoint'),
         SearchField.set(name='Protocol', key='data.subscriptions.protocol')
+    ],
+    widget=[
+        CardWidget.set(**get_data_from_yaml(subscription_total_count_conf)),
+        ChartWidget.set(**get_data_from_yaml(topic_count_per_region_conf)),
+        ChartWidget.set(**get_data_from_yaml(topic_count_per_account_conf)),
+        ChartWidget.set(**get_data_from_yaml(subscription_count_per_account_conf)),
     ]
 )
 

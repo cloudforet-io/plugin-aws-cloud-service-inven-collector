@@ -1,0 +1,16 @@
+---
+cloud_service_group: RDS
+cloud_service_type: Snapshot
+name: Snapshot Storage Total Size per Account
+query:
+  aggregate:
+    - group:
+        keys:
+          - name: account
+            key: account
+        fields:
+          - name: size
+            key: data.allocated_storage
+            operator: sum
+options:
+  chart_type: DONUT

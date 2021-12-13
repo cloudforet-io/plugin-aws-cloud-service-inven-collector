@@ -1,0 +1,13 @@
+---
+cloud_service_group: EC2
+cloud_service_type: AutoScalingGroup
+name: Instance Total Count
+query:
+  aggregate:
+    - unwind:
+        path: data.instances
+    - group:
+        fields:
+          - name: count
+            key: data.instances
+            operator: count

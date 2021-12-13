@@ -1,7 +1,19 @@
+import os
+from spaceone.inventory.libs.common_parser import *
+from spaceone.inventory.libs.schema.dynamic_widget import ChartWidget, CardWidget
 from spaceone.inventory.libs.schema.dynamic_field import TextDyField, DateTimeDyField, EnumDyField, SearchField, \
     SizeField, ListDyField
 from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, \
     CloudServiceTypeMeta
+
+current_dir = os.path.abspath(os.path.dirname(__file__))
+
+filesystem_total_size_conf = os.path.join(current_dir, 'widget/filesystem_total_size.yaml')
+mount_target_total_count_conf = os.path.join(current_dir, 'widget/mount_target_total_count.yaml')
+filesystem_count_per_region_conf = os.path.join(current_dir, 'widget/filesystem_count_per_region.yaml')
+filesystem_count_per_account_conf = os.path.join(current_dir, 'widget/filesystem_count_per_account.yaml')
+mount_target_count_per_az_conf = os.path.join(current_dir, 'widget/mount_target_count_per_az.yaml')
+top_size_per_filesystem_conf = os.path.join(current_dir, 'widget/top_size_per_filesystem.yaml')
 
 cst_filesystem = CloudServiceTypeResource()
 cst_filesystem.name = 'FileSystem'
@@ -23,7 +35,7 @@ cst_filesystem._metadata = CloudServiceTypeMeta.set_meta(
             'warning': ['creating', 'updating', 'deleting'],
             'disable': ['deleted']
         }),
-        SizeField.data_source('Metered Sizes', 'size'),
+        SizeField.data_source('Metered Sizes', 'instance_size'),
         TextDyField.data_source('Mount Targets', 'data.number_of_mount_targets'),
 
         TextDyField.data_source('ID', 'data.file_system_id', options={
@@ -72,7 +84,7 @@ cst_filesystem._metadata = CloudServiceTypeMeta.set_meta(
                             'deleting': {'label': 'deleting', 'icon': {'color': 'yellow.500'}},
                             'deleted': {'label': 'deleted', 'icon': {'color': 'gray.400'}},
                         }),
-        SearchField.set(name='Metered Size (Bytes)', key='size', data_type='integer'),
+        SearchField.set(name='Metered Size (Bytes)', key='instance_size', data_type='integer'),
         SearchField.set(name='Performance Mode', key='data.performance_mode',
                         enums={
                             'generalPurpose': {'label': 'General Purpose'},
@@ -89,6 +101,14 @@ cst_filesystem._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Availability Zone', key='data.mount_targets.availability_zone_name'),
         SearchField.set(name='Subnet ID', key='data.mount_targets.subnet_id'),
         SearchField.set(name='Security Group ID', key='data.mount_targets.security_groups')
+    ],
+    widget=[
+        CardWidget.set(**get_data_from_yaml(filesystem_total_size_conf)),
+        CardWidget.set(**get_data_from_yaml(mount_target_total_count_conf)),
+        ChartWidget.set(**get_data_from_yaml(filesystem_count_per_region_conf)),
+        ChartWidget.set(**get_data_from_yaml(filesystem_count_per_account_conf)),
+        ChartWidget.set(**get_data_from_yaml(mount_target_count_per_az_conf)),
+        ChartWidget.set(**get_data_from_yaml(top_size_per_filesystem_conf)),
     ]
 )
 

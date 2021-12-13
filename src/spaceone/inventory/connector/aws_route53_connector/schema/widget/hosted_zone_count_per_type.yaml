@@ -1,0 +1,15 @@
+---
+cloud_service_group: Route53
+cloud_service_type: HostedZone
+name: Record Set per Type
+query:
+  aggregate:
+    - group:
+        keys:
+          - name: type
+            key: instance_type
+        fields:
+          - name: value
+            operator: count
+options:
+  chart_type: DONUT

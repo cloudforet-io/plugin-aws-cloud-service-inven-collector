@@ -193,9 +193,9 @@ class CollectorService(BaseService):
             'sa-east-1': {'name': 'South America (São Paulo)',
                           'tags': {'latitude': '-23.493549', 'longitude': '-46.809319', 'continent': 'south_america'}},
             'us-gov-east-1': {'name': 'AWS GovCloud (US-East)',
-                              'tags': {'continent': 'south_america'}},
+                              'tags': {'continent': 'north_america'}},
             'us-gov-west-1': {'name': 'AWS GovCloud (US)',
-                              'tags': {'continent': 'south_america'}},
+                              'tags': {'continent': 'north_america'}},
             'global': {'name': 'Global'}
         }
 

@@ -1,7 +1,12 @@
+import os
+from spaceone.inventory.libs.common_parser import *
+from spaceone.inventory.libs.schema.dynamic_widget import ChartWidget, CardWidget
 from spaceone.inventory.libs.schema.dynamic_field import TextDyField, ListDyField, DateTimeDyField, \
     EnumDyField, SearchField
 from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, \
     CloudServiceTypeMeta
+
+current_dir = os.path.abspath(os.path.dirname(__file__))
 
 cst_vpc = CloudServiceTypeResource()
 cst_vpc.name = 'VPC'
@@ -162,7 +167,7 @@ cst_subnet._metadata = CloudServiceTypeMeta.set_meta(
         }),
         TextDyField.data_source('CIDR', 'data.cidr_block'),
         TextDyField.data_source('AZ', 'data.availability_zone'),
-        EnumDyField.data_source('Type', 'type', default_badge={
+        EnumDyField.data_source('Type', 'instance_type', default_badge={
             'indigo.500': ['public'], 'coral.600': ['private']
         }),
         TextDyField.data_source('VPC', 'data.vpc_id'),
@@ -220,7 +225,7 @@ cst_subnet._metadata = CloudServiceTypeMeta.set_meta(
                             'available': {'label': 'Available', 'icon': {'color': 'green.500'}},
                             'pending': {'label': 'Pending', 'icon': {'color': 'yellow.500'}},
                         }),
-        SearchField.set(name='Subnet Type', key='type',
+        SearchField.set(name='Subnet Type', key='instance_type',
                         enums={
                             'public': {'label': 'Public'},
                             'private': {'label': 'Private'},
@@ -584,7 +589,7 @@ cst_endpoint._metadata = CloudServiceTypeMeta.set_meta(
         }),
         TextDyField.data_source('VPC ID', 'data.vpc_id'),
         TextDyField.data_source('Service Name', 'data.service_name'),
-        TextDyField.data_source('Endpoint Type', 'type'),
+        TextDyField.data_source('Endpoint Type', 'instance_type'),
         DateTimeDyField.data_source('Creation Time', 'launched_at', options={
             'is_optional': True
         }),
@@ -633,7 +638,7 @@ cst_endpoint._metadata = CloudServiceTypeMeta.set_meta(
                         }),
         SearchField.set(name='VPC ID', key='data.vpc_id'),
         SearchField.set(name='Service Name', key='data.service_name'),
-        SearchField.set(name='Type', key='type',
+        SearchField.set(name='Type', key='instance_type',
                         enums={
                             'Interface': {'label': 'Interface'},
                             'Gateway': {'label': 'Gateway'}
@@ -744,7 +749,7 @@ cst_customgw._metadata = CloudServiceTypeMeta.set_meta(
             'warning': ['pending', 'deleting'],
             'disable': ['deleted']
         }),
-        TextDyField.data_source('Type', 'type'),
+        TextDyField.data_source('Type', 'instance_type'),
         TextDyField.data_source('IP Address', 'data.ip_address'),
         TextDyField.data_source('BGP ASN', 'data.bgp_asn'),
         TextDyField.data_source('Certificate ARN', 'data.certificate_arn', options={
@@ -784,7 +789,7 @@ cst_customgw._metadata = CloudServiceTypeMeta.set_meta(
                             'deleting': {'label': 'Deleting', 'icon': {'color': 'yellow.500'}},
                             'deleted': {'label': 'Deleted', 'icon': {'color': 'grey.500'}},
                         }),
-        SearchField.set(name='Type', key='type'),
+        SearchField.set(name='Type', key='instance_type'),
         SearchField.set(name='IP Address', key='data.ip_address'),
         SearchField.set(name='BGP ASN', key='data.bgp_asn'),
         SearchField.set(name='Device', key='data.device_name'),
@@ -822,7 +827,7 @@ cst_vpnconn._metadata = CloudServiceTypeMeta.set_meta(
         TextDyField.data_source('Transit Gateway', 'data.transit_gateway_id'),
         TextDyField.data_source('Customer Gateway', 'data.customer_gateway_id'),
         TextDyField.data_source('Customer Gateway Address', 'data.customer_gateway_address'),
-        TextDyField.data_source('Type', 'type'),
+        TextDyField.data_source('Type', 'instance_type'),
         EnumDyField.data_source('Category', 'data.category', default_badge={
             'indigo.500': ['VPN'], 'coral.500': ['VPN-Classic']
         }),
@@ -858,7 +863,7 @@ cst_vpnconn._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Virtual Private Gateway ID', key='data.vpn_gateway_id'),
         SearchField.set(name='Customer Gateway ID', key='data.customer_gateway_id'),
         SearchField.set(name='Transit Gateway ID', key='data.transit_gateway_id'),
-        SearchField.set(name='Type', key='type'),
+        SearchField.set(name='Type', key='instance_type'),
         SearchField.set(name='Category', key='data.category',
                         enums={
                             'VPN': {'label': 'VPN'},
@@ -887,7 +892,7 @@ cst_vpngw._metadata = CloudServiceTypeMeta.set_meta(
         TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('ID', 'data.vpn_gateway_id'),
         TextDyField.data_source('State', 'data.state'),
-        TextDyField.data_source('Type', 'type'),
+        TextDyField.data_source('Type', 'instance_type'),
         ListDyField.data_source('VPC', 'data.vpc_attachments', options={
             'sub_key': 'vpc_id',
             'delimiter': '<br>'
@@ -913,7 +918,7 @@ cst_vpngw._metadata = CloudServiceTypeMeta.set_meta(
                             'deleting': {'label': 'Deleting', 'icon': {'color': 'yellow.500'}},
                             'deleted': {'label': 'Deleted', 'icon': {'color': 'grey.500'}},
                         }),
-        SearchField.set(name='Type', key='type'),
+        SearchField.set(name='Type', key='instance_type'),
         SearchField.set(name='VPC ID', key='data.vpc_attachments.vpc_id'),
         SearchField.set(name='ASN', key='data.amazon_side_asn'),
         SearchField.set(name='VPN Connection ID', key='data.vpn_connection.vpn_connection_id'),

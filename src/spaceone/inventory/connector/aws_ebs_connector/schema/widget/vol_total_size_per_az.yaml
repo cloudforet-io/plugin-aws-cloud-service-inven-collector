@@ -1,0 +1,16 @@
+---
+cloud_service_group: EC2
+cloud_service_type: Volume
+name: Volume Total Size per Availability Zone
+query:
+  aggregate:
+    - group:
+        keys:
+          - name: availability_zone
+            key: data.availability_zone
+        fields:
+          - name: size
+            key: instance_size
+            operator: sum
+options:
+  chart_type: COLUMN

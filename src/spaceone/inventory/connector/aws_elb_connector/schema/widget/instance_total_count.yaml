@@ -1,0 +1,13 @@
+---
+cloud_service_group: ELB
+cloud_service_type: LoadBalancer
+name: Instance Total Count
+query:
+  aggregate:
+    - unwind:
+        path: data.instances
+    - group:
+        fields:
+        - name: count
+          key: data.instances
+          operator: count
