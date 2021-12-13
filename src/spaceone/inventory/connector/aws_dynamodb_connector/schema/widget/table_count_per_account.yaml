@@ -1,0 +1,15 @@
+---
+cloud_service_group: DynamoDB
+cloud_service_type: Table
+name: Table per Account
+query:
+  aggregate:
+    - group:
+        keys:
+          - name: account
+            key: account
+        fields:
+          - name: value
+            operator: count
+options:
+  chart_type: DONUT

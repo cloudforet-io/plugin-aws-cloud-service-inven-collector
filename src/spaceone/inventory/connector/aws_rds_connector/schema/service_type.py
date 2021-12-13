@@ -1,11 +1,19 @@
+import os
+from spaceone.inventory.libs.common_parser import *
+from spaceone.inventory.libs.schema.dynamic_widget import ChartWidget, CardWidget
 from spaceone.inventory.libs.schema.dynamic_field import TextDyField, DateTimeDyField, EnumDyField, \
     BadgeDyField, SearchField, ListDyField
 from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, CloudServiceTypeMeta
 
+current_dir = os.path.abspath(os.path.dirname(__file__))
 
 '''
 Database
 '''
+database_count_per_region_conf = os.path.join(current_dir, 'widget/database_count_per_region.yaml')
+database_count_per_account_conf = os.path.join(current_dir, 'widget/database_count_per_account.yaml')
+database_count_per_engine_conf = os.path.join(current_dir, 'widget/database_count_per_engine.yaml')
+
 cst_rds_database = CloudServiceTypeResource()
 cst_rds_database.name = 'Database'
 cst_rds_database.provider = 'aws'
@@ -78,12 +86,23 @@ cst_rds_database._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Instance Endpoint', key='data.instance.endpoint.address'),
         SearchField.set(name='Instance Port', key='data.instance.endpoint.port', data_type='integer'),
         SearchField.set(name='AWS Account ID', key='data.account_id'),
+    ],
+    widget=[
+        ChartWidget.set(**get_data_from_yaml(database_count_per_region_conf)),
+        ChartWidget.set(**get_data_from_yaml(database_count_per_account_conf)),
+        ChartWidget.set(**get_data_from_yaml(database_count_per_engine_conf))
     ]
 )
 
 '''
 Instance
 '''
+instance_storage_total_size_conf = os.path.join(current_dir, 'widget/instance_storage_total_size.yaml')
+instance_count_per_region_conf = os.path.join(current_dir, 'widget/instance_count_per_region.yaml')
+instance_count_per_account_conf = os.path.join(current_dir, 'widget/instance_count_per_account.yaml')
+instance_storage_total_size_per_account_conf = os.path.join(current_dir, 'widget/instance_storage_total_size_per_account.yaml')
+instance_count_per_instance_type_conf = os.path.join(current_dir, 'widget/instance_count_per_instance_type.yaml')
+
 cst_rds_instance = CloudServiceTypeResource()
 cst_rds_instance.name = 'Instance'
 cst_rds_instance.provider = 'aws'
@@ -243,6 +262,13 @@ cst_rds_instance._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Endpoint Address', key='data.endpoint.address'),
         SearchField.set(name='Endpoint Port', key='data.endpoint.port', data_type='integer'),
         SearchField.set(name='AWS Account ID', key='data.account_id'),
+    ],
+    widget=[
+        CardWidget.set(**get_data_from_yaml(instance_storage_total_size_conf)),
+        ChartWidget.set(**get_data_from_yaml(instance_count_per_region_conf)),
+        ChartWidget.set(**get_data_from_yaml(instance_count_per_account_conf)),
+        ChartWidget.set(**get_data_from_yaml(instance_storage_total_size_per_account_conf)),
+        ChartWidget.set(**get_data_from_yaml(instance_count_per_instance_type_conf))
     ]
 )
 
@@ -250,6 +276,13 @@ cst_rds_instance._metadata = CloudServiceTypeMeta.set_meta(
 '''
 Snapshot
 '''
+snapshot_total_size_conf = os.path.join(current_dir, 'widget/snapshot_total_size.yaml')
+snapshot_count_per_region_conf = os.path.join(current_dir, 'widget/snapshot_count_per_region.yaml')
+snapshot_count_per_az_conf = os.path.join(current_dir, 'widget/snapshot_count_per_az.yaml')
+snapshot_count_per_account_conf = os.path.join(current_dir, 'widget/snapshot_count_per_account.yaml')
+snapshot_storage_total_size_per_account_conf = os.path.join(current_dir, 'widget/snapshot_storage_total_size_per_account.yaml')
+snapshot_count_per_engine_conf = os.path.join(current_dir, 'widget/snapshot_count_per_engine.yaml')
+
 cst_rds_snapshot = CloudServiceTypeResource()
 cst_rds_snapshot.name = 'Snapshot'
 cst_rds_snapshot.provider = 'aws'
@@ -319,6 +352,14 @@ cst_rds_snapshot._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='VPC ID', key='data.vpc_id'),
         SearchField.set(name='Created Time', key='data.snapshot_create_time', data_type='datetime'),
         SearchField.set(name='AWS Account ID', key='data.account_id'),
+    ],
+    widget=[
+        CardWidget.set(**get_data_from_yaml(snapshot_total_size_conf)),
+        ChartWidget.set(**get_data_from_yaml(snapshot_count_per_region_conf)),
+        ChartWidget.set(**get_data_from_yaml(snapshot_count_per_az_conf)),
+        ChartWidget.set(**get_data_from_yaml(snapshot_count_per_account_conf)),
+        ChartWidget.set(**get_data_from_yaml(snapshot_storage_total_size_per_account_conf)),
+        ChartWidget.set(**get_data_from_yaml(snapshot_count_per_engine_conf))
     ]
 )
 

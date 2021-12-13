@@ -1,8 +1,15 @@
+import os
+from spaceone.inventory.libs.common_parser import *
 from spaceone.inventory.libs.schema.dynamic_field import TextDyField, SearchField, DateTimeDyField, EnumDyField, \
     ListDyField
+from spaceone.inventory.libs.schema.dynamic_widget import CardWidget, ChartWidget
 from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, \
     CloudServiceTypeMeta
 
+current_dir = os.path.abspath(os.path.dirname(__file__))
+api_count_per_region_widget_conf = os.path.join(current_dir, 'widget/api_count_per_region.yaml')
+api_count_per_account_widget_conf = os.path.join(current_dir, 'widget/api_count_per_account.yaml')
+api_count_per_protocol_widget_conf = os.path.join(current_dir, 'widget/api_count_per_protocol.yaml')
 
 cst_api = CloudServiceTypeResource()
 cst_api.name = 'API'
@@ -20,7 +27,7 @@ cst_api._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
         TextDyField.data_source('ID', 'data.id'),
         TextDyField.data_source('Name', 'name'),
-        TextDyField.data_source('Protocol', 'type', default_outline_badge=['REST', 'WEBSOCKET', 'HTTP']),
+        TextDyField.data_source('Protocol', 'instance_type', default_outline_badge=['REST', 'WEBSOCKET', 'HTTP']),
         TextDyField.data_source('Endpoint Type', 'data.endpoint_type'),
         DateTimeDyField.data_source('Creation Time', 'launched_at'),
         # For Dynamic Table
@@ -42,9 +49,13 @@ cst_api._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='ID', key='data.id'),
         SearchField.set(name='ARN', key='data.arn'),
         SearchField.set(name='Endpoint Type', key='data.endpoint_type'),
+    ],
+    widget=[
+        ChartWidget.set(**get_data_from_yaml(api_count_per_region_widget_conf)),
+        ChartWidget.set(**get_data_from_yaml(api_count_per_account_widget_conf)),
+        ChartWidget.set(**get_data_from_yaml(api_count_per_protocol_widget_conf))
     ]
 )
-
 
 CLOUD_SERVICE_TYPES = [
     CloudServiceTypeResponse({'resource': cst_api}),

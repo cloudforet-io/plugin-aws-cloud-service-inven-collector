@@ -1,0 +1,11 @@
+---
+cloud_service_group: SNS
+cloud_service_type: Topic
+name: Subscription Total Count
+query:
+  aggregate:
+    - group:
+        fields:
+          - name: count
+            key: data.subscriptions
+            operator: size

@@ -1,6 +1,14 @@
+import os
+from spaceone.inventory.libs.common_parser import *
+from spaceone.inventory.libs.schema.dynamic_widget import ChartWidget, CardWidget
 from spaceone.inventory.libs.schema.dynamic_field import TextDyField, ListDyField, DateTimeDyField, SearchField, EnumDyField
 from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, \
     CloudServiceTypeMeta
+
+current_dir = os.path.abspath(os.path.dirname(__file__))
+
+cert_count_per_region_conf = os.path.join(current_dir, 'widget/cert_count_per_region.yaml')
+cert_count_per_account_conf = os.path.join(current_dir, 'widget/cert_count_per_account.yaml')
 
 cst_certi = CloudServiceTypeResource()
 cst_certi.name = 'Certificate'
@@ -23,7 +31,7 @@ cst_certi._metadata = CloudServiceTypeMeta.set_meta(
             'warning': ['PENDING_VALIDATION', 'INACTIVE', 'VALIDATION_TIMED_OUT', 'REVOKED'],
             'alert': ['EXPIRED', 'FAILED']
         }),
-        TextDyField.data_source('Type', 'type'),
+        TextDyField.data_source('Type', 'instance_type'),
         TextDyField.data_source('In use?', 'data.in_use_display'),
         TextDyField.data_source('Renewal Eligibility', 'data.renewal_eligibility_display'),
         # For Dynamic Table
@@ -55,6 +63,10 @@ cst_certi._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='In use?', key='data.in_use_display'),
         SearchField.set(name='Renewal Eligibility', key='data.renewal_eligibility'),
         SearchField.set(name='Associated Resources', key='data.in_use_by'),
+    ],
+    widget=[
+        ChartWidget.set(**get_data_from_yaml(cert_count_per_region_conf)),
+        ChartWidget.set(**get_data_from_yaml(cert_count_per_account_conf)),
     ]
 )
 

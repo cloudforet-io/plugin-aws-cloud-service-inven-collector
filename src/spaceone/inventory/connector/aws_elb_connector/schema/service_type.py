@@ -1,7 +1,19 @@
+import os
+from spaceone.inventory.libs.common_parser import *
+from spaceone.inventory.libs.schema.dynamic_widget import ChartWidget, CardWidget
 from spaceone.inventory.libs.schema.dynamic_field import TextDyField, ListDyField, \
     DateTimeDyField, EnumDyField, SearchField
 from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, \
     CloudServiceTypeMeta
+
+current_dir = os.path.abspath(os.path.dirname(__file__))
+
+"""
+LOAD BALANCER
+"""
+lb_count_per_region_conf = os.path.join(current_dir, 'widget/lb_count_per_region.yaml')
+lb_count_per_account_conf = os.path.join(current_dir, 'widget/lb_count_per_account.yaml')
+instance_total_count_conf = os.path.join(current_dir, 'widget/instance_total_count.yaml')
 
 cst_elb = CloudServiceTypeResource()
 cst_elb.name = 'LoadBalancer'
@@ -24,7 +36,7 @@ cst_elb._metadata = CloudServiceTypeMeta.set_meta(
             'warning': ['provisioning'],
             'alert': ['active_impaired', 'failed']
         }),
-        EnumDyField.data_source('Type', 'type', default_badge={
+        EnumDyField.data_source('Type', 'instance_type', default_badge={
             'indigo.500': ['network'], 'coral.600': ['application']
         }),
         ListDyField.data_source('Availability Zones', 'data.availability_zones', options={
@@ -110,7 +122,7 @@ cst_elb._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='ARN', key='data.load_balancer_arn'),
         SearchField.set(name='DNS Name', key='data.dns_name'),
         SearchField.set(name='State', key='data.state'),
-        SearchField.set(name='Type', key='type',
+        SearchField.set(name='Type', key='instance_type',
                         enums={
                             'application': {'label': 'Application'},
                             'network': {'label': 'Network'},
@@ -145,9 +157,18 @@ cst_elb._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Instance ID', key='data.instances.instance_id'),
         SearchField.set(name='Instance Name', key='data.instances.instance_name'),
         SearchField.set(name='Instance State', key='data.instances.state')
+    ],
+    widget=[
+        CardWidget.set(**get_data_from_yaml(instance_total_count_conf)),
+        ChartWidget.set(**get_data_from_yaml(lb_count_per_region_conf)),
+        ChartWidget.set(**get_data_from_yaml(lb_count_per_account_conf))
     ]
 )
 
+
+"""
+TARGET GROUP
+"""
 cst_tg = CloudServiceTypeResource()
 cst_tg.name = 'TargetGroup'
 cst_tg.provider = 'aws'
@@ -163,7 +184,7 @@ cst_tg._metadata = CloudServiceTypeMeta.set_meta(
         TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('Port', 'data.port'),
         TextDyField.data_source('Protocol', 'data.protocol'),
-        TextDyField.data_source('Target Type', 'type'),
+        TextDyField.data_source('Target Type', 'instance_type'),
         ListDyField.data_source('Load Balancers', 'data.load_balancer_arns', options={
             'delimiter': '<br>'
         }),
@@ -221,7 +242,7 @@ cst_tg._metadata = CloudServiceTypeMeta.set_meta(
                             'TCP_UDP': {'label': 'TCP/UDP'},
                         }),
         SearchField.set(name='Port', key='data.port', data_type='integer'),
-        SearchField.set(name='Target Type', key='type',
+        SearchField.set(name='Target Type', key='instance_type',
                         enums={
                             'instance': {'label': 'Instance'},
                             'ip': {'label': 'IP'},

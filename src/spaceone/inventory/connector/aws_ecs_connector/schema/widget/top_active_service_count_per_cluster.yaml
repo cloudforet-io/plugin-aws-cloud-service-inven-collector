@@ -1,0 +1,21 @@
+---
+cloud_service_group: ECS
+cloud_service_type: Cluster
+name: Top Active Services per Cluster
+query:
+  aggregate:
+    - unwind:
+        path: data.tasks
+    - group:
+        keys:
+        - name: cluster
+          key: name
+        fields:
+        - name: task_count
+          key: data.tasks
+          operator: count
+    - sort:
+        key: task_count
+        desc: true
+options:
+  chart_type: COLUMN

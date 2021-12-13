@@ -1,0 +1,15 @@
+---
+cloud_service_group: KinesisDataStream
+cloud_service_type: DataStream
+name: Data Stream per Region
+query:
+  aggregate:
+    - group:
+        keys:
+          - name: name
+            key: region_code
+        fields:
+          - name: value
+            operator: count
+options:
+  chart_type: COLUMN

@@ -1,0 +1,15 @@
+---
+cloud_service_group: EC2
+cloud_service_type: AutoScalingGroup
+name: Auto Scaling Group per Account
+query:
+  aggregate:
+    - group:
+        keys:
+          - name: account
+            key: account
+        fields:
+          - name: value
+            operator: count
+options:
+  chart_type: DONUT

@@ -1,11 +1,7 @@
-import logging
-
 from schematics import Model
 from spaceone.inventory.libs.schema.resource import CloudWatchModel, CloudWatchDimensionModel
 from schematics.types import ModelType, StringType, IntType, DateTimeType, ListType, BooleanType, \
     FloatType
-
-_LOGGER = logging.getLogger(__name__)
 
 
 class Tags(Model):
@@ -249,7 +245,7 @@ class Cluster(Model):
     hsm_status = ModelType(HsmStatus, deserialize_from="HsmStatus")
     cluster_snapshot_copy_status = ModelType(ClusterSnapshotCopyStatus, deserialize_from="ClusterSnapshotCopyStatus")
     cluster_public_key = StringType(deserialize_from="ClusterPublicKey")
-    cluster_nodes = ListType(ModelType(ClusterNodes), deserialize_from="ClusterNodes")
+    cluster_nodes = ListType(ModelType(ClusterNodes), deserialize_from="ClusterNodes", default=[])
     elastic_ip_status = ModelType(ElasticIpStatus, deserialize_from="ElasticIpStatus")
     cluster_revision_number = StringType(deserialize_from="ClusterRevisionNumber")
     tags = ListType(ModelType(Tags), deserialize_from="Tags", default=[])
@@ -268,7 +264,7 @@ class Cluster(Model):
     expected_next_snapshot_schedule_time_status = StringType(deserialize_from="ExpectedNextSnapshotScheduleTimeStatus")
     next_maintenance_window_start_time = DateTimeType(deserialize_from="NextMaintenanceWindowStartTime")
     resize_info = ModelType(ResizeInfo, deserialize_from="ResizeInfo")
-    snapshots = ListType(ModelType(Snapshot))
+    snapshots = ListType(ModelType(Snapshot), default=[])
     snapshot_schedules = ListType(ModelType(SnapshotSchedule))
     scheduled_actions = ListType(ModelType(ScheduledAction))
     account_id = StringType(default="")

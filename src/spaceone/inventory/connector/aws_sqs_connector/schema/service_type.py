@@ -1,5 +1,15 @@
+import os
+from spaceone.inventory.libs.common_parser import *
+from spaceone.inventory.libs.schema.dynamic_widget import ChartWidget, CardWidget
 from spaceone.inventory.libs.schema.dynamic_field import TextDyField, SearchField
 from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, CloudServiceTypeMeta
+
+current_dir = os.path.abspath(os.path.dirname(__file__))
+
+queue_max_message_total_size_conf = os.path.join(current_dir, 'widget/queue_max_message_total_size.yaml')
+queue_count_per_region_conf = os.path.join(current_dir, 'widget/queue_count_per_region.yaml')
+queue_count_per_account_conf = os.path.join(current_dir, 'widget/queue_count_per_account.yaml')
+queue_max_message_total_size_per_account_conf = os.path.join(current_dir, 'widget/queue_max_message_total_size_per_account_conf.yaml')
 
 cst_que = CloudServiceTypeResource()
 cst_que.name = 'Queue'
@@ -71,6 +81,12 @@ cst_que._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Approximate Number of Messages', key='data.approximate_number_of_messages',
                         data_type='integer'),
         SearchField.set(name='Last Modified Time', key='data.last_modified_timestamp', data_type='datetime'),
+    ],
+    widget=[
+        CardWidget.set(**get_data_from_yaml(queue_max_message_total_size_conf)),
+        ChartWidget.set(**get_data_from_yaml(queue_count_per_region_conf)),
+        ChartWidget.set(**get_data_from_yaml(queue_count_per_account_conf)),
+        ChartWidget.set(**get_data_from_yaml(queue_max_message_total_size_per_account_conf)),
     ]
 )
 

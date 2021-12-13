@@ -1,0 +1,15 @@
+---
+cloud_service_group: DirectConnect
+cloud_service_type: DirectConnectGateway
+name: Direct Connect Gateway per Region
+query:
+  aggregate:
+    - group:
+        keys:
+          - name: name
+            key: region_code
+        fields:
+          - name: value
+            operator: count
+options:
+  chart_type: COLUMN

@@ -1,6 +1,20 @@
+import os
+from spaceone.inventory.libs.common_parser import *
+from spaceone.inventory.libs.schema.dynamic_widget import ChartWidget, CardWidget
 from spaceone.inventory.libs.schema.dynamic_field import TextDyField, SearchField, DateTimeDyField, EnumDyField
 from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, \
     CloudServiceTypeMeta
+
+current_dir = os.path.abspath(os.path.dirname(__file__))
+
+"""
+SECURITY GROUP
+"""
+inbound_rule_total_count_conf = os.path.join(current_dir, 'widget/inbound_rule_total_count.yaml')
+outbound_rule_total_count_conf = os.path.join(current_dir, 'widget/outbound_rule_total_count.yaml')
+instance_total_count_conf = os.path.join(current_dir, 'widget/instance_total_count.yaml')
+sg_count_per_region_conf = os.path.join(current_dir, 'widget/sg_count_per_region.yaml')
+sg_count_per_account_conf = os.path.join(current_dir, 'widget/sg_count_per_account.yaml')
 
 cst_sg = CloudServiceTypeResource()
 cst_sg.name = 'SecurityGroup'
@@ -29,8 +43,21 @@ cst_sg._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Outbound Protocol', key='data.ip_permissions_egress.protocol_display'),
         SearchField.set(name='Outbound Port Rage', key='data.ip_permissions_egress.port_display'),
         SearchField.set(name='Outbound Source', key='data.ip_permissions_egress.source_display'),
+    ],
+    widget=[
+        CardWidget.set(**get_data_from_yaml(inbound_rule_total_count_conf)),
+        CardWidget.set(**get_data_from_yaml(outbound_rule_total_count_conf)),
+        CardWidget.set(**get_data_from_yaml(instance_total_count_conf)),
+        ChartWidget.set(**get_data_from_yaml(sg_count_per_region_conf)),
+        ChartWidget.set(**get_data_from_yaml(sg_count_per_account_conf))
     ]
 )
+
+"""
+AMI
+"""
+ami_count_per_region_conf = os.path.join(current_dir, 'widget/ami_count_per_region.yaml')
+ami_count_per_account_conf = os.path.join(current_dir, 'widget/ami_count_per_account.yaml')
 
 cst_ami = CloudServiceTypeResource()
 cst_ami.name = 'AMI'
@@ -94,6 +121,10 @@ cst_ami._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Instance ID', key='data.instances.instance_id'),
         SearchField.set(name='Instance Name', key='data.instances.instance_name'),
         SearchField.set(name='Instance State', key='data.instances.state'),
+    ],
+    widget=[
+        ChartWidget.set(**get_data_from_yaml(ami_count_per_region_conf)),
+        ChartWidget.set(**get_data_from_yaml(ami_count_per_account_conf))
     ]
 )
 

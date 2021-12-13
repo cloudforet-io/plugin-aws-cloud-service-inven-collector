@@ -1,0 +1,16 @@
+---
+cloud_service_group: S3
+cloud_service_type: Bucket
+name: Object Total Size per Account
+query:
+  aggregate:
+    - group:
+        keys:
+          - name: account
+            key: account
+        fields:
+          - name: value
+            key: instance_size
+            operator: sum
+options:
+  chart_type: DONUT

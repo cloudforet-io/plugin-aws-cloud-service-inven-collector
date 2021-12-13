@@ -1,0 +1,13 @@
+---
+cloud_service_group: ECS
+cloud_service_type: Cluster
+name: Active Service Total Count
+query:
+  aggregate:
+    - unwind:
+        path: data.tasks
+    - group:
+        fields:
+        - name: count
+          key: data.tasks
+          operator: count

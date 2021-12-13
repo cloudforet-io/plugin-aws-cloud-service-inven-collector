@@ -1,6 +1,22 @@
+import os
+from spaceone.inventory.libs.common_parser import *
+from spaceone.inventory.libs.schema.dynamic_widget import ChartWidget, CardWidget
 from spaceone.inventory.libs.schema.dynamic_field import TextDyField, BadgeDyField, ListDyField, SearchField, SizeField
 from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, \
     CloudServiceTypeMeta
+
+current_dir = os.path.abspath(os.path.dirname(__file__))
+
+"""
+FUNCTION
+"""
+function_code_total_size_conf = os.path.join(current_dir, 'widget/function_code_total_size.yaml')
+function_memory_total_size_conf = os.path.join(current_dir, 'widget/function_memory_total_size.yaml')
+function_count_per_region_conf = os.path.join(current_dir, 'widget/function_count_per_region.yaml')
+function_count_per_account_conf = os.path.join(current_dir, 'widget/function_count_per_account.yaml')
+function_code_total_size_per_account_conf = os.path.join(current_dir, 'widget/function_code_total_size_per_account.yaml')
+function_memory_total_size_per_account_conf = os.path.join(current_dir, 'widget/function_memory_total_size_per_account.yaml')
+function_total_count_per_runtime_conf = os.path.join(current_dir, 'widget/function_total_count_per_runtime.yaml')
 
 cst_function = CloudServiceTypeResource()
 cst_function.name = 'Function'
@@ -18,7 +34,7 @@ cst_function._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
         TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('Runtime', 'data.runtime'),
-        SizeField.data_source('Code Size', 'size'),
+        SizeField.data_source('Code Size', 'instance_size'),
         SizeField.data_source('Memory Size', 'data.memory_size', options={
             'source_unit': 'MB'
         }),
@@ -96,6 +112,15 @@ cst_function._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='VPC Name', key='data.vpc_config.vpc.name'),
         SearchField.set(name='Subnet Id', key='data.vpc_config.subnets.id'),
         SearchField.set(name='Last Modified Time', key='data.last_modified', data_type='datetime'),
+    ],
+    widget=[
+        CardWidget.set(**get_data_from_yaml(function_code_total_size_conf)),
+        CardWidget.set(**get_data_from_yaml(function_memory_total_size_conf)),
+        ChartWidget.set(**get_data_from_yaml(function_count_per_region_conf)),
+        ChartWidget.set(**get_data_from_yaml(function_count_per_account_conf)),
+        ChartWidget.set(**get_data_from_yaml(function_code_total_size_per_account_conf)),
+        ChartWidget.set(**get_data_from_yaml(function_memory_total_size_per_account_conf)),
+        ChartWidget.set(**get_data_from_yaml(function_total_count_per_runtime_conf)),
     ]
 )
 

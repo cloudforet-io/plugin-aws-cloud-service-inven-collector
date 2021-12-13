@@ -26,7 +26,7 @@ cst_memcached._metadata = CloudServiceTypeMeta.set_meta(
         TextDyField.data_source('ARN', 'data.arn', options={
             'is_optional': True
         }),
-        TextDyField.data_source('Cache Node Type', 'type', options={
+        TextDyField.data_source('Cache Node Type', 'instance_type', options={
             'is_optional': True
         }),
         TextDyField.data_source('Engine Version', 'data.engine_version', options={
@@ -64,7 +64,7 @@ cst_memcached._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='ARN', key='data.arn'),
         SearchField.set(name='Status', key='data.status'),
         SearchField.set(name='Nodes', key='data.num_cache_nodes', data_type='integer'),
-        SearchField.set(name='Node Type', key='type'),
+        SearchField.set(name='Node Type', key='instance_type'),
         SearchField.set(name='Zone', key='data.preferred_availability_zone'),
         SearchField.set(name='Configuration Endpoint Address', key='data.configuration_endpoint.address'),
         SearchField.set(name='Configuration Endpoint Port', key='data.configuration_endpoint.port'),
@@ -95,7 +95,7 @@ cst_redis._metadata = CloudServiceTypeMeta.set_meta(
         }),
         TextDyField.data_source('Shard', 'data.shard_count'),
         TextDyField.data_source('Nodes', 'data.node_count'),
-        TextDyField.data_source('Node Type', 'type'),
+        TextDyField.data_source('Node Type', 'instance_type'),
         TextDyField.data_source('Encryption in-transit', 'data.transit_encryption_enabled'),
         TextDyField.data_source('Encryption at-rest', 'data.at_rest_encryption_enabled'),
         TextDyField.data_source('ARN', 'data.arn', options={
@@ -151,7 +151,7 @@ cst_redis._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Status', key='data.status'),
         SearchField.set(name='Shard Count', key='data.shard_count', data_type='integer'),
         SearchField.set(name='Node Count', key='data.node_count', data_type='integer'),
-        SearchField.set(name='Node Type', key='type'),
+        SearchField.set(name='Node Type', key='instance_type'),
         SearchField.set(name='Multi AZ', key='data.multi_az'),
         SearchField.set(name='Configuration Endpoint Address', key='data.configuration_endpoint.address'),
         SearchField.set(name='Configuration Endpoint Port', key='data.configuration_endpoint.port'),

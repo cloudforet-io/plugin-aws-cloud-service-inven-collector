@@ -1,10 +1,19 @@
+import os
+from spaceone.inventory.libs.common_parser import *
+from spaceone.inventory.libs.schema.dynamic_widget import ChartWidget, CardWidget
 from spaceone.inventory.libs.schema.dynamic_field import TextDyField, EnumDyField, SearchField, ListDyField
 from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, \
     CloudServiceTypeMeta
 
+current_dir = os.path.abspath(os.path.dirname(__file__))
+
 '''
 CONNECTION
 '''
+connection_bandwidth_total_sum_conf = os.path.join(current_dir, 'widget/connection_bandwidth_total_sum.yaml')
+connection_count_per_region_widget_conf = os.path.join(current_dir, 'widget/connection_count_per_region.yaml')
+connection_count_per_account_widget_conf = os.path.join(current_dir, 'widget/connection_count_per_account.yaml')
+
 cst_connection = CloudServiceTypeResource()
 cst_connection.name = 'Connection'
 cst_connection.provider = 'aws'
@@ -75,6 +84,11 @@ cst_connection_meta = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Lag ID', key='data.lag_id'),
         SearchField.set(name='AWS Device', key='data.aws_device'),
         SearchField.set(name='Provider Name', key='data.provider_name')
+    ],
+    widget=[
+        # CardWidget.set(**get_data_from_yaml(connection_bandwidth_total_sum_conf)),
+        ChartWidget.set(**get_data_from_yaml(connection_count_per_region_widget_conf)),
+        ChartWidget.set(**get_data_from_yaml(connection_count_per_account_widget_conf))
     ]
 )
 cst_connection._metadata = cst_connection_meta
@@ -82,6 +96,9 @@ cst_connection._metadata = cst_connection_meta
 '''
 DIRECT CONNECT GATEWAY
 '''
+dcgw_count_per_region_widget_conf = os.path.join(current_dir, 'widget/dcgw_count_per_region.yaml')
+dcgw_count_per_account_widget_conf = os.path.join(current_dir, 'widget/dcgw_count_per_account.yaml')
+
 cst_dc_gw = CloudServiceTypeResource()
 cst_dc_gw.name = 'DirectConnectGateway'
 cst_dc_gw.provider = 'aws'
@@ -121,6 +138,10 @@ cst_dc_gw_meta = CloudServiceTypeMeta.set_meta(
                             'deleting': {'label': 'Deleting', 'icon': {'color': 'yellow.500'}}
                         }),
         SearchField.set(name='Amazon Side ASN', key='data.amazon_side_asn')
+    ],
+    widget=[
+        ChartWidget.set(**get_data_from_yaml(dcgw_count_per_region_widget_conf)),
+        ChartWidget.set(**get_data_from_yaml(dcgw_count_per_account_widget_conf))
     ]
 )
 cst_dc_gw._metadata = cst_dc_gw_meta
@@ -129,6 +150,9 @@ cst_dc_gw._metadata = cst_dc_gw_meta
 '''
 VIRTUAL PRIVATE GATEWAY
 '''
+vpgw_count_per_region_widget_conf = os.path.join(current_dir, 'widget/vpgw_count_per_region.yaml')
+vpgw_count_per_account_widget_conf = os.path.join(current_dir, 'widget/vpgw_count_per_account.yaml')
+
 cst_vp_gw = CloudServiceTypeResource()
 cst_vp_gw.name = 'VirtualPrivateGateway'
 cst_vp_gw.provider = 'aws'
@@ -160,6 +184,10 @@ cst_vp_gw_meta = CloudServiceTypeMeta.set_meta(
                             'pending': {'label': 'Pending', 'icon': {'color': 'yellow.500'}},
                             'deleting': {'label': 'Deleting', 'icon': {'color': 'yellow.500'}}
                         })
+    ],
+    widget=[
+        ChartWidget.set(**get_data_from_yaml(vpgw_count_per_region_widget_conf)),
+        ChartWidget.set(**get_data_from_yaml(vpgw_count_per_account_widget_conf))
     ]
 )
 cst_vp_gw._metadata = cst_vp_gw_meta
@@ -168,6 +196,10 @@ cst_vp_gw._metadata = cst_vp_gw_meta
 '''
 LAG
 '''
+lag_bandwidth_total_sum_conf = os.path.join(current_dir, 'widget/lag_bandwidth_total_sum.yaml')
+lag_count_per_region_widget_conf = os.path.join(current_dir, 'widget/lag_count_per_region.yaml')
+lag_count_per_account_widget_conf = os.path.join(current_dir, 'widget/lag_count_per_account.yaml')
+
 cst_lags = CloudServiceTypeResource()
 cst_lags.name = 'LAG'
 cst_lags.provider = 'aws'
@@ -259,6 +291,11 @@ cst_lags_meta = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Bandwidth', key='data.connections_bandwidth'),
         SearchField.set(name='Minimum Links', key='data.minimum_links', data_type='integer'),
         SearchField.set(name='AWS Device', key='data.aws_device')
+    ],
+    widget=[
+        # CardWidget.set(**get_data_from_yaml(lag_bandwidth_total_sum_conf)),
+        ChartWidget.set(**get_data_from_yaml(lag_count_per_region_widget_conf)),
+        ChartWidget.set(**get_data_from_yaml(lag_count_per_account_widget_conf))
     ]
 )
 cst_lags._metadata = cst_lags_meta

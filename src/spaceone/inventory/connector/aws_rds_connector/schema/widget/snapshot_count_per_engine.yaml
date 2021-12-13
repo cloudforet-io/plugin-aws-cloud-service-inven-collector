@@ -1,0 +1,15 @@
+---
+cloud_service_group: RDS
+cloud_service_type: Snapshot
+name: Snapshot per Engine
+query:
+  aggregate:
+    - group:
+        keys:
+          - name: name
+            key: instance_type
+        fields:
+          - name: value
+            operator: count
+options:
+  chart_type: TREEMAP

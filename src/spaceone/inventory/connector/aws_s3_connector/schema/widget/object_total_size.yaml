@@ -1,0 +1,11 @@
+---
+cloud_service_group: S3
+cloud_service_type: Bucket
+name: Bucket Total Size
+query:
+  aggregate:
+    - group:
+        fields:
+          - name: value
+            key: instance_size
+            operator: sum

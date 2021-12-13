@@ -1,0 +1,11 @@
+---
+cloud_service_group: KinesisDataStream
+cloud_service_type: DataStream
+name: Open Shard Total Count
+query:
+  aggregate:
+    - group:
+        fields:
+        - name: value
+          key: data.open_shards_num
+          operator: sum

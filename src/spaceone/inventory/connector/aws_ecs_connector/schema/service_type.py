@@ -1,5 +1,17 @@
+import os
+from spaceone.inventory.libs.common_parser import *
+from spaceone.inventory.libs.schema.dynamic_widget import ChartWidget, CardWidget
 from spaceone.inventory.libs.schema.dynamic_field import TextDyField, EnumDyField, SearchField, ListDyField
 from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, CloudServiceTypeMeta
+
+current_dir = os.path.abspath(os.path.dirname(__file__))
+
+active_service_total_count_conf = os.path.join(current_dir, 'widget/active_service_total_count.yaml')
+running_task_total_count_conf = os.path.join(current_dir, 'widget/running_task_total_count.yaml')
+cluster_count_per_region_conf = os.path.join(current_dir, 'widget/cluster_count_per_region.yaml')
+cluster_count_per_account_conf = os.path.join(current_dir, 'widget/cluster_count_per_account.yaml')
+top_active_service_count_per_cluster_conf = os.path.join(current_dir, 'widget/top_active_service_count_per_cluster.yaml')
+top_running_task_count_per_cluster_conf = os.path.join(current_dir, 'widget/top_running_task_count_per_cluster.yaml')
 
 cst_ecs_cluster = CloudServiceTypeResource()
 cst_ecs_cluster.name = 'Cluster'
@@ -103,6 +115,14 @@ cst_ecs_cluster._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Task Definition', key='data.tasks.task_definition'),
         SearchField.set(name='Task Definition ARN', key='data.tasks.task_definition_arn'),
         SearchField.set(name='Container Instance ID', key='data.container_instances.ec2_instance_id'),
+    ],
+    widget=[
+        CardWidget.set(**get_data_from_yaml(active_service_total_count_conf)),
+        CardWidget.set(**get_data_from_yaml(running_task_total_count_conf)),
+        ChartWidget.set(**get_data_from_yaml(cluster_count_per_region_conf)),
+        ChartWidget.set(**get_data_from_yaml(cluster_count_per_account_conf)),
+        ChartWidget.set(**get_data_from_yaml(top_active_service_count_per_cluster_conf)),
+        ChartWidget.set(**get_data_from_yaml(top_running_task_count_per_cluster_conf))
     ]
 )
 

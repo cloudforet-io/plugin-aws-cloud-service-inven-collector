@@ -1,0 +1,13 @@
+---
+cloud_service_group: EC2
+cloud_service_type: SecurityGroup
+name: Instance Total Count
+query:
+  aggregate:
+    - unwind:
+        path: data.instances
+    - group:
+        fields:
+          - name: count
+            operator: count
+            key: data.instances

@@ -1,0 +1,16 @@
+---
+cloud_service_group: EC2
+cloud_service_type: Volume
+name: Volume Total Size per State
+query:
+  aggregate:
+    - group:
+        keys:
+          - name: state
+            key: data.state
+        fields:
+          - name: size
+            key: instance_size
+            operator: sum
+options:
+  chart_type: DONUT

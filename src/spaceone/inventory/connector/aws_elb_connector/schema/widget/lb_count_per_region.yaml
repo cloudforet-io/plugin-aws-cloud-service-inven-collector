@@ -1,0 +1,15 @@
+---
+cloud_service_group: ELB
+cloud_service_type: LoadBalancer
+name: Load Balancer per Region
+query:
+  aggregate:
+    - group:
+        keys:
+          - name: name
+            key: region_code
+        fields:
+          - name: value
+            operator: count
+options:
+  chart_type: COLUMN

@@ -1,0 +1,16 @@
+---
+cloud_service_group: EC2
+cloud_service_type: Snapshot
+name: Snapshot Total Size per Account
+query:
+  aggregate:
+    - group:
+        keys:
+          - name: account
+            key: account
+        fields:
+          - name: size
+            key: instance_size
+            operator: sum
+options:
+  chart_type: DONUT

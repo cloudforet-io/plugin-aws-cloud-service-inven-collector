@@ -1,3 +1,6 @@
+import os
+from spaceone.inventory.libs.common_parser import *
+from spaceone.inventory.libs.schema.dynamic_widget import ChartWidget, CardWidget
 from spaceone.inventory.libs.schema.dynamic_field import (
     SearchField,
     TextDyField,
@@ -9,6 +12,12 @@ from spaceone.inventory.libs.schema.resource import (
     CloudServiceTypeResponse,
     CloudServiceTypeMeta,
 )
+
+current_dir = os.path.abspath(os.path.dirname(__file__))
+
+open_shard_total_count_conf = os.path.join(current_dir, 'widget/open_shard_total_count.yaml')
+stream_count_per_region_conf = os.path.join(current_dir, 'widget/stream_count_per_region.yaml')
+stream_count_per_account_conf = os.path.join(current_dir, 'widget/stream_count_per_account.yaml')
 
 cst_kds = CloudServiceTypeResource()
 cst_kds.name = "DataStream"
@@ -33,7 +42,7 @@ cst_kds._metadata = CloudServiceTypeMeta.set_meta(
                 "warning": ["Creating", "Deleting", "Updating"],
             },
         ),
-        TextDyField.data_source("Open shards", "size"),
+        TextDyField.data_source("Open shards", "instance_size"),
         TextDyField.data_source(
             "Data retention period", "data.retention_period_display"
         ),
@@ -77,7 +86,7 @@ cst_kds._metadata = CloudServiceTypeMeta.set_meta(
         ),
         SearchField.set(
             name="Number of Open Shards",
-            key="size",
+            key="instance_size",
             data_type="Integer",
         ),
         SearchField.set(
@@ -86,6 +95,11 @@ cst_kds._metadata = CloudServiceTypeMeta.set_meta(
             data_type="Integer",
         ),
     ],
+    widget=[
+        CardWidget.set(**get_data_from_yaml(open_shard_total_count_conf)),
+        ChartWidget.set(**get_data_from_yaml(stream_count_per_region_conf)),
+        ChartWidget.set(**get_data_from_yaml(stream_count_per_account_conf)),
+    ]
 )
 
 CLOUD_SERVICE_TYPES = [

@@ -1,0 +1,15 @@
+---
+cloud_service_group: KinesisFirehose
+cloud_service_type: DeliveryStream
+name: Delivery Stream per Account
+query:
+  aggregate:
+    - group:
+        keys:
+          - name: account
+            key: account
+        fields:
+          - name: value
+            operator: count
+options:
+  chart_type: DONUT

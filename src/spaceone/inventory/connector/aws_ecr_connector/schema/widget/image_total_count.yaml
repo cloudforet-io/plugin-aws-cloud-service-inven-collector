@@ -1,0 +1,13 @@
+---
+cloud_service_group: ECR
+cloud_service_type: Repository
+name: Item Total Count
+query:
+  aggregate:
+    - unwind:
+        path: data.images
+    - group:
+        fields:
+        - name: count
+          key: data.images
+          operator: count

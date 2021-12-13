@@ -1,0 +1,13 @@
+---
+cloud_service_group: DocumentDB
+cloud_service_type: Cluster
+name: Instance Total Count
+query:
+  aggregate:
+    - unwind:
+        path: data.instances
+    - group:
+        fields:
+          - name: count
+            operator: count
+            key: data.instances

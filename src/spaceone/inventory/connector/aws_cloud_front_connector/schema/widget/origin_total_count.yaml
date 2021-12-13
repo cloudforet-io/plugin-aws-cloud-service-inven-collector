@@ -1,0 +1,11 @@
+---
+cloud_service_group: CloudFront
+cloud_service_type: Distribution
+name: Origin Total Count
+query:
+  aggregate:
+    - group:
+        fields:
+          - name: count
+            operator: count
+            key: data.origins.items

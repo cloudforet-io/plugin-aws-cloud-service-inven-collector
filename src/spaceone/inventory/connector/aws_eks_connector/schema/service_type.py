@@ -1,6 +1,17 @@
+import os
+from spaceone.inventory.libs.common_parser import *
+from spaceone.inventory.libs.schema.dynamic_widget import ChartWidget, CardWidget
 from spaceone.inventory.libs.schema.dynamic_field import TextDyField, EnumDyField, SearchField, ListDyField
 from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, \
     CloudServiceTypeMeta
+
+current_dir = os.path.abspath(os.path.dirname(__file__))
+
+"""
+CLUSTER
+"""
+cluster_count_per_region_conf = os.path.join(current_dir, 'widget/cluster_count_per_region.yaml')
+cluster_count_per_account_conf = os.path.join(current_dir, 'widget/cluster_count_per_account.yaml')
 
 cst_eks_cluster = CloudServiceTypeResource()
 cst_eks_cluster.name = 'Cluster'
@@ -88,9 +99,17 @@ cst_eks_cluster._metadata = CloudServiceTypeMeta.set_meta(
                         }),
         SearchField.set(name='Cluster Version', key='data.version'),
         SearchField.set(name='Cluster Endpoint', key='data.endpoint')
+    ],
+    widget=[
+        ChartWidget.set(**get_data_from_yaml(cluster_count_per_region_conf)),
+        ChartWidget.set(**get_data_from_yaml(cluster_count_per_account_conf)),
     ]
 )
 
+
+"""
+NODE GROUP
+"""
 cst_eks_nodegrp = CloudServiceTypeResource()
 cst_eks_nodegrp.name = 'NodeGroup'
 cst_eks_nodegrp.provider = 'aws'

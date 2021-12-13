@@ -1,0 +1,15 @@
+---
+cloud_service_group: RDS
+cloud_service_type: Instance
+name: Instance Count per Instance Type
+query:
+  aggregate:
+    - group:
+        keys:
+          - name: instance_type
+            key: data.db_instance_class
+        fields:
+          - name: count
+            operator: count
+options:
+  chart_type: TREEMAP

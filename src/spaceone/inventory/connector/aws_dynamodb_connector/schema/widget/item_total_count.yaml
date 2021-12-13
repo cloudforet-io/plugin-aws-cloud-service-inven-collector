@@ -1,0 +1,11 @@
+---
+cloud_service_group: DynamoDB
+cloud_service_type: Table
+name: Item Total Count
+query:
+  aggregate:
+    - group:
+        fields:
+          - name: item_count
+            operator: sum
+            key: data.item_count

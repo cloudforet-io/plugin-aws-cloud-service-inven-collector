@@ -1,0 +1,15 @@
+---
+cloud_service_group: DynamoDB
+cloud_service_type: Table
+name: Table per Region
+query:
+  aggregate:
+    - group:
+        keys:
+          - name: name
+            key: region_code
+        fields:
+          - name: value
+            operator: count
+options:
+  chart_type: COLUMN

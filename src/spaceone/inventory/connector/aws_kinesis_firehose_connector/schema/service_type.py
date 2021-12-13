@@ -1,6 +1,14 @@
+import os
+from spaceone.inventory.libs.common_parser import *
+from spaceone.inventory.libs.schema.dynamic_widget import ChartWidget, CardWidget
 from spaceone.inventory.libs.schema.dynamic_field import TextDyField, EnumDyField, SearchField, DateTimeDyField
 from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, \
     CloudServiceTypeMeta
+
+current_dir = os.path.abspath(os.path.dirname(__file__))
+
+stream_count_per_region_conf = os.path.join(current_dir, 'widget/stream_count_per_region.yaml')
+stream_count_per_account_conf = os.path.join(current_dir, 'widget/stream_count_per_account.yaml')
 
 cst_firehose = CloudServiceTypeResource()
 cst_firehose.name = "DeliveryStream"
@@ -70,6 +78,10 @@ TextDyField.data_source('ARN', 'data.delivery_stream_arn', options={
         SearchField.set(name="IAM role", key="data.additional_tabs.iam_role"),
         SearchField.set(name="S3 backup mode", key="data.additional_tabs.s3_backup_info")
     ],
+    widget=[
+        ChartWidget.set(**get_data_from_yaml(stream_count_per_region_conf)),
+        ChartWidget.set(**get_data_from_yaml(stream_count_per_account_conf)),
+    ]
 )
 
 CLOUD_SERVICE_TYPES = [

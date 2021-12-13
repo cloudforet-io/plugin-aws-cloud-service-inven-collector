@@ -1,0 +1,18 @@
+---
+cloud_service_group: Redshift
+cloud_service_type: Cluster
+name: Snapshot Total Size per Account
+query:
+  aggregate:
+    - unwind:
+        path: data.snapshot
+    - group:
+        keys:
+          - name: account
+            key: account
+        fields:
+          - name: size
+            key: data.snapshots.total_backup_size_in_mega_bytes
+            operator: sum
+options:
+  chart_type: DONUT

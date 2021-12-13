@@ -2,6 +2,7 @@ from schematics import Model
 from schematics.types import ListType, StringType, PolyModelType, DictType, ModelType, BooleanType, DateTimeType, FloatType
 from .dynamic_layout import BaseLayoutField, QuerySearchTableDynamicLayout
 from .dynamic_search import BaseDynamicSearch
+from .dynamic_widget import BaseDynamicWidget
 
 
 class MetaDataViewSubData(Model):
@@ -16,6 +17,7 @@ class MetaDataView(Model):
     table = PolyModelType(MetaDataViewTable, serialize_when_none=False)
     sub_data = PolyModelType(MetaDataViewSubData, serialize_when_none=False)
     search = ListType(PolyModelType(BaseDynamicSearch), serialize_when_none=False)
+    widget = ListType(PolyModelType(BaseDynamicWidget), serialize_when_none=False)
 
 
 class BaseMetaData(Model):
@@ -59,14 +61,9 @@ class CloudServiceResourceTags(Model):
 
 class CloudServiceTypeMeta(BaseMetaData):
     @classmethod
-    def set_fields(cls, name='', fields=[]):
-        _table = MetaDataViewTable({'layout': QuerySearchTableDynamicLayout.set_fields(name, fields)})
-        return cls({'view': MetaDataView({'table': _table})})
-
-    @classmethod
-    def set_meta(cls, name='', fields=[], search=[]):
+    def set_meta(cls, name='', fields=[], search=[], widget=[]):
         table_meta = MetaDataViewTable({'layout': QuerySearchTableDynamicLayout.set_fields(name, fields)})
-        return cls({'view': MetaDataView({'table': table_meta, 'search': search})})
+        return cls({'view': MetaDataView({'table': table_meta, 'search': search, 'widget': widget})})
 
 
 class CloudServiceMeta(BaseMetaData):

@@ -1,7 +1,18 @@
+import os
+from spaceone.inventory.libs.common_parser import *
+from spaceone.inventory.libs.schema.dynamic_widget import ChartWidget, CardWidget
 from spaceone.inventory.libs.schema.dynamic_field import TextDyField, ListDyField, DateTimeDyField, SearchField, \
     EnumDyField
 from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, \
     CloudServiceTypeMeta
+
+current_dir = os.path.abspath(os.path.dirname(__file__))
+
+"""
+CLUSTER
+"""
+cluster_count_per_region_conf = os.path.join(current_dir, 'widget/cluster_count_per_region.yaml')
+cluster_count_per_account_conf = os.path.join(current_dir, 'widget/cluster_count_per_account.yaml')
 
 # CLUSTERS
 cst_cluster = CloudServiceTypeResource()
@@ -84,9 +95,16 @@ cst_cluster._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Kafka Version', key='data.current_broker_software_info.kafka_version'),
         SearchField.set(name='Broker Type', key='data.broker_node_group_info.instance_type'),
         SearchField.set(name='Status', key='data.state')
+    ],
+    widget=[
+        ChartWidget.set(**get_data_from_yaml(cluster_count_per_region_conf)),
+        ChartWidget.set(**get_data_from_yaml(cluster_count_per_account_conf)),
     ]
 )
 
+"""
+CONFIGURATION
+"""
 # CONFIGURATION
 cst_config = CloudServiceTypeResource()
 cst_config.name = 'ClusterConfiguration'

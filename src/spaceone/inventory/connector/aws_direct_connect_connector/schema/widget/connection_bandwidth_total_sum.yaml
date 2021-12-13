@@ -1,0 +1,14 @@
+######
+# bandwidth 단위와 type 변경 작업 먼저 해야함..
+######
+---
+cloud_service_group: DirectConnect
+cloud_service_type: Connection
+name: Connection Bandwidth Total Sum
+query:
+  aggregate:
+    - group:
+        fields:
+          - name: bandwidth
+            operator: sum
+            key: data.bandwidth
