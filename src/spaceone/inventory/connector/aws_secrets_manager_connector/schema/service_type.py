@@ -8,7 +8,7 @@ from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, Cl
 current_dir = os.path.abspath(os.path.dirname(__file__))
 
 secret_count_per_region_conf = os.path.join(current_dir, 'widget/secret_count_per_region.yaml')
-secret_count_per_account_conf = os.path.join(current_dir, 'widget/secret_count_per_account_conf.yaml')
+secret_count_per_account_conf = os.path.join(current_dir, 'widget/secret_count_per_account.yaml')
 
 cst_secret = CloudServiceTypeResource()
 cst_secret.name = 'Secret'

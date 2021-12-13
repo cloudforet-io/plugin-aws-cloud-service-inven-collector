@@ -9,7 +9,7 @@ current_dir = os.path.abspath(os.path.dirname(__file__))
 queue_max_message_total_size_conf = os.path.join(current_dir, 'widget/queue_max_message_total_size.yaml')
 queue_count_per_region_conf = os.path.join(current_dir, 'widget/queue_count_per_region.yaml')
 queue_count_per_account_conf = os.path.join(current_dir, 'widget/queue_count_per_account.yaml')
-queue_max_message_total_size_per_account_conf = os.path.join(current_dir, 'widget/queue_max_message_total_size_per_account_conf.yaml')
+queue_max_message_total_size_per_account_conf = os.path.join(current_dir, 'widget/queue_max_message_total_size_per_account.yaml')
 
 cst_que = CloudServiceTypeResource()
 cst_que.name = 'Queue'
