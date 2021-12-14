@@ -32,7 +32,7 @@ cst_sg._metadata = CloudServiceTypeMeta.set_meta(
         TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('VPC ID', 'data.vpc_id'),
         TextDyField.data_source('Description', 'data.description'),
-        TextDyField.data_source('Account ID', 'account_id')
+        TextDyField.data_source('Account ID', 'account')
     ],
     search=[
         SearchField.set(name='Security Group ID', key='data.group_id'),
