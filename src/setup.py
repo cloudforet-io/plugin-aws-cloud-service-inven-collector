@@ -38,5 +38,8 @@ setup(
         'arnparse',
         'moto',
     ],
+    package_data={
+        'spaceone': ['inventory/connector/*/schema/widget/*.yaml']
+    },
     zip_safe=False,
 )
