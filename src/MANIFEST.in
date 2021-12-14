@@ -1,1 +1,1 @@
-recursive-include spaceone/inventory/connector *.yaml
+recursive-include spaceone *.yaml
