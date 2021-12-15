@@ -29,7 +29,7 @@ class RDSConnector(SchematicAWSConnector):
 
         collect_resources = [
             {
-                'request_method': self.instance_data,
+                'request_method': self.instance_request_data,
                 'resource': InstanceResource,
                 'response_schema': InstanceResponse
             },
@@ -159,11 +159,15 @@ class RDSConnector(SchematicAWSConnector):
                     res = Cluster(raw, strict=False)
                     yield res, res.db_cluster_identifier
 
-    def instance_data(self, region_name) -> List[Instance]:
+    def instance_request_data(self, region_name) -> List[Instance]:
         self.cloud_service_type = 'Instance'
 
         for instance, instance_identifier in self.describe_instances(region_name):
-            yield instance, instance_identifier
+            yield {
+                'data': instance,
+                'name': instance_identifier,
+                'account': self.account_id
+            }
 
     def describe_instances(self, region_name) -> List[Instance]:
         paginator = self.client.get_paginator('describe_db_instances')
