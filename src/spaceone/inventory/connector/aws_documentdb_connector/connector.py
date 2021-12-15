@@ -174,24 +174,35 @@ class DocumentDBConnector(SchematicAWSConnector):
         return list(map(lambda tag: Tag(tag, strict=False), response.get('TagList', [])))
 
     def _describe_instances(self):
-        response = self.client.describe_db_instances(
-            Filters=[{
-                'Name': 'engine',
-                'Values': ['docdb']
-            }]
+        instances = []
+        paginator = self.client.get_paginator('describe_db_instances')
+        response_iterator = paginator.paginate(
+            PaginationConfig={
+                'MaxItems': 10000,
+                'PageSize': 50,
+            }
         )
 
-        return response.get('DBInstances', [])
+        for data in response_iterator:
+            instances.extend([instance for instance in data.get('DBInstances', [])
+                              if instance.get('Engine') == 'docdb'])
+
+        return instances
 
     def _describe_snapshots(self):
-        response = self.client.describe_db_cluster_snapshots(
-            Filters=[{
-                'Name': 'engine',
-                'Values': ['docdb']
-            }]
+        snapshots = []
+        paginator = self.client.get_paginator('describe_db_cluster_snapshots')
+        response_iterator = paginator.paginate(
+            PaginationConfig={
+                'MaxItems': 10000,
+                'PageSize': 50,
+            }
         )
 
-        return response.get('DBClusterSnapshots', [])
+        for data in response_iterator:
+            snapshots.extend([snapshot for snapshot in data.get('DBClusterSnapshots', [])
+                              if snapshot.get('Engine') == 'docdb'])
+        return snapshots
 
     @staticmethod
     def _match_instances(raw_instances, cluster_name):
