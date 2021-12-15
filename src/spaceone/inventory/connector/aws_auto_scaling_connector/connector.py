@@ -243,11 +243,14 @@ class AutoScalingConnector(SchematicAWSConnector):
         split_instances = [instances[i:i + max_count] for i in range(0, len(instances), max_count)]
 
         for instances in split_instances:
-            instance_ids = [_instance.get('InstanceId') for _instance in instances if _instance.get('InstanceId')]
-            response = ec2_client.describe_instances(InstanceIds=instance_ids)
+            try:
+                instance_ids = [_instance.get('InstanceId') for _instance in instances if _instance.get('InstanceId')]
+                response = ec2_client.describe_instances(InstanceIds=instance_ids)
 
-            for reservation in response.get('Reservations', []):
-                instances_from_ec2.extend(reservation.get('Instances', []))
+                for reservation in response.get('Reservations', []):
+                    instances_from_ec2.extend(reservation.get('Instances', []))
+            except Exception as e:
+                _LOGGER.debug(f"[autoscaling] instance not found: {instance_ids}")
 
         for instance in instances:
             for instance_from_ec2 in instances_from_ec2:
@@ -267,12 +270,15 @@ class AutoScalingConnector(SchematicAWSConnector):
         split_tgs_arns = [target_group_arns[i:i + max_count] for i in range(0, len(target_group_arns), max_count)]
 
         for tg_arns in split_tgs_arns:
-            response = elb_client.describe_target_groups(TargetGroupArns=tg_arns)
+            try:
+                response = elb_client.describe_target_groups(TargetGroupArns=tg_arns)
 
-            for target_group in response.get('TargetGroups', []):
-                lb_arns.extend(target_group.get('LoadBalancerArns', []))
+                for target_group in response.get('TargetGroups', []):
+                    lb_arns.extend(target_group.get('LoadBalancerArns', []))
+            except Exception as e:
+                _LOGGER.debug(f"[autoscaling] target group not found: {tg_arns}")
 
-        return list(set(lb_arns))
+        return lb_arns
 
     def get_load_balancer_info(self, lb_arns):
         if not len(lb_arns): return []
