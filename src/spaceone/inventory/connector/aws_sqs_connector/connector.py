@@ -52,7 +52,6 @@ class SQSConnector(SchematicAWSConnector):
                 result = QueData(attr)
                 result.region_name = region_name
                 result.url = que.url
-                result.account_id = self.account_id
                 yield {
                     'data': result,
                     'name': result.name,

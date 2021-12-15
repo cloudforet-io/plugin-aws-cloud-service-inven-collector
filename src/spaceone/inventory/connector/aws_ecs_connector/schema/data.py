@@ -262,7 +262,7 @@ class ServiceTaskSets(Model):
     capacity_provider_strategy = ListType(ModelType(CapacityProviderStrategy),
                                           deserialize_from="capacityProviderStrategy")
     platform_version = StringType(deserialize_from="platformVersion")
-    network_configuration = ListType(ModelType(NetworkConfiguration), deserialize_from="networkConfiguration")
+    network_configuration = ModelType(NetworkConfiguration, deserialize_from="networkConfiguration")
     load_balancers = ListType(ModelType(LoadBalancer))
     service_registries = ListType(ModelType(ServiceRegistry))
     scale = ModelType(Scale, deserialize_from="scale")

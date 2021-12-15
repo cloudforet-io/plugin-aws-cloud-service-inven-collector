@@ -38,14 +38,7 @@ class ElastiCacheConnector(SchematicAWSConnector):
                     if getattr(memcached_vo, 'set_cloudwatch', None):
                         memcached_vo.cloudwatch = CloudWatchModel(memcached_vo.set_cloudwatch(region_name))
 
-                    resources.append(MemcachedResponse(
-                        {'resource': MemcachedResource(
-                            {
-                                'data': memcached_vo,
-                                'tags': [{'key':tag.key, 'value': tag.value} for tag in memcached_vo.tags],
-                                'region_code': region_name,
-                                'reference': ReferenceModel(memcached_vo.reference(region_name))})}
-                    ))
+                    resources.append(MemcachedResponse({'resource': memcached_vo}))
 
             for redis_vo in self.get_redis_data(region_name, cache_clusters):
                 if getattr(redis_vo, 'resource_type', None) and redis_vo.resource_type == 'inventory.ErrorResource':
@@ -55,12 +48,7 @@ class ElastiCacheConnector(SchematicAWSConnector):
                     if getattr(redis_vo, 'set_cloudwatch', None):
                         redis_vo.cloudwatch = CloudWatchModel(redis_vo.set_cloudwatch(region_name))
 
-                    resources.append(RedisResponse(
-                        {'resource': RedisResource(
-                            {'data': redis_vo,
-                             'region_code': region_name,
-                             'reference': ReferenceModel(redis_vo.reference(region_name))})}
-                    ))
+                    resources.append(RedisResponse({'resource': redis_vo}))
 
         _LOGGER.debug(f'[get_resources] FINISHED: ElastiCache ({time.time() - start_time} sec)')
         return resources
@@ -80,13 +68,16 @@ class ElastiCacheConnector(SchematicAWSConnector):
 
                     memcached_vo = Memcached(cluster, strict=False)
 
-                    yield {
+                    yield MemcachedResource({
                         'data': memcached_vo,
                         'name': memcached_vo.cache_cluster_id,
                         'instance_type': memcached_vo.cache_node_type,
                         'launched_at': datetime_to_iso8601(memcached_vo.cache_cluster_create_time),
-                        'account': self.account_id
-                    }
+                        'account': self.account_id,
+                        'tags': [{'key': tag.key, 'value': tag.value} for tag in memcached_vo.tags],
+                        'region_code': region_name,
+                        'reference': ReferenceModel(memcached_vo.reference(region_name))
+                    })
 
             except Exception as e:
                 resource_id = cluster.get('ARN', '')
@@ -123,12 +114,14 @@ class ElastiCacheConnector(SchematicAWSConnector):
 
                 redis_vo = Redis(replication_group, strict=False)
 
-                yield {
+                yield RedisResource({
                     'data': redis_vo,
                     'name': redis_vo.replication_group_id,
                     'instance_type': redis_vo.cache_node_type,
-                    'account': self.account_id
-                }
+                    'account': self.account_id,
+                    'region_code': region_name,
+                    'reference': ReferenceModel(redis_vo.reference(region_name))
+                })
 
             except Exception as e:
                 resource_id = replication_group.get('ARN', '')

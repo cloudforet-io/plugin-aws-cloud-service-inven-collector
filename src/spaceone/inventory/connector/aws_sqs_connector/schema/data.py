@@ -34,7 +34,8 @@ class QueData(Model):
     kms_master_key_id = StringType(deserialize_from="KmsMasterKeyId")
     kms_data_key_reuse_period_seconds = StringType(deserialize_from="KmsDataKeyReusePeriodSeconds")
     sqs_managed_sse_enabled = BooleanType(deserialize_from="SqsManagedSseEnabled")
-    account_id = StringType()
+    deduplication_scope = StringType(deserialize_from="DeduplicationScope", serialize_when_none=False)
+    fifo_throughput_limit = StringType(deserialize_from="FifoThroughputLimit", serialize_when_none=False)
     policy = StringType(deserialize_from="Policy")
     cloudwatch = ModelType(CloudWatchModel, serialize_when_none=False)
 
