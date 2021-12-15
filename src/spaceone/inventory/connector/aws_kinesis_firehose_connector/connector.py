@@ -51,25 +51,24 @@ class KinesisFirehoseConnector(SchematicAWSConnector):
         response = self.client.list_delivery_streams()
         return response.get("DeliveryStreamNames", [])
 
-    def request_data(self, region_name) -> List[DeliveryStreamDescription]:
+    def request_data(self, region_name):
         for stream_name in self.list_delivery_streams():
             try:
                 stream_response = self.client.describe_delivery_stream(DeliveryStreamName=stream_name)
                 delivery_stream_info = stream_response.get("DeliveryStreamDescription", {})
-                destinations_ref, additional_tabs = self.get_destinations_ref(delivery_stream_info["Destinations"])
+                # destinations_ref, additional_tabs = self.get_destinations_ref(delivery_stream_info.get("Destinations", []))
                 delivery_stream_info.update(
                     {
-                        "source": self.get_source(delivery_stream_info.get("Source", {})),
-                        "delivery_stream_status_display": self.get_delivery_stream_status_display(
-                            (delivery_stream_info["DeliveryStreamStatus"])),
-                        "destinations_ref": destinations_ref,
-                        "additional_tabs": additional_tabs
+                        "Source": self.get_source(delivery_stream_info.get("Source", {})),
+                        # "destinations_ref": destinations_ref,
+                        # "additional_tabs": additional_tabs
                     }
                 )
+
                 stream_vo = DeliveryStreamDescription(delivery_stream_info, strict=False)
                 yield {
                     'data': stream_vo,
-                    'name': stream_vo.stream_name,
+                    'name': stream_vo.delivery_stream_name,
                     'launched_at': datetime_to_iso8601(stream_vo.create_timestamp),
                     'account': self.account_id
                 }
@@ -126,10 +125,10 @@ class KinesisFirehoseConnector(SchematicAWSConnector):
             value.update(refined_destn_des)
             additional_tabs = {
                 "destination_name": destn_name,
-                "cloud_watch_info": self.get_cloud_watch_error_logging(value["CloudWatchLoggingOptions"]),
-                "lambda_tab": self.get_lambda_tab(value["ProcessingConfiguration"]),
-                "iam_role": self.get_iam_role(value["RoleARN"]),
-                "s3_backup_info": self.get_s3_backup_info(value["S3BackupMode"],
+                "cloud_watch_info": self.get_cloud_watch_error_logging(value.get("CloudWatchLoggingOptions", {})),
+                "lambda_tab": self.get_lambda_tab(value.get("ProcessingConfiguration", {})),
+                "iam_role": value.get("RoleARN", ""),
+                "s3_backup_info": self.get_s3_backup_info(value.get("S3BackupMode"),
                                                           value.get("S3DestinationDescription", {}))
             }
 
@@ -198,32 +197,27 @@ class KinesisFirehoseConnector(SchematicAWSConnector):
         return data_format_conversion_configuration
 
     @staticmethod
-    def get_iam_role(role_arn):
-        return role_arn.split("/")[-1]
-
-    @staticmethod
     def get_cloud_watch_error_logging(cloud_watch_logging_options):
-        return "Enabled" if cloud_watch_logging_options["Enabled"] else "Disabled"
+        return "Enabled" if cloud_watch_logging_options.get("Enabled") else "Disabled"
 
     def get_s3_backup_info(self, s3_backup_mode, s3_destination_description):
         s3_destination_description.update({
             "backup_mode": s3_backup_mode
         })
-        if s3_backup_mode != "Disabled":
+        if s3_backup_mode == "Enabled":
             s3_destination_description.update({
-                "bucket_name": s3_destination_description["BucketARN"].split(":::")[1],
-                "buffer_conditions": self.get_buffer_conditions(s3_destination_description["BufferingHints"])
+                "buffer_conditions": self.get_buffer_conditions(s3_destination_description.get("BufferingHints", {}))
             })
         return s3_destination_description
 
     def get_lambda_tab(self, processing_configuration):
         lambda_tab = dict()
-        if not processing_configuration["Enabled"]:
+        if not processing_configuration.get("Enabled"):
             lambda_tab["source_record_transformation"] = "Disabled"
             lambda_tab["data_transformation"] = "Disabled"
         else:
             for processor in processing_configuration.get("Processors", []):
-                if processor.get("Type", "") == 'Lambda':
+                if processor.get("Type") == 'Lambda':
                     lambda_tab = self.get_lambda_processor_info(processor)
                     lambda_tab["source_record_transformation"] = "Enabled"
                     lambda_tab["data_transformation"] = lambda_tab["lambda_func"]
@@ -246,32 +240,21 @@ class KinesisFirehoseConnector(SchematicAWSConnector):
 
     @staticmethod
     def get_buffer_conditions(buffering_hints):
-        return f"{buffering_hints['SizeInMBs']} MiB or {buffering_hints['IntervalInSeconds']} seconds"
-
-    @staticmethod
-    def get_destination_display(destination):
-        return destination["Url"]
-
-    @staticmethod
-    def get_role_arn(role_arn):
-        return role_arn.split("/")[-1]
+        return f"{buffering_hints.get('SizeInMBs', 0)} MiB or {buffering_hints('IntervalInSeconds', 0)} seconds"
 
     @staticmethod
     def get_source(source):
-        if not source:
-            source_details = "Direct PUT and other sources"
-            source_name = "Direct PUT and other sources"
+        if source:
+            kinesis_data_stream_arn = source.get('KinesisStreamSourceDescription', {}).get('KinesisStreamARN', '')
+
+            source.update({
+                'source_details': f"Kinesis Data Stream : {kinesis_data_stream_arn}",
+                'source_name': kinesis_data_stream_arn
+            })
         else:
-            info = source.get("KinesisStreamSourceDescription", [])
-            source_name = info.get("KinesisStreamARN").split('/')[1]
-            source_details = f"Kinesis Data Stream : {source_name}"
+            source = {
+                'source_details': "Direct PUT and other sources",
+                'source_name': "Direct PUT and other sources"
+            }
 
-        source.update({
-            "source_details": source_details,
-            "source_name": source_name
-        })
         return source
-
-    @staticmethod
-    def get_delivery_stream_status_display(raw_status):
-        return raw_status[0] + raw_status[1:].lower()
