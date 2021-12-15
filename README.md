@@ -140,8 +140,6 @@ authentication privilege for followings:
                 "directconnect:Describe*",
                 "dynamodb:Describe*",
                 "dynamodb:List*",
-                "dynamodb:Query",
-                "dynamodb:Scan",
                 "ec2:Describe*",
                 "ecr:Describe*",
                 "ecr:List*",
