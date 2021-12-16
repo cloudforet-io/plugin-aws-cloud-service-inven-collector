@@ -67,7 +67,7 @@ class EFSConnector(SchematicAWSConnector):
                         'data': filesystem_vo,
                         'name': filesystem_vo.name,
                         'instance_size': float(filesystem_vo.size),
-                        'launched_at': datetime_to_iso8601(filesystem_vo.creation_time),
+                        'launched_at': self.datetime_to_iso8601(filesystem_vo.creation_time),
                         'account': self.account_id
                     }
 

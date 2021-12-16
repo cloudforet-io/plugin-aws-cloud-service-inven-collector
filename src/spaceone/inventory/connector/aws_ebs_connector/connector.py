@@ -87,7 +87,7 @@ class EBSConnector(SchematicAWSConnector):
                         'name': volume_vo.name,
                         'instance_size': float(volume_vo.size),
                         'instance_type': volume_vo.volume_type,
-                        'launched_at': datetime_to_iso8601(volume_vo.create_time),
+                        'launched_at': self.datetime_to_iso8601(volume_vo.create_time),
                         'account': self.account_id
                     }
 
@@ -132,7 +132,7 @@ class EBSConnector(SchematicAWSConnector):
                         'data': snapshot_vo,
                         'name': snapshot_vo.name,
                         'instance_size': float(snapshot_vo.volume_size),
-                        'launched_at': datetime_to_iso8601(snapshot_vo.start_time),
+                        'launched_at': self.datetime_to_iso8601(snapshot_vo.start_time),
                         'account': self.account_id
                     }
 

@@ -131,7 +131,7 @@ class LambdaConnector(SchematicAWSConnector):
                     yield {
                         'data': layer_vo,
                         'name': layer_vo.layer_name,
-                        'launched_at': datetime_to_iso8601(layer_vo.latest_matching_version.created_date),
+                        'launched_at': self.datetime_to_iso8601(layer_vo.latest_matching_version.created_date),
                         'account': self.account_id
                     }
                     

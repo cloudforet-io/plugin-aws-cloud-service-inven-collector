@@ -68,7 +68,7 @@ class RedshiftConnector(SchematicAWSConnector):
                         'data': cluster_vo,
                         'name': cluster_vo.cluster_identifier,
                         'instance_type': cluster_vo.node_type,
-                        'launched_at': datetime_to_iso8601(cluster_vo.cluster_create_time),
+                        'launched_at': self.datetime_to_iso8601(cluster_vo.cluster_create_time),
                         'account': self.account_id
                     }
                     

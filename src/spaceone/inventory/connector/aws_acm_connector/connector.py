@@ -73,7 +73,7 @@ class ACMConnector(SchematicAWSConnector):
                         'name': certificate_vo.domain_name,
                         'instance_type': certificate_vo.type_display,
                         'account': self.account_id,
-                        'launched_at': datetime_to_iso8601(certificate_vo.created_at)
+                        'launched_at': self.datetime_to_iso8601(certificate_vo.created_at)
                     }
                     
                 except Exception as e:

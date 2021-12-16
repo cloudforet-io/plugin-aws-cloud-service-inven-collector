@@ -69,7 +69,7 @@ class KinesisFirehoseConnector(SchematicAWSConnector):
                 yield {
                     'data': stream_vo,
                     'name': stream_vo.delivery_stream_name,
-                    'launched_at': datetime_to_iso8601(stream_vo.create_timestamp),
+                    'launched_at': self.datetime_to_iso8601(stream_vo.create_timestamp),
                     'account': self.account_id
                 }
 

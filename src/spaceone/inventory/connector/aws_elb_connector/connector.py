@@ -124,7 +124,7 @@ class ELBConnector(SchematicAWSConnector):
                     'name': load_balancer_vo.load_balancer_name,
                     'data': load_balancer_vo,
                     'instance_type': load_balancer_vo.type,
-                    'launched_at': datetime_to_iso8601(load_balancer_vo.created_time),
+                    'launched_at': self.datetime_to_iso8601(load_balancer_vo.created_time),
                     'account': self.account_id
                 }
 
