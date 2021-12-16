@@ -113,8 +113,6 @@ class LambdaFunctionData(Model):
     name = StringType(deserialize_from='FunctionName', default='')
     arn = StringType(deserialize_from='FunctionArn', default='')
     master_arn = StringType(deserialize_from='MasterArn', default='')
-    account_id = StringType(default='')
-
     runtime = StringType(deserialize_from='Runtime', default='')
     role = StringType(deserialize_from='Role', default='')
     handler = StringType(deserialize_from='Handler', default='')
