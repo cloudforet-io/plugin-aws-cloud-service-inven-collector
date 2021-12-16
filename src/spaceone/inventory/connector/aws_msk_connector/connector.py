@@ -80,7 +80,7 @@ class MSKConnector(SchematicAWSConnector):
                     yield {
                         'data': cluster_vo,
                         'name': cluster_vo.cluster_name,
-                        'launched_at': datetime_to_iso8601(cluster_vo.creation_time),
+                        'launched_at': self.datetime_to_iso8601(cluster_vo.creation_time),
                         'account': self.account_id
                     }
                     

@@ -151,7 +151,7 @@ class AutoScalingConnector(SchematicAWSConnector):
                         'data': auto_scaling_group_vo,
                         'name': auto_scaling_group_vo.auto_scaling_group_name,
                         'account': self.account_id,
-                        'launched_at': datetime_to_iso8601(auto_scaling_group_vo.created_time)
+                        'launched_at': self.datetime_to_iso8601(auto_scaling_group_vo.created_time)
                     }
 
                 except Exception as e:
@@ -183,7 +183,7 @@ class AutoScalingConnector(SchematicAWSConnector):
                         'data': launch_configuration_vo,
                         'name': launch_configuration_vo.launch_configuration_name,
                         'account': self.account_id,
-                        'launched_at': datetime_to_iso8601(launch_configuration_vo.created_time)
+                        'launched_at': self.datetime_to_iso8601(launch_configuration_vo.created_time)
                     }
 
                 except Exception as e:
@@ -228,7 +228,7 @@ class AutoScalingConnector(SchematicAWSConnector):
                         'data': launch_template_vo,
                         'name': launch_template_vo.launch_template_name,
                         'account': self.account_id,
-                        'launched_at': datetime_to_iso8601(launch_template_vo.create_time)
+                        'launched_at': self.datetime_to_iso8601(launch_template_vo.create_time)
                     }
 
                except Exception as e:

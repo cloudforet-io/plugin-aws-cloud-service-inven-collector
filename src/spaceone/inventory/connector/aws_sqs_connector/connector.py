@@ -55,7 +55,7 @@ class SQSConnector(SchematicAWSConnector):
                 yield {
                     'data': result,
                     'name': result.name,
-                    'launched_at': datetime_to_iso8601(result.created_timestamp),
+                    'launched_at': self.datetime_to_iso8601(result.created_timestamp),
                     'account': self.account_id
                 }
                 

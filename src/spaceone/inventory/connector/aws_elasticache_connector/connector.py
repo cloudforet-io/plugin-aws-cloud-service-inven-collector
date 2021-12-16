@@ -72,7 +72,7 @@ class ElastiCacheConnector(SchematicAWSConnector):
                         'data': memcached_vo,
                         'name': memcached_vo.cache_cluster_id,
                         'instance_type': memcached_vo.cache_node_type,
-                        'launched_at': datetime_to_iso8601(memcached_vo.cache_cluster_create_time),
+                        'launched_at': self.datetime_to_iso8601(memcached_vo.cache_cluster_create_time),
                         'account': self.account_id,
                         'tags': [{'key': tag.key, 'value': tag.value} for tag in memcached_vo.tags],
                         'region_code': region_name,

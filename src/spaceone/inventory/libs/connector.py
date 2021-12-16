@@ -1,5 +1,6 @@
 import json
 import logging
+import datetime
 from functools import partial
 from typing import List
 from boto3.session import Session
@@ -180,6 +181,13 @@ class SchematicAWSConnector(AWSConnector):
                               'cloud_service_type': self.cloud_service_type}})
 
         return error_resource_response
+
+    def datetime_to_iso8601(self, value: datetime.datetime):
+        if isinstance(value, datetime.datetime):
+            value = value.replace(tzinfo=None)
+            return f"{value.isoformat(timespec='seconds')}TZD"
+
+        return None
 
     @staticmethod
     def convert_tags(tags):
