@@ -7,7 +7,7 @@
 
 
 Find us also at [Dockerhub](https://hub.docker.com/repository/docker/spaceone/aws-cloud-services)
-> Latest stable version : 1.13
+> Latest stable version : 1.13.3
 
 Please contact us if you need any further information. (<support@spaceone.dev>)
 
@@ -260,6 +260,9 @@ Update plugin through spacectl command with the created yaml file.
 
 
 ## Release Note
+
+### Ver 1.13.1-3
+* Fix some bugs..!
 
 ### Ver 1.13
 * Add feature to specify the Cloud Service Type and collect it.
