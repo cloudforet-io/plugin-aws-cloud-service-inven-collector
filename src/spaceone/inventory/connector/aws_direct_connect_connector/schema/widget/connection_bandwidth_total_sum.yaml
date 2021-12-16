@@ -11,4 +11,4 @@ query:
         fields:
           - name: bandwidth
             operator: sum
-            key: data.bandwidth
+            key: instance_size
