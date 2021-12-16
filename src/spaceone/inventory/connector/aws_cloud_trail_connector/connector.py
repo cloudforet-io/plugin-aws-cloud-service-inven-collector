@@ -50,7 +50,7 @@ class CloudTrailConnector(SchematicAWSConnector):
             try:
                 if raw['TrailARN'] not in self.trails:
                     raw['event_selectors'] = list(map(lambda event_selector: EventSelector(event_selector, strict=False),
-                                                      self._get_event_selector(raw['Name'])))
+                                                      self._get_event_selector(raw['TrailARN'])))
 
                     if raw['HasInsightSelectors']:
                         insight_selectors = self._get_insight_selectors(raw.get('Name'))
@@ -58,7 +58,6 @@ class CloudTrailConnector(SchematicAWSConnector):
                             raw['insight_selectors'] = InsightSelector(insight_selectors, strict=False)
 
                     raw.update({
-                        'account_id': self.account_id,
                         'tags': self._match_tags(raw.get('TrailARN'), tags)
                     })
 
@@ -76,8 +75,8 @@ class CloudTrailConnector(SchematicAWSConnector):
                 error_resource_response = self.generate_error(region_name, resource_id, e)
                 yield {'data': error_resource_response}
 
-    def _get_event_selector(self, trail_name):
-        response = self.client.get_event_selectors(TrailName=trail_name)
+    def _get_event_selector(self, trail_arn):
+        response = self.client.get_event_selectors(TrailName=trail_arn)
         return response.get('EventSelectors', [])
 
     def _list_tags(self, trails):
