@@ -51,7 +51,7 @@ function = ItemDynamicLayout.set_fields('Functions', fields=[
 ])
 
 function_vpc = ItemDynamicLayout.set_fields('VPC', fields=[
-    TextDyField.data_source('VPC Id', 'data.vpc_config.vpc.id'),
+    TextDyField.data_source('VPC Id', 'data.vpc_config.vpc_id'),
     ListDyField.data_source('Subnet IDs', 'data.vpc_config.subnet_ids', options={
         'delimiter': '<br>'
     }),
