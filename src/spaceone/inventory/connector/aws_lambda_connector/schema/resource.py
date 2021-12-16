@@ -52,18 +52,11 @@ function = ItemDynamicLayout.set_fields('Functions', fields=[
 
 function_vpc = ItemDynamicLayout.set_fields('VPC', fields=[
     TextDyField.data_source('VPC Id', 'data.vpc_config.vpc.id'),
-    TextDyField.data_source('VPC Name', 'data.vpc_config.vpc.name'),
-    EnumDyField.data_source('Default VPC', 'data.vpc_config.vpc.is_default', default_badge={
-        'indigo.500': ['true'], 'coral.600': ['false']
+    ListDyField.data_source('Subnet IDs', 'data.vpc_config.subnet_ids', options={
+        'delimiter': '<br>'
     }),
-    ListDyField.data_source('Subnets', 'data.vpc_config.subnets', default_badge={
-        'type': 'outline',
-        'sub_key': 'id',
-
-    }),
-    ListDyField.data_source('Security Groups', 'data.vpc_config.security_groups', default_badge={
-        'type': 'outline',
-        'sub_key': 'id',
+    ListDyField.data_source('Security Group IDs', 'data.vpc_config.security_group_ids', options={
+        'delimiter': '<br>',
     })
 ])
 

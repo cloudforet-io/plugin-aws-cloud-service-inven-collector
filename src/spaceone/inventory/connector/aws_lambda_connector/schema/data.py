@@ -9,26 +9,27 @@ _LOGGER = logging.getLogger(__name__)
 LAYER
 '''
 class LatestMatchingVersion(Model):
-    layer_version_arn = StringType(deserialize_from="LayerVersionArn")
-    version = IntType(deserialize_from="Version")
-    description = StringType(deserialize_from="Description")
-    created_date = DateTimeType(deserialize_from="CreatedDate")
+    layer_version_arn = StringType(deserialize_from="LayerVersionArn", serialize_when_none=False)
+    version = IntType(deserialize_from="Version", serialize_when_none=False)
+    description = StringType(deserialize_from="Description", serialize_when_none=False)
+    created_date = DateTimeType(deserialize_from="CreatedDate", serialize_when_none=False)
     compatible_runtimes = ListType(StringType,
                                    deserialize_from="CompatibleRuntimes",
+                                   serialize_when_none = False,
                                    choices=('nodejs', 'nodejs4.3', 'nodejs6.10', 'nodejs8.10', 'nodejs10.x',
                                                         'nodejs12.x', 'java8', 'java11', 'python2.7', 'python3.6',
                                                         'python3.7', 'python3.8', 'dotnetcore1.0', 'dotnetcore2.0',
                                                         'dotnetcore2.1', 'dotnetcore3.1', 'nodejs4.3-edge', 'go1.x',
                                                         'ruby2.5', 'ruby2.7', 'provided'))
-    license_info = StringType(deserialize_from="LicenseInfo")
+    license_info = StringType(deserialize_from="LicenseInfo", serialize_when_none=False)
 
 
 class Layer(Model):
-    layer_name = StringType(deserialize_from="LayerName")
-    layer_arn = StringType(deserialize_from="LayerArn")
-    latest_matching_version = ModelType(LatestMatchingVersion, deserialize_from="LatestMatchingVersion")
+    layer_name = StringType(deserialize_from="LayerName", serialize_when_none=False)
+    layer_arn = StringType(deserialize_from="LayerArn", serialize_when_none=False)
+    latest_matching_version = ModelType(LatestMatchingVersion, deserialize_from="LatestMatchingVersion"
+                                        , serialize_when_none=False)
     version = IntType(default=1)
-    account_id = StringType()
 
     def reference(self, region_code):
         return {
@@ -41,101 +42,85 @@ class Layer(Model):
 FUNCTION
 '''
 class LambdaError(Model):
-    error_code = StringType(deserialize_from='ErrorCode')
-    message = StringType(deserialize_from='Message')
+    error_code = StringType(deserialize_from='ErrorCode', serialize_when_none=False)
+    message = StringType(deserialize_from='Message', serialize_when_none=False)
 
 
 class EnvironmentVariable(Model):
-    key = StringType()
-    value = StringType(required=False)
+    key = StringType(serialize_when_none=False)
+    value = StringType(required=False, serialize_when_none=False)
 
 
 class Environment(Model):
-    variables = ListType(ModelType(EnvironmentVariable), default=[])
-    error = ModelType(LambdaError, deserialize_from='Error')
+    variables = ListType(ModelType(EnvironmentVariable), serialize_when_none=False)
+    error = ModelType(LambdaError, deserialize_from='Error', serialize_when_none=False)
 
 
 class DLC(Model):
-    target_arn = StringType(deserialize_from='TargetArn')
-    target_name = StringType()
+    target_arn = StringType(deserialize_from='TargetArn', serialize_when_none=False)
+    target_name = StringType(serialize_when_none=False)
 
 
 class TracingConfig(Model):
-    mode = StringType(choices=['Active', 'PassThrough'], deserialize_from='Mode')
+    mode = StringType(choices=['Active', 'PassThrough'], deserialize_from='Mode', serialize_when_none=False)
 
 
 class FunctionLayer(Model):
-    arn = StringType(deserialize_from='Arn')
-    code_size = IntType(deserialize_from='CodeSize')
-    name = StringType()
+    arn = StringType(deserialize_from='Arn', serialize_when_none=False)
+    code_size = IntType(deserialize_from='CodeSize', serialize_when_none=False)
+    name = StringType(serialize_when_none=False)
 
 
 class LastUpdateStatus(Model):
-    type = StringType(choices=['Successful', 'Failed', 'InProgress'])
-    reason = StringType()
-    reason_code = StringType(
-        choices=['EniLimitExceeded', 'InsufficientRolePermissions', 'InvalidConfiguration', 'InternalError',
-                 'SubnetOutOfIPAddresses', 'InvalidSubnet', 'InvalidSecurityGroup'])
+    type = StringType(choices=['Successful', 'Failed', 'InProgress'], serialize_when_none=False)
+    reason = StringType(serialize_when_none=False)
+    reason_code = StringType(serialize_when_none=False,
+                             choices=['EniLimitExceeded', 'InsufficientRolePermissions', 'InvalidConfiguration',
+                                      'InternalError', 'SubnetOutOfIPAddresses', 'InvalidSubnet', 'InvalidSecurityGroup'])
 
 
 class LambdaState(Model):
-    type = StringType(choices=['Pending', 'Active', 'Inactive', 'Failed'])
-    reason = StringType()
-    reason_code = StringType(
-        choices=['Idle', 'Creating', 'Restoring', 'EniLimitExceeded', 'InsufficientRolePermissions',
-                 'InvalidConfiguration', 'InternalError', 'SubnetOutOfIPAddresses', 'InvalidSubnet',
-                 'InvalidSecurityGroup', ])
-
-
-class Subnet(Model):
-    id = StringType()
-    name = StringType()
-
-
-class SecurityGroup(Model):
-    id = StringType()
-    name = StringType()
-
-
-class VPC(Model):
-    id = StringType()
-    name = StringType(default='')
-    is_default = BooleanType()
+    type = StringType(choices=['Pending', 'Active', 'Inactive', 'Failed'], serialize_when_none=False)
+    reason = StringType(serialize_when_none=False)
+    reason_code = StringType(serialize_when_none=False,
+                             choices=['Idle', 'Creating', 'Restoring', 'EniLimitExceeded', 'InsufficientRolePermissions',
+                                      'InvalidConfiguration', 'InternalError', 'SubnetOutOfIPAddresses', 'InvalidSubnet',
+                                      'InvalidSecurityGroup', ])
 
 
 class VPCConfig(Model):
-    subnets = ListType(ModelType(Subnet), default=[])
-    security_groups = ListType(ModelType(SecurityGroup), default=[])
-    vpc = ModelType(VPC)
+    subnet_ids = ListType(StringType, deserialize_from="SubnetIds", serialize_when_none=False)
+    security_group_ids = ListType(StringType, deserialize_from="SecurityGroupIds", serialize_when_none=False)
+    vpc_id = StringType(deserialize_from="VpcId", serialize_when_none=False)
 
 
 class LambdaFunctionData(Model):
-    name = StringType(deserialize_from='FunctionName', default='')
-    arn = StringType(deserialize_from='FunctionArn', default='')
-    master_arn = StringType(deserialize_from='MasterArn', default='')
-    runtime = StringType(deserialize_from='Runtime', default='')
-    role = StringType(deserialize_from='Role', default='')
-    handler = StringType(deserialize_from='Handler', default='')
-    code_size = IntType(deserialize_from='CodeSize')
-    description = StringType(deserialize_from='Description', default='')
-    time_out = IntType(deserialize_from='Timeout')
-    memory_size = IntType(deserialize_from='MemorySize')
-    last_modified = DateTimeType(deserialize_from='LastModified')
-    code_sha256 = StringType(deserialize_from='CodeSha256')
-    version = StringType(deserialize_from='Version', default='')
-    trace_config = ModelType(TracingConfig, deserialize_from='TracingConfig')
-    environment = ModelType(Environment, deserialize_from='Environment', default={})
-    revision_id = StringType(deserialize_from='RevisionId', default='')
-    kms_key_arn = StringType(deserialize_from='KMSKeyArn', default='')
-    state = ModelType(LambdaState)
-    last_update = ModelType(LastUpdateStatus)
+    name = StringType(deserialize_from='FunctionName', serialize_when_none=False)
+    arn = StringType(deserialize_from='FunctionArn', serialize_when_none=False)
+    master_arn = StringType(deserialize_from='MasterArn', serialize_when_none=False)
+    runtime = StringType(deserialize_from='Runtime', serialize_when_none=False)
+    role = StringType(deserialize_from='Role', serialize_when_none=False)
+    handler = StringType(deserialize_from='Handler', serialize_when_none=False)
+    code_size = IntType(deserialize_from='CodeSize', serialize_when_none=False)
+    description = StringType(deserialize_from='Description', serialize_when_none=False)
+    time_out = IntType(deserialize_from='Timeout', serialize_when_none=False)
+    memory_size = IntType(deserialize_from='MemorySize', serialize_when_none=False)
+    last_modified = DateTimeType(deserialize_from='LastModified', serialize_when_none=False)
+    code_sha256 = StringType(deserialize_from='CodeSha256', serialize_when_none=False)
+    version = StringType(deserialize_from='Version', serialize_when_none=False)
+    trace_config = ModelType(TracingConfig, deserialize_from='TracingConfig', serialize_when_none=False)
+    environment = ModelType(Environment, deserialize_from='Environment', serialize_when_none=False)
+    revision_id = StringType(deserialize_from='RevisionId', serialize_when_none=False)
+    kms_key_arn = StringType(deserialize_from='KMSKeyArn', serialize_when_none=False)
+    state = ModelType(LambdaState, serialize_when_none=False)
+    last_update = ModelType(LastUpdateStatus, serialize_when_none=False)
 
     # get sub resource - vpc
-    vpc_config = ModelType(VPCConfig, required=False)
+    vpc_config = ModelType(VPCConfig, required=False, deserialize_from="VpcConfig")
     # get sub resource - sqs
-    dead_letter_config = ModelType(DLC, deserialize_from='DeadLetterConfig', default={})
+    dead_letter_config = ModelType(DLC, deserialize_from='DeadLetterConfig', serialize_when_none=False)
     # get sub resource - lambda layer
-    layers = ListType(ModelType(FunctionLayer), deserialize_from='Layers', default=[])
+    layers = ListType(ModelType(FunctionLayer), deserialize_from='Layers', serialize_when_none=False)
 
     def reference(self, region_code):
         return {
