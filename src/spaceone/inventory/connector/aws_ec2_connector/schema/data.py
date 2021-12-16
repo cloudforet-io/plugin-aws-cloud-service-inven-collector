@@ -10,71 +10,80 @@ _LOGGER = logging.getLogger(__name__)
 AMI
 """
 class Tags(Model):
-    key = StringType(deserialize_from="Key")
-    value = StringType(deserialize_from="Value")
+    key = StringType(deserialize_from="Key", serialize_when_none=False)
+    value = StringType(deserialize_from="Value", serialize_when_none=False)
 
 
 class ImageBlockDeviceMappingsEBS(Model):
-    delete_on_termination = BooleanType(deserialize_from="DeleteOnTermination")
-    iops = IntType(deserialize_from="Iops")
-    snapshot_id = StringType(deserialize_from="SnapshotId")
-    volume_size = IntType(deserialize_from="VolumeSize")
+    delete_on_termination = BooleanType(deserialize_from="DeleteOnTermination", serialize_when_none=False)
+    iops = IntType(deserialize_from="Iops", serialize_when_none=False)
+    snapshot_id = StringType(deserialize_from="SnapshotId", serialize_when_none=False)
+    volume_size = IntType(deserialize_from="VolumeSize", serialize_when_none=False)
     volume_type = StringType(deserialize_from="VolumeType",
-                             choices=("standard", "io1", "io2", "gp2", "gp3", "sc1", "st1"))
-    kms_key_id = StringType(deserialize_from="KmsKeyId")
-    encrypted = BooleanType(deserialize_from="Encrypted")
+                             choices=("standard", "io1", "io2", "gp2", "gp3", "sc1", "st1"),
+                             serialize_when_none=False)
+    kms_key_id = StringType(deserialize_from="KmsKeyId", serialize_when_none=False)
+    encrypted = BooleanType(deserialize_from="Encrypted", serialize_when_none=False)
 
 
 class ImageStateReason(Model):
-    code = StringType(deserialize_from="Code")
-    message = StringType(deserialize_from="Message")
+    code = StringType(deserialize_from="Code", serialize_when_none=False)
+    message = StringType(deserialize_from="Message", serialize_when_none=False)
 
 
 class ImageProductCodes(Model):
-    product_code_id = StringType(deserialize_from="ProductCodeId")
-    product_code_type = StringType(deserialize_from="ProductCodeType", choices=("devpay", "marketplace"))
+    product_code_id = StringType(deserialize_from="ProductCodeId", serialize_when_none=False)
+    product_code_type = StringType(deserialize_from="ProductCodeType", choices=("devpay", "marketplace"),
+                                   serialize_when_none=False)
 
 
 class ImageBlockDeviceMappings(Model):
-    device_name = StringType(deserialize_from="DeviceName")
-    virtual_name = StringType(deserialize_from="VirtualName")
-    ebs = ModelType(ImageBlockDeviceMappingsEBS, deserialize_from="Ebs")
-    no_device = StringType(deserialize_from="NoDevice")
+    device_name = StringType(deserialize_from="DeviceName", serialize_when_none=False)
+    virtual_name = StringType(deserialize_from="VirtualName", serialize_when_none=False)
+    ebs = ModelType(ImageBlockDeviceMappingsEBS, deserialize_from="Ebs", serialize_when_none=False)
+    no_device = StringType(deserialize_from="NoDevice", serialize_when_none=False)
 
 
 class LaunchPermission(Model):
-    user_id = StringType(deserialize_from='UserId')
+    user_id = StringType(deserialize_from='UserId', serialize_when_none=False)
 
 
 class Image(Model):
-    image_id = StringType(deserialize_from="ImageId")
-    name = StringType(deserialize_from="Name")
-    architecture = StringType(deserialize_from="Architecture", choices=("i386", "x86_64", "arm64"))
-    creation_date = StringType(deserialize_from="CreationDate")
-    image_location = StringType(deserialize_from="ImageLocation")
-    image_type = StringType(deserialize_from="ImageType", choices=("machine", "kernel", "ramdisk"))
-    public = BooleanType(deserialize_from="Public")
-    kernel_id = StringType(deserialize_from="KernelId")
-    owner_id = StringType(deserialize_from="OwnerId")
-    platform = StringType(deserialize_from="Platform", default="Other Linux")
-    platform_details = StringType(deserialize_from="PlatformDetails")
-    usage_operation = StringType(deserialize_from="UsageOperation")
-    product_codes = ListType(ModelType(ImageProductCodes), deserialize_from="ProductCodes")
-    ramdisk_id = StringType(deserialize_from="RamdiskId")
+    image_id = StringType(deserialize_from="ImageId", serialize_when_none=False)
+    name = StringType(deserialize_from="Name", serialize_when_none=False)
+    architecture = StringType(deserialize_from="Architecture", choices=("i386", "x86_64", "arm64"),
+                              serialize_when_none=False)
+    creation_date = StringType(deserialize_from="CreationDate", serialize_when_none=False)
+    image_location = StringType(deserialize_from="ImageLocation", serialize_when_none=False)
+    image_type = StringType(deserialize_from="ImageType", choices=("machine", "kernel", "ramdisk"),
+                            serialize_when_none=False)
+    public = BooleanType(deserialize_from="Public", serialize_when_none=False)
+    kernel_id = StringType(deserialize_from="KernelId", serialize_when_none=False)
+    owner_id = StringType(deserialize_from="OwnerId", serialize_when_none=False)
+    platform = StringType(deserialize_from="Platform", default="Other Linux", serialize_when_none=False)
+    platform_details = StringType(deserialize_from="PlatformDetails", serialize_when_none=False)
+    usage_operation = StringType(deserialize_from="UsageOperation", serialize_when_none=False)
+    product_codes = ListType(ModelType(ImageProductCodes), deserialize_from="ProductCodes", serialize_when_none=False)
+    ramdisk_id = StringType(deserialize_from="RamdiskId", serialize_when_none=False)
     state = StringType(deserialize_from="State", choices=("pending", "available", "invalid", "deregistered",
-                                                          "transient", "failed", "error"))
-    block_device_mappings = ListType(ModelType(ImageBlockDeviceMappings, deserialize_from="BlockDeviceMappings"))
-    description = StringType(deserialize_from="Description")
-    ena_support = BooleanType(deserialize_from="EnaSupport")
-    hypervisor = StringType(deserialize_from="Hypervisor", choices=("ovm", "xen"))
-    image_owner_alias = StringType(deserialize_from="ImageOwnerAlias")
-    root_device_name = StringType(deserialize_from="RootDeviceName")
-    root_device_type = StringType(deserialize_from="RootDeviceType", choices=("ebs", "instance-store"))
-    sriov_net_support = StringType(deserialize_from="SriovNetSupport")
-    state_reason = ModelType(ImageStateReason, deserialize_from="StateReason")
+                                                          "transient", "failed", "error"),
+                       serialize_when_none=False)
+    block_device_mappings = ListType(ModelType(ImageBlockDeviceMappings),
+                                     deserialize_from="BlockDeviceMappings",
+                                     serialize_when_none=False)
+    description = StringType(deserialize_from="Description", serialize_when_none=False)
+    ena_support = BooleanType(deserialize_from="EnaSupport", serialize_when_none=False)
+    hypervisor = StringType(deserialize_from="Hypervisor", choices=("ovm", "xen"), serialize_when_none=False)
+    image_owner_alias = StringType(deserialize_from="ImageOwnerAlias", serialize_when_none=False)
+    root_device_name = StringType(deserialize_from="RootDeviceName", serialize_when_none=False)
+    root_device_type = StringType(deserialize_from="RootDeviceType", choices=("ebs", "instance-store"),
+                                  serialize_when_none=False)
+    sriov_net_support = StringType(deserialize_from="SriovNetSupport", serialize_when_none=False)
+    state_reason = ModelType(ImageStateReason, deserialize_from="StateReason", serialize_when_none=False)
     tags = ListType(ModelType(Tags), deserialize_from="Tags", default=[])
-    virtualization_type = StringType(deserialize_from="VirtualizationType", choices=("hvm", "paravirtual"))
-    launch_permissions = ListType(ModelType(LaunchPermission))
+    virtualization_type = StringType(deserialize_from="VirtualizationType", choices=("hvm", "paravirtual"),
+                                     serialize_when_none=False)
+    launch_permissions = ListType(ModelType(LaunchPermission), serialize_when_none=False)
 
     def reference(self, region_code):
         return {
