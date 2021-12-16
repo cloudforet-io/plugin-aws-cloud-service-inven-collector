@@ -62,7 +62,7 @@ class TestCloudServiceAPIs(TestCase):
     def test_collect(self):
         options = {
             'cloud_service_types': [
-                'CloudTrail'
+                'Lambda'
             ]
         }
         # options = {}

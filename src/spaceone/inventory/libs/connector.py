@@ -139,11 +139,14 @@ class SchematicAWSConnector(AWSConnector):
                     resource_dict = {
                         'data': data,
                         'account': collected_dict.get('account'),
+                        'instance_size': float(collected_dict.get('instance_size', 0)),
+                        'instance_type': collected_dict.get('instance_type', ''),
+                        'launched_at': collected_dict.get('launched_at', ''),
                         'tags': self.get_resource_tags(getattr(data, 'tags', [])),
                         'region_code': region_name,
                         'reference': ReferenceModel(data.reference(region_name))
                     }
-    
+
                     for add_field in additional_data:
                         if add_field in collected_dict:
                             resource_dict.update({add_field: collected_dict[add_field]})

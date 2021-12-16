@@ -7,8 +7,10 @@ cloud_service_type: LAG
 name: LAG Bandwidth Total Sum
 query:
   aggregate:
+    - unwind:
+        path: data.connections
     - group:
         fields:
           - name: bandwidth
             operator: sum
-            key: data.bandwidth
+            key: data.connections.bandwidth_gbps

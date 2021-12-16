@@ -1,7 +1,8 @@
 import logging
 
 from schematics import Model
-from schematics.types import ModelType, StringType, IntType, DateTimeType, serializable, ListType, BooleanType
+from schematics.types import ModelType, StringType, IntType, FloatType, DateTimeType, serializable, ListType, \
+    BooleanType
 from spaceone.inventory.libs.schema.resource import CloudWatchModel, CloudWatchDimensionModel
 
 _LOGGER = logging.getLogger(__name__)
@@ -24,6 +25,7 @@ class LAGConnections(Model):
     region = StringType(deserialize_from="region")
     location = StringType(deserialize_from="location")
     bandwidth = StringType(deserialize_from="bandwidth")
+    bandwidth_gbps = FloatType(serialize_when_none=False)
     vlan = IntType(deserialize_from="vlan")
     partner_name = StringType(deserialize_from="partnerName")
     loa_issue_time = DateTimeType(deserialize_from="loaIssueTime")
@@ -48,13 +50,12 @@ class LAG(Model):
     minimum_links = IntType(deserialize_from="minimumLinks")
     aws_device = StringType(deserialize_from="awsDevice")
     aws_device_v2 = StringType(deserialize_from="awsDeviceV2")
-    connections = ListType(ModelType(LAGConnections, deserialize_from="connections"))
+    connections = ListType(ModelType(LAGConnections), deserialize_from="connections")
     allows_hosted_connections = BooleanType(deserialize_from="allowsHostedConnections")
     jumbo_frame_capable = BooleanType(deserialize_from="jumboFrameCapable")
     has_logical_redundancy = StringType(deserialize_from="hasLogicalRedundancy", choices=("unknown", "yes", "no"))
     tags = ListType(ModelType(Tags), default=[])
     provider_name = StringType(deserialize_from="providerName")
-    account_id = StringType()
 
     def reference(self, region_code):
         return {
@@ -70,7 +71,6 @@ class VirtualPrivateGateway(Model):
     virtual_gateway_id = StringType(deserialize_from="virtualGatewayId")
     virtual_gateway_state = StringType(deserialize_from="virtualGatewayState")
     owner_account = StringType(deserialize_from="ownerAccount")
-    account_id = StringType()
 
     def reference(self, region_code):
         return {
@@ -92,7 +92,6 @@ class DirectConnectGateway(Model):
                                                                                                     "deleting",
                                                                                                     "deleted"))
     state_change_error = StringType(deserialize_from="stateChangeError")
-    account_id = StringType()
 
     def reference(self, region_code):
         return {
@@ -156,7 +155,6 @@ class VirtualInterface(Model):
     region = StringType(deserialize_from="region")
     aws_device_v2 = StringType(deserialize_from="awsDeviceV2")
     tags = ListType(ModelType(Tags), default=[])
-    account_id = StringType()
     cloudwatch = ModelType(CloudWatchModel, serialize_when_none=False)
 
     def reference(self, region_code):
@@ -186,6 +184,7 @@ class Connection(Model):
     region = StringType(deserialize_from="region")
     location = StringType(deserialize_from="location")
     bandwidth = StringType(deserialize_from="bandwidth")
+    bandwidth_gbps = FloatType(serialize_when_none=False)
     vlan = IntType(deserialize_from="vlan")
     partner_name = StringType(deserialize_from="partnerName")
     loa_issue_time = DateTimeType(deserialize_from="loaIssueTime")
@@ -197,7 +196,6 @@ class Connection(Model):
     tags = ListType(ModelType(Tags), default=[])
     provider_name = StringType(deserialize_from="providerName")
     virtual_interfaces = ListType(ModelType(VirtualInterface))
-    account_id = StringType()
     cloudwatch = ModelType(CloudWatchModel, serialize_when_none=False)
 
     def reference(self, region_code):
