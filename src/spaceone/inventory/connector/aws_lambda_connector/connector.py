@@ -105,11 +105,10 @@ class LambdaConnector(SchematicAWSConnector):
             }
         )
         for data in response_iterator:
-            for raw in data['Functions']:
+            for raw in data.get('Functions', []):
                 try:
                     func = LambdaFunctionData(raw, strict=False)
                     func.region_name = region_name
-                    func.account_id = self.account_id
 
                     if raw.get('State'):
                         func.state = LambdaState({
