@@ -60,7 +60,12 @@ class TestCloudServiceAPIs(TestCase):
         print_json(v_info)
 
     def test_collect(self):
-        options = {}
+        options = {
+            'cloud_service_types': [
+                'CloudTrail'
+            ]
+        }
+        # options = {}
         filter = {}
 
         res_stream = self.inventory.Collector.collect(

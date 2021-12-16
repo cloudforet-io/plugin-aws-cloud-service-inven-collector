@@ -56,12 +56,19 @@ class EC2Connector(SchematicAWSConnector):
 
         for image in results.get('Images', []):
             try:
-                permission_info = self.client.describe_image_attribute(Attribute='launchPermission', ImageId=image['ImageId'])
+                try:
+                    permission_info = self.client.describe_image_attribute(Attribute='launchPermission',
+                                                                           ImageId=image['ImageId'])
 
-                if permission_info:
-                    image.update({
-                        'launch_permissions': [LaunchPermission(_permission, strict=False) for _permission in permission_info.get('LaunchPermissions', [])]
-                    })
+                    if permission_info:
+                        image.update({
+                            'launch_permissions': [LaunchPermission(_permission, strict=False) for _permission in
+                                                   permission_info.get('LaunchPermissions', [])]
+                        })
+
+                except Exception as e:
+                    _LOGGER.debug(f"[ami][request_ami_data] SKIP: {e}")
+
 
                 image_vo = Image(image, strict=False)
                 yield {

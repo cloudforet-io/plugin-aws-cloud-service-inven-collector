@@ -33,6 +33,9 @@ class IAMConnector(SchematicAWSConnector):
         start_time = time.time()
         resources = []
 
+        policy_errors = []
+        user_errors = []
+
         # init cloud service type
         for cst in CLOUD_SERVICE_TYPES:
             resources.append(cst)

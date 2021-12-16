@@ -5,33 +5,14 @@ from botocore.exceptions import ClientError
 
 from spaceone.core.utils import *
 from spaceone.inventory.connector.aws_lambda_connector.schema.data import LambdaFunctionData, \
-    EnvironmentVariable, LambdaState, LastUpdateStatus, VPC, VPCConfig, Environment, Subnet, SecurityGroup, Layer
+    EnvironmentVariable, LambdaState, LastUpdateStatus, VPCConfig, Environment, Layer
 from spaceone.inventory.connector.aws_lambda_connector.schema.resource import LambdaFunctionResponse, \
     LambdaFunctionResource, LambdaLayerResource, LambdaLayerResponse
 from spaceone.inventory.connector.aws_lambda_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
-from spaceone.inventory.libs.data_loader import DataLoader
+
 
 _LOGGER = logging.getLogger(__name__)
-
-
-class VpcDataLoader(DataLoader):
-
-    @property
-    def resource(self):
-        return self.session.resource('ec2')
-
-    def fetch_data(self, resource_id):
-        data = {}
-        try:
-            vpc = self.resource.Vpc(resource_id)
-            data['is_default'] = vpc.is_default
-            for tag in vpc.tags:
-                if tag['Key'] == 'Name':
-                    data['name'] = tag['Value']
-        except ClientError as e:
-            _LOGGER.debug(e)
-        return data
 
 
 class LambdaConnector(SchematicAWSConnector):
@@ -73,25 +54,6 @@ class LambdaConnector(SchematicAWSConnector):
     def layers(self):
         return self.init_property('_lambda_layers', lambda: {})
 
-    def get_vpc(self, vpc_config):
-        vpc_data = None
-
-        if vpc_id := vpc_config.get('VpcId'):
-            vpc_data = VpcDataLoader(self.session).get(vpc_id)
-
-            vpc = {
-                'id': vpc_id,
-                'name': vpc_data.get('name'),
-                'is_default': vpc_data.get('is_default')
-            }
-            subnets = [Subnet({'id': subnet_id}) for subnet_id in vpc_config.get('SubnetIds', [])]
-            security_groups = [
-                SecurityGroup({'id': sg_id}) for sg_id in vpc_config.get('SecurityGroupIds', [])
-            ]
-            vpc_data = VPCConfig({'vpc': VPC(vpc), 'subnets': subnets, 'security_groups': security_groups, })
-
-        return vpc_data
-
     def request_functions_data(self, region_name) -> List[LambdaFunctionData]:
         cloud_service_group = 'Lambda'
         cloud_service_type = 'Function'
@@ -105,11 +67,10 @@ class LambdaConnector(SchematicAWSConnector):
             }
         )
         for data in response_iterator:
-            for raw in data['Functions']:
+            for raw in data.get('Functions', []):
                 try:
                     func = LambdaFunctionData(raw, strict=False)
                     func.region_name = region_name
-                    func.account_id = self.account_id
 
                     if raw.get('State'):
                         func.state = LambdaState({
@@ -123,9 +84,7 @@ class LambdaConnector(SchematicAWSConnector):
                             'reason': raw.get('LastUpdateStatusReason'),
                             'reason_code': raw.get('LastUpdateStatusReasonCode'),
                         })
-                    if vpc_config := raw.get('VpcConfig'):
-                        if vpc_data := self.get_vpc(vpc_config):
-                            func.vpc_config = vpc_data
+
                     if env := raw.get('Environment'):
                         if not func.environment:
                             func.environment = Environment()
@@ -166,10 +125,7 @@ class LambdaConnector(SchematicAWSConnector):
                             'version': latest_matching_version.get('Version')
                         })
 
-                    raw.update({
-                        'region_name': region_name,
-                        'account_id': self.account_id
-                    })
+                    raw.update({'region_name': region_name})
 
                     layer_vo = Layer(raw, strict=False)
                     yield {

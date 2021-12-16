@@ -281,18 +281,30 @@ class AutoScalingConnector(SchematicAWSConnector):
         return lb_arns
 
     def get_load_balancer_info(self, lb_arns):
-        if not len(lb_arns): return []
         elb_client = self.session.client('elbv2')
-        lbs = elb_client.describe_load_balancers(LoadBalancerArns=lb_arns).get('LoadBalancers', [])
+        max_count = 20
+
+        split_lb_arns = [lb_arns[i:i + max_count] for i in range(0, len(lb_arns), max_count)]
+
         load_balancer_data_list = []
 
-        for lb in lbs:
-            lb_arn = lb.get('LoadBalancerArn', '')
-            listeners = elb_client.describe_listeners(LoadBalancerArn=lb_arn).get('Listeners', [])
-            lb.update({
-                'listeners': listeners
-            })
-            load_balancer_data_list.append(self.get_load_balancer_data(lb))
+        for lb_arns in split_lb_arns:
+            try:
+                lbs = elb_client.describe_load_balancers(LoadBalancerArns=lb_arns).get('LoadBalancers', [])
+
+                for lb in lbs:
+                    lb_arn = lb.get('LoadBalancerArn', '')
+                    listeners = elb_client.describe_listeners(LoadBalancerArn=lb_arn).get('Listeners', [])
+                    lb.update({
+                        'listeners': listeners
+                    })
+                    load_balancer_data_list.append(self.get_load_balancer_data(lb))
+
+                    # avoid to API Rate limitation.
+                    time.sleep(0.5)
+
+            except Exception as e:
+                _LOGGER.debug(f"[autoscaling] ELB not found: {lb_arns}")
 
         return load_balancer_data_list
 
@@ -304,9 +316,9 @@ class AutoScalingConnector(SchematicAWSConnector):
             'scheme': match_load_balancer.get('Scheme'),
             'name': match_load_balancer.get('LoadBalancerName', ''),
             'protocol': [listener.get('Protocol') for listener in match_load_balancer.get('listeners', []) if
-                         listener.get('Protocol') is not None],
+                         listener.get('Protocol')],
             'port': [listener.get('Port') for listener in match_load_balancer.get('listeners', []) if
-                     listener.get('Port') is not None],
+                     listener.get('Port')],
             'tags': {
                 'arn': match_load_balancer.get('LoadBalancerArn', '')
             }
