@@ -86,7 +86,7 @@ cst_connection_meta = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Provider Name', key='data.provider_name')
     ],
     widget=[
-        # CardWidget.set(**get_data_from_yaml(connection_bandwidth_total_sum_conf)),
+        CardWidget.set(**get_data_from_yaml(connection_bandwidth_total_sum_conf)),
         ChartWidget.set(**get_data_from_yaml(connection_count_per_region_widget_conf)),
         ChartWidget.set(**get_data_from_yaml(connection_count_per_account_widget_conf))
     ]
@@ -293,7 +293,7 @@ cst_lags_meta = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='AWS Device', key='data.aws_device')
     ],
     widget=[
-        # CardWidget.set(**get_data_from_yaml(lag_bandwidth_total_sum_conf)),
+        CardWidget.set(**get_data_from_yaml(lag_bandwidth_total_sum_conf)),
         ChartWidget.set(**get_data_from_yaml(lag_count_per_region_widget_conf)),
         ChartWidget.set(**get_data_from_yaml(lag_count_per_account_widget_conf))
     ]
