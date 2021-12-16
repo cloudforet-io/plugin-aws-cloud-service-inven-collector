@@ -66,7 +66,7 @@ class KMSConnector(SchematicAWSConnector):
                 yield {
                     'data': key_vo,
                     'name': key_vo.alias_name,
-                    'launched_at': datetime_to_iso8601(key_vo.creation_date),
+                    'launched_at': self.datetime_to_iso8601(key_vo.creation_date),
                     'account': self.account_id
                 }
 

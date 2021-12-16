@@ -297,7 +297,7 @@ class VPCConnector(SchematicAWSConnector):
                 yield {
                     'data': nat_gateway_vo,
                     'name': nat_gateway_vo.name,
-                    'launched_at': datetime_to_iso8601(nat_gateway_vo.create_time),
+                    'launched_at': self.datetime_to_iso8601(nat_gateway_vo.create_time),
                     'account': self.account_id
                 }
                 
@@ -370,7 +370,7 @@ class VPCConnector(SchematicAWSConnector):
                     'data': endpoint_vo,
                     'name': endpoint_vo.name,
                     'instance_type': endpoint_vo.vpc_endpoint_type,
-                    'launched_at': datetime_to_iso8601(endpoint_vo.creation_timestamp),
+                    'launched_at': self.datetime_to_iso8601(endpoint_vo.creation_timestamp),
                     'account': self.account_id
                 }
                 
@@ -562,7 +562,7 @@ class VPCConnector(SchematicAWSConnector):
                 yield {
                     'data': tgw_vo,
                     'name': tgw_vo.name,
-                    'launched_at': datetime_to_iso8601(tgw_vo.creation_time),
+                    'launched_at': self.datetime_to_iso8601(tgw_vo.creation_time),
                     'account': self.account_id
                 }
                 

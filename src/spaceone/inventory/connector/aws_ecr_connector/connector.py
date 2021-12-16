@@ -66,7 +66,7 @@ class ECRConnector(SchematicAWSConnector):
                     yield {
                         'data': repository_vo,
                         'name': repository_vo.repository_name,
-                        'launched_at': datetime_to_iso8601(repository_vo.created_at),
+                        'launched_at': self.datetime_to_iso8601(repository_vo.created_at),
                         'account': self.account_id
                     }
 

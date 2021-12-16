@@ -88,7 +88,7 @@ class APIGatewayConnector(SchematicAWSConnector):
                         'name': rest_api_vo.name,
                         'instance_type': rest_api_vo.protocol,
                         'account': self.account_id,
-                        'launched_at': datetime_to_iso8601(rest_api_vo.created_date)
+                        'launched_at': self.datetime_to_iso8601(rest_api_vo.created_date)
                     }
 
                 except Exception as e:
@@ -127,7 +127,7 @@ class APIGatewayConnector(SchematicAWSConnector):
                         'name': http_websocket_vo.name,
                         'instance_type': http_websocket_vo.protocol,
                         'account': self.account_id,
-                        'launched_at': datetime_to_iso8601(http_websocket_vo.created_date)
+                        'launched_at': self.datetime_to_iso8601(http_websocket_vo.created_date)
                     }
 
                 except Exception as e:
