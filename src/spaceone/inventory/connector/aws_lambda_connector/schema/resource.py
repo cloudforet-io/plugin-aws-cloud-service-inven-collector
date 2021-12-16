@@ -42,11 +42,6 @@ function = ItemDynamicLayout.set_fields('Functions', fields=[
         'warning': ['InProgress']
     }),
     TextDyField.data_source('Last Update State Reason', 'data.last_update.reason'),
-    EnumDyField.data_source('State Reason Code', 'data.last_update.reason_code', default_state={
-        'alert': ['EniLimitExceeded', 'InsufficientRolePermissions', 'InvalidConfiguration', 'InternalError',
-                  'SubnetOutOfIPAddresses', 'InvalidSubnet', 'InvalidSecurityGroup']
-
-    }),
     DateTimeDyField.data_source('Last Modified', 'data.last_modified'),
 ])
 
