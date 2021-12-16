@@ -67,12 +67,15 @@ class DirectConnectConnector(SchematicAWSConnector):
 
         for raw in response.get('connections', []):
             try:
-                raw.update({
-                    'account_id': self.account_id
-                })
+                bandwidth_size = self.convert_bandwidth_gbps(raw.get('bandwidth', ''))
+
+                if bandwidth_size:
+                    raw.update({'bandwidth_gbps': bandwidth_size})
+
                 connection_vo = Connection(raw, strict=False)
                 yield {
                     'data': connection_vo,
+                    'instance_size': bandwidth_size,
                     'name': connection_vo.connection_name,
                     'instance_type': connection_vo.location,
                     'account': self.account_id
@@ -90,9 +93,6 @@ class DirectConnectConnector(SchematicAWSConnector):
 
         for raw in response.get('directConnectGateways', []):
             try:
-                raw.update({
-                    'account_id': self.account_id
-                })
                 dc_gw_vo = DirectConnectGateway(raw, strict=False)
                 yield {
                     'data': dc_gw_vo,
@@ -112,9 +112,6 @@ class DirectConnectConnector(SchematicAWSConnector):
 
         for raw in response.get('virtualGateways', []):
             try:
-                raw.update({
-                    'account_id': self.account_id
-                })
                 virtual_private_gw_vo = VirtualPrivateGateway(raw, strict=False)
 
                 yield {
@@ -131,13 +128,16 @@ class DirectConnectConnector(SchematicAWSConnector):
         self.cloudservice_type = 'LAG'
 
         response = self.client.describe_lags()
-
         for raw in response.get('lags', []):
             try:
-                raw.update({
-                    'account_id': self.account_id
-                })
+                for lag_connection in raw.get('connections', []):
+                    bandwidth_size = self.convert_bandwidth_gbps(lag_connection.get('bandwidth', ''))
+
+                    if bandwidth_size:
+                        lag_connection.update({'bandwidth_gbps': bandwidth_size})
+
                 lag_vo = LAG(raw, strict=False)
+
                 yield {
                     'data': lag_vo,
                     'name': lag_vo.lag_name,
@@ -148,3 +148,15 @@ class DirectConnectConnector(SchematicAWSConnector):
                 resource_id = raw.get('lagId', '')
                 error_resource_response = self.generate_error(region_name, resource_id, e)
                 yield {'data': error_resource_response}
+
+    def convert_bandwidth_gbps(self, bandwidth):
+        try:
+            if 'Mbps' in bandwidth:
+                bw_mbps = bandwidth.replace('Mbps', '')
+                return float(bw_mbps/1000)
+            elif 'Gbps' in bandwidth:
+                return float(bandwidth.replace('Gpbs', ''))
+            else:
+                return float(0)
+        except Exception as e:
+            return float(0)
