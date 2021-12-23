@@ -14,7 +14,7 @@ Please contact us if you need any further information. (<support@spaceone.dev>)
   - Bucket
   
 - Boto3 info
-  - Client : s3
+  - Client : s3, cloudwatch
   - API used
     - [list_buckets()](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/s3.html#S3.Client.list_buckets)
     - [get_bucket_versioning()](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/s3.html#S3.Client.get_bucket_versioning)
@@ -29,6 +29,7 @@ Please contact us if you need any further information. (<support@spaceone.dev>)
     - [get_bucket_policy_status()](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/s3.html#S3.Client.get_bucket_policy_status)
     - [get_bucket_acl()](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/s3.html#S3.Client.get_bucket_acl)
     - [get_bucket_location()](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/s3.html#S3.Client.get_bucket_location)
+    - [get_metric_data()](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/cloudwatch.html#CloudWatch.Client.get_metric_data)
 
 ### Required Policy
   
@@ -39,8 +40,22 @@ Please contact us if you need any further information. (<support@spaceone.dev>)
     "Statement": [
         {
             "Action": [
-                "s3:Get*",
-                "s3:List*"
+                "s3:ListBucket",
+                "s3:ListBucketVersions",
+                "s3:ListAllMyBuckets",
+                "s3:GetBucketVersioning",
+                "s3:GetBucketLogging",
+                "s3:GetBucketWebsite",
+                "s3:GetEncryptionConfiguration",
+                "s3:GetBucketObjectLockConfiguration",
+                "s3:GetAccelerateConfiguration",
+                "s3:GetBucketRequestPayment"
+                "s3:GetBucketNotification",
+                "s3:GetBucketTagging",
+                "s3:GetBucketPolicyStatus",
+                "s3:GetBucketAcl",
+                "s3:GetBucketLocation",
+                "cloudwatch:GetMetricData"
             ],
             "Effect": "Allow",
             "Resource": "*"
