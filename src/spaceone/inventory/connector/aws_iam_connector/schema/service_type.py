@@ -1,9 +1,16 @@
+import os
+from spaceone.inventory.libs.common_parser import *
+from spaceone.inventory.libs.schema.dynamic_widget import ChartWidget, CardWidget
 from spaceone.inventory.libs.schema.dynamic_field import TextDyField, SearchField, DateTimeDyField, ListDyField, \
     EnumDyField
 from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, \
     CloudServiceTypeMeta
 
-# GROUP
+current_dir = os.path.abspath(os.path.dirname(__file__))
+
+"""
+GROUP
+"""
 cst_group = CloudServiceTypeResource()
 cst_group.name = 'Group'
 cst_group.provider = 'aws'
@@ -70,7 +77,14 @@ cst_group._metadata = CloudServiceTypeMeta.set_meta(
     ]
 )
 
-# USER
+"""
+USER
+"""
+access_key_total_count_conf = os.path.join(current_dir, 'widget/access_key_total_count.yaml')
+mfa_not_used_total_count_conf = os.path.join(current_dir, 'widget/mfa_not_used_total_count.yaml')
+access_key_age_30_total_count_conf = os.path.join(current_dir, 'widget/access_key_age_30_total_count.yaml')
+access_key_age_ratio_conf = os.path.join(current_dir, 'widget/access_key_age_ratio.yaml')
+
 cst_user = CloudServiceTypeResource()
 cst_user.name = 'User'
 cst_user.provider = 'aws'
@@ -189,10 +203,20 @@ cst_user._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Keyspaces Created Time ', key='data.cassandra_credential.create_date',
                         data_type='datetime'),
         SearchField.set(name='Creation Time', key='data.create_date', data_type='datetime'),
+    ],
+    widget=[
+        CardWidget.set(**get_data_from_yaml(access_key_total_count_conf)),
+        CardWidget.set(**get_data_from_yaml(mfa_not_used_total_count_conf)),
+        CardWidget.set(**get_data_from_yaml(access_key_age_30_total_count_conf)),
+        ChartWidget.set(**get_data_from_yaml(access_key_age_ratio_conf))
     ]
 )
 
-# ROLE
+
+"""
+ROLE
+"""
+
 cst_role = CloudServiceTypeResource()
 cst_role.name = 'Role'
 cst_role.provider = 'aws'
@@ -265,7 +289,11 @@ cst_role._metadata = CloudServiceTypeMeta.set_meta(
     ]
 )
 
-# POLICY
+
+"""
+POLICY
+"""
+
 cst_policy = CloudServiceTypeResource()
 cst_policy.name = 'Policy'
 cst_policy.provider = 'aws'
@@ -319,7 +347,10 @@ cst_policy._metadata = CloudServiceTypeMeta.set_meta(
     ]
 )
 
-# IDENTITY PROVIDER
+"""
+IDENTITY PROVIDER
+"""
+
 cst_identity_provider = CloudServiceTypeResource()
 cst_identity_provider.name = 'IdentityProvider'
 cst_identity_provider.provider = 'aws'
