@@ -12,6 +12,7 @@ EIP
 """
 eip_total_count_per_region_conf = os.path.join(current_dir, 'widget/eip_total_count_per_region.yaml')
 eip_total_count_per_account_conf = os.path.join(current_dir, 'widget/eip_total_count_per_account.yaml')
+eip_use_count_per_status_conf = os.path.join(current_dir, 'widget/eip_use_count_per_status.yaml')
 
 cst_eip = CloudServiceTypeResource()
 cst_eip.name = 'EIP'
@@ -60,6 +61,7 @@ cst_eip._metadata = CloudServiceTypeMeta.set_meta(
     widget=[
         ChartWidget.set(**get_data_from_yaml(eip_total_count_per_region_conf)),
         ChartWidget.set(**get_data_from_yaml(eip_total_count_per_account_conf)),
+        ChartWidget.set(**get_data_from_yaml(eip_use_count_per_status_conf))
     ]
 )
 

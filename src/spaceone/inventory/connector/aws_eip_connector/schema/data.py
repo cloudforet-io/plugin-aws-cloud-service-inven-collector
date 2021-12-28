@@ -17,7 +17,7 @@ class ElasticIPAddress(Model):
     public_ip = StringType(deserialize_from="PublicIp")
     public_dns = StringType()
     nat_gateway_id = StringType()
-    account_id = StringType()
+    allocation_status = StringType(choices=('In-use', 'Unused'))
     allocation_id = StringType(deserialize_from="AllocationId")
     association_id = StringType(deserialize_from="AssociationId")
     domain = StringType(deserialize_from="Domain", choices=("vpc", "standard"))

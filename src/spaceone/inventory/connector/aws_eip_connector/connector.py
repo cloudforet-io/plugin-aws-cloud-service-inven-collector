@@ -59,9 +59,10 @@ class EIPConnector(SchematicAWSConnector):
                         _ip['public_dns'] = public_dns
 
                 _ip.update({
-                    'account_id': self.account_id,
+                    'allocation_status': 'In-use' if _ip.get('allocation_id') else 'Unused',
                     'name': self._get_name_from_tags(_ip.get('Tags', []))
                 })
+
                 eip_vo = ElasticIPAddress(_ip, strict=False)
 
                 yield {
