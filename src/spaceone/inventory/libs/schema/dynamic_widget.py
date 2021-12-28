@@ -27,7 +27,7 @@ class BaseDynamicWidgetQueryAggregateGroupFields(Model):
     name = StringType(serialize_when_none=False)
     operator = StringType(serialize_when_none=False)
     _fields = ListType(ModelType(BaseDynamicWidgetKeyFields), serialize_when_none=False, serialized_name='fields')
-    condition = ModelType(BaseDynamicWidgetGroupCondition, serialize_when_none=False)
+    conditions = ListType(ModelType(BaseDynamicWidgetGroupCondition), serialize_when_none=False)
 
 
 class BaseDynamicWidgetQueryAggregateGroup(Model):
@@ -50,11 +50,22 @@ class BaseDynamicWidgetQueryAggregateSort(Model):
     keys = ListType(ModelType(BaseDynamicWidgetQueryAggregateSortKey), serialize_when_none=False)
 
 
+class BaseDynamicWidgetQueryAggregateProjectField(Model):
+    key = StringType(serialize_when_none=False)
+    name = StringType(serialize_when_none=False)
+    operator = StringType(serialize_when_none=False)
+
+
+class BaseDynamicWidgetQueryAggregateProject(Model):
+    _fields = ListType(ModelType(BaseDynamicWidgetQueryAggregateProjectField), serialize_when_none=False, serialized_name='fields')
+
+
 class BaseDynamicWidgetQueryAggregate(Model):
     unwind = ModelType(BaseDynamicWidgetQueryAggregateUnwind, serialize_when_none=False)
     group = ModelType(BaseDynamicWidgetQueryAggregateGroup, serialize_when_none=False)
     count = ModelType(BaseDynamicWidgetQueryAggregateCount, serialize_when_none=False)
     sort = ModelType(BaseDynamicWidgetQueryAggregateSort, serialize_when_none=False)
+    project = ModelType(BaseDynamicWidgetQueryAggregateProject, serialize_when_none=False)
 
 
 class BaseDynamicWidgetQueryFilter(Model):
@@ -131,6 +142,13 @@ class BaseDynamicWidget(Model):
                     _aggr_sort['keys'] = _aggr_sort_keys
 
                 _aggr_dict['sort'] = BaseDynamicWidgetQueryAggregateSort(_aggr_sort)
+
+            if 'project' in _aggregate:
+                _aggr_project = _aggregate['project']
+                _aggr_project_fields = [BaseDynamicWidgetQueryAggregateProjectField(_aggr_project_field)
+                                        for _aggr_project_field in _aggr_project.get('fields', [])]
+
+                _aggr_dict['project'] = BaseDynamicWidgetQueryAggregateProject({'fields': _aggr_project_fields})
 
             query_aggrs.append(BaseDynamicWidgetQueryAggregate(_aggr_dict))
 
