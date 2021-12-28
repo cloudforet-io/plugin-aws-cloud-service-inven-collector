@@ -8,10 +8,10 @@ query:
         path: data.instances
     - group:
         keys:
-          - name: availability_zone
+          - name: name
             key: data.instances.availability_zone
         fields:
-          - name: count
+          - name: value
             key: data.instances.availability_zone
             operator: count
 options:

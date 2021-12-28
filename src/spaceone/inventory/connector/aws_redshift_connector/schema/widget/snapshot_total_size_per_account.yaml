@@ -8,10 +8,10 @@ query:
         path: data.snapshot
     - group:
         keys:
-          - name: account
+          - name: name
             key: account
         fields:
-          - name: size
+          - name: value
             key: data.snapshots.total_backup_size_in_mega_bytes
             operator: sum
 options:

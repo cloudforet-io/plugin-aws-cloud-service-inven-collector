@@ -1,0 +1,13 @@
+---
+cloud_service_group: IAM
+cloud_service_type: User
+name: Access Key Total Count
+query:
+  aggregate:
+    - unwind:
+        path: data.access_key
+    - group:
+        fields:
+        - name: value
+          key: data.access_key
+          operator: count

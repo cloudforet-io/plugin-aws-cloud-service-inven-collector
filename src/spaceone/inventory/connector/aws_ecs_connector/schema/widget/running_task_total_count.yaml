@@ -8,6 +8,6 @@ query:
         path: data.tasks
     - group:
         fields:
-        - name: count
+        - name: value
           key: data.tasks
           operator: count

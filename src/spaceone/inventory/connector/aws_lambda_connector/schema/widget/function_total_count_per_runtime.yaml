@@ -6,10 +6,10 @@ query:
   aggregate:
     - group:
         keys:
-          - name: runtime
+          - name: name
             key: data.runtime
         fields:
-          - name: count
+          - name: value
             operator: count
 options:
   chart_type: DONUT

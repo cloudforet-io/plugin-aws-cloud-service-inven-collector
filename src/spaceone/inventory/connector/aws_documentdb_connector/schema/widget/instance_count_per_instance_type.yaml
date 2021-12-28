@@ -8,10 +8,10 @@ query:
         path: data.instances
     - group:
         keys:
-          - name: instance_type
+          - name: name
             key: data.instances.db_instance_class
         fields:
-          - name: count
+          - name: value
             key: data.instances.db_instance_class
             operator: count
 options:

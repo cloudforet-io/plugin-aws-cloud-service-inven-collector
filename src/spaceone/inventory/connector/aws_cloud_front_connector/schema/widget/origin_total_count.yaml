@@ -6,6 +6,6 @@ query:
   aggregate:
     - group:
         fields:
-          - name: count
+          - name: value
             operator: count
             key: data.origins.items

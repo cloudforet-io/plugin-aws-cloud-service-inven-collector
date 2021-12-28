@@ -11,6 +11,6 @@ query:
         path: data.connections
     - group:
         fields:
-          - name: bandwidth
+          - name: value
             operator: sum
             key: data.connections.bandwidth_gbps

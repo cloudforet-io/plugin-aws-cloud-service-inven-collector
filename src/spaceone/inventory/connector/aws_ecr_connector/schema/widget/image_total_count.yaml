@@ -8,6 +8,6 @@ query:
         path: data.images
     - group:
         fields:
-        - name: count
+        - name: value
           key: data.images
           operator: count

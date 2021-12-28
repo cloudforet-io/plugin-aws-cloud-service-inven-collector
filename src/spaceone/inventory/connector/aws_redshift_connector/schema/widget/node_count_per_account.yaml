@@ -6,10 +6,10 @@ query:
   aggregate:
     - group:
         keys:
-          - name: account
+          - name: name
             key: account
         fields:
-          - name: count
+          - name: value
             key: data.number_of_nodes
             operator: sum
 options:

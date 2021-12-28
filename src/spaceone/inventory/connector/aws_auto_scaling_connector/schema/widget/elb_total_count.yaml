@@ -8,6 +8,6 @@ query:
         path: data.load_balancers
     - group:
         fields:
-          - name: count
+          - name: value
             key: data.load_balancers
             operator: count
