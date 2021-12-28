@@ -6,6 +6,6 @@ query:
   aggregate:
     - group:
         fields:
-          - name: capacity
+          - name: value
             operator: sum
             key: data.total_read_capacity

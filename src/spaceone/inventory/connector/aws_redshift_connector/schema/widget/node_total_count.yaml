@@ -6,6 +6,6 @@ query:
   aggregate:
     - group:
         fields:
-          - name: count
+          - name: value
             key: data.number_of_nodes
             operator: sum

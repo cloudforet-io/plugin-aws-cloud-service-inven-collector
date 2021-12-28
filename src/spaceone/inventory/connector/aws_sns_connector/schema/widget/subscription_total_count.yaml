@@ -6,6 +6,6 @@ query:
   aggregate:
     - group:
         fields:
-          - name: count
+          - name: value
             key: data.subscriptions
             operator: size

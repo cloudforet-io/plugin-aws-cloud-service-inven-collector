@@ -6,10 +6,10 @@ query:
   aggregate:
     - group:
         keys:
-          - name: volume_type
+          - name: name
             key: instance_type
         fields:
-          - name: size
+          - name: value
             key: instance_size
             operator: sum
 options:

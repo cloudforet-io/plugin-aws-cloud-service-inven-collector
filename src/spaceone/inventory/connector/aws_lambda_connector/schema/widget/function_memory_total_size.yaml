@@ -6,6 +6,6 @@ query:
   aggregate:
     - group:
         fields:
-          - name: size
+          - name: value
             key: data.memory_size
             operator: sum

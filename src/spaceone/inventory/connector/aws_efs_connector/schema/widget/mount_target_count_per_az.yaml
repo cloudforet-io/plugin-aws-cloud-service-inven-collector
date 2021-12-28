@@ -8,10 +8,10 @@ query:
         path: data.mount_targets
     - group:
         keys:
-          - name: availability_zone
+          - name: name
             key: data.mount_targets.availability_zone_name
         fields:
-          - name: count
+          - name: value
             key: data.mount_targets
             operator: count
 options:

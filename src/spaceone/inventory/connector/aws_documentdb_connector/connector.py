@@ -190,19 +190,26 @@ class DocumentDBConnector(SchematicAWSConnector):
         return instances
 
     def _describe_snapshots(self):
-        snapshots = []
-        paginator = self.client.get_paginator('describe_db_cluster_snapshots')
-        response_iterator = paginator.paginate(
-            PaginationConfig={
-                'MaxItems': 10000,
-                'PageSize': 50,
-            }
-        )
+        response = self.client.describe_db_cluster_snapshots()
+        return [snapshot for snapshot in response.get('DBClusterSnapshots', []) if snapshot.get('Engine') == 'docdb']
 
-        for data in response_iterator:
-            snapshots.extend([snapshot for snapshot in data.get('DBClusterSnapshots', [])
-                              if snapshot.get('Engine') == 'docdb'])
-        return snapshots
+        """
+        CAN NOT operate paginated: describe_db_cluster_snapshot
+        Need to check out why can't use it.
+        """
+        # snapshots = []
+        # paginator = self.client.get_paginator('describe_db_cluster_snapshots')
+        # response_iterator = paginator.paginate(
+        #     PaginationConfig={
+        #         'MaxItems': 10000,
+        #         'PageSize': 50,
+        #     }
+        # )
+        #
+        # for data in response_iterator:
+        #     snapshots.extend([snapshot for snapshot in data.get('DBClusterSnapshots', [])
+        #                       if snapshot.get('Engine') == 'docdb'])
+        # return snapshots
 
     @staticmethod
     def _match_instances(raw_instances, cluster_name):

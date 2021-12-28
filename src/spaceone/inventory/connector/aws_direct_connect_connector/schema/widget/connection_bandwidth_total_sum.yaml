@@ -9,6 +9,6 @@ query:
   aggregate:
     - group:
         fields:
-          - name: bandwidth
+          - name: value
             operator: sum
             key: instance_size

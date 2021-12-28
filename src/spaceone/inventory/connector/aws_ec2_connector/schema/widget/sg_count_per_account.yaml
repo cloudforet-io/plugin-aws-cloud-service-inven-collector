@@ -6,7 +6,7 @@ query:
   aggregate:
     - group:
         keys:
-          - name: account
+          - name: name
             key: account
         fields:
           - name: value

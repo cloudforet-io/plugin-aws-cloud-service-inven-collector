@@ -1,0 +1,15 @@
+---
+cloud_service_group: EC2
+cloud_service_type: EIP
+name: EIP In-use/Unused Count
+query:
+  aggregate:
+    - group:
+        keys:
+          - name: name
+            key: data.allocation_status
+        fields:
+          - name: value
+            operator: count
+options:
+  chart_type: DONUT

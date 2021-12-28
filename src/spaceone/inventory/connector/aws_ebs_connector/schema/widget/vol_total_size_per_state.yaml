@@ -6,10 +6,10 @@ query:
   aggregate:
     - group:
         keys:
-          - name: state
+          - name: name
             key: data.state
         fields:
-          - name: size
+          - name: value
             key: instance_size
             operator: sum
 options:

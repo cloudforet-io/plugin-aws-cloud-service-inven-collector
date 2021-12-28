@@ -6,8 +6,8 @@ query:
   aggregate:
     - group:
         keys:
-          - name: account
-            key: "data.status"
+          - name: name
+            key: data.status
         fields:
           - name: value
             operator: count

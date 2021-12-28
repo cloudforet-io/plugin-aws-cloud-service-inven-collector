@@ -6,7 +6,7 @@ query:
   aggregate:
     - group:
         keys:
-          - name: type
+          - name: name
             key: instance_type
         fields:
           - name: value

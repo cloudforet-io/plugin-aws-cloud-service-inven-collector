@@ -6,6 +6,6 @@ query:
   aggregate:
     - group:
         fields:
-        - name: size
+        - name: value
           key: instance_size
           operator: sum
