@@ -1,0 +1,30 @@
+---
+cloud_service_group: IAM
+cloud_service_type: User
+name: Access Key Total Count
+query:
+  aggregate:
+  - group:
+      fields:
+      - key: data.access_key_age
+        name: ">30"
+        operator: count
+        conditions:
+        - key: data.access_key_age
+          value: 30
+          operator: gt
+  - project:
+      fields:
+      - key: ">30"
+        name: "results.>30"
+  - project:
+      fields:
+      - key: results
+        name: results
+        operator: object_to_array
+  - unwind:
+      path: results
+  - project:
+      fields:
+      - name: value
+        key: results.v

@@ -8,6 +8,6 @@ query:
         path: data.services
     - group:
         fields:
-        - name: count
+        - name: value
           key: data.services
           operator: count

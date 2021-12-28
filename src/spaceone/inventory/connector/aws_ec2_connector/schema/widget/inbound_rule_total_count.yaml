@@ -8,6 +8,6 @@ query:
         path: data.ip_permissions
     - group:
         fields:
-          - name: count
+          - name: value
             operator: count
             key: data.ip_permissions

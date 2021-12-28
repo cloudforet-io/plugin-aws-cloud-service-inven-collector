@@ -8,14 +8,14 @@ query:
         path: data.images
     - group:
         keys:
-        - name: repository
+        - name: name
           key: data.repository_name
         fields:
-        - name: image_size
+        - name: value
           key: data.images.image_size_in_bytes
           operator: sum
     - sort:
-        key: image_size
+        key: value
         desc: true
 options:
   chart_type: COLUMN

@@ -6,14 +6,14 @@ query:
   aggregate:
     - group:
         keys:
-        - name: filesystem
+        - name: name
           key: name
         fields:
-        - name: size
+        - name: value
           key: instance_size
           operator: sum
     - sort:
-        key: filesystem
+        key: value
         desc: true
 options:
   chart_type: COLUMN

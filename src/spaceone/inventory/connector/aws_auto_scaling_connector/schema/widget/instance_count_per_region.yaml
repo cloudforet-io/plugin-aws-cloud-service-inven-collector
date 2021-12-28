@@ -8,10 +8,10 @@ query:
         path: data.instances
     - group:
         keys:
-          - name: region
+          - name: name
             key: region_code
         fields:
-          - name: count
+          - name: value
             key: data.instances
             operator: count
 options:

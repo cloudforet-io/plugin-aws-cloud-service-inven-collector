@@ -8,14 +8,14 @@ query:
         path: data.services
     - group:
         keys:
-        - name: cluster
+        - name: name
           key: name
         fields:
-        - name: service_count
+        - name: value
           key: data.services
           operator: count
     - sort:
-        key: service_count
+        key: value
         desc: true
 options:
   chart_type: COLUMN

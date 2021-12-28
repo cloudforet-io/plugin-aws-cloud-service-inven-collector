@@ -8,6 +8,6 @@ query:
         path: data.mount_targets
     - group:
         fields:
-        - name: count
+        - name: value
           key: data.mount_targets
           operator: count

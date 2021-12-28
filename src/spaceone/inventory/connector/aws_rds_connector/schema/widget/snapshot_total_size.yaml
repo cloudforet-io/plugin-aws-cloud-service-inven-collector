@@ -6,6 +6,6 @@ query:
   aggregate:
     - group:
         fields:
-          - name: size
+          - name: value
             key: data.allocated_storage
             operator: sum

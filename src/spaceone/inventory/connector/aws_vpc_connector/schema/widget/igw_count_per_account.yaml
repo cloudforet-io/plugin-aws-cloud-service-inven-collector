@@ -1,0 +1,15 @@
+---
+cloud_service_group: VPC
+cloud_service_type: InternetGateway
+name: Internet Gateway count per Account
+query:
+  aggregate:
+    - group:
+        keys:
+          - name: name
+            key: account
+        fields:
+          - name: value
+            operator: count
+options:
+  chart_type: DONUT

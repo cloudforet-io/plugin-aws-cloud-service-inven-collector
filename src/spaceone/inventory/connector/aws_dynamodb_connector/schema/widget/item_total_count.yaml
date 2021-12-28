@@ -6,6 +6,6 @@ query:
   aggregate:
     - group:
         fields:
-          - name: item_count
+          - name: value
             operator: sum
             key: data.item_count

@@ -8,6 +8,6 @@ query:
         path: data.instances
     - group:
         fields:
-          - name: count
+          - name: value
             operator: count
             key: data.instances

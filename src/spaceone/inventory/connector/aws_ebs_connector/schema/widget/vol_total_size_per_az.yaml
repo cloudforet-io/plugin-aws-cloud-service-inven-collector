@@ -6,10 +6,10 @@ query:
   aggregate:
     - group:
         keys:
-          - name: availability_zone
+          - name: name
             key: data.availability_zone
         fields:
-          - name: size
+          - name: value
             key: instance_size
             operator: sum
 options:

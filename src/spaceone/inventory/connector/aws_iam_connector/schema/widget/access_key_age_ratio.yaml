@@ -1,0 +1,56 @@
+---
+cloud_service_group: IAM
+cloud_service_type: User
+name: Access Key Age Ratio
+query:
+  aggregate:
+  - group:
+      fields:
+        - key: data.access_key_age
+          name: "30~90"
+          operator: count
+          conditions:
+            - key: data.access_key_age
+              value: 30
+              operator: gt
+            - key: data.access_key_age
+              value: 90
+              operator: lte
+        - key: data.access_key_age
+          name: "<=30"
+          operator: count
+          conditions:
+            - key: data.access_key_age
+              value: 30
+              operator: lte
+        - key: data.access_key_age
+          name: ">90"
+          operator: count
+          conditions:
+            - key: data.access_key_age
+              value: 90
+              operator: gt
+  - project:
+      fields:
+        - key: "<=30"
+          name: "results.<=30"
+        - key: "30~90"
+          name: "results.30~90"
+        - key: ">90"
+          name: "results.>90"
+  - project:
+      fields:
+        - key: results
+          name: results
+          operator: object_to_array
+  - unwind:
+      path: results
+  - project:
+      fields:
+        - name: name
+          key: results.k
+        - name: value
+          key: results.v
+
+options:
+  chart_type: DONUT

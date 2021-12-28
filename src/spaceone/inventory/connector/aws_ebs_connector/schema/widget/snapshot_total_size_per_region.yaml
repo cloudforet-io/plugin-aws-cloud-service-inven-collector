@@ -6,10 +6,10 @@ query:
   aggregate:
     - group:
         keys:
-          - name: region
+          - name: name
             key: region_code
         fields:
-          - name: count
+          - name: value
             key: instance_size
             operator: sum
 options:

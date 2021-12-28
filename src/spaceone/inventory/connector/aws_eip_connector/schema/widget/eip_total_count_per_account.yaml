@@ -6,10 +6,10 @@ query:
   aggregate:
     - group:
         keys:
-          - name: account
+          - name: name
             key: account
         fields:
-          - name: count
+          - name: value
             operator: count
 options:
   chart_type: DONUT

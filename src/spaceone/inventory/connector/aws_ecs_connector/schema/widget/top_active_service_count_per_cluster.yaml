@@ -8,14 +8,14 @@ query:
         path: data.tasks
     - group:
         keys:
-        - name: cluster
+        - name: name
           key: name
         fields:
-        - name: task_count
+        - name: value
           key: data.tasks
           operator: count
     - sort:
-        key: task_count
+        key: value
         desc: true
 options:
   chart_type: COLUMN

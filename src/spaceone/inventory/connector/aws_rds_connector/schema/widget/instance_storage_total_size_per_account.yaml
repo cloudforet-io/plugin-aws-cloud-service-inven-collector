@@ -6,10 +6,10 @@ query:
   aggregate:
     - group:
         keys:
-          - name: account
+          - name: name
             key: account
         fields:
-          - name: size
+          - name: value
             key: data.allocated_storage
             operator: sum
 options:

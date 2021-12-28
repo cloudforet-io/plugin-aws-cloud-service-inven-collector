@@ -1,0 +1,15 @@
+---
+cloud_service_group: VPC
+cloud_service_type: PeeringConnection
+name: Peering Connection count per Region
+query:
+  aggregate:
+    - group:
+        keys:
+          - name: name
+            key: region_code
+        fields:
+          - name: value
+            operator: count
+options:
+  chart_type: COLUMN
