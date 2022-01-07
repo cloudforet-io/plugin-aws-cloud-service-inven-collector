@@ -1,0 +1,33 @@
+name: "[Push] Sync_ci"
+
+on:
+  push:
+    branches:
+      - master
+    paths-ignore:
+      - '.github/**'
+      - 'src/VERSION'
+
+env:
+  workflow_file_name: deploy.yaml
+  owner: GeunjeLEE
+  repo: github_actions_management_tool
+  ref: master
+
+jobs:
+  master_push:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: git pull
+        uses: convictional/trigger-workflow-and-wait@v1.3.0
+        with:
+          owner: ${{ env.owner }}
+          repo: ${{ env.repo }}
+          github_token: ${{ secrets.PAT_TOKEN }}
+          workflow_file_name: ${{ env.workflow_file_name }}
+          ref: ${{ env.ref }}
+          wait_interval: 10
+          inputs: '{"repository" : "${{ github.repository }}"}'
+          trigger_workflow: true
+          wait_workflow: true
