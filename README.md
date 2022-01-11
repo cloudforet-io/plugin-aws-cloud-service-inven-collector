@@ -7,7 +7,7 @@
 
 
 Find us also at [Dockerhub](https://hub.docker.com/repository/docker/spaceone/aws-cloud-services)
-> Latest stable version : 1.13.3
+> Latest stable version : 1.13.5
 
 Please contact us if you need any further information. (<support@spaceone.dev>)
 
