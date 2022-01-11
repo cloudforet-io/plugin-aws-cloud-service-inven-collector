@@ -113,6 +113,82 @@ Please contact us if you need any further information. (<support@spaceone.dev>)
 
 ---
 
+## AWS Service Endpoint (in use)
+
+ There is an endpoints used to collect AWS resources information.
+AWS endpoint is a URL consisting of a region and a service code. 
+<pre>
+https://[service-code].[region-code].amazonaws.com
+</pre>
+
+We use hundreds of endpoints because we collect information from a lots of regions and services.  
+
+### Region list
+
+Below is the AWS region information.
+The regions we collect are not all regions supported by AWS. Exactly, we target the regions results returned by [describe_regions()](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ec2.html#EC2.Client.describe_regions) of AWS ec2 client.
+
+|No.|Region name|Region Code|
+|---|------|---|
+|1|US East (Ohio)|us-east-2|
+|2|US East (N. Virginia)|us-east-1|
+|3|US West (N. California)|us-west-1|
+|4|US West (Oregon)|us-west-2|
+|5|Asia Pacific (Mumbai)|ap-south-1|
+|6|Asia Pacific (Osaka)|ap-northeast-3|
+|7|Asia Pacific (Seoul)|ap-northeast-2|
+|8|Asia Pacific (Singapore)|ap-southeast-1|
+|9|Asia Pacific (Sydney)|ap-southeast-2|
+|10|Asia Pacific (Tokyo)|ap-northeast-1|
+|11|Canada (Central)|ca-central-1|
+|12|Europe (Frankfurt)|eu-central-1|
+|13|Europe (Ireland)|eu-west-1|
+|14|Europe (London)|eu-west-2|
+|15|Europe (Paris)|eu-west-3|
+|16|Europe (Stockholm)|eu-north-1|
+|17|South America (São Paulo)|sa-east-1|
+
+
+
+### Service list
+
+The following is a list of services being collected and service code information.
+
+|No.|Service name|Service Code|
+|---|------|---|
+|1|AWS Certifcate Manager|acm|
+|2|API Gateway (REST API)|apigateway|
+|3|API Gateway V2 (Websocket)|apigatewayv2|
+|4|Auto Scaling Group|autoscaling|
+|5|CloudFront|cloudfront|
+|6|CloudTrail|cloudtrail|
+|7|Direct Connect|directconnect|
+|8|DocumentDB|docdb|
+|9|DynamoDB|dynamodb|
+|10|Elastic Block Store (EBS)|ebs|
+|11|EC2 (SecurityGroup, AMI, EIP)|ec2|
+|12|Elastic Container Registry (ECR)|ecr|
+|13|Elastic Container Service (ECS)|ecs|
+|14|Elastic File System (EFS)|efs|
+|15|Elastic Kubernetes Service (EKS)|eks|
+|16|Elasticache|elasticache|
+|17|Elastic Load Balancer (ELB)|elbv2|
+|18|Identity Access Management (IAM)|iam|
+|19|Kinesis Data Stream|kinesis|
+|20|Kinesis Firehose|firehose|
+|21|Key Management System (KMS)|kms|
+|22|Lambda|lambda|
+|21|Managed Streaming for Apache Kafka (MSK)|msk|
+|22|Relational Database Service (RDS)|rds|
+|23|Redshift|redshift|
+|24|Route53|route53|
+|25|Simple Cloud Storage (S3)|s3|
+|26|Secrets Manager|secretsmanager|
+|27|Simple Notification Service (SNS)|sns|
+|28|Simple Queue Service (SQS)|sqs|
+|29|Virtual Private Cloud (VPC)|vpc|
+
+
 ## Authentication Overview
 
 Registered service account on SpaceONE must have certain permissions to collect cloud service data Please, set
