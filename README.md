@@ -1,12 +1,12 @@
-# plugin-aws-cloud-services
+# plugin-aws-cloud-service-inven-collector
 
 ![AWS Cloud Services](https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/aws-cloudservice.svg)
-**Plugin to collect Google Cloud Services**
+**Plugin to collect AWS Cloud Services**
 
-> SpaceONE's [plugin-aws-cloud-services](https://github.com/spaceone-dev/plugin-aws-cloud-services) is a convenient tool to get cloud service data from AWS.
+> SpaceONE's [plugin-aws-cloud-service-inven-collector](https://github.com/spaceone-dev/plugin-aws-cloud-services) is a convenient tool to get cloud service data from AWS.
 
 
-Find us also at [Dockerhub](https://hub.docker.com/repository/docker/spaceone/aws-cloud-services)
+Find us also at [Dockerhub](https://hub.docker.com/repository/docker/spaceone/plugin-aws-cloud-service-inven-collector)
 > Latest stable version : 1.13.5
 
 Please contact us if you need any further information. (<support@spaceone.dev>)
@@ -188,6 +188,7 @@ The following is a list of services being collected and service code information
 |28|Simple Queue Service (SQS)|sqs|
 |29|Virtual Private Cloud (VPC)|vpc|
 
+---
 
 ## Authentication Overview
 
