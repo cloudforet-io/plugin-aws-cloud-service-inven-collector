@@ -7,7 +7,7 @@ query:
     - group:
         keys:
           - name: name
-            key: data.origins.items
+            key: account
         fields:
           - name: value
             operator: count
