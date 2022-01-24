@@ -6,6 +6,8 @@ query:
   aggregate:
     - group:
         keys:
+          - name: name
+            key: name
           - name: value
             key: instance_size
     - sort:
