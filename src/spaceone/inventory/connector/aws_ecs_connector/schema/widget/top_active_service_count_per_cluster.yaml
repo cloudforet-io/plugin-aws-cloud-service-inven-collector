@@ -5,14 +5,14 @@ name: Top Active Services per Cluster
 query:
   aggregate:
     - unwind:
-        path: data.tasks
+        path: data.services
     - group:
         keys:
         - name: name
           key: name
         fields:
         - name: value
-          key: data.tasks
+          key: data.services
           operator: count
     - sort:
         key: value

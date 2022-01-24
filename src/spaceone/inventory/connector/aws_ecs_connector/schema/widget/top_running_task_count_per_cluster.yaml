@@ -5,14 +5,14 @@ name: Top Running Tasks per Cluster
 query:
   aggregate:
     - unwind:
-        path: data.services
+        path: data.tasks
     - group:
         keys:
         - name: name
           key: name
         fields:
         - name: value
-          key: data.services
+          key: data.tasks
           operator: count
     - sort:
         key: value
