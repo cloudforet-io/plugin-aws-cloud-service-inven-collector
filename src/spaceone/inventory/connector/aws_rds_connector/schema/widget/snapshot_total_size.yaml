@@ -9,3 +9,10 @@ query:
           - name: value
             key: data.allocated_storage
             operator: sum
+options:
+  value_options:
+    key: value
+    type: size
+    options:
+      source_unit: GB
+      default: 0
