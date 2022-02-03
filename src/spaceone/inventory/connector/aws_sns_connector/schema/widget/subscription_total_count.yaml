@@ -4,8 +4,10 @@ cloud_service_type: Topic
 name: Subscription Total Count
 query:
   aggregate:
+    - unwind:
+        path: data.subscriptions
     - group:
         fields:
           - name: value
             key: data.subscriptions
-            operator: size
+            operator: count
