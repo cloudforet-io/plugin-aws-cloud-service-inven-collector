@@ -11,3 +11,7 @@ query:
         - name: value
           key: data.images.image_size_in_bytes
           operator: sum
+options:
+  value_options:
+    key: value
+    type: size

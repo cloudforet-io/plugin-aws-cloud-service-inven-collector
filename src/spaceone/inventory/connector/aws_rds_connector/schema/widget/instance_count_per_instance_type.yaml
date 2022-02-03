@@ -7,7 +7,7 @@ query:
     - group:
         keys:
           - name: name
-            key: data.db_instance_class
+            key: data.instance.db_instance_class
         fields:
           - name: value
             operator: count

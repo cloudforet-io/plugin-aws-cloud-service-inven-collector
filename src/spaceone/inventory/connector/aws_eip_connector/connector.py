@@ -59,7 +59,7 @@ class EIPConnector(SchematicAWSConnector):
                         _ip['public_dns'] = public_dns
 
                 _ip.update({
-                    'allocation_status': 'In-use' if _ip.get('allocation_id') else 'Unused',
+                    'allocation_status': 'In-use' if _ip.get('AllocationId') else 'Unused',
                     'name': self._get_name_from_tags(_ip.get('Tags', []))
                 })
 

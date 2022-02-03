@@ -9,3 +9,7 @@ query:
         - name: value
           key: instance_size
           operator: sum
+options:
+  value_options:
+    key: value
+    type: size

@@ -14,3 +14,6 @@ query:
             operator: sum
 options:
   chart_type: COLUMN
+  value_options:
+    key: value
+    type: size

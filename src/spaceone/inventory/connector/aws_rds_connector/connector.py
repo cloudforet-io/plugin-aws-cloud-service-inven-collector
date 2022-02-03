@@ -79,6 +79,7 @@ class RDSConnector(SchematicAWSConnector):
                                 'instance_type': database_vo.engine,
                                 'tags': [{'key':tag.key, 'value': tag.value} for tag in database_vo.tags],
                                 'region_code': region_name,
+                                'account': self.account_id,
                                 'reference': ReferenceModel(database_vo.reference(region_name))})}
                         ))
             except Exception as e:

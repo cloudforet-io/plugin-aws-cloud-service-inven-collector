@@ -4,6 +4,8 @@ cloud_service_type: Topic
 name: Subscription per Account
 query:
   aggregate:
+    - unwind:
+        path: data.subscriptions
     - group:
         keys:
           - name: name
@@ -11,6 +13,6 @@ query:
         fields:
           - name: value
             key: data.subscriptions
-            operator: size
+            operator: count
 options:
   chart_type: DONUT

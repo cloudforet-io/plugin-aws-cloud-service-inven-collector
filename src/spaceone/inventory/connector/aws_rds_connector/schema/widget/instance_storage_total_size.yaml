@@ -7,5 +7,12 @@ query:
     - group:
         fields:
           - name: value
-            key: data.allocated_storage
+            key: data.instance.allocated_storage
             operator: sum
+options:
+  value_options:
+    key: value
+    type: size
+    options:
+      source_unit: GB
+      default: 0
