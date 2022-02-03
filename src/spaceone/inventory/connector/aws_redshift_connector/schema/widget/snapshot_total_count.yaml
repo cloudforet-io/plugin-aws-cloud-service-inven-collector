@@ -4,8 +4,10 @@ cloud_service_type: Cluster
 name: Snapshot Total Count
 query:
   aggregate:
+    - unwind:
+        path: data.snapshots
     - group:
         fields:
           - name: value
             key: data.snapshots
-            operator: size
+            operator: count

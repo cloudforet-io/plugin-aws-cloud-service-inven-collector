@@ -16,3 +16,9 @@ query:
             operator: sum
 options:
   chart_type: DONUT
+  value_options:
+    key: value
+    type: size
+    options:
+      source_unit: MB
+      default: 0

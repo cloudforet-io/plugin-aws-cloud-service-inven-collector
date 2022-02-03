@@ -4,6 +4,8 @@ cloud_service_type: Cluster
 name: Snapshot count per Account
 query:
   aggregate:
+    - unwind:
+        path: data.snapshots
     - group:
         keys:
           - name: name
@@ -11,6 +13,6 @@ query:
         fields:
           - name: value
             key: data.snapshots
-            operator: size
+            operator: count
 options:
   chart_type: DONUT
