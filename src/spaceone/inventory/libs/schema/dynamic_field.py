@@ -51,8 +51,8 @@ class FieldViewOption(Model):
 
 
 class BaseDynamicField(BaseField):
-    name = StringType()
-    key = StringType()
+    name = StringType(serialize_when_none=False)
+    key = StringType(serialize_when_none=False)
     reference = ModelType(FieldReference, serialize_when_none=False)
 
     @classmethod
