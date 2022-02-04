@@ -1,0 +1,10 @@
+---
+cloud_service_group: CloudFront
+cloud_service_type: Distribution
+name: Distribution Total Count
+query:
+  aggregate:
+    - group:
+        fields:
+          - name: value
+            operator: count
