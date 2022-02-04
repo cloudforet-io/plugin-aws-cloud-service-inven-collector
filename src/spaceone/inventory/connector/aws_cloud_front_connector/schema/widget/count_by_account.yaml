@@ -1,7 +1,7 @@
 ---
 cloud_service_group: CloudFront
 cloud_service_type: Distribution
-name: Distribution Count per Account
+name: Count by Account
 query:
   aggregate:
     - group:
@@ -12,4 +12,4 @@ query:
           - name: value
             operator: count
 options:
-  chart_type: COLUMN
+  chart_type: DONUT
