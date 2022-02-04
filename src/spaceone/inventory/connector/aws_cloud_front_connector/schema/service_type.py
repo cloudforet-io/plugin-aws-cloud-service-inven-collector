@@ -6,9 +6,10 @@ from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, Cl
 
 current_dir = os.path.abspath(os.path.dirname(__file__))
 
+total_count_widget_conf = os.path.join(current_dir, 'widget/total_count.yaml')
 origin_total_widget_conf = os.path.join(current_dir, 'widget/origin_total_count.yaml')
-dist_count_per_account_widget_conf = os.path.join(current_dir, 'widget/distribution_count_per_account.yaml')
-dist_count_per_status_widget_conf = os.path.join(current_dir, 'widget/distribution_count_per_status.yaml')
+count_by_account_widget_conf = os.path.join(current_dir, 'widget/count_by_account.yaml')
+count_by_status_widget_conf = os.path.join(current_dir, 'widget/count_by_status.yaml')
 
 cst_distribution = CloudServiceTypeResource()
 cst_distribution.name = 'Distribution'
@@ -60,9 +61,10 @@ cst_distribution._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='CNAME', key='data.alias_icp_recordals.cname'),
     ],
     widget=[
+        CardWidget.set(**get_data_from_yaml(total_count_widget_conf)),
         CardWidget.set(**get_data_from_yaml(origin_total_widget_conf)),
-        ChartWidget.set(**get_data_from_yaml(dist_count_per_account_widget_conf)),
-        ChartWidget.set(**get_data_from_yaml(dist_count_per_status_widget_conf))
+        ChartWidget.set(**get_data_from_yaml(count_by_account_widget_conf)),
+        ChartWidget.set(**get_data_from_yaml(count_by_status_widget_conf))
     ]
 )
 
