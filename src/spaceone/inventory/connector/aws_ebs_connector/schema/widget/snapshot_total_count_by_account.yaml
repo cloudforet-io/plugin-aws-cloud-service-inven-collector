@@ -1,15 +1,15 @@
 ---
 cloud_service_group: EC2
 cloud_service_type: Snapshot
-name: Snapshot Total Size per Region
+name: Count by Account
 query:
   aggregate:
     - group:
         keys:
           - name: name
-            key: region_code
+            key: account
         fields:
           - name: value
             operator: count
 options:
-  chart_type: COLUMN
+  chart_type: DONUT
