@@ -1,7 +1,7 @@
 ---
 cloud_service_group: CertificateManager
 cloud_service_type: Certificate
-name: Certificate per Region
+name: Count by Region
 query:
   aggregate:
     - group:
