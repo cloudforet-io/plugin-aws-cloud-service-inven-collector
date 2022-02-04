@@ -1,13 +1,13 @@
 ---
 cloud_service_group: APIGateway
 cloud_service_type: API
-name: API Count per Protocol
+name: Count by Account
 query:
   aggregate:
     - group:
         keys:
           - name: name
-            key: data.protocol
+            key: account
         fields:
           - name: value
             operator: count
