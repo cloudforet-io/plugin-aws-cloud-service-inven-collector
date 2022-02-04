@@ -16,3 +16,8 @@ query:
             operator: count
 options:
   chart_type: COLUMN
+  name_options:
+    key: name
+    reference:
+      resource_type: "inventory.Region"
+      reference_key: region_code
