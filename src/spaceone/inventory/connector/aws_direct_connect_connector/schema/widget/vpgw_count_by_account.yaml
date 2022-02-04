@@ -1,15 +1,15 @@
 ---
 cloud_service_group: DirectConnect
-cloud_service_type: DirectConnectGateway
-name: Direct Connect Gateway per Region
+cloud_service_type: VirtualPrivateGateway
+name: Count by Account
 query:
   aggregate:
     - group:
         keys:
           - name: name
-            key: region_code
+            key: account
         fields:
           - name: value
             operator: count
 options:
-  chart_type: COLUMN
+  chart_type: DONUT

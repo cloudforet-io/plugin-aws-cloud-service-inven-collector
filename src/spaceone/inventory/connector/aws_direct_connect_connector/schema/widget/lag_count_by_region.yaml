@@ -1,7 +1,7 @@
 ---
 cloud_service_group: DirectConnect
-cloud_service_type: VirtualPrivateGateway
-name: Virtual Private Gateway per Region
+cloud_service_type: LAG
+name: Count by Region
 query:
   aggregate:
     - group:
