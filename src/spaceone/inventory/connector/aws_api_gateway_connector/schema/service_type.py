@@ -7,9 +7,11 @@ from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, Cl
     CloudServiceTypeMeta
 
 current_dir = os.path.abspath(os.path.dirname(__file__))
-api_count_per_region_widget_conf = os.path.join(current_dir, 'widget/api_count_per_region.yaml')
-api_count_per_account_widget_conf = os.path.join(current_dir, 'widget/api_count_per_account.yaml')
-api_count_per_protocol_widget_conf = os.path.join(current_dir, 'widget/api_count_per_protocol.yaml')
+
+total_count_conf = os.path.join(current_dir, 'widget/total_count.yaml')
+count_by_region_widget_conf = os.path.join(current_dir, 'widget/count_by_region.yaml')
+count_by_account_widget_conf = os.path.join(current_dir, 'widget/count_by_account.yaml')
+count_by_protocol_widget_conf = os.path.join(current_dir, 'widget/count_by_protocol.yaml')
 
 cst_api = CloudServiceTypeResource()
 cst_api.name = 'API'
@@ -51,9 +53,10 @@ cst_api._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Endpoint Type', key='data.endpoint_type'),
     ],
     widget=[
-        ChartWidget.set(**get_data_from_yaml(api_count_per_region_widget_conf)),
-        ChartWidget.set(**get_data_from_yaml(api_count_per_account_widget_conf)),
-        ChartWidget.set(**get_data_from_yaml(api_count_per_protocol_widget_conf))
+        CardWidget.set(**get_data_from_yaml(total_count_conf)),
+        ChartWidget.set(**get_data_from_yaml(count_by_region_widget_conf)),
+        ChartWidget.set(**get_data_from_yaml(count_by_account_widget_conf)),
+        ChartWidget.set(**get_data_from_yaml(count_by_protocol_widget_conf))
     ]
 )
 
