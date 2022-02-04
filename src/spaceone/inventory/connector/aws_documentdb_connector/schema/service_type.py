@@ -11,12 +11,13 @@ current_dir = os.path.abspath(os.path.dirname(__file__))
 '''
 CLUSTER
 '''
+cluster_total_count_conf = os.path.join(current_dir, 'widget/cluster_total_count.yaml')
 instance_total_count_conf = os.path.join(current_dir, 'widget/instance_total_count.yaml')
 snapshot_total_count_conf = os.path.join(current_dir, 'widget/snapshot_total_count.yaml')
-cluster_count_per_region_widget_conf = os.path.join(current_dir, 'widget/cluster_count_per_region.yaml')
-cluster_count_per_account_widget_conf = os.path.join(current_dir, 'widget/cluster_count_per_account.yaml')
-instance_count_per_az_widget_conf = os.path.join(current_dir, 'widget/instance_count_per_az.yaml')
-instance_count_per_instance_type_widget_conf = os.path.join(current_dir, 'widget/instance_count_per_instance_type.yaml')
+cluster_count_by_region_widget_conf = os.path.join(current_dir, 'widget/cluster_count_by_region.yaml')
+cluster_count_by_account_widget_conf = os.path.join(current_dir, 'widget/cluster_count_by_account.yaml')
+instance_count_by_az_widget_conf = os.path.join(current_dir, 'widget/instance_count_by_az.yaml')
+instance_count_by_instance_type_widget_conf = os.path.join(current_dir, 'widget/instance_count_by_instance_type.yaml')
 
 cst_cluster = CloudServiceTypeResource()
 cst_cluster.name = 'Cluster'
@@ -147,12 +148,13 @@ cst_cluster._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='VPC ID', key='data.instances.db_subnet_group.vpc_id'),
     ],
     widget=[
+        CardWidget.set(**get_data_from_yaml(cluster_total_count_conf)),
         CardWidget.set(**get_data_from_yaml(instance_total_count_conf)),
         CardWidget.set(**get_data_from_yaml(snapshot_total_count_conf)),
-        ChartWidget.set(**get_data_from_yaml(cluster_count_per_region_widget_conf)),
-        ChartWidget.set(**get_data_from_yaml(cluster_count_per_account_widget_conf)),
-        ChartWidget.set(**get_data_from_yaml(instance_count_per_az_widget_conf)),
-        ChartWidget.set(**get_data_from_yaml(instance_count_per_instance_type_widget_conf))
+        ChartWidget.set(**get_data_from_yaml(cluster_count_by_region_widget_conf)),
+        ChartWidget.set(**get_data_from_yaml(cluster_count_by_account_widget_conf)),
+        ChartWidget.set(**get_data_from_yaml(instance_count_by_az_widget_conf)),
+        ChartWidget.set(**get_data_from_yaml(instance_count_by_instance_type_widget_conf))
     ]
 )
 
