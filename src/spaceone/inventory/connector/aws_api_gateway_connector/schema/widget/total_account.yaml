@@ -1,0 +1,11 @@
+---
+cloud_service_group: APIGateway
+cloud_service_type: API
+name: Total Count
+query:
+  aggregate:
+    - group:
+        fields:
+          - name: value
+            operator: count
+
