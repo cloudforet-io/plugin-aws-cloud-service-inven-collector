@@ -1,15 +1,15 @@
 ---
 cloud_service_group: DynamoDB
 cloud_service_type: Table
-name: Table per Account
+name: Table Count by Region
 query:
   aggregate:
     - group:
         keys:
           - name: name
-            key: account
+            key: region_code
         fields:
           - name: value
             operator: count
 options:
-  chart_type: DONUT
+  chart_type: COLUMN
