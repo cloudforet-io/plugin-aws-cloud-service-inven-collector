@@ -12,12 +12,13 @@ current_dir = os.path.abspath(os.path.dirname(__file__))
 """
 VOLUME
 """
+vol_total_count_conf = os.path.join(current_dir, 'widget/vol_total_count.yaml')
 vol_total_size_conf = os.path.join(current_dir, 'widget/vol_total_size.yaml')
-vol_total_size_per_region_conf = os.path.join(current_dir, 'widget/vol_total_size_per_region.yaml')
-vol_total_size_per_account_conf = os.path.join(current_dir, 'widget/vol_total_size_per_account.yaml')
-vol_total_size_per_az_conf = os.path.join(current_dir, 'widget/vol_total_size_per_az.yaml')
-vol_total_size_per_type_conf = os.path.join(current_dir, 'widget/vol_total_size_per_type.yaml')
-vol_total_size_per_state_conf = os.path.join(current_dir, 'widget/vol_total_size_per_state.yaml')
+vol_total_size_by_region_conf = os.path.join(current_dir, 'widget/vol_total_size_by_region.yaml')
+vol_total_size_by_account_conf = os.path.join(current_dir, 'widget/vol_total_size_by_account.yaml')
+vol_total_size_by_az_conf = os.path.join(current_dir, 'widget/vol_total_size_by_az.yaml')
+vol_total_size_by_type_conf = os.path.join(current_dir, 'widget/vol_total_size_by_type.yaml')
+vol_total_size_by_state_conf = os.path.join(current_dir, 'widget/vol_total_size_by_state.yaml')
 
 cst_ebs = CloudServiceTypeResource()
 cst_ebs.name = 'Volume'
@@ -97,23 +98,25 @@ cst_ebs._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Attached Instance ID', key='data.attachments.instance_id'),
     ],
     widget=[
+        CardWidget.set(**get_data_from_yaml(vol_total_count_conf)),
         CardWidget.set(**get_data_from_yaml(vol_total_size_conf)),
-        ChartWidget.set(**get_data_from_yaml(vol_total_size_per_region_conf)),
-        ChartWidget.set(**get_data_from_yaml(vol_total_size_per_account_conf)),
-        ChartWidget.set(**get_data_from_yaml(vol_total_size_per_az_conf)),
-        ChartWidget.set(**get_data_from_yaml(vol_total_size_per_type_conf)),
-        ChartWidget.set(**get_data_from_yaml(vol_total_size_per_state_conf))
+        ChartWidget.set(**get_data_from_yaml(vol_total_size_by_region_conf)),
+        ChartWidget.set(**get_data_from_yaml(vol_total_size_by_account_conf)),
+        ChartWidget.set(**get_data_from_yaml(vol_total_size_by_az_conf)),
+        ChartWidget.set(**get_data_from_yaml(vol_total_size_by_type_conf)),
+        ChartWidget.set(**get_data_from_yaml(vol_total_size_by_state_conf))
     ]
 )
 
 """
 SNAPSHOT
 """
+snapshot_total_count_conf = os.path.join(current_dir, 'widget/snapshot_total_count.yaml')
 snapshot_total_size_conf = os.path.join(current_dir, 'widget/snapshot_total_size.yaml')
-snapshot_total_count_per_region_conf = os.path.join(current_dir, 'widget/snapshot_total_count_per_region.yaml')
-snapshot_total_count_per_account_conf = os.path.join(current_dir, 'widget/snapshot_total_count_per_account.yaml')
-snapshot_total_size_per_region_conf = os.path.join(current_dir, 'widget/snapshot_total_size_per_region.yaml')
-snapshot_total_size_per_account_conf = os.path.join(current_dir, 'widget/snapshot_total_size_per_account.yaml')
+snapshot_total_count_by_region_conf = os.path.join(current_dir, 'widget/snapshot_total_count_by_region.yaml')
+snapshot_total_count_by_account_conf = os.path.join(current_dir, 'widget/snapshot_total_count_by_account.yaml')
+snapshot_total_size_by_region_conf = os.path.join(current_dir, 'widget/snapshot_total_size_by_region.yaml')
+snapshot_total_size_by_account_conf = os.path.join(current_dir, 'widget/snapshot_total_size_by_account.yaml')
 
 cst_snapshot = CloudServiceTypeResource()
 cst_snapshot.name = 'Snapshot'
@@ -163,6 +166,7 @@ cst_snapshot._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Size (GB)', key='instance_size', data_type='integer'),
     ],
     widget=[
+        CardWidget.set(**get_data_from_yaml(snapshot_total_count_conf)),
         CardWidget.set(**get_data_from_yaml(snapshot_total_size_conf)),
         ChartWidget.set(**get_data_from_yaml(snapshot_total_count_per_region_conf)),
         ChartWidget.set(**get_data_from_yaml(snapshot_total_count_per_account_conf)),
