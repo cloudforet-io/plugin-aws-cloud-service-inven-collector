@@ -1,18 +1,15 @@
 ---
 cloud_service_group: EC2
 cloud_service_type: AutoScalingGroup
-name: Auto Scaling Group per Account
+name: Count by Region
 query:
   aggregate:
-    - unwind:
-        path: data.instances
     - group:
         keys:
           - name: name
-            key: account
+            key: region_code
         fields:
           - name: value
-            key: data.instances
             operator: count
 options:
-  chart_type: DONUT
+  chart_type: COLUMN
