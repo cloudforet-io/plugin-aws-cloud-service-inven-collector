@@ -1,18 +1,20 @@
 ---
 cloud_service_group: DocumentDB
 cloud_service_type: Cluster
-name: Instance per Availability Zone
+name: Count by Region
 query:
   aggregate:
-    - unwind:
-        path: data.instances
     - group:
         keys:
           - name: name
-            key: data.instances.availability_zone
+            key: region_code
         fields:
           - name: value
-            key: data.instances.availability_zone
             operator: count
 options:
   chart_type: COLUMN
+  name_options:
+    key: name
+    reference:
+      resource_type: "inventory.Region"
+      reference_key: region_code

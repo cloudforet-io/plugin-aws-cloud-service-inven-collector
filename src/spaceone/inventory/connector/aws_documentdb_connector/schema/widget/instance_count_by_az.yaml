@@ -1,7 +1,7 @@
 ---
 cloud_service_group: DocumentDB
 cloud_service_type: Cluster
-name: Instance per Instance Type
+name: Instance by Availability Zone
 query:
   aggregate:
     - unwind:
@@ -9,10 +9,10 @@ query:
     - group:
         keys:
           - name: name
-            key: data.instances.db_instance_class
+            key: data.instances.availability_zone
         fields:
           - name: value
-            key: data.instances.db_instance_class
+            key: data.instances.availability_zone
             operator: count
 options:
-  chart_type: TREEMAP
+  chart_type: COLUMN
