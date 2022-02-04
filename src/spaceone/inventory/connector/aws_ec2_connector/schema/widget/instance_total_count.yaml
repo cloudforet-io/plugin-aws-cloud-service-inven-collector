@@ -1,7 +1,7 @@
 ---
 cloud_service_group: EC2
 cloud_service_type: SecurityGroup
-name: Instance Total Count
+name: Related Instance Total Count
 query:
   aggregate:
     - unwind:

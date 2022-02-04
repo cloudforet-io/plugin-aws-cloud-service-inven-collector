@@ -1,15 +1,15 @@
 ---
 cloud_service_group: EC2
-cloud_service_type: SecurityGroup
-name: Security Group per Region
+cloud_service_type: AMI
+name: Count by Account
 query:
   aggregate:
     - group:
         keys:
           - name: name
-            key: region_code
+            key: account
         fields:
           - name: value
             operator: count
 options:
-  chart_type: COLUMN
+  chart_type: DONUT
