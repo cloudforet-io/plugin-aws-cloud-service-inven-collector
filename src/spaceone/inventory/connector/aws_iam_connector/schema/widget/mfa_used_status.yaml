@@ -1,7 +1,7 @@
 ---
 cloud_service_group: IAM
 cloud_service_type: User
-name: MFA Not used user Total Count
+name: MFA Used Status
 query:
   aggregate:
   - group:
