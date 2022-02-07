@@ -1,13 +1,13 @@
 ---
 cloud_service_group: EC2
 cloud_service_type: EIP
-name: EIP Total Count per Account
+name: In-use/Unused Count
 query:
   aggregate:
     - group:
         keys:
           - name: name
-            key: account
+            key: data.allocation_status
         fields:
           - name: value
             operator: count

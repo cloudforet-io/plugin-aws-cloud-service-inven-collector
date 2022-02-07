@@ -10,9 +10,10 @@ current_dir = os.path.abspath(os.path.dirname(__file__))
 """
 EIP
 """
-eip_total_count_per_region_conf = os.path.join(current_dir, 'widget/eip_total_count_per_region.yaml')
-eip_total_count_per_account_conf = os.path.join(current_dir, 'widget/eip_total_count_per_account.yaml')
-eip_use_count_per_status_conf = os.path.join(current_dir, 'widget/eip_use_count_per_status.yaml')
+total_count_conf = os.path.join(current_dir, 'widget/total_count.yaml')
+count_by_region_conf = os.path.join(current_dir, 'widget/count_by_region.yaml')
+count_by_account_conf = os.path.join(current_dir, 'widget/count_by_account.yaml')
+use_count_by_status_conf = os.path.join(current_dir, 'widget/use_count_by_status.yaml')
 
 cst_eip = CloudServiceTypeResource()
 cst_eip.name = 'EIP'
@@ -59,9 +60,10 @@ cst_eip._metadata = CloudServiceTypeMeta.set_meta(
                         })
     ],
     widget=[
-        ChartWidget.set(**get_data_from_yaml(eip_total_count_per_region_conf)),
-        ChartWidget.set(**get_data_from_yaml(eip_total_count_per_account_conf)),
-        ChartWidget.set(**get_data_from_yaml(eip_use_count_per_status_conf))
+        CardWidget.set(**get_data_from_yaml(total_count_conf)),
+        ChartWidget.set(**get_data_from_yaml(count_by_region_conf)),
+        ChartWidget.set(**get_data_from_yaml(count_by_account_conf)),
+        ChartWidget.set(**get_data_from_yaml(use_count_by_status_conf))
     ]
 )
 
