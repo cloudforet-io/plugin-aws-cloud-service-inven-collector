@@ -6,12 +6,13 @@ from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, Cl
 
 current_dir = os.path.abspath(os.path.dirname(__file__))
 
+total_count_conf = os.path.join(current_dir, 'widget/total_count.yaml')
 active_service_total_count_conf = os.path.join(current_dir, 'widget/active_service_total_count.yaml')
 running_task_total_count_conf = os.path.join(current_dir, 'widget/running_task_total_count.yaml')
-cluster_count_per_region_conf = os.path.join(current_dir, 'widget/cluster_count_per_region.yaml')
-cluster_count_per_account_conf = os.path.join(current_dir, 'widget/cluster_count_per_account.yaml')
-top_active_service_count_per_cluster_conf = os.path.join(current_dir, 'widget/top_active_service_count_per_cluster.yaml')
-top_running_task_count_per_cluster_conf = os.path.join(current_dir, 'widget/top_running_task_count_per_cluster.yaml')
+cluster_count_by_region_conf = os.path.join(current_dir, 'widget/cluster_count_by_region.yaml')
+cluster_count_by_account_conf = os.path.join(current_dir, 'widget/cluster_count_by_account.yaml')
+active_service_count_by_cluster_conf = os.path.join(current_dir, 'widget/active_service_count_by_cluster.yaml')
+running_task_count_by_cluster_conf = os.path.join(current_dir, 'widget/running_task_count_by_cluster.yaml')
 
 cst_ecs_cluster = CloudServiceTypeResource()
 cst_ecs_cluster.name = 'Cluster'
@@ -117,12 +118,13 @@ cst_ecs_cluster._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Container Instance ID', key='data.container_instances.ec2_instance_id'),
     ],
     widget=[
+        CardWidget.set(**get_data_from_yaml(total_count_conf)),
         CardWidget.set(**get_data_from_yaml(active_service_total_count_conf)),
         CardWidget.set(**get_data_from_yaml(running_task_total_count_conf)),
-        ChartWidget.set(**get_data_from_yaml(cluster_count_per_region_conf)),
-        ChartWidget.set(**get_data_from_yaml(cluster_count_per_account_conf)),
-        ChartWidget.set(**get_data_from_yaml(top_active_service_count_per_cluster_conf)),
-        ChartWidget.set(**get_data_from_yaml(top_running_task_count_per_cluster_conf))
+        ChartWidget.set(**get_data_from_yaml(cluster_count_by_region_conf)),
+        ChartWidget.set(**get_data_from_yaml(cluster_count_by_account_conf)),
+        ChartWidget.set(**get_data_from_yaml(active_service_count_by_cluster_conf)),
+        ChartWidget.set(**get_data_from_yaml(running_task_count_by_cluster_conf))
     ]
 )
 
