@@ -1,7 +1,7 @@
 ---
 cloud_service_group: KinesisFirehose
 cloud_service_type: DeliveryStream
-name: Delivery Stream per Account
+name: Count by Account
 query:
   aggregate:
     - group:

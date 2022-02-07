@@ -8,8 +8,9 @@ from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, Cl
 
 current_dir = os.path.abspath(os.path.dirname(__file__))
 
-stream_count_per_region_conf = os.path.join(current_dir, 'widget/stream_count_per_region.yaml')
-stream_count_per_account_conf = os.path.join(current_dir, 'widget/stream_count_per_account.yaml')
+total_count_conf = os.path.join(current_dir, 'widget/total_count.yaml')
+count_by_region_conf = os.path.join(current_dir, 'widget/count_by_region.yaml')
+count_by_account_conf = os.path.join(current_dir, 'widget/count_by_account.yaml')
 
 cst_firehose = CloudServiceTypeResource()
 cst_firehose.name = "DeliveryStream"
@@ -64,6 +65,7 @@ cst_firehose._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name="Source Name", key="data.source.source_name"),
     ],
     widget=[
+        CardWidget.set(**get_data_from_yaml(total_count_conf)),
         ChartWidget.set(**get_data_from_yaml(stream_count_per_region_conf)),
         ChartWidget.set(**get_data_from_yaml(stream_count_per_account_conf)),
     ]
