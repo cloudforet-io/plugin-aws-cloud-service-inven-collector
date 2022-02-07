@@ -1,18 +1,15 @@
 ---
 cloud_service_group: SNS
 cloud_service_type: Topic
-name: Subscription per Account
+name: Topic Count by Account
 query:
   aggregate:
-    - unwind:
-        path: data.subscriptions
     - group:
         keys:
           - name: name
             key: account
         fields:
           - name: value
-            key: data.subscriptions
             operator: count
 options:
   chart_type: DONUT

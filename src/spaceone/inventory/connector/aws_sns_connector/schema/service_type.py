@@ -6,10 +6,11 @@ from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, Cl
 
 current_dir = os.path.abspath(os.path.dirname(__file__))
 
+topic_total_count_conf = os.path.join(current_dir, 'widget/topic_total_count.yaml')
 subscription_total_count_conf = os.path.join(current_dir, 'widget/subscription_total_count.yaml')
-topic_count_per_region_conf = os.path.join(current_dir, 'widget/topic_count_per_region.yaml')
-topic_count_per_account_conf = os.path.join(current_dir, 'widget/topic_count_per_account.yaml')
-subscription_count_per_account_conf = os.path.join(current_dir, 'widget/subscription_count_per_account.yaml')
+topic_count_by_region_conf = os.path.join(current_dir, 'widget/topic_count_by_region.yaml')
+topic_count_by_account_conf = os.path.join(current_dir, 'widget/topic_count_by_account.yaml')
+subscription_count_by_account_conf = os.path.join(current_dir, 'widget/subscription_count_by_account.yaml')
 
 cst_topic = CloudServiceTypeResource()
 cst_topic.name = 'Topic'
@@ -58,10 +59,11 @@ cst_topic._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Protocol', key='data.subscriptions.protocol')
     ],
     widget=[
+        CardWidget.set(**get_data_from_yaml(topic_total_count_conf)),
         CardWidget.set(**get_data_from_yaml(subscription_total_count_conf)),
-        ChartWidget.set(**get_data_from_yaml(topic_count_per_region_conf)),
-        ChartWidget.set(**get_data_from_yaml(topic_count_per_account_conf)),
-        ChartWidget.set(**get_data_from_yaml(subscription_count_per_account_conf)),
+        ChartWidget.set(**get_data_from_yaml(topic_count_by_region_conf)),
+        ChartWidget.set(**get_data_from_yaml(topic_count_by_account_conf)),
+        ChartWidget.set(**get_data_from_yaml(subscription_count_by_account_conf)),
     ]
 )
 
