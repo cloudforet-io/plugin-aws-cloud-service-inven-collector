@@ -1,7 +1,7 @@
 ---
 cloud_service_group: IAM
 cloud_service_type: User
-name: MFA Used Status
+name: MFA Unused Count
 query:
   aggregate:
   - group:
@@ -15,3 +15,8 @@ query:
         - key: data.mfa_device
           value: Not enabled
           operator: eq
+options:
+  value_options:
+    key: value
+    options:
+      default: 0

@@ -9,3 +9,8 @@ query:
           - name: value
             key: data.number_of_nodes
             operator: sum
+options:
+  value_options:
+    key: value
+    options:
+      default: 0

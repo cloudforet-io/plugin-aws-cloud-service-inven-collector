@@ -9,3 +9,8 @@ query:
         - name: value
           key: data.open_shards_num
           operator: sum
+options:
+  value_options:
+    key: value
+    options:
+      default: 0

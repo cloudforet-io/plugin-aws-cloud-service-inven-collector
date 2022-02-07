@@ -8,3 +8,8 @@ query:
         fields:
           - name: value
             operator: count
+options:
+  value_options:
+    key: value
+    options:
+      default: 0

@@ -9,4 +9,8 @@ query:
           - name: value
             key: data.resource_record_set_count
             operator: sum
-
+options:
+  value_options:
+    key: value
+    options:
+      default: 0

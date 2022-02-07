@@ -28,3 +28,8 @@ query:
       fields:
       - name: value
         key: results.v
+options:
+  value_options:
+    key: value
+    options:
+      default: 0

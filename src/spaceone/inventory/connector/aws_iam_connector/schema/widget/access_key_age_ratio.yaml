@@ -7,7 +7,14 @@ query:
   - group:
       fields:
         - key: data.access_key_age
-          name: "30~90"
+          name: "30 or less"
+          operator: count
+          conditions:
+            - key: data.access_key_age
+              value: 30
+              operator: lte
+        - key: data.access_key_age
+          name: "30 ~ 90"
           operator: count
           conditions:
             - key: data.access_key_age
@@ -17,14 +24,7 @@ query:
               value: 90
               operator: lte
         - key: data.access_key_age
-          name: "<=30"
-          operator: count
-          conditions:
-            - key: data.access_key_age
-              value: 30
-              operator: lte
-        - key: data.access_key_age
-          name: ">90"
+          name: "over 90"
           operator: count
           conditions:
             - key: data.access_key_age
@@ -32,12 +32,12 @@ query:
               operator: gt
   - project:
       fields:
-        - key: "<=30"
-          name: "results.<=30"
-        - key: "30~90"
-          name: "results.30~90"
-        - key: ">90"
-          name: "results.>90"
+        - key: "30 or less"
+          name: "results.30 or less"
+        - key: "30 ~ 90"
+          name: "results.30 ~ 90"
+        - key: "over 90"
+          name: "results.over 90"
   - project:
       fields:
         - key: results

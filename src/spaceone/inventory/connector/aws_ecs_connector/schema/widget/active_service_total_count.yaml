@@ -11,3 +11,8 @@ query:
         - name: value
           key: data.services
           operator: count
+options:
+  value_options:
+    key: value
+    options:
+      default: 0
