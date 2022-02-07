@@ -9,3 +9,8 @@ query:
           - name: value
             operator: sum
             key: data.total_read_capacity
+options:
+  value_options:
+    key: value
+    options:
+      default: 0

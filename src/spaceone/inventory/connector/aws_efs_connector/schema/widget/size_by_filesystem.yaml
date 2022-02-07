@@ -20,3 +20,5 @@ options:
   value_options:
     key: value
     type: size
+    options:
+      default: 0

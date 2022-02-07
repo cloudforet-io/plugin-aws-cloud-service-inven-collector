@@ -11,3 +11,8 @@ query:
           - name: value
             operator: count
             key: data.instances
+options:
+  value_options:
+    key: value
+    options:
+      default: 0

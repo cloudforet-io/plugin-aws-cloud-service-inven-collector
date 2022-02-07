@@ -9,4 +9,8 @@ query:
           - name: value
             key: data.object_count
             operator: sum
-
+options:
+  value_options:
+    key: value
+    options:
+      default: 0
