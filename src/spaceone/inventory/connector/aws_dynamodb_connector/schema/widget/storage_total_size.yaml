@@ -1,7 +1,7 @@
 ---
 cloud_service_group: DynamoDB
 cloud_service_type: Table
-name: Snapshot Total Count
+name: Storage Total Size
 query:
   aggregate:
     - group:

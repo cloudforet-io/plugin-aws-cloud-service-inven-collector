@@ -15,9 +15,10 @@ from spaceone.inventory.libs.schema.resource import (
 
 current_dir = os.path.abspath(os.path.dirname(__file__))
 
+total_count_conf = os.path.join(current_dir, 'widget/total_count.yaml')
 open_shard_total_count_conf = os.path.join(current_dir, 'widget/open_shard_total_count.yaml')
-stream_count_per_region_conf = os.path.join(current_dir, 'widget/stream_count_per_region.yaml')
-stream_count_per_account_conf = os.path.join(current_dir, 'widget/stream_count_per_account.yaml')
+stream_count_by_region_conf = os.path.join(current_dir, 'widget/stream_count_by_region.yaml')
+stream_count_by_account_conf = os.path.join(current_dir, 'widget/stream_count_by_account.yaml')
 
 cst_kds = CloudServiceTypeResource()
 cst_kds.name = "DataStream"
@@ -96,9 +97,10 @@ cst_kds._metadata = CloudServiceTypeMeta.set_meta(
         ),
     ],
     widget=[
+        CardWidget.set(**get_data_from_yaml(total_count_conf)),
         CardWidget.set(**get_data_from_yaml(open_shard_total_count_conf)),
-        ChartWidget.set(**get_data_from_yaml(stream_count_per_region_conf)),
-        ChartWidget.set(**get_data_from_yaml(stream_count_per_account_conf)),
+        ChartWidget.set(**get_data_from_yaml(stream_count_by_region_conf)),
+        ChartWidget.set(**get_data_from_yaml(stream_count_by_account_conf)),
     ]
 )
 

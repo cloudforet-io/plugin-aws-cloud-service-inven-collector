@@ -1,7 +1,7 @@
 ---
 cloud_service_group: ECR
 cloud_service_type: Repository
-name: Item Total Count
+name: Image Total Count
 query:
   aggregate:
     - unwind:

@@ -1,0 +1,15 @@
+---
+cloud_service_group: CloudFront
+cloud_service_type: Distribution
+name: Count by Account
+query:
+  aggregate:
+    - group:
+        keys:
+          - name: name
+            key: account
+        fields:
+          - name: value
+            operator: count
+options:
+  chart_type: DONUT

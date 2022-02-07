@@ -1,0 +1,15 @@
+---
+cloud_service_group: APIGateway
+cloud_service_type: API
+name: Count by Protocol
+query:
+  aggregate:
+    - group:
+        keys:
+          - name: name
+            key: data.protocol
+        fields:
+          - name: value
+            operator: count
+options:
+  chart_type: TREEMAP

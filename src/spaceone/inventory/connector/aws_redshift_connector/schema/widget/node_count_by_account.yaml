@@ -1,0 +1,16 @@
+---
+cloud_service_group: Redshift
+cloud_service_type: Cluster
+name: Node Count by Account
+query:
+  aggregate:
+    - group:
+        keys:
+          - name: name
+            key: account
+        fields:
+          - name: value
+            key: data.number_of_nodes
+            operator: sum
+options:
+  chart_type: DONUT

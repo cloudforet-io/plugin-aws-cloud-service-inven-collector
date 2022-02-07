@@ -15,3 +15,6 @@ query:
         desc: true
 options:
   chart_type: COLUMN
+  value_options:
+    key: value
+    type: size

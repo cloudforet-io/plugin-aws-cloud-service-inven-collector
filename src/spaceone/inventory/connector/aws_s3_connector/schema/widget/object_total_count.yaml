@@ -1,7 +1,7 @@
 ---
 cloud_service_group: S3
 cloud_service_type: Bucket
-name: Bucket Total Count
+name: Object Total Count
 query:
   aggregate:
     - group:

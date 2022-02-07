@@ -1,0 +1,10 @@
+---
+cloud_service_group: EFS
+cloud_service_type: FileSystem
+name: File System Total Count
+query:
+  aggregate:
+    - group:
+        fields:
+          - name: value
+            operator: count

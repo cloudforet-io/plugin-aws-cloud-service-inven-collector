@@ -1,0 +1,22 @@
+---
+cloud_service_group: EFS
+cloud_service_type: FileSystem
+name: Size by File System
+query:
+  aggregate:
+    - group:
+        keys:
+        - name: name
+          key: name
+        fields:
+        - name: value
+          key: instance_size
+          operator: sum
+    - sort:
+        key: value
+        desc: true
+options:
+  chart_type: COLUMN
+  value_options:
+    key: value
+    type: size

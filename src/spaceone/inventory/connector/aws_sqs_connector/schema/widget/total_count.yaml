@@ -1,0 +1,10 @@
+---
+cloud_service_group: SQS
+cloud_service_type: Queue
+name: Total Count
+query:
+  aggregate:
+    - group:
+        fields:
+          - name: value
+            operator: count

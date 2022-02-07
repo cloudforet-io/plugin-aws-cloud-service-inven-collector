@@ -1,0 +1,10 @@
+---
+cloud_service_group: ELB
+cloud_service_type: LoadBalancer
+name: Total Count
+query:
+  aggregate:
+    - group:
+        fields:
+          - name: value
+            operator: count

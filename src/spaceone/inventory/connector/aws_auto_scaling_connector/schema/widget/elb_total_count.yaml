@@ -1,7 +1,7 @@
 ---
 cloud_service_group: EC2
 cloud_service_type: AutoScalingGroup
-name: ELB Total Count
+name: Releated ELB Total Count
 query:
   aggregate:
     - unwind:
@@ -11,3 +11,8 @@ query:
           - name: value
             key: data.load_balancers
             operator: count
+options:
+  value_options:
+    key: value
+    options:
+      default: 0

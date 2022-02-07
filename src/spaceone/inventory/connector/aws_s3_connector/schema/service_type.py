@@ -6,14 +6,15 @@ from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, Cl
 
 current_dir = os.path.abspath(os.path.dirname(__file__))
 
+bucket_total_count_conf = os.path.join(current_dir, 'widget/bucket_total_count.yaml')
 object_total_count_conf = os.path.join(current_dir, 'widget/object_total_count.yaml')
 object_total_size_conf = os.path.join(current_dir, 'widget/object_total_size.yaml')
-bucket_count_per_region_conf = os.path.join(current_dir, 'widget/bucket_count_per_region.yaml')
-object_count_per_region_conf = os.path.join(current_dir, 'widget/object_count_per_region.yaml')
-object_total_size_per_region_conf = os.path.join(current_dir, 'widget/object_total_size_per_region.yaml')
-bucket_count_per_account_conf = os.path.join(current_dir, 'widget/bucket_count_per_account.yaml')
-object_count_per_account_conf = os.path.join(current_dir, 'widget/object_count_per_account.yaml')
-object_total_size_per_account_conf = os.path.join(current_dir, 'widget/object_total_size_per_account.yaml')
+bucket_count_by_region_conf = os.path.join(current_dir, 'widget/bucket_count_by_region.yaml')
+object_count_by_region_conf = os.path.join(current_dir, 'widget/object_count_by_region.yaml')
+object_total_size_by_region_conf = os.path.join(current_dir, 'widget/object_total_size_by_region.yaml')
+bucket_count_by_account_conf = os.path.join(current_dir, 'widget/bucket_count_by_account.yaml')
+object_count_by_account_conf = os.path.join(current_dir, 'widget/object_count_by_account.yaml')
+object_total_size_by_account_conf = os.path.join(current_dir, 'widget/object_total_size_by_account.yaml')
 
 cst_bucket = CloudServiceTypeResource()
 cst_bucket.name = 'Bucket'
@@ -90,14 +91,15 @@ cst_bucket._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Object Total Size (Bytes)', key='instance_size', data_type='integer')
     ],
     widget=[
+        CardWidget.set(**get_data_from_yaml(bucket_total_count_conf)),
         CardWidget.set(**get_data_from_yaml(object_total_count_conf)),
         CardWidget.set(**get_data_from_yaml(object_total_size_conf)),
-        ChartWidget.set(**get_data_from_yaml(bucket_count_per_region_conf)),
-        ChartWidget.set(**get_data_from_yaml(object_count_per_region_conf)),
-        ChartWidget.set(**get_data_from_yaml(object_total_size_per_region_conf)),
-        ChartWidget.set(**get_data_from_yaml(bucket_count_per_account_conf)),
-        ChartWidget.set(**get_data_from_yaml(object_count_per_account_conf)),
-        ChartWidget.set(**get_data_from_yaml(object_total_size_per_account_conf)),
+        ChartWidget.set(**get_data_from_yaml(bucket_count_by_region_conf)),
+        ChartWidget.set(**get_data_from_yaml(object_count_by_region_conf)),
+        ChartWidget.set(**get_data_from_yaml(object_total_size_by_region_conf)),
+        ChartWidget.set(**get_data_from_yaml(bucket_count_by_account_conf)),
+        ChartWidget.set(**get_data_from_yaml(object_count_by_account_conf)),
+        ChartWidget.set(**get_data_from_yaml(object_total_size_by_account_conf)),
     ]
 )
 

@@ -11,8 +11,9 @@ current_dir = os.path.abspath(os.path.dirname(__file__))
 """
 VPC
 """
-vpc_count_per_region_conf = os.path.join(current_dir, 'widget/vpc_count_per_region.yaml')
-vpc_count_per_account_conf = os.path.join(current_dir, 'widget/vpc_count_per_account.yaml')
+vpc_total_count_conf = os.path.join(current_dir, 'widget/vpc_total_count.yaml')
+vpc_count_by_region_conf = os.path.join(current_dir, 'widget/vpc_count_by_region.yaml')
+vpc_count_by_account_conf = os.path.join(current_dir, 'widget/vpc_count_by_account.yaml')
 
 cst_vpc = CloudServiceTypeResource()
 cst_vpc.name = 'VPC'
@@ -152,16 +153,18 @@ cst_vpc._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Transit Gateway Name', key='data.transit_gateway.name'),
     ],
     widget=[
-        ChartWidget.set(**get_data_from_yaml(vpc_count_per_region_conf)),
-        ChartWidget.set(**get_data_from_yaml(vpc_count_per_account_conf))
+        CardWidget.set(**get_data_from_yaml(vpc_total_count_conf)),
+        ChartWidget.set(**get_data_from_yaml(vpc_count_by_region_conf)),
+        ChartWidget.set(**get_data_from_yaml(vpc_count_by_account_conf))
     ]
 )
 
 """
 SUBNET
 """
-subnet_count_per_region_conf = os.path.join(current_dir, 'widget/subnet_count_per_region.yaml')
-subnet_count_per_account_conf = os.path.join(current_dir, 'widget/subnet_count_per_account.yaml')
+subnet_total_count_conf = os.path.join(current_dir, 'widget/subnet_total_count.yaml')
+subnet_count_by_region_conf = os.path.join(current_dir, 'widget/subnet_count_by_region.yaml')
+subnet_count_by_account_conf = os.path.join(current_dir, 'widget/subnet_count_by_account.yaml')
 
 cst_subnet = CloudServiceTypeResource()
 cst_subnet.name = 'Subnet'
@@ -256,8 +259,9 @@ cst_subnet._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Auto-assign Public IP', key='data.map_public_ip_on_launch', data_type='boolean'),
     ],
     widget=[
-        ChartWidget.set(**get_data_from_yaml(subnet_count_per_region_conf)),
-        ChartWidget.set(**get_data_from_yaml(subnet_count_per_account_conf))
+        CardWidget.set(**get_data_from_yaml(subnet_total_count_conf)),
+        ChartWidget.set(**get_data_from_yaml(subnet_count_by_region_conf)),
+        ChartWidget.set(**get_data_from_yaml(subnet_count_by_account_conf))
     ]
 )
 
@@ -327,8 +331,9 @@ cst_rt._metadata = CloudServiceTypeMeta.set_meta(
 """
 INTERNET GATEWAY
 """
-igw_count_per_region_conf = os.path.join(current_dir, 'widget/igw_count_per_region.yaml')
-igw_count_per_account_conf = os.path.join(current_dir, 'widget/igw_count_per_account.yaml')
+igw_total_count_conf = os.path.join(current_dir, 'widget/igw_total_count.yaml')
+igw_count_by_region_conf = os.path.join(current_dir, 'widget/igw_count_by_region.yaml')
+igw_count_by_account_conf = os.path.join(current_dir, 'widget/igw_count_by_account.yaml')
 
 cst_igw = CloudServiceTypeResource()
 cst_igw.name = 'InternetGateway'
@@ -372,8 +377,9 @@ cst_igw._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='VPC ID', key='data.vpc_id')
     ],
     widget=[
-        ChartWidget.set(**get_data_from_yaml(igw_count_per_region_conf)),
-        ChartWidget.set(**get_data_from_yaml(igw_count_per_account_conf))
+        CardWidget.set(**get_data_from_yaml(igw_total_count_conf)),
+        ChartWidget.set(**get_data_from_yaml(igw_count_by_region_conf)),
+        ChartWidget.set(**get_data_from_yaml(igw_count_by_account_conf))
     ]
 )
 
@@ -381,8 +387,9 @@ cst_igw._metadata = CloudServiceTypeMeta.set_meta(
 """
 EGRESS ONLY INTERNET GATEWAY
 """
-eoigw_count_per_region_conf = os.path.join(current_dir, 'widget/eoigw_count_per_region.yaml')
-eoigw_count_per_account_conf = os.path.join(current_dir, 'widget/eoigw_count_per_account.yaml')
+eoigw_total_count_conf = os.path.join(current_dir, 'widget/eoigw_total_count.yaml')
+eoigw_count_by_region_conf = os.path.join(current_dir, 'widget/eoigw_count_by_region.yaml')
+eoigw_count_by_account_conf = os.path.join(current_dir, 'widget/eoigw_count_by_account.yaml')
 
 cst_eoigw = CloudServiceTypeResource()
 cst_eoigw.name = 'EgressOnlyInternetGateway'
@@ -423,8 +430,9 @@ cst_eoigw._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='VPC ID', key='data.attachments.vpc_id')
     ],
     widget=[
-        ChartWidget.set(**get_data_from_yaml(eoigw_count_per_region_conf)),
-        ChartWidget.set(**get_data_from_yaml(eoigw_count_per_account_conf))
+        CardWidget.set(**get_data_from_yaml(eoigw_total_count_conf)),
+        ChartWidget.set(**get_data_from_yaml(eoigw_count_by_region_conf)),
+        ChartWidget.set(**get_data_from_yaml(eoigw_count_by_account_conf))
     ]
 )
 
@@ -432,8 +440,9 @@ cst_eoigw._metadata = CloudServiceTypeMeta.set_meta(
 """
 NAT GATEWAY
 """
-natgw_count_per_region_conf = os.path.join(current_dir, 'widget/natgw_count_per_region.yaml')
-natgw_count_per_account_conf = os.path.join(current_dir, 'widget/natgw_count_per_account.yaml')
+natgw_total_count_conf = os.path.join(current_dir, 'widget/natgw_total_count.yaml')
+natgw_count_by_region_conf = os.path.join(current_dir, 'widget/natgw_count_by_region.yaml')
+natgw_count_by_account_conf = os.path.join(current_dir, 'widget/natgw_count_by_account.yaml')
 
 cst_natgw = CloudServiceTypeResource()
 cst_natgw.name = 'NATGateway'
@@ -507,8 +516,9 @@ cst_natgw._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='VPC ID', key='data.vpc_id')
     ],
     widget=[
-        ChartWidget.set(**get_data_from_yaml(natgw_count_per_region_conf)),
-        ChartWidget.set(**get_data_from_yaml(natgw_count_per_account_conf))
+        CardWidget.set(**get_data_from_yaml(natgw_total_count_conf)),
+        ChartWidget.set(**get_data_from_yaml(natgw_count_by_region_conf)),
+        ChartWidget.set(**get_data_from_yaml(natgw_count_by_account_conf))
     ]
 )
 
@@ -516,8 +526,9 @@ cst_natgw._metadata = CloudServiceTypeMeta.set_meta(
 """
 PEERING CONNECTION
 """
-peerconn_count_per_region_conf = os.path.join(current_dir, 'widget/peerconn_count_per_region.yaml')
-peerconn_count_per_account_conf = os.path.join(current_dir, 'widget/peerconn_count_per_account.yaml')
+peerconn_total_count_conf = os.path.join(current_dir, 'widget/peerconn_total_count.yaml')
+peerconn_count_by_region_conf = os.path.join(current_dir, 'widget/peerconn_count_by_region.yaml')
+peerconn_count_by_account_conf = os.path.join(current_dir, 'widget/peerconn_count_by_account.yaml')
 
 cst_peerconn = CloudServiceTypeResource()
 cst_peerconn.name = 'PeeringConnection'
@@ -570,8 +581,9 @@ cst_peerconn._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Expiration Time', key='data.expiration_time', data_type='datetime')
     ],
     widget=[
-        ChartWidget.set(**get_data_from_yaml(peerconn_count_per_region_conf)),
-        ChartWidget.set(**get_data_from_yaml(peerconn_count_per_account_conf))
+        CardWidget.set(**get_data_from_yaml(peerconn_total_count_conf)),
+        ChartWidget.set(**get_data_from_yaml(peerconn_count_by_region_conf)),
+        ChartWidget.set(**get_data_from_yaml(peerconn_count_by_account_conf))
     ]
 )
 
@@ -638,8 +650,9 @@ cst_nacl._metadata = CloudServiceTypeMeta.set_meta(
 """
 ENDPOINT
 """
-ep_count_per_region_conf = os.path.join(current_dir, 'widget/ep_count_per_region.yaml')
-ep_count_per_account_conf = os.path.join(current_dir, 'widget/ep_count_per_account.yaml')
+ep_total_count_conf = os.path.join(current_dir, 'widget/ep_total_count.yaml')
+ep_count_by_region_conf = os.path.join(current_dir, 'widget/ep_count_by_region.yaml')
+ep_count_by_account_conf = os.path.join(current_dir, 'widget/ep_count_by_account.yaml')
 
 cst_endpoint = CloudServiceTypeResource()
 cst_endpoint.name = 'Endpoint'
@@ -720,16 +733,18 @@ cst_endpoint._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Private DNS Names enabled', key='data.private_dns_enabled', data_type='boolean')
     ],
     widget=[
-        ChartWidget.set(**get_data_from_yaml(ep_count_per_region_conf)),
-        ChartWidget.set(**get_data_from_yaml(ep_count_per_account_conf))
+        CardWidget.set(**get_data_from_yaml(ep_total_count_conf)),
+        ChartWidget.set(**get_data_from_yaml(ep_count_by_region_conf)),
+        ChartWidget.set(**get_data_from_yaml(ep_count_by_account_conf))
     ]
 )
 
 """
 TRANSIT GATEWAY
 """
-transitgw_count_per_region_conf = os.path.join(current_dir, 'widget/transitgw_count_per_region.yaml')
-transitgw_count_per_account_conf = os.path.join(current_dir, 'widget/transitgw_count_per_account.yaml')
+transitgw_total_count_conf = os.path.join(current_dir, 'widget/transitgw_total_count.yaml')
+transitgw_count_by_region_conf = os.path.join(current_dir, 'widget/transitgw_count_by_region.yaml')
+transitgw_count_by_account_conf = os.path.join(current_dir, 'widget/transitgw_count_by_account.yaml')
 
 cst_transitgw = CloudServiceTypeResource()
 cst_transitgw.name = 'TransitGateway'
@@ -813,16 +828,18 @@ cst_transitgw._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='VPN Gateway ID', key='data.vpn_connections.vpn_gateway_id'),
     ],
     widget=[
-        ChartWidget.set(**get_data_from_yaml(transitgw_count_per_region_conf)),
-        ChartWidget.set(**get_data_from_yaml(transitgw_count_per_account_conf))
+        CardWidget.set(**get_data_from_yaml(transitgw_total_count_conf)),
+        ChartWidget.set(**get_data_from_yaml(transitgw_count_by_region_conf)),
+        ChartWidget.set(**get_data_from_yaml(transitgw_count_by_account_conf))
     ]
 )
 
 """
 CUSTOMER GATEWAY
 """
-customergw_count_per_region_conf = os.path.join(current_dir, 'widget/customergw_count_per_region.yaml')
-customergw_count_per_account_conf = os.path.join(current_dir, 'widget/customergw_count_per_account.yaml')
+customergw_total_count_conf = os.path.join(current_dir, 'widget/customergw_total_count.yaml')
+customergw_count_by_region_conf = os.path.join(current_dir, 'widget/customergw_count_by_region.yaml')
+customergw_count_by_account_conf = os.path.join(current_dir, 'widget/customergw_count_by_account.yaml')
 
 cst_customgw = CloudServiceTypeResource()
 cst_customgw.name = 'CustomerGateway'
@@ -897,16 +914,18 @@ cst_customgw._metadata = CloudServiceTypeMeta.set_meta(
                         })
     ],
     widget=[
-        ChartWidget.set(**get_data_from_yaml(customergw_count_per_region_conf)),
-        ChartWidget.set(**get_data_from_yaml(customergw_count_per_account_conf))
+        CardWidget.set(**get_data_from_yaml(customergw_total_count_conf)),
+        ChartWidget.set(**get_data_from_yaml(customergw_count_by_region_conf)),
+        ChartWidget.set(**get_data_from_yaml(customergw_count_by_account_conf))
     ]
 )
 
 """
 VPN CONNECTION
 """
-vpnconn_count_per_region_conf = os.path.join(current_dir, 'widget/vpnconn_count_per_region.yaml')
-vpnconn_count_per_account_conf = os.path.join(current_dir, 'widget/vpnconn_count_per_account.yaml')
+vpnconn_total_count_conf = os.path.join(current_dir, 'widget/vpnconn_total_count.yaml')
+vpnconn_count_by_region_conf = os.path.join(current_dir, 'widget/vpnconn_count_by_region.yaml')
+vpnconn_count_by_account_conf = os.path.join(current_dir, 'widget/vpnconn_count_by_account.yaml')
 
 cst_vpnconn = CloudServiceTypeResource()
 cst_vpnconn.name = 'VPNConnection'
@@ -980,16 +999,18 @@ cst_vpnconn._metadata = CloudServiceTypeMeta.set_meta(
                         })
     ],
     widget=[
-        ChartWidget.set(**get_data_from_yaml(vpnconn_count_per_region_conf)),
-        ChartWidget.set(**get_data_from_yaml(vpnconn_count_per_account_conf))
+        CardWidget.set(**get_data_from_yaml(vpnconn_total_count_conf)),
+        ChartWidget.set(**get_data_from_yaml(vpnconn_count_by_region_conf)),
+        ChartWidget.set(**get_data_from_yaml(vpnconn_count_by_account_conf))
     ]
 )
 
 """
 VPN GATEWAY
 """
-vpngw_count_per_region_conf = os.path.join(current_dir, 'widget/vpngw_count_per_region.yaml')
-vpngw_count_per_account_conf = os.path.join(current_dir, 'widget/vpngw_count_per_account.yaml')
+vpngw_total_count_conf = os.path.join(current_dir, 'widget/vpngw_total_count.yaml')
+vpngw_count_by_region_conf = os.path.join(current_dir, 'widget/vpngw_count_by_region.yaml')
+vpngw_count_by_account_conf = os.path.join(current_dir, 'widget/vpngw_count_by_account.yaml')
 
 cst_vpngw = CloudServiceTypeResource()
 cst_vpngw.name = 'VPNGateway'
@@ -1045,8 +1066,9 @@ cst_vpngw._metadata = CloudServiceTypeMeta.set_meta(
                         })
     ],
     widget=[
-        ChartWidget.set(**get_data_from_yaml(vpngw_count_per_region_conf)),
-        ChartWidget.set(**get_data_from_yaml(vpngw_count_per_account_conf))
+        CardWidget.set(**get_data_from_yaml(vpngw_total_count_conf)),
+        ChartWidget.set(**get_data_from_yaml(vpngw_count_by_region_conf)),
+        ChartWidget.set(**get_data_from_yaml(vpngw_count_by_account_conf))
     ]
 )
 

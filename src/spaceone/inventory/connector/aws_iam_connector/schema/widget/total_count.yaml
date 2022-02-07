@@ -1,0 +1,10 @@
+---
+cloud_service_group: IAM
+cloud_service_type: User
+name: User Total Count
+query:
+  aggregate:
+    - group:
+        fields:
+          - name: value
+            operator: count

@@ -7,11 +7,12 @@ from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, Cl
 
 current_dir = os.path.abspath(os.path.dirname(__file__))
 
+total_count_conf = os.path.join(current_dir, 'widget/total_count.yaml')
 image_total_count_conf = os.path.join(current_dir, 'widget/image_total_count.yaml')
 image_total_size_conf = os.path.join(current_dir, 'widget/image_total_size.yaml')
-repository_count_per_region_conf = os.path.join(current_dir, 'widget/repository_count_per_region.yaml')
-repository_count_per_account_conf = os.path.join(current_dir, 'widget/repository_count_per_account.yaml')
-top_image_total_size_per_repository_conf = os.path.join(current_dir, 'widget/top_image_total_size_per_repository.yaml')
+repository_count_by_region_conf = os.path.join(current_dir, 'widget/repository_count_by_region.yaml')
+repository_count_by_account_conf = os.path.join(current_dir, 'widget/repository_count_by_account.yaml')
+image_total_size_by_repository_conf = os.path.join(current_dir, 'widget/image_total_size_by_repository.yaml')
 
 cst_ecr_repo = CloudServiceTypeResource()
 cst_ecr_repo.name = 'Repository'
@@ -46,11 +47,12 @@ cst_ecr_repo._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Image URI', key='data.images.image_uri')
     ],
     widget=[
+        CardWidget.set(**get_data_from_yaml(total_count_conf)),
         CardWidget.set(**get_data_from_yaml(image_total_count_conf)),
         CardWidget.set(**get_data_from_yaml(image_total_size_conf)),
-        ChartWidget.set(**get_data_from_yaml(repository_count_per_region_conf)),
-        ChartWidget.set(**get_data_from_yaml(repository_count_per_account_conf)),
-        ChartWidget.set(**get_data_from_yaml(top_image_total_size_per_repository_conf)),
+        ChartWidget.set(**get_data_from_yaml(repository_count_by_region_conf)),
+        ChartWidget.set(**get_data_from_yaml(repository_count_by_account_conf)),
+        ChartWidget.set(**get_data_from_yaml(image_total_size_by_repository_conf)),
     ]
 )
 

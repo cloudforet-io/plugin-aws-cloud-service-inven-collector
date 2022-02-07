@@ -1,7 +1,7 @@
 ---
 cloud_service_group: RDS
 cloud_service_type: Instance
-name: Instance Storage Total Size
+name: Storage Total Size
 query:
   aggregate:
     - group:

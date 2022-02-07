@@ -1,0 +1,10 @@
+---
+cloud_service_group: Route53
+cloud_service_type: HostedZone
+name: Hosted Zone Total Count
+query:
+  aggregate:
+    - group:
+        fields:
+          - name: value
+            operator: count

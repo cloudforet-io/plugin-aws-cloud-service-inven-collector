@@ -1,0 +1,19 @@
+---
+cloud_service_group: EC2
+cloud_service_type: Volume
+name: Total Size by Account
+query:
+  aggregate:
+    - group:
+        keys:
+          - name: name
+            key: account
+        fields:
+          - name: value
+            key: instance_size
+            operator: sum
+options:
+  chart_type: DONUT
+  value_options:
+    key: value
+    type: size

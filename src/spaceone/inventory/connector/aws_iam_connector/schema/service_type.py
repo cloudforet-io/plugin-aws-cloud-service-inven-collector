@@ -80,8 +80,9 @@ cst_group._metadata = CloudServiceTypeMeta.set_meta(
 """
 USER
 """
+total_count_conf = os.path.join(current_dir, 'widget/total_count.yaml')
 access_key_total_count_conf = os.path.join(current_dir, 'widget/access_key_total_count.yaml')
-mfa_not_used_total_count_conf = os.path.join(current_dir, 'widget/mfa_not_used_total_count.yaml')
+mfa_used_status_conf = os.path.join(current_dir, 'widget/mfa_used_status.yaml')
 access_key_age_30_total_count_conf = os.path.join(current_dir, 'widget/access_key_age_30_total_count.yaml')
 access_key_age_ratio_conf = os.path.join(current_dir, 'widget/access_key_age_ratio.yaml')
 
@@ -205,8 +206,9 @@ cst_user._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Creation Time', key='data.create_date', data_type='datetime'),
     ],
     widget=[
+        CardWidget.set(**get_data_from_yaml(total_count_conf)),
         CardWidget.set(**get_data_from_yaml(access_key_total_count_conf)),
-        CardWidget.set(**get_data_from_yaml(mfa_not_used_total_count_conf)),
+        CardWidget.set(**get_data_from_yaml(mfa_used_status_conf)),
         CardWidget.set(**get_data_from_yaml(access_key_age_30_total_count_conf)),
         ChartWidget.set(**get_data_from_yaml(access_key_age_ratio_conf))
     ]

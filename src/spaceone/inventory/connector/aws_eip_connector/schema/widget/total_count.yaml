@@ -1,0 +1,10 @@
+---
+cloud_service_group: EC2
+cloud_service_type: EIP
+name: Total Count
+query:
+  aggregate:
+    - group:
+        fields:
+          - name: value
+            operator: count

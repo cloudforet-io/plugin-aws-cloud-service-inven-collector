@@ -1,0 +1,15 @@
+---
+cloud_service_group: CloudFront
+cloud_service_type: Distribution
+name: Count by Status
+query:
+  aggregate:
+    - group:
+        keys:
+          - name: name
+            key: data.status
+        fields:
+          - name: value
+            operator: count
+options:
+  chart_type: TREEMAP

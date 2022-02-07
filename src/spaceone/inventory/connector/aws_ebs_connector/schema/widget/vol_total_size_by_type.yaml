@@ -1,0 +1,19 @@
+---
+cloud_service_group: EC2
+cloud_service_type: Volume
+name: Total Size by Volume Type
+query:
+  aggregate:
+    - group:
+        keys:
+          - name: name
+            key: instance_type
+        fields:
+          - name: value
+            key: instance_size
+            operator: sum
+options:
+  chart_type: TREEMAP
+  value_options:
+    key: value
+    type: size

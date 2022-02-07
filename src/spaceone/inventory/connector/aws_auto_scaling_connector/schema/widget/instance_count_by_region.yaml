@@ -1,0 +1,23 @@
+---
+cloud_service_group: EC2
+cloud_service_type: AutoScalingGroup
+name: Related Instance by Region
+query:
+  aggregate:
+    - unwind:
+        path: data.instances
+    - group:
+        keys:
+          - name: name
+            key: region_code
+        fields:
+          - name: value
+            key: data.instances
+            operator: count
+options:
+  chart_type: COLUMN
+  name_options:
+    key: name
+    reference:
+      resource_type: "inventory.Region"
+      reference_key: region_code

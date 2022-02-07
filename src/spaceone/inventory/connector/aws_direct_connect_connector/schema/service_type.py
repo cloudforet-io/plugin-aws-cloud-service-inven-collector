@@ -10,9 +10,10 @@ current_dir = os.path.abspath(os.path.dirname(__file__))
 '''
 CONNECTION
 '''
+connection_total_count_conf = os.path.join(current_dir, 'widget/connection_total_count.yaml')
 # connection_bandwidth_total_sum_conf = os.path.join(current_dir, 'widget/connection_bandwidth_total_sum.yaml')
-connection_count_per_region_widget_conf = os.path.join(current_dir, 'widget/connection_count_per_region.yaml')
-connection_count_per_account_widget_conf = os.path.join(current_dir, 'widget/connection_count_per_account.yaml')
+connection_count_by_region_widget_conf = os.path.join(current_dir, 'widget/connection_count_by_region.yaml')
+connection_count_by_account_widget_conf = os.path.join(current_dir, 'widget/connection_count_by_account.yaml')
 
 cst_connection = CloudServiceTypeResource()
 cst_connection.name = 'Connection'
@@ -86,9 +87,10 @@ cst_connection_meta = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Provider Name', key='data.provider_name')
     ],
     widget=[
+        CardWidget.set(**get_data_from_yaml(connection_total_count_conf)),
 #         CardWidget.set(**get_data_from_yaml(connection_bandwidth_total_sum_conf)),
-        ChartWidget.set(**get_data_from_yaml(connection_count_per_region_widget_conf)),
-        ChartWidget.set(**get_data_from_yaml(connection_count_per_account_widget_conf))
+        ChartWidget.set(**get_data_from_yaml(connection_count_by_region_widget_conf)),
+        ChartWidget.set(**get_data_from_yaml(connection_count_by_account_widget_conf))
     ]
 )
 cst_connection._metadata = cst_connection_meta
@@ -96,8 +98,9 @@ cst_connection._metadata = cst_connection_meta
 '''
 DIRECT CONNECT GATEWAY
 '''
-dcgw_count_per_region_widget_conf = os.path.join(current_dir, 'widget/dcgw_count_per_region.yaml')
-dcgw_count_per_account_widget_conf = os.path.join(current_dir, 'widget/dcgw_count_per_account.yaml')
+dcgw_total_count_widget_conf = os.path.join(current_dir, 'widget/dcgw_total_count.yaml')
+dcgw_count_by_region_widget_conf = os.path.join(current_dir, 'widget/dcgw_count_by_region.yaml')
+dcgw_count_by_account_widget_conf = os.path.join(current_dir, 'widget/dcgw_count_by_account.yaml')
 
 cst_dc_gw = CloudServiceTypeResource()
 cst_dc_gw.name = 'DirectConnectGateway'
@@ -140,8 +143,9 @@ cst_dc_gw_meta = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Amazon Side ASN', key='data.amazon_side_asn')
     ],
     widget=[
-        ChartWidget.set(**get_data_from_yaml(dcgw_count_per_region_widget_conf)),
-        ChartWidget.set(**get_data_from_yaml(dcgw_count_per_account_widget_conf))
+        CardWidget.set(**get_data_from_yaml(dcgw_total_count_widget_conf)),
+        ChartWidget.set(**get_data_from_yaml(dcgw_count_by_region_widget_conf)),
+        ChartWidget.set(**get_data_from_yaml(dcgw_count_by_account_widget_conf))
     ]
 )
 cst_dc_gw._metadata = cst_dc_gw_meta
@@ -150,8 +154,9 @@ cst_dc_gw._metadata = cst_dc_gw_meta
 '''
 VIRTUAL PRIVATE GATEWAY
 '''
-vpgw_count_per_region_widget_conf = os.path.join(current_dir, 'widget/vpgw_count_per_region.yaml')
-vpgw_count_per_account_widget_conf = os.path.join(current_dir, 'widget/vpgw_count_per_account.yaml')
+vpgw_total_count_widget_conf = os.path.join(current_dir, 'widget/vpgw_total_count.yaml')
+vpgw_count_by_region_widget_conf = os.path.join(current_dir, 'widget/vpgw_count_by_region.yaml')
+vpgw_count_by_account_widget_conf = os.path.join(current_dir, 'widget/vpgw_count_by_account.yaml')
 
 cst_vp_gw = CloudServiceTypeResource()
 cst_vp_gw.name = 'VirtualPrivateGateway'
@@ -186,8 +191,9 @@ cst_vp_gw_meta = CloudServiceTypeMeta.set_meta(
                         })
     ],
     widget=[
-        ChartWidget.set(**get_data_from_yaml(vpgw_count_per_region_widget_conf)),
-        ChartWidget.set(**get_data_from_yaml(vpgw_count_per_account_widget_conf))
+        CardWidget.set(**get_data_from_yaml(vpgw_total_count_widget_conf)),
+        ChartWidget.set(**get_data_from_yaml(vpgw_count_by_region_widget_conf)),
+        ChartWidget.set(**get_data_from_yaml(vpgw_count_by_account_widget_conf))
     ]
 )
 cst_vp_gw._metadata = cst_vp_gw_meta
@@ -196,9 +202,10 @@ cst_vp_gw._metadata = cst_vp_gw_meta
 '''
 LAG
 '''
+lag_total_count_widget_conf = os.path.join(current_dir, 'widget/lag_total_count.yaml')
 # lag_bandwidth_total_sum_conf = os.path.join(current_dir, 'widget/lag_bandwidth_total_sum.yaml')
-lag_count_per_region_widget_conf = os.path.join(current_dir, 'widget/lag_count_per_region.yaml')
-lag_count_per_account_widget_conf = os.path.join(current_dir, 'widget/lag_count_per_account.yaml')
+lag_count_by_region_widget_conf = os.path.join(current_dir, 'widget/lag_count_by_region.yaml')
+lag_count_by_account_widget_conf = os.path.join(current_dir, 'widget/lag_count_by_account.yaml')
 
 cst_lags = CloudServiceTypeResource()
 cst_lags.name = 'LAG'
@@ -293,9 +300,10 @@ cst_lags_meta = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='AWS Device', key='data.aws_device')
     ],
     widget=[
+        CardWidget.set(**get_data_from_yaml(lag_total_count_widget_conf)),
         # CardWidget.set(**get_data_from_yaml(lag_bandwidth_total_sum_conf)),
-        ChartWidget.set(**get_data_from_yaml(lag_count_per_region_widget_conf)),
-        ChartWidget.set(**get_data_from_yaml(lag_count_per_account_widget_conf))
+        ChartWidget.set(**get_data_from_yaml(lag_count_by_region_widget_conf)),
+        ChartWidget.set(**get_data_from_yaml(lag_count_by_account_widget_conf))
     ]
 )
 cst_lags._metadata = cst_lags_meta

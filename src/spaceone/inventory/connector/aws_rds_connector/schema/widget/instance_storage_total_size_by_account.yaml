@@ -1,0 +1,22 @@
+---
+cloud_service_group: RDS
+cloud_service_type: Instance
+name: Storage Total Size by Account
+query:
+  aggregate:
+    - group:
+        keys:
+          - name: name
+            key: account
+        fields:
+          - name: value
+            key: data.instance.allocated_storage
+            operator: sum
+options:
+  chart_type: DONUT
+  value_options:
+    key: value
+    type: size
+    options:
+      source_unit: GB
+      default: 0

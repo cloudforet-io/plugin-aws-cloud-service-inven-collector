@@ -1,0 +1,10 @@
+---
+cloud_service_group: DynamoDB
+cloud_service_type: Table
+name: Table Total Count
+query:
+  aggregate:
+    - group:
+        fields:
+          - name: value
+            operator: count

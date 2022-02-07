@@ -1,0 +1,21 @@
+---
+cloud_service_group: ECS
+cloud_service_type: Cluster
+name: Active Services by Cluster
+query:
+  aggregate:
+    - unwind:
+        path: data.services
+    - group:
+        keys:
+        - name: name
+          key: name
+        fields:
+        - name: value
+          key: data.services
+          operator: count
+    - sort:
+        key: value
+        desc: true
+options:
+  chart_type: COLUMN

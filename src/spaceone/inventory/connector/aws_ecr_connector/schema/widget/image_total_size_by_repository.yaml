@@ -1,0 +1,24 @@
+---
+cloud_service_group: ECR
+cloud_service_type: Repository
+name: Image Total Size by Repository
+query:
+  aggregate:
+    - unwind:
+        path: data.images
+    - group:
+        keys:
+        - name: name
+          key: data.repository_name
+        fields:
+        - name: value
+          key: data.images.image_size_in_bytes
+          operator: sum
+    - sort:
+        key: value
+        desc: true
+options:
+  chart_type: COLUMN
+  value_options:
+    key: value
+    type: size

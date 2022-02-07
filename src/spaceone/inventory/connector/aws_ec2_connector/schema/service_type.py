@@ -10,11 +10,12 @@ current_dir = os.path.abspath(os.path.dirname(__file__))
 """
 SECURITY GROUP
 """
+sg_total_count_conf = os.path.join(current_dir, 'widget/sg_total_count.yaml')
 inbound_rule_total_count_conf = os.path.join(current_dir, 'widget/inbound_rule_total_count.yaml')
 outbound_rule_total_count_conf = os.path.join(current_dir, 'widget/outbound_rule_total_count.yaml')
 instance_total_count_conf = os.path.join(current_dir, 'widget/instance_total_count.yaml')
-sg_count_per_region_conf = os.path.join(current_dir, 'widget/sg_count_per_region.yaml')
-sg_count_per_account_conf = os.path.join(current_dir, 'widget/sg_count_per_account.yaml')
+sg_count_by_region_conf = os.path.join(current_dir, 'widget/sg_count_by_region.yaml')
+sg_count_by_account_conf = os.path.join(current_dir, 'widget/sg_count_by_account.yaml')
 
 cst_sg = CloudServiceTypeResource()
 cst_sg.name = 'SecurityGroup'
@@ -45,19 +46,21 @@ cst_sg._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Outbound Source', key='data.ip_permissions_egress.source_display'),
     ],
     widget=[
+        CardWidget.set(**get_data_from_yaml(sg_total_count_conf)),
         CardWidget.set(**get_data_from_yaml(inbound_rule_total_count_conf)),
         CardWidget.set(**get_data_from_yaml(outbound_rule_total_count_conf)),
         CardWidget.set(**get_data_from_yaml(instance_total_count_conf)),
-        ChartWidget.set(**get_data_from_yaml(sg_count_per_region_conf)),
-        ChartWidget.set(**get_data_from_yaml(sg_count_per_account_conf))
+        ChartWidget.set(**get_data_from_yaml(sg_count_by_region_conf)),
+        ChartWidget.set(**get_data_from_yaml(sg_count_by_account_conf))
     ]
 )
 
 """
 AMI
 """
-ami_count_per_region_conf = os.path.join(current_dir, 'widget/ami_count_per_region.yaml')
-ami_count_per_account_conf = os.path.join(current_dir, 'widget/ami_count_per_account.yaml')
+ami_total_count_conf = os.path.join(current_dir, 'widget/ami_total_count.yaml')
+ami_count_by_region_conf = os.path.join(current_dir, 'widget/ami_count_by_region.yaml')
+ami_count_by_account_conf = os.path.join(current_dir, 'widget/ami_count_by_account.yaml')
 
 cst_ami = CloudServiceTypeResource()
 cst_ami.name = 'AMI'
@@ -123,8 +126,9 @@ cst_ami._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Instance State', key='data.instances.state'),
     ],
     widget=[
-        ChartWidget.set(**get_data_from_yaml(ami_count_per_region_conf)),
-        ChartWidget.set(**get_data_from_yaml(ami_count_per_account_conf))
+        CardWidget.set(**get_data_from_yaml(ami_total_count_conf)),
+        ChartWidget.set(**get_data_from_yaml(ami_count_by_region_conf)),
+        ChartWidget.set(**get_data_from_yaml(ami_count_by_account_conf))
     ]
 )
 

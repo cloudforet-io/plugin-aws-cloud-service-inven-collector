@@ -1,0 +1,24 @@
+---
+cloud_service_group: S3
+cloud_service_type: Bucket
+name: Object Total Size by Region
+query:
+  aggregate:
+    - group:
+        keys:
+          - name: name
+            key: region_code
+        fields:
+          - name: value
+            key: instance_size
+            operator: sum
+options:
+  chart_type: COLUMN
+  name_options:
+    key: name
+    reference:
+      resource_type: "inventory.Region"
+      reference_key: region_code
+  value_options:
+    key: value
+    type: size

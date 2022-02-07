@@ -1,0 +1,10 @@
+---
+cloud_service_group: KinesisFirehose
+cloud_service_type: DeliveryStream
+name: Total Count
+query:
+  aggregate:
+    - group:
+        fields:
+          - name: value
+            operator: count

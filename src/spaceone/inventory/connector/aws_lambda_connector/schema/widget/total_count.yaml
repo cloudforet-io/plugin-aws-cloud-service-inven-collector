@@ -1,0 +1,10 @@
+---
+cloud_service_group: Lambda
+cloud_service_type: Function
+name: Total Count
+query:
+  aggregate:
+    - group:
+        fields:
+          - name: value
+            operator: count

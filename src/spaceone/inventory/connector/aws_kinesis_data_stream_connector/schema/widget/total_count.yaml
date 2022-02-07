@@ -1,0 +1,10 @@
+---
+cloud_service_group: KinesisDataStream
+cloud_service_type: DataStream
+name: Stream Total Count
+query:
+  aggregate:
+    - group:
+        fields:
+          - name: value
+            operator: count

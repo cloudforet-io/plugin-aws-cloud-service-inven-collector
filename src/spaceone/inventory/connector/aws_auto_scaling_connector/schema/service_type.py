@@ -10,12 +10,13 @@ current_dir = os.path.abspath(os.path.dirname(__file__))
 """
 AUTO SCALING GROUP
 """
+total_count_conf = os.path.join(current_dir, 'widget/total_count.yaml')
 elb_total_count_conf = os.path.join(current_dir, 'widget/elb_total_count.yaml')
 instance_total_count_conf = os.path.join(current_dir, 'widget/instance_total_count.yaml')
-asg_count_per_region_conf = os.path.join(current_dir, 'widget/instance_count_per_region.yaml')
-asg_count_per_account_conf = os.path.join(current_dir, 'widget/asg_count_per_account.yaml')
-instance_count_per_region_conf = os.path.join(current_dir, 'widget/instance_count_per_region.yaml')
-instance_count_per_account_conf = os.path.join(current_dir, 'widget/instance_count_per_account.yaml')
+count_by_region_conf = os.path.join(current_dir, 'widget/count_by_region.yaml')
+count_by_account_conf = os.path.join(current_dir, 'widget/count_by_account.yaml')
+instance_count_by_region_conf = os.path.join(current_dir, 'widget/instance_count_by_region.yaml')
+instance_count_by_account_conf = os.path.join(current_dir, 'widget/instance_count_by_account.yaml')
 
 cst_asg = CloudServiceTypeResource()
 cst_asg.name = 'AutoScalingGroup'
@@ -106,12 +107,13 @@ cst_asg._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Instance ID', key='data.instances.instance_id')
     ],
     widget=[
+        CardWidget.set(**get_data_from_yaml(total_count_conf)),
         CardWidget.set(**get_data_from_yaml(elb_total_count_conf)),
         CardWidget.set(**get_data_from_yaml(instance_total_count_conf)),
-        ChartWidget.set(**get_data_from_yaml(asg_count_per_region_conf)),
-        ChartWidget.set(**get_data_from_yaml(asg_count_per_account_conf)),
-        ChartWidget.set(**get_data_from_yaml(instance_count_per_region_conf)),
-        ChartWidget.set(**get_data_from_yaml(instance_count_per_account_conf))
+        ChartWidget.set(**get_data_from_yaml(count_by_region_conf)),
+        ChartWidget.set(**get_data_from_yaml(count_by_account_conf)),
+        ChartWidget.set(**get_data_from_yaml(instance_count_by_region_conf)),
+        ChartWidget.set(**get_data_from_yaml(instance_count_by_account_conf))
     ]
 )
 

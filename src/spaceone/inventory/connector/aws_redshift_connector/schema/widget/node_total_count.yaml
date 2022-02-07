@@ -1,7 +1,7 @@
 ---
 cloud_service_group: Redshift
 cloud_service_type: Cluster
-name: Cluster Total Count
+name: Node Total Count
 query:
   aggregate:
     - group:

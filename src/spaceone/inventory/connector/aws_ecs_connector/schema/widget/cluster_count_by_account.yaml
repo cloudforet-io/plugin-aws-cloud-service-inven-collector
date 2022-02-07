@@ -1,0 +1,15 @@
+---
+cloud_service_group: ECS
+cloud_service_type: Cluster
+name: Cluster by Region
+query:
+  aggregate:
+    - group:
+        keys:
+          - name: name
+            key: account
+        fields:
+          - name: value
+            operator: count
+options:
+  chart_type: COLUMN

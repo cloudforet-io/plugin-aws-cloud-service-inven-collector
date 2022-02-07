@@ -1,0 +1,13 @@
+---
+cloud_service_group: VPC
+cloud_service_type: PeeringConnection
+name: Total Count
+query:
+  aggregate:
+    - group:
+        keys:
+          - name: name
+            key: account
+        fields:
+          - name: value
+            operator: count

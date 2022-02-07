@@ -6,12 +6,13 @@ from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, Cl
 
 current_dir = os.path.abspath(os.path.dirname(__file__))
 
-storage_total_size_count_conf = os.path.join(current_dir, 'widget/storage_total_size.yaml')
+total_count_conf = os.path.join(current_dir, 'widget/total_count.yaml')
+storage_total_size_conf = os.path.join(current_dir, 'widget/storage_total_size.yaml')
 item_total_count_conf = os.path.join(current_dir, 'widget/item_total_count.yaml')
 read_capacity_total_conf = os.path.join(current_dir, 'widget/read_capacity_total.yaml')
 write_capacity_total_conf = os.path.join(current_dir, 'widget/write_capacity_total.yaml')
-table_count_per_region_conf = os.path.join(current_dir, 'widget/table_count_per_region.yaml')
-table_count_per_account_conf = os.path.join(current_dir, 'widget/table_count_per_account.yaml')
+table_count_by_region_conf = os.path.join(current_dir, 'widget/table_count_by_region.yaml')
+table_count_by_account_conf = os.path.join(current_dir, 'widget/table_count_by_account.yaml')
 top_table_size_conf = os.path.join(current_dir, 'widget/top_table_size.yaml')
 
 cst_table = CloudServiceTypeResource()
@@ -78,12 +79,13 @@ cst_table._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Item Count', key='data.item_count', data_type='integer'),
     ],
     widget=[
-        CardWidget.set(**get_data_from_yaml(storage_total_size_count_conf)),
+        CardWidget.set(**get_data_from_yaml(total_count_conf)),
+        CardWidget.set(**get_data_from_yaml(storage_total_size_conf)),
         CardWidget.set(**get_data_from_yaml(item_total_count_conf)),
         CardWidget.set(**get_data_from_yaml(read_capacity_total_conf)),
         CardWidget.set(**get_data_from_yaml(write_capacity_total_conf)),
-        ChartWidget.set(**get_data_from_yaml(table_count_per_region_conf)),
-        ChartWidget.set(**get_data_from_yaml(table_count_per_account_conf)),
+        ChartWidget.set(**get_data_from_yaml(table_count_by_region_conf)),
+        ChartWidget.set(**get_data_from_yaml(table_count_by_account_conf)),
         ChartWidget.set(**get_data_from_yaml(top_table_size_conf)),
     ]
 )

@@ -7,8 +7,9 @@ from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, Cl
 
 current_dir = os.path.abspath(os.path.dirname(__file__))
 
-key_count_per_region_conf = os.path.join(current_dir, 'widget/key_count_per_region.yaml')
-key_count_per_account_conf = os.path.join(current_dir, 'widget/key_count_per_account.yaml')
+total_count_conf = os.path.join(current_dir, 'widget/total_count.yaml')
+count_by_region_conf = os.path.join(current_dir, 'widget/count_by_region.yaml')
+count_by_account_conf = os.path.join(current_dir, 'widget/count_by_account.yaml')
 
 cst_kms_cluster = CloudServiceTypeResource()
 cst_kms_cluster.name = 'Key'
@@ -99,8 +100,9 @@ cst_kms_cluster._metadata = CloudServiceTypeMeta.set_meta(
                         })
     ],
     widget=[
-        ChartWidget.set(**get_data_from_yaml(key_count_per_region_conf)),
-        ChartWidget.set(**get_data_from_yaml(key_count_per_account_conf))
+        CardWidget.set(**get_data_from_yaml(total_count_conf)),
+        ChartWidget.set(**get_data_from_yaml(count_by_region_conf)),
+        ChartWidget.set(**get_data_from_yaml(count_by_account_conf))
     ]
 )
 

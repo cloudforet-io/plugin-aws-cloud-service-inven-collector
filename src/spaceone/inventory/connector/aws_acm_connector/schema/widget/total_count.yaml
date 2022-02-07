@@ -1,0 +1,11 @@
+---
+cloud_service_group: CertificateManager
+cloud_service_type: Certificate
+name: Total Count
+query:
+  aggregate:
+    - group:
+        fields:
+          - name: value
+            operator: count
+

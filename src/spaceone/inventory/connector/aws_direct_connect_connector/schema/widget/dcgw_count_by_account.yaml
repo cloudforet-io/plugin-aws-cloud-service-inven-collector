@@ -1,0 +1,15 @@
+---
+cloud_service_group: DirectConnect
+cloud_service_type: DirectConnectGateway
+name: Count by Account
+query:
+  aggregate:
+    - group:
+        keys:
+          - name: name
+            key: account
+        fields:
+          - name: value
+            operator: count
+options:
+  chart_type: DONUT

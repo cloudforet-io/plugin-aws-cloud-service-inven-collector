@@ -1,0 +1,19 @@
+---
+cloud_service_group: SQS
+cloud_service_type: Queue
+name: Queue Maximum Message Total Size by Account
+query:
+  aggregate:
+    - group:
+        keys:
+          - name: name
+            key: account
+        fields:
+          - name: value
+            key: data.maximum_message_size
+            operator: sum
+options:
+  chart_type: DONUT
+  value_options:
+    key: value
+    type: size

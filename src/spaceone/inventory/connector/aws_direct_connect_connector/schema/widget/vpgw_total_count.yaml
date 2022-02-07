@@ -1,0 +1,10 @@
+---
+cloud_service_group: DirectConnect
+cloud_service_type: VirtualPrivateGateway
+name: Total Count
+query:
+  aggregate:
+    - group:
+        fields:
+          - name: value
+            operator: count
