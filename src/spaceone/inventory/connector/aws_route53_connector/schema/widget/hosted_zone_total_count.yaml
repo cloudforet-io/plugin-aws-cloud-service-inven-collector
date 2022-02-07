@@ -1,15 +1,10 @@
 ---
 cloud_service_group: Route53
 cloud_service_type: HostedZone
-name: Hosted Zone per Account
+name: Hosted Zone Total Count
 query:
   aggregate:
     - group:
-        keys:
-          - name: name
-            key: account
         fields:
           - name: value
             operator: count
-options:
-  chart_type: DONUT

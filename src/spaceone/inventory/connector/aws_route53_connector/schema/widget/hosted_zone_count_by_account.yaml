@@ -1,13 +1,13 @@
 ---
 cloud_service_group: Route53
 cloud_service_type: HostedZone
-name: Record Set per Type
+name: Hosted Zone Count by Account
 query:
   aggregate:
     - group:
         keys:
           - name: name
-            key: instance_type
+            key: account
         fields:
           - name: value
             operator: count

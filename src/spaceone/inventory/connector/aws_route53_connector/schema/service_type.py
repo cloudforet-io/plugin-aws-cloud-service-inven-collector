@@ -6,10 +6,11 @@ from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, Cl
 
 current_dir = os.path.abspath(os.path.dirname(__file__))
 
+hosted_zone_total_count_conf = os.path.join(current_dir, 'widget/hosted_zone_total_count.yaml')
 record_set_total_count_conf = os.path.join(current_dir, 'widget/record_set_total_count.yaml')
-hosted_zone_count_per_account_conf = os.path.join(current_dir, 'widget/hosted_zone_count_per_account.yaml')
-hosted_zone_count_per_type_conf = os.path.join(current_dir, 'widget/hosted_zone_count_per_type.yaml')
-record_set_per_account_conf = os.path.join(current_dir, 'widget/record_set_per_account.yaml')
+hosted_zone_count_by_account_conf = os.path.join(current_dir, 'widget/hosted_zone_count_by_account.yaml')
+hosted_zone_count_by_type_conf = os.path.join(current_dir, 'widget/hosted_zone_count_by_type.yaml')
+record_set_by_account_conf = os.path.join(current_dir, 'widget/record_set_by_account.yaml')
 
 cst_hostedzone = CloudServiceTypeResource()
 cst_hostedzone.name = 'HostedZone'
@@ -60,10 +61,11 @@ cst_hostedzone._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Record Name', key='data.record_sets.name')
     ],
     widget=[
+        CardWidget.set(**get_data_from_yaml(hosted_zone_total_count_conf)),
         CardWidget.set(**get_data_from_yaml(record_set_total_count_conf)),
-        ChartWidget.set(**get_data_from_yaml(hosted_zone_count_per_account_conf)),
-        ChartWidget.set(**get_data_from_yaml(hosted_zone_count_per_type_conf)),
-        ChartWidget.set(**get_data_from_yaml(record_set_per_account_conf))
+        ChartWidget.set(**get_data_from_yaml(hosted_zone_count_by_account_conf)),
+        ChartWidget.set(**get_data_from_yaml(hosted_zone_count_by_type_conf)),
+        ChartWidget.set(**get_data_from_yaml(record_set_by_account_conf))
     ]
 )
 

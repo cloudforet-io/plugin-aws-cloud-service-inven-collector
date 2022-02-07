@@ -1,7 +1,7 @@
 ---
 cloud_service_group: Route53
 cloud_service_type: HostedZone
-name: Record Set per Account
+name: Record Set Count by Account
 query:
   aggregate:
     - group:
