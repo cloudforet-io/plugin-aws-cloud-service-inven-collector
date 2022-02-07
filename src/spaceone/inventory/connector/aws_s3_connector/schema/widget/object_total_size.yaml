@@ -1,7 +1,7 @@
 ---
 cloud_service_group: S3
 cloud_service_type: Bucket
-name: Bucket Total Size
+name: Object Total Size
 query:
   aggregate:
     - group:

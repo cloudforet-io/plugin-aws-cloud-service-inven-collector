@@ -1,19 +1,19 @@
 ---
 cloud_service_group: S3
 cloud_service_type: Bucket
-name: Object Total Size per Region
+name: Object Total Size by Account
 query:
   aggregate:
     - group:
         keys:
           - name: name
-            key: region_code
+            key: account
         fields:
           - name: value
             key: instance_size
             operator: sum
 options:
-  chart_type: COLUMN
+  chart_type: DONUT
   value_options:
     key: value
     type: size

@@ -1,7 +1,7 @@
 ---
 cloud_service_group: S3
 cloud_service_type: Bucket
-name: Object count per Region
+name: Object Count by Region
 query:
   aggregate:
     - group:
@@ -14,3 +14,8 @@ query:
             operator: sum
 options:
   chart_type: COLUMN
+  name_options:
+    key: name
+    reference:
+      resource_type: "inventory.Region"
+      reference_key: region_code

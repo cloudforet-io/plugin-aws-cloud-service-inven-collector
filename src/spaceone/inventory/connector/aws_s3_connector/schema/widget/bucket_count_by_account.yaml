@@ -1,7 +1,7 @@
 ---
 cloud_service_group: S3
 cloud_service_type: Bucket
-name: Object count per Account
+name: Bucket Count by Account
 query:
   aggregate:
     - group:
@@ -10,7 +10,6 @@ query:
             key: account
         fields:
           - name: value
-            key: data.object_count
-            operator: sum
+            operator: count
 options:
   chart_type: DONUT

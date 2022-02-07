@@ -1,12 +1,10 @@
 ---
 cloud_service_group: S3
 cloud_service_type: Bucket
-name: Object Total Count
+name: Bucket Total Count
 query:
   aggregate:
     - group:
         fields:
           - name: value
-            key: data.object_count
-            operator: sum
-
+            operator: count
