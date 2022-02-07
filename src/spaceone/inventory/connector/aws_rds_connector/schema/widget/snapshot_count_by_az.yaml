@@ -1,15 +1,15 @@
 ---
 cloud_service_group: RDS
-cloud_service_type: Instance
-name: Instance Count per Instance Type
+cloud_service_type: Snapshot
+name: Count by Availability Zone
 query:
   aggregate:
     - group:
         keys:
           - name: name
-            key: data.instance.db_instance_class
+            key: data.availability_zone
         fields:
           - name: value
             operator: count
 options:
-  chart_type: TREEMAP
+  chart_type: COLUMN

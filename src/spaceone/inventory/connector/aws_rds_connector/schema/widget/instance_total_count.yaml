@@ -1,15 +1,10 @@
 ---
 cloud_service_group: RDS
 cloud_service_type: Instance
-name: Instance per Account
+name: Total Count
 query:
   aggregate:
     - group:
-        keys:
-          - name: name
-            key: account
         fields:
           - name: value
             operator: count
-options:
-  chart_type: DONUT

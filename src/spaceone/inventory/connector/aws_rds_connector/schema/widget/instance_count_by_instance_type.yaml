@@ -1,15 +1,15 @@
 ---
 cloud_service_group: RDS
-cloud_service_type: Snapshot
-name: Snapshot per Account
+cloud_service_type: Instance
+name: Count by Instance Type
 query:
   aggregate:
     - group:
         keys:
           - name: name
-            key: account
+            key: data.instance.db_instance_class
         fields:
           - name: value
             operator: count
 options:
-  chart_type: DONUT
+  chart_type: TREEMAP

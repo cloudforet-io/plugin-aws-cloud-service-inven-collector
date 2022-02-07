@@ -1,7 +1,7 @@
 ---
 cloud_service_group: RDS
 cloud_service_type: Snapshot
-name: Snapshot Total Size
+name: Total Size
 query:
   aggregate:
     - group:
