@@ -168,10 +168,10 @@ cst_snapshot._metadata = CloudServiceTypeMeta.set_meta(
     widget=[
         CardWidget.set(**get_data_from_yaml(snapshot_total_count_conf)),
         CardWidget.set(**get_data_from_yaml(snapshot_total_size_conf)),
-        ChartWidget.set(**get_data_from_yaml(snapshot_total_count_per_region_conf)),
-        ChartWidget.set(**get_data_from_yaml(snapshot_total_count_per_account_conf)),
-        ChartWidget.set(**get_data_from_yaml(snapshot_total_size_per_region_conf)),
-        ChartWidget.set(**get_data_from_yaml(snapshot_total_size_per_account_conf))
+        ChartWidget.set(**get_data_from_yaml(snapshot_total_count_by_region_conf)),
+        ChartWidget.set(**get_data_from_yaml(snapshot_total_count_by_account_conf)),
+        ChartWidget.set(**get_data_from_yaml(snapshot_total_size_by_region_conf)),
+        ChartWidget.set(**get_data_from_yaml(snapshot_total_size_by_account_conf))
     ]
 )
 

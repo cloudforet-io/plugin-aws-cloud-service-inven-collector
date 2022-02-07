@@ -58,7 +58,7 @@ cst_sg._metadata = CloudServiceTypeMeta.set_meta(
 """
 AMI
 """
-ami_total_count_conf = os.path.join(current_dir, 'widget/ami_total_count_conf.yaml')
+ami_total_count_conf = os.path.join(current_dir, 'widget/ami_total_count.yaml')
 ami_count_by_region_conf = os.path.join(current_dir, 'widget/ami_count_by_region.yaml')
 ami_count_by_account_conf = os.path.join(current_dir, 'widget/ami_count_by_account.yaml')
 

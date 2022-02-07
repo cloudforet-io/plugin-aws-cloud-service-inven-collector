@@ -80,12 +80,12 @@ cst_table._metadata = CloudServiceTypeMeta.set_meta(
     ],
     widget=[
         CardWidget.set(**get_data_from_yaml(total_count_conf)),
-        CardWidget.set(**get_data_from_yaml(storage_total_size_count_conf)),
+        CardWidget.set(**get_data_from_yaml(storage_total_size_conf)),
         CardWidget.set(**get_data_from_yaml(item_total_count_conf)),
         CardWidget.set(**get_data_from_yaml(read_capacity_total_conf)),
         CardWidget.set(**get_data_from_yaml(write_capacity_total_conf)),
-        ChartWidget.set(**get_data_from_yaml(table_count_per_region_conf)),
-        ChartWidget.set(**get_data_from_yaml(table_count_per_account_conf)),
+        ChartWidget.set(**get_data_from_yaml(table_count_by_region_conf)),
+        ChartWidget.set(**get_data_from_yaml(table_count_by_account_conf)),
         ChartWidget.set(**get_data_from_yaml(top_table_size_conf)),
     ]
 )
