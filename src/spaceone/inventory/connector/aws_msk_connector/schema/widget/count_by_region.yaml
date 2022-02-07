@@ -1,7 +1,7 @@
 ---
 cloud_service_group: MSK
 cloud_service_type: Cluster
-name: Cluster per Region
+name: Count by Region
 query:
   aggregate:
     - group:
@@ -13,3 +13,8 @@ query:
             operator: count
 options:
   chart_type: COLUMN
+  name_options:
+    key: name
+    reference:
+      resource_type: "inventory.Region"
+      reference_key: region_code
