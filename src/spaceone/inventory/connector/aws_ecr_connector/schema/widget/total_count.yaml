@@ -1,0 +1,10 @@
+---
+cloud_service_group: ECR
+cloud_service_type: Repository
+name: Repository Total Count
+query:
+  aggregate:
+    - group:
+        fields:
+          - name: value
+            operator: count

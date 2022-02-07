@@ -1,7 +1,7 @@
 ---
-cloud_service_group: Repository
-cloud_service_type: ECR
-name: Top Image Total Size per Repository
+cloud_service_group: ECR
+cloud_service_type: Repository
+name: Image Total Size by Repository
 query:
   aggregate:
     - unwind:

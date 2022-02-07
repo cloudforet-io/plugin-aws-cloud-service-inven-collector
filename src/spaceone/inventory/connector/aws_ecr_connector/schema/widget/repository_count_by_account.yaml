@@ -1,15 +1,15 @@
 ---
-cloud_service_group: Repository
-cloud_service_type: ECR
-name: Repository per Region
+cloud_service_group: ECR
+cloud_service_type: Repository
+name: Repository by Account
 query:
   aggregate:
     - group:
         keys:
           - name: name
-            key: region_code
+            key: account
         fields:
           - name: value
             operator: count
 options:
-  chart_type: COLUMN
+  chart_type: DONUT
