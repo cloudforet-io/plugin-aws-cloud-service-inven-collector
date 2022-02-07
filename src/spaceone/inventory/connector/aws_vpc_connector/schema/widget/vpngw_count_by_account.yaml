@@ -1,7 +1,7 @@
 ---
 cloud_service_group: VPC
-cloud_service_type: CustomerGateway
-name: Customer Gateway count per Account
+cloud_service_type: VPNGateway
+name: Count by Account
 query:
   aggregate:
     - group:

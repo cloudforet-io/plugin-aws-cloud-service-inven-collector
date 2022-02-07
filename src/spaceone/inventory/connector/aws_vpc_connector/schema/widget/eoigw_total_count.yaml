@@ -1,7 +1,7 @@
 ---
 cloud_service_group: VPC
-cloud_service_type: VPC
-name: VPC count per Account
+cloud_service_type: EgressOnlyInternetGateway
+name: Total Count
 query:
   aggregate:
     - group:
@@ -11,5 +11,3 @@ query:
         fields:
           - name: value
             operator: count
-options:
-  chart_type: DONUT

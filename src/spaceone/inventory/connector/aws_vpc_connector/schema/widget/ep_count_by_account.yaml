@@ -1,15 +1,15 @@
 ---
 cloud_service_group: VPC
-cloud_service_type: InternetGateway
-name: Internet Gateway count per Region
+cloud_service_type: Endpoint
+name: Count by Account
 query:
   aggregate:
     - group:
         keys:
           - name: name
-            key: region_code
+            key: account
         fields:
           - name: value
             operator: count
 options:
-  chart_type: COLUMN
+  chart_type: DONUT

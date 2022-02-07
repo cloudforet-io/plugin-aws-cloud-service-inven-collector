@@ -1,7 +1,7 @@
 ---
 cloud_service_group: VPC
-cloud_service_type: PeeringConnection
-name: Peering Connection count per Account
+cloud_service_type: InternetGateway
+name: Count by Account
 query:
   aggregate:
     - group:

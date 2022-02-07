@@ -1,7 +1,7 @@
 ---
 cloud_service_group: VPC
-cloud_service_type: EgressOnlyInternetGateway
-name: Egress Only Internet Gateway count per Account
+cloud_service_type: CustomerGateway
+name: Count by Account
 query:
   aggregate:
     - group:

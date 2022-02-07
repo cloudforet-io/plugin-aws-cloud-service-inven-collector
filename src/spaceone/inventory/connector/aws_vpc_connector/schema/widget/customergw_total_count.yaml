@@ -1,15 +1,13 @@
 ---
 cloud_service_group: VPC
 cloud_service_type: CustomerGateway
-name: Customer Gateway count per Region
+name: Total Count
 query:
   aggregate:
     - group:
         keys:
           - name: name
-            key: region_code
+            key: account
         fields:
           - name: value
             operator: count
-options:
-  chart_type: COLUMN

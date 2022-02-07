@@ -1,15 +1,13 @@
 ---
 cloud_service_group: VPC
-cloud_service_type: VPNGateway
-name: VPN Gateway count per Region
+cloud_service_type: VPNConnection
+name: Total Count
 query:
   aggregate:
     - group:
         keys:
           - name: name
-            key: region_code
+            key: account
         fields:
           - name: value
             operator: count
-options:
-  chart_type: COLUMN
