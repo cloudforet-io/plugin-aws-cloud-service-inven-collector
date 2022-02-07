@@ -8,13 +8,14 @@ from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, Cl
 
 current_dir = os.path.abspath(os.path.dirname(__file__))
 
+cluster_total_count_conf = os.path.join(current_dir, 'widget/cluster_total_count.yaml')
 node_total_count_conf = os.path.join(current_dir, 'widget/node_total_count.yaml')
 snapshot_total_count_conf = os.path.join(current_dir, 'widget/snapshot_total_count.yaml')
-cluster_count_per_region_conf = os.path.join(current_dir, 'widget/cluster_count_per_region.yaml')
-cluster_count_per_account_conf = os.path.join(current_dir, 'widget/cluster_count_per_account.yaml')
-node_count_per_account_conf = os.path.join(current_dir, 'widget/node_count_per_account.yaml')
-snapshot_count_per_account_conf = os.path.join(current_dir, 'widget/snapshot_count_per_account.yaml')
-snapshot_total_size_per_account_conf = os.path.join(current_dir, 'widget/snapshot_total_size_per_account.yaml')
+cluster_count_by_region_conf = os.path.join(current_dir, 'widget/cluster_count_by_region.yaml')
+cluster_count_by_account_conf = os.path.join(current_dir, 'widget/cluster_count_by_account.yaml')
+node_count_by_account_conf = os.path.join(current_dir, 'widget/node_count_by_account.yaml')
+snapshot_count_by_account_conf = os.path.join(current_dir, 'widget/snapshot_count_by_account.yaml')
+snapshot_total_size_by_account_conf = os.path.join(current_dir, 'widget/snapshot_total_size_by_account.yaml')
 
 cst_redshift_cluster = CloudServiceTypeResource()
 cst_redshift_cluster.name = 'Cluster'
@@ -144,13 +145,14 @@ cst_redshift_cluster._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Node Counts', key='data.number_of_nodes', data_type='integer'),
     ],
     widget=[
+        CardWidget.set(**get_data_from_yaml(cluster_total_count_conf)),
         CardWidget.set(**get_data_from_yaml(node_total_count_conf)),
         CardWidget.set(**get_data_from_yaml(snapshot_total_count_conf)),
-        ChartWidget.set(**get_data_from_yaml(cluster_count_per_region_conf)),
-        ChartWidget.set(**get_data_from_yaml(cluster_count_per_account_conf)),
-        ChartWidget.set(**get_data_from_yaml(node_count_per_account_conf)),
-        ChartWidget.set(**get_data_from_yaml(snapshot_count_per_account_conf)),
-        ChartWidget.set(**get_data_from_yaml(snapshot_total_size_per_account_conf)),
+        ChartWidget.set(**get_data_from_yaml(cluster_count_by_region_conf)),
+        ChartWidget.set(**get_data_from_yaml(cluster_count_by_account_conf)),
+        ChartWidget.set(**get_data_from_yaml(node_count_by_account_conf)),
+        ChartWidget.set(**get_data_from_yaml(snapshot_count_by_account_conf)),
+        ChartWidget.set(**get_data_from_yaml(snapshot_total_size_by_account_conf)),
     ]
 )
 

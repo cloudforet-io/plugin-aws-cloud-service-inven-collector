@@ -1,7 +1,7 @@
 ---
 cloud_service_group: Redshift
 cloud_service_type: Cluster
-name: Cluster per Account
+name: Cluster Count by Account
 query:
   aggregate:
     - group:
