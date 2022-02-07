@@ -1,7 +1,7 @@
 ---
 cloud_service_group: EFS
 cloud_service_type: FileSystem
-name: Top Size per File System
+name: Size by File System
 query:
   aggregate:
     - group:

@@ -8,12 +8,13 @@ from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, Cl
 
 current_dir = os.path.abspath(os.path.dirname(__file__))
 
+total_count_conf = os.path.join(current_dir, 'widget/total_count.yaml')
 filesystem_total_size_conf = os.path.join(current_dir, 'widget/filesystem_total_size.yaml')
 mount_target_total_count_conf = os.path.join(current_dir, 'widget/mount_target_total_count.yaml')
-filesystem_count_per_region_conf = os.path.join(current_dir, 'widget/filesystem_count_per_region.yaml')
-filesystem_count_per_account_conf = os.path.join(current_dir, 'widget/filesystem_count_per_account.yaml')
-mount_target_count_per_az_conf = os.path.join(current_dir, 'widget/mount_target_count_per_az.yaml')
-top_size_per_filesystem_conf = os.path.join(current_dir, 'widget/top_size_per_filesystem.yaml')
+filesystem_count_by_region_conf = os.path.join(current_dir, 'widget/filesystem_count_by_region.yaml')
+filesystem_count_by_account_conf = os.path.join(current_dir, 'widget/filesystem_count_by_account.yaml')
+mount_target_count_by_az_conf = os.path.join(current_dir, 'widget/mount_target_count_by_az.yaml')
+size_by_filesystem_conf = os.path.join(current_dir, 'widget/size_by_filesystem.yaml')
 
 cst_filesystem = CloudServiceTypeResource()
 cst_filesystem.name = 'FileSystem'
@@ -103,12 +104,13 @@ cst_filesystem._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Security Group ID', key='data.mount_targets.security_groups')
     ],
     widget=[
+        CardWidget.set(**get_data_from_yaml(total_count_conf)),
         CardWidget.set(**get_data_from_yaml(filesystem_total_size_conf)),
         CardWidget.set(**get_data_from_yaml(mount_target_total_count_conf)),
-        ChartWidget.set(**get_data_from_yaml(filesystem_count_per_region_conf)),
-        ChartWidget.set(**get_data_from_yaml(filesystem_count_per_account_conf)),
-        ChartWidget.set(**get_data_from_yaml(mount_target_count_per_az_conf)),
-        ChartWidget.set(**get_data_from_yaml(top_size_per_filesystem_conf)),
+        ChartWidget.set(**get_data_from_yaml(filesystem_count_by_region_conf)),
+        ChartWidget.set(**get_data_from_yaml(filesystem_count_by_account_conf)),
+        ChartWidget.set(**get_data_from_yaml(mount_target_count_by_az_conf)),
+        ChartWidget.set(**get_data_from_yaml(size_by_filesystem_conf)),
     ]
 )
 

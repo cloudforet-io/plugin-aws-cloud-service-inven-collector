@@ -1,7 +1,7 @@
 ---
 cloud_service_group: EFS
 cloud_service_type: FileSystem
-name: Mount Target Count per Availability Zone
+name: Mount Target Count by Availability Zone
 query:
   aggregate:
     - unwind:
