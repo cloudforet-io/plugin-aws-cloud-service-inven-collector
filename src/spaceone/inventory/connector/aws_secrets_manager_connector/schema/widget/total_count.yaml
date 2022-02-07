@@ -1,0 +1,10 @@
+---
+cloud_service_group: SecretsManager
+cloud_service_type: Secret
+name: Total Count
+query:
+  aggregate:
+    - group:
+        fields:
+          - name: value
+            operator: count
