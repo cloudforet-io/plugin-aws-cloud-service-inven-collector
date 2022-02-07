@@ -1,7 +1,7 @@
 ---
 cloud_service_group: Lambda
 cloud_service_type: Function
-name: Function Total Count per Runtime
+name: Count by Runtime
 query:
   aggregate:
     - group:

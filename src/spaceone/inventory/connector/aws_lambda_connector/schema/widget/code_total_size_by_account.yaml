@@ -1,7 +1,7 @@
 ---
 cloud_service_group: Lambda
 cloud_service_type: Function
-name: Function per Account
+name: Code Total Size by Account
 query:
   aggregate:
     - group:
@@ -10,6 +10,10 @@ query:
             key: account
         fields:
           - name: value
-            operator: count
+            key: instance_size
+            operator: sum
 options:
   chart_type: DONUT
+  value_options:
+    key: value
+    type: size

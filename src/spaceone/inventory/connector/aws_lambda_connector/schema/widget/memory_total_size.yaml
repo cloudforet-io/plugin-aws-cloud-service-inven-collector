@@ -1,19 +1,18 @@
 ---
 cloud_service_group: Lambda
 cloud_service_type: Function
-name: Function Code Total Size per Account
+name: Memory Total Size
 query:
   aggregate:
     - group:
-        keys:
-          - name: name
-            key: account
         fields:
           - name: value
-            key: instance_size
+            key: data.memory_size
             operator: sum
 options:
-  chart_type: DONUT
   value_options:
     key: value
     type: size
+    options:
+      source_unit: MB
+      default: 0

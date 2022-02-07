@@ -10,13 +10,14 @@ current_dir = os.path.abspath(os.path.dirname(__file__))
 """
 FUNCTION
 """
-function_code_total_size_conf = os.path.join(current_dir, 'widget/function_code_total_size.yaml')
-function_memory_total_size_conf = os.path.join(current_dir, 'widget/function_memory_total_size.yaml')
-function_count_per_region_conf = os.path.join(current_dir, 'widget/function_count_per_region.yaml')
-function_count_per_account_conf = os.path.join(current_dir, 'widget/function_count_per_account.yaml')
-function_code_total_size_per_account_conf = os.path.join(current_dir, 'widget/function_code_total_size_per_account.yaml')
-function_memory_total_size_per_account_conf = os.path.join(current_dir, 'widget/function_memory_total_size_per_account.yaml')
-function_total_count_per_runtime_conf = os.path.join(current_dir, 'widget/function_total_count_per_runtime.yaml')
+total_count_conf = os.path.join(current_dir, 'widget/total_count.yaml')
+code_total_size_conf = os.path.join(current_dir, 'widget/code_total_size.yaml')
+memory_total_size_conf = os.path.join(current_dir, 'widget/memory_total_size.yaml')
+count_by_region_conf = os.path.join(current_dir, 'widget/count_by_region.yaml')
+count_by_account_conf = os.path.join(current_dir, 'widget/count_by_account.yaml')
+code_total_size_by_account_conf = os.path.join(current_dir, 'widget/code_total_size_by_account.yaml')
+memory_total_size_by_account_conf = os.path.join(current_dir, 'widget/memory_total_size_by_account.yaml')
+count_by_runtime_conf = os.path.join(current_dir, 'widget/count_by_runtime.yaml')
 
 cst_function = CloudServiceTypeResource()
 cst_function.name = 'Function'
@@ -114,13 +115,14 @@ cst_function._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Last Modified Time', key='data.last_modified', data_type='datetime'),
     ],
     widget=[
-        CardWidget.set(**get_data_from_yaml(function_code_total_size_conf)),
-        CardWidget.set(**get_data_from_yaml(function_memory_total_size_conf)),
-        ChartWidget.set(**get_data_from_yaml(function_count_per_region_conf)),
-        ChartWidget.set(**get_data_from_yaml(function_count_per_account_conf)),
-        ChartWidget.set(**get_data_from_yaml(function_code_total_size_per_account_conf)),
-        ChartWidget.set(**get_data_from_yaml(function_memory_total_size_per_account_conf)),
-        ChartWidget.set(**get_data_from_yaml(function_total_count_per_runtime_conf)),
+        CardWidget.set(**get_data_from_yaml(total_count_conf)),
+        CardWidget.set(**get_data_from_yaml(code_total_size_conf)),
+        CardWidget.set(**get_data_from_yaml(memory_total_size_conf)),
+        ChartWidget.set(**get_data_from_yaml(count_by_runtime_conf)),
+        ChartWidget.set(**get_data_from_yaml(count_by_region_conf)),
+        ChartWidget.set(**get_data_from_yaml(count_by_account_conf)),
+        ChartWidget.set(**get_data_from_yaml(code_total_size_by_account_conf)),
+        ChartWidget.set(**get_data_from_yaml(memory_total_size_by_account_conf)),
     ]
 )
 

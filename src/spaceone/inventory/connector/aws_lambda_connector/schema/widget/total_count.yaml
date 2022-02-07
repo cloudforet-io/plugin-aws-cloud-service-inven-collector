@@ -1,15 +1,10 @@
 ---
 cloud_service_group: Lambda
 cloud_service_type: Function
-name: Function per Region
+name: Total Count
 query:
   aggregate:
     - group:
-        keys:
-          - name: name
-            key: region_code
         fields:
           - name: value
             operator: count
-options:
-  chart_type: COLUMN

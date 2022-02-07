@@ -1,7 +1,7 @@
 ---
 cloud_service_group: Lambda
 cloud_service_type: Function
-name: Function Memory Total Size per Account
+name: Memory Total Size by Account
 query:
   aggregate:
     - group:
