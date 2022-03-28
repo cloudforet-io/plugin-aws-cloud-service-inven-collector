@@ -1,0 +1,15 @@
+---
+cloud_service_group: Lightsail
+cloud_service_type: Instance
+name: Count by Type
+query:
+  aggregate:
+    - group:
+        keys:
+          - name: name
+            key: data.bundle_id
+        fields:
+          - name: value
+            operator: count
+options:
+  chart_type: TREEMAP
