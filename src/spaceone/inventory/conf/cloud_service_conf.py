@@ -36,5 +36,6 @@ CLOUD_SERVICE_GROUP_MAP = {
     'ACM': 'ACMConnectorManager',
     'KinesisDataStream': 'KinesisDataStreamConnectorManager',
     'MSK': 'MSKConnectorManager',
-    'KinesisFirehose': 'KinesisFirehoseConnectorManager'
+    'KinesisFirehose': 'KinesisFirehoseConnectorManager',
+    'Lightsail': 'LightsailConnectorManager'
 }
