@@ -29,3 +29,4 @@ from spaceone.inventory.connector.aws_acm_connector.connector import ACMConnecto
 from spaceone.inventory.connector.aws_kinesis_data_stream_connector.connector import KinesisDataStreamConnector
 from spaceone.inventory.connector.aws_msk_connector.connector import MSKConnector
 from spaceone.inventory.connector.aws_kinesis_firehose_connector.connector import KinesisFirehoseConnector
+from spaceone.inventory.connector.aws_lightsail_connector.connector import LightsailConnector
