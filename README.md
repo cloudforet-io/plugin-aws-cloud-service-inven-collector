@@ -1,6 +1,15 @@
-# plugin-aws-cloud-service-inven-collector
+<h1 align="center">AWS Cloud Service Collector</h1>  
 
-![AWS Cloud Services](https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/aws-cloudservice.svg)
+<br/>  
+<div align="center" style="display:flex;">  
+  <img width="245" src="https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/aws-cloudservice.svg">
+  <p> 
+    <br>
+    <img alt="Version"  src="https://img.shields.io/badge/version-1.13.5-blue.svg?cacheSeconds=2592000"  />    
+    <a href="https://www.apache.org/licenses/LICENSE-2.0"  target="_blank"><img alt="License: Apache 2.0"  src="https://img.shields.io/badge/License-Apache 2.0-yellow.svg" /></a> 
+  </p> 
+</div>    
+
 **Plugin to collect AWS Cloud Services**
 
 > SpaceONE's [plugin-aws-cloud-service-inven-collector](https://github.com/spaceone-dev/plugin-aws-cloud-services) is a convenient tool to get cloud service data from AWS.
