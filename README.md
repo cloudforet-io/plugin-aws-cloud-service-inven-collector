@@ -156,37 +156,39 @@ The following is a list of services being collected and service code information
 
 |No.|Service name|Service Code|
 |---|------|---|
-|1|AWS Certifcate Manager|acm|
-|2|API Gateway (REST API)|apigateway|
-|3|API Gateway V2 (Websocket)|apigatewayv2|
-|4|Auto Scaling Group|autoscaling|
-|5|CloudFront|cloudfront|
-|6|CloudTrail|cloudtrail|
-|7|Direct Connect|directconnect|
-|8|DocumentDB|docdb|
-|9|DynamoDB|dynamodb|
-|10|Elastic Block Store (EBS)|ebs|
-|11|EC2 (SecurityGroup, AMI, EIP)|ec2|
-|12|Elastic Container Registry (ECR)|ecr|
-|13|Elastic Container Service (ECS)|ecs|
-|14|Elastic File System (EFS)|efs|
-|15|Elastic Kubernetes Service (EKS)|eks|
-|16|Elasticache|elasticache|
-|17|Elastic Load Balancer (ELB)|elbv2|
-|18|Identity Access Management (IAM)|iam|
-|19|Kinesis Data Stream|kinesis|
-|20|Kinesis Firehose|firehose|
-|21|Key Management System (KMS)|kms|
-|22|Lambda|lambda|
-|21|Managed Streaming for Apache Kafka (MSK)|msk|
-|22|Relational Database Service (RDS)|rds|
-|23|Redshift|redshift|
-|24|Route53|route53|
-|25|Simple Cloud Storage (S3)|s3|
-|26|Secrets Manager|secretsmanager|
-|27|Simple Notification Service (SNS)|sns|
-|28|Simple Queue Service (SQS)|sqs|
-|29|Virtual Private Cloud (VPC)|vpc|
+|1|AWS Certifcate Manager|AWSCertificateManager|
+|2|API Gateway (REST API)|AmazonApiGateway|
+|3|API Gateway V2 (Websocket)|AmazonApiGateway|
+|4|Auto Scaling Group|AmazonEC2|
+|5|CloudFront|AmazonCloudFront|
+|6|CloudTrail|AWSCloudTrail|
+|7|Direct Connect|AWSDirectConnect|
+|8|DocumentDB|AmazonDocDB|
+|9|DynamoDB|AmazonDynamoDB|
+|10|Elastic Block Store (EBS)|AmazonEC2|
+|11|EC2 (SecurityGroup, AMI, EIP)|AmazonEC2|
+|12|Elastic Container Registry (ECR)|AmazonECR|
+|13|Elastic Container Service (ECS)|AmazonECS|
+|14|Elastic File System (EFS)|AmazonEFS|
+|15|Elastic Kubernetes Service (EKS)|AmazonEKS|
+|16|Elasticache|AmazonElastiCache|
+|17|Elastic Load Balancer (ELB)|AWSELB|
+|18|Identity Access Management (IAM)|-|
+|19|Kinesis Data Stream|AmazonKinesis|
+|20|Kinesis Firehose|AmazonKinesisFirehose|
+|21|Key Management System (KMS)|awskms|
+|22|Lambda|AWSLambda|
+|21|Managed Streaming for Apache Kafka (MSK)|AmazonMSK|
+|22|Relational Database Service (RDS)|AmazonRDS|
+|23|Redshift|AmazonRedshift|
+|24|Route53|AmazonRoute53|
+|25|Simple Cloud Storage (S3)|AmazonS3|
+|26|Secrets Manager|AWSSecretsManager|
+|27|Simple Notification Service (SNS)|AmazonSNS|
+|28|Simple Queue Service (SQS)|AWSQueueService|
+|29|Virtual Private Cloud (VPC)|AmazonVPC|
+|30|Lightsail|AmazonLightsail|
+
 
 ---
 
