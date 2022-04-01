@@ -349,6 +349,9 @@ Update plugin through spacectl command with the created yaml file.
 
 ## Release Note
 
+### Ver 1.13.5
+* Add Dynamic Widget for Cloud Service Statistics
+
 ### Ver 1.13.1-3
 * Fix some bugs..!
 
