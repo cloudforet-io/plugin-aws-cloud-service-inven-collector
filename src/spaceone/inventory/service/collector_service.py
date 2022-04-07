@@ -54,10 +54,6 @@ class CollectorService(BaseService):
 
         return params
 
-    def _match_execute_manager(self, cloud_service_groups):
-        return [CLOUD_SERVICE_GROUP_MAP[_cloud_service_group] for _cloud_service_group in cloud_service_groups
-                if _cloud_service_group in CLOUD_SERVICE_GROUP_MAP]
-
     def _get_target_execute_manger(self, options):
         if 'cloud_service_types' in options:
             execute_managers = self._match_execute_manager(options['cloud_service_types'])
@@ -122,6 +118,19 @@ class CollectorService(BaseService):
         for resource_region in resource_regions:
             yield resource_region
 
+    def get_region_from_result(self, region_code):
+        region_resource = self.match_region_info(region_code)
+
+        if region_resource:
+            return RegionResponse({'resource': region_resource})
+
+        return None
+
+    @staticmethod
+    def _match_execute_manager(cloud_service_groups):
+        return [CLOUD_SERVICE_GROUP_MAP[_cloud_service_group] for _cloud_service_group in cloud_service_groups
+                if _cloud_service_group in CLOUD_SERVICE_GROUP_MAP]
+
     @staticmethod
     def get_account_id(secret_data, region=DEFAULT_REGION):
         _session = get_session(secret_data, region)
@@ -134,14 +143,6 @@ class CollectorService(BaseService):
         ec2_client = _session.client('ec2')
         return list(map(lambda region_info: region_info.get('RegionName'),
                         ec2_client.describe_regions().get('Regions')))
-
-    def get_region_from_result(self, region_code):
-        region_resource = self.match_region_info(region_code)
-
-        if region_resource:
-            return RegionResponse({'resource': region_resource})
-
-        return None
 
     @staticmethod
     def match_region_info(region_name):
