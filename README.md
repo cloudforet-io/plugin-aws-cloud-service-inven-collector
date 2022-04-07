@@ -16,7 +16,7 @@
 
 
 Find us also at [Dockerhub](https://hub.docker.com/repository/docker/spaceone/plugin-aws-cloud-service-inven-collector)
-> Latest stable version : 1.13.5
+> Latest stable version : 1.13.7
 
 Please contact us if you need any further information. (<support@spaceone.dev>)
 
@@ -342,14 +342,32 @@ options:
 
 Update plugin through spacectl command with the created yaml file.
 
-<pre><code>
-> spacectl exec update_plugin inventory.Collector -f update_collector.yaml
-</code></pre>
+### Service Code Mapper : Convert service code in Cloud Service Type what you want.
 
+If cloud_service_types is added in options, You can replace the service code specified in the cloud service type.
+The service code set by default can be checked in the Service List item of this document.
+
+The `service_code_mappers` items that can be specified are as follows.
+
+<pre>
+<code>
+{
+    "service_code_mappers": {
+        "AmazonEC2": "Amazon Elastic Computing",
+        "AmazonRDS": "Amazon Relatioin Database",
+    }
+}
+</code>
+</pre>
+
+---
 
 ## Release Note
 
-### Ver 1.13.1-3
+### Ver 1.13.7
+* Add feature to convert service_code to what you want using options ([#417](https://github.com/spaceone-dev/plugin-aws-cloud-service-inven-collector/issues/417))
+
+### Ver 1.13.1-6
 * Fix some bugs..!
 
 ### Ver 1.13
