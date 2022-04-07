@@ -17,6 +17,7 @@ class RedshiftConnector(SchematicAWSConnector):
     service_name = 'redshift'
     cloud_service_group = 'Redshift'
     cloud_service_type = 'Cluster'
+    cloud_service_types = CLOUD_SERVICE_TYPES
 
     def get_resources(self) -> List[ClusterResource]:
         _LOGGER.debug("[get_resources] START: Redshift")
@@ -29,9 +30,7 @@ class RedshiftConnector(SchematicAWSConnector):
             'response_schema': ClusterResponse
         }
 
-        # init cloud service type
-        for cst in CLOUD_SERVICE_TYPES:
-            resources.append(cst)
+        resources.extend(self.set_service_code_in_cloud_service_type())
 
         for region_name in self.region_names:
             self.reset_region(region_name)

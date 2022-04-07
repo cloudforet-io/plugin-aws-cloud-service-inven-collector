@@ -18,6 +18,7 @@ class SecretsManagerConnector(SchematicAWSConnector):
     service_name = 'secretsmanager'
     cloud_service_group = 'SecretsManager'
     cloud_service_type = 'Secret'
+    cloud_service_types = CLOUD_SERVICE_TYPES
 
     def get_resources(self) -> List[SecretResource]:
         _LOGGER.debug("[get_resources] START: Secrets Manager")
@@ -30,9 +31,7 @@ class SecretsManagerConnector(SchematicAWSConnector):
             'response_schema': SecretResponse
         }
 
-        # init cloud service type
-        for cst in CLOUD_SERVICE_TYPES:
-            resources.append(cst)
+        resources.extend(self.set_service_code_in_cloud_service_type())
 
         # merge data
         for region_name in self.region_names:

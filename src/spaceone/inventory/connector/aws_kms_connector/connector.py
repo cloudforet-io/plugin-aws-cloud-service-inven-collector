@@ -16,6 +16,7 @@ class KMSConnector(SchematicAWSConnector):
     service_name = 'kms'
     cloud_service_group = 'KMS'
     cloud_service_type = 'Key'
+    cloud_service_types = CLOUD_SERVICE_TYPES
 
     def get_resources(self) -> List[KeyResource]:
         _LOGGER.debug("[get_resources] START: KMS")
@@ -28,9 +29,7 @@ class KMSConnector(SchematicAWSConnector):
             'response_schema': KeyResponse
         }
 
-        # init cloud service type
-        for cst in CLOUD_SERVICE_TYPES:
-            resources.append(cst)
+        resources.extend(self.set_service_code_in_cloud_service_type())
 
         for region_name in self.region_names:
             self.reset_region(region_name)

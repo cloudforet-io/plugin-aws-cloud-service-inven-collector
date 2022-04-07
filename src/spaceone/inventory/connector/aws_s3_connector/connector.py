@@ -20,6 +20,7 @@ class S3Connector(SchematicAWSConnector):
     service_name = 's3'
     cloud_service_group = 'S3'
     cloud_service_type = 'Bucket'
+    cloud_service_types = CLOUD_SERVICE_TYPES
 
     def get_resources(self) -> List[BucketResource]:
         _LOGGER.debug("[get_resources] START: S3")
@@ -27,9 +28,7 @@ class S3Connector(SchematicAWSConnector):
         start_time = time.time()
 
         try:
-            # init cloud service type
-            for cst in CLOUD_SERVICE_TYPES:
-                resources.append(cst)
+            resources.extend(self.set_service_code_in_cloud_service_type())
 
             # merge data
             for data in self.request_data():

@@ -16,11 +16,14 @@ class ACMConnector(SchematicAWSConnector):
     service_name = 'acm'
     cloud_service_group = 'CertificateManager'
     cloud_service_type = 'Certificate'
+    cloud_service_types = CLOUD_SERVICE_TYPES
 
     def get_resources(self):
         _LOGGER.debug("[get_resources] START: Certificate Manager")
         resources = []
         start_time = time.time()
+
+        resources.extend(self.set_service_code_in_cloud_service_type())
 
         collect_resources = [
             {
@@ -29,9 +32,6 @@ class ACMConnector(SchematicAWSConnector):
                 'response_schema': ACMResponse
             }
         ]
-
-        for cst in CLOUD_SERVICE_TYPES:
-            resources.append(cst)
 
         for region_name in self.region_names:
             self.reset_region(region_name)

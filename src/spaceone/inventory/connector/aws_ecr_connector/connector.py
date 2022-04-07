@@ -15,6 +15,7 @@ class ECRConnector(SchematicAWSConnector):
     service_name = 'ecr'
     cloud_service_group = 'EC2'
     cloud_service_type = 'Repository'
+    cloud_service_types = CLOUD_SERVICE_TYPES
 
     @staticmethod
     def _set_image_uri(images, repository_uri):
@@ -28,15 +29,13 @@ class ECRConnector(SchematicAWSConnector):
         resources = []
         start_time = time.time()
 
+        resources.extend(self.set_service_code_in_cloud_service_type())
+
         collect_resource = {
             'request_method': self.request_data,
             'resource': ECRRepositoryResource,
             'response_schema': ECRResponse
         }
-
-        # init cloud service type
-        for cst in CLOUD_SERVICE_TYPES:
-            resources.append(cst)
 
         # merge data
         for region_name in self.region_names:

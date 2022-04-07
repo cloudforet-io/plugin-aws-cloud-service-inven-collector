@@ -19,11 +19,14 @@ _LOGGER = logging.getLogger(__name__)
 class ELBConnector(SchematicAWSConnector):
     service_name = 'elbv2'
     cloud_service_group = 'ELB'
+    cloud_service_types = CLOUD_SERVICE_TYPES
 
     def get_resources(self):
         _LOGGER.debug("[get_resources] START: ELB")
         resources = []
         start_time = time.time()
+
+        resources.extend(self.set_service_code_in_cloud_service_type())
 
         collect_resources = [{
             'request_method': self.request_target_group_data,
@@ -34,10 +37,6 @@ class ELBConnector(SchematicAWSConnector):
             'resource': LoadBalancerResource,
             'response_schema': LoadBalancerResponse
         }]
-
-        # init cloud service type
-        for cst in CLOUD_SERVICE_TYPES:
-            resources.append(cst)
 
         for region_name in self.region_names:
             self.reset_region(region_name)
