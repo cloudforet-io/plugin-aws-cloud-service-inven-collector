@@ -15,6 +15,7 @@ class DynamoDBConnector(SchematicAWSConnector):
     service_name = 'dynamodb'
     cloud_service_group = 'DynamoDB'
     cloud_service_type = 'Table'
+    cloud_service_types = CLOUD_SERVICE_TYPES
 
     def get_resources(self) -> List[TableResource]:
         resources = []
@@ -27,9 +28,7 @@ class DynamoDBConnector(SchematicAWSConnector):
             'response_schema': TableResponse
         }
 
-        # init cloud service type
-        for cst in CLOUD_SERVICE_TYPES:
-            resources.append(cst)
+        resources.extend(self.set_service_code_in_cloud_service_type())
 
         for region_name in self.region_names:
             self.reset_region(region_name)

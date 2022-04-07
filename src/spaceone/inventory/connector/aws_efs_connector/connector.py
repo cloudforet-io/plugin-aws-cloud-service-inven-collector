@@ -15,21 +15,20 @@ class EFSConnector(SchematicAWSConnector):
     service_name = 'efs'
     cloud_service_group = 'EFS'
     cloud_service_type = 'FileSystem'
+    cloud_service_types = CLOUD_SERVICE_TYPES
 
     def get_resources(self) -> List[FileSystemResource]:
         _LOGGER.debug("[get_resources] START: EFS")
         resources = []
         start_time = time.time()
 
+        resources.extend(self.set_service_code_in_cloud_service_type())
+
         collect_resource = {
             'request_method': self.request_data,
             'resource': FileSystemResource,
             'response_schema': FileSystemResponse
         }
-
-        # init cloud service type
-        for cst in CLOUD_SERVICE_TYPES:
-            resources.append(cst)
 
         # merge data
         for region_name in self.region_names:

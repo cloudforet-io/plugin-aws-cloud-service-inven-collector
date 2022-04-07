@@ -14,11 +14,14 @@ class EIPConnector(SchematicAWSConnector):
     service_name = 'ec2'
     cloud_service_group = 'EC2'
     cloud_service_type = 'EIP'
+    cloud_service_types = CLOUD_SERVICE_TYPES
 
     def get_resources(self) -> List[EIPResource]:
         _LOGGER.debug("[get_resources] START: EIP")
         resources = []
         start_time = time.time()
+
+        resources.extend(self.set_service_code_in_cloud_service_type())
 
         collect_resource = {
             'request_method': self.request_data,

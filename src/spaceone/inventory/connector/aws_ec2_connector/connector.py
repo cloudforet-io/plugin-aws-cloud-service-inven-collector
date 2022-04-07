@@ -15,6 +15,7 @@ _LOGGER = logging.getLogger(__name__)
 class EC2Connector(SchematicAWSConnector):
     service_name = 'ec2'
     cloud_service_group = 'EC2'
+    cloud_service_types = CLOUD_SERVICE_TYPES
 
     include_vpc_default = False
 
@@ -22,6 +23,8 @@ class EC2Connector(SchematicAWSConnector):
         _LOGGER.debug("[get_resources] START: EC2")
         resources = []
         start_time = time.time()
+
+        resources.extend(self.set_service_code_in_cloud_service_type())
 
         collect_resources = [
             {
@@ -35,10 +38,6 @@ class EC2Connector(SchematicAWSConnector):
                 'response_schema': ImageResponse
             },
         ]
-
-        # init cloud service type
-        for cst in CLOUD_SERVICE_TYPES:
-            resources.append(cst)
 
         for region_name in self.region_names:
             self.reset_region(region_name)

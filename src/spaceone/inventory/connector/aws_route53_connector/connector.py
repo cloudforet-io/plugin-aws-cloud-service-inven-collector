@@ -16,6 +16,7 @@ class Route53Connector(SchematicAWSConnector):
     service_name = 'route53'
     cloud_service_group = 'Route53'
     cloud_service_type = 'HostedZone'
+    cloud_service_types = CLOUD_SERVICE_TYPES
 
     def get_resources(self) -> List[HostedZoneResource]:
         _LOGGER.debug("[get_resources] START: Route53")
@@ -23,9 +24,7 @@ class Route53Connector(SchematicAWSConnector):
         start_time = time.time()
 
         try:
-            # init cloud service type
-            for cst in CLOUD_SERVICE_TYPES:
-                resources.append(cst)
+            resources.extend(self.set_service_code_in_cloud_service_type())
 
             # merge data
             for data in self.request_data():

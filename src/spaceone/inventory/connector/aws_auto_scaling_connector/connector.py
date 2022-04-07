@@ -21,11 +21,14 @@ class AutoScalingConnector(SchematicAWSConnector):
 
     service_name = 'autoscaling'
     cloud_service_group = 'EC2'
+    cloud_service_types = CLOUD_SERVICE_TYPES
 
     def get_resources(self):
         _LOGGER.debug("[get_resources] START: Auto Scaling")
         resources = []
         start_time = time.time()
+
+        resources.extend(self.set_service_code_in_cloud_service_type())
 
         collect_resources = [
             {
@@ -44,9 +47,6 @@ class AutoScalingConnector(SchematicAWSConnector):
                 'response_schema': AutoScalingGroupResponse
             }
         ]
-
-        for cst in CLOUD_SERVICE_TYPES:
-            resources.append(cst)
 
         for region_name in self.region_names:
             self._launch_configurations = []
