@@ -344,7 +344,7 @@ Update plugin through spacectl command with the created yaml file.
 
 ### Service Code Mapper : Convert service code in Cloud Service Type what you want.
 
-If cloud_service_types is added in options, You can replace the service code specified in the cloud service type.
+If `service_code_mappers` is added in options, You can replace the service code specified in the cloud service type.
 The service code set by default can be checked in the Service List item of this document.
 
 The `service_code_mappers` items that can be specified are as follows.
