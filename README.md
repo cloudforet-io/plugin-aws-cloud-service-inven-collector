@@ -354,7 +354,7 @@ The `service_code_mappers` items that can be specified are as follows.
 {
     "service_code_mappers": {
         "AmazonEC2": "Amazon Elastic Computing",
-        "AmazonRDS": "Amazon Relatioin Database",
+        "AmazonRDS": "Amazon Relation Database",
     }
 }
 </code>
