@@ -368,6 +368,7 @@ The `service_code_mappers` items that can be specified are as follows.
 * Add feature to convert service_code to what you want using options ([#417](https://github.com/spaceone-dev/plugin-aws-cloud-service-inven-collector/issues/417))
 
 ### Ver 1.13.1-6
+
 * Fix some bugs..!
 
 ### Ver 1.13
