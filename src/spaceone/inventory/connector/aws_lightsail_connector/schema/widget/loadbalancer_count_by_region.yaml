@@ -1,7 +1,7 @@
 ---
 cloud_service_group: Lightsail
-cloud_service_type: Disk
-name: Total Size by Region
+cloud_service_type: LoadBalancer
+name: Count by Region
 query:
   aggregate:
     - group:
@@ -10,8 +10,7 @@ query:
             key: region_code
         fields:
           - name: value
-            key: instance_size
-            operator: sum
+            operator: count
 options:
   chart_type: COLUMN
   name_options:
@@ -19,9 +18,3 @@ options:
     reference:
       resource_type: "inventory.Region"
       reference_key: region_code
-  value_options:
-    key: value
-    type: size
-    options:
-      source_unit: GB
-      default: 0

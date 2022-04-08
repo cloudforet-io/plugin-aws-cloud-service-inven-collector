@@ -62,6 +62,7 @@ class Disk(ResourceBase):
             "external_link": f"https://lightsail.aws.amazon.com/ls/webapp/{region_code}/disks/{self.name}"
         }
 
+
 class InstanceHardware(Model):
     cpu_count = IntType(deserialize_from="cpuCount", serialize_when_none=False)
     disks = ListType(ModelType(Disk), default=[])
@@ -216,7 +217,7 @@ class RelationDatabase(ResourceBase):
     hardware = ModelType(RelationDatabaseHardware, serialize_when_none=False)
     state = StringType(serialize_when_none=False)
     secondary_availability_zone = StringType(deserialize_from="secondaryAvailabilityZone", serialize_when_none=False)
-    backup_retention_enabled = StringType(deserialize_from="backupRetentionEnabled", serialize_when_none=False)
+    backup_retention_enabled = BooleanType(deserialize_from="backupRetentionEnabled", serialize_when_none=False)
     pending_modified_values = ModelType(PendingModifiedValues, deserialize_from="pendingModifiedValues", serialize_when_none=False)
     engine = StringType(serialize_when_none=False)
     engine_version = StringType(deserialize_from="engineVersion", serialize_when_none=False)
@@ -227,7 +228,7 @@ class RelationDatabase(ResourceBase):
     preferred_maintenance_window = StringType(deserialize_from="preferredMaintenanceWindow", serialize_when_none=False)
     publicly_accessible = BooleanType(deserialize_from="publiclyAccessible", serialize_when_none=False)
     master_endpoint = ModelType(MasterEndpoint, deserialize_from="masterEndpoint", serialize_when_none=False)
-    pending_maintenance_actions = ModelType(PendingMaintenanceActions, deserialize_from="pendingMaintenanceActions", serialize_when_none=False)
+    pending_maintenance_actions = ListType(ModelType(PendingMaintenanceActions), deserialize_from="pendingMaintenanceActions", serialize_when_none=False)
     ca_certificate_identifier = StringType(deserialize_from="caCertificateIdentifier", serialize_when_none=False)
 
     def reference(self, region_code):
@@ -243,13 +244,12 @@ class DomainEntry(Model):
     target = StringType(serialize_when_none=False)
     type = StringType(serialize_when_none=False)
     is_alias = BooleanType(deserialize_from="isAlias", serialize_when_none=False)
-    options = DictType(default={})
 
 
 class Domain(ResourceBase):
-    domain_entries = ListType(ModelType(DomainEntry), deserialize_from="domainEntries", default=[])
+    domain_entry = ListType(ModelType(DomainEntry), deserialize_from="domainEntries", default=[])
 
-    def reference(self):
+    def reference(self, region_code):
         return {
             "resource_id": self.arn,
             "external_link": f"https://lightsail.aws.amazon.com/ls/webapp/domains/{self.name}"
@@ -283,9 +283,24 @@ class ForwardedCookies(Model):
                                  default=[])
 
 
-class ForwardedQueryStrings(Model):
+class ForwardedHeaders(Model):
     option = StringType(serialize_when_none=False, choices=['none', 'allow-list', 'all'])
+    header_allow_list = ListType(StringType(choices=['Accept', 'Accept-Charset', 'Accept-Datetime', 'Accept-Encoding',
+                                                     'Accept-Language', 'Authorization', 'CloudFront-Forwarded-Proto',
+                                                     'CloudFront-Is-Desktop-Viewer', 'CloudFront-Is-Mobile-Viewer',
+                                                     'CloudFront-Is-SmartTV-Viewer', 'CloudFront-Is-Tablet-Viewer',
+                                                     'CloudFront-Viewer-Country', 'Host', 'Origin', 'Referer']),
+                                 default=[])
+
+
+class ForwardedQueryStrings(Model):
+    option = BooleanType(serialize_when_none=False)
     query_string_allow_list = ListType(StringType, default=[])
+
+
+class CacheBehavior(Model):
+    path = StringType(serialize_when_none=False),
+    behavior = StringType(serialize_when_none=False, choices=['dont-cache', 'cache'])
 
 
 class CacheBehaviorSettings(Model):
@@ -295,6 +310,7 @@ class CacheBehaviorSettings(Model):
     allowed_http_methods = StringType(deserialize_from="allowedHTTPMethods", serialize_when_none=False)
     cached_http_methods = StringType(deserialize_from="cachedHTTPMethods", serialize_when_none=False)
     forwarded_cookies = ModelType(ForwardedCookies, deserialize_from="forwardedCookies", serialize_when_none=False)
+    forwarded_headers = ModelType(ForwardedHeaders, deserialize_from="forwardedHeaders", serialize_when_none=False)
     forwarded_query_strings = ModelType(ForwardedQueryStrings, deserialize_from="forwardedQueryStrings",
                                         serialize_when_none=False)
 
@@ -306,18 +322,19 @@ class Distribution(ResourceBase):
     domain_name = StringType(deserialize_from="domainName", serialize_when_none=False)
     bundle_id = StringType(deserialize_from="bundleId", serialize_when_none=False)
     certificate_name = StringType(deserialize_from="certificateName", serialize_when_none=False)
-    origin = ModelType(Origin, deserialize_from="certificateName", serialize_when_none=False)
+    origin = ModelType(Origin, deserialize_from="origin", serialize_when_none=False)
     origin_public_dns = StringType(deserialize_from="originPublicDNS", serialize_when_none=False)
     default_cache_behavior = ModelType(DefaultCacheBehavior, deserialize_from="defaultCacheBehavior", serialize_when_none=False)
     cache_behavior_settings = ModelType(CacheBehaviorSettings, deserialize_from="cacheBehaviorSettings", serialize_when_none=False)
+    cache_behavior = ListType(ModelType(CacheBehavior), deserialize_from="cacheBehaviors", serialize_when_none=False)
     able_to_update_bundle = BooleanType(deserialize_from="ableToUpdateBundle", serialize_when_none=False)
     ip_address_type = StringType(deserialize_from="ipAddressType", serialize_when_none=False,
                                  choices=['dualstack', 'ipv4'])
 
-    def reference(self):
+    def reference(self, region_code):
         return {
             "resource_id": self.arn,
-            "external_link": f"https://lightsail.aws.amazon.com/ls/webapp/domains/{self.name}"
+            "external_link": f"https://lightsail.aws.amazon.com/ls/webapp/distributions/{self.name}/"
         }
 
 
@@ -330,24 +347,81 @@ class ContainerServiceStateDetail(Model):
     message = StringType(serialize_when_none=False)
 
 
-class CurrentDeploymentContainer(Model):
-    image = StringType(serialize_when_none=False)
-    command = ListType(StringType, default=[])
-    environment = DictType(default={})
-    ports = DictType(default={})
+class CurrentDeploymentContainerPorts(Model):
+    ports = StringType(serialize_when_none=False, choices=['HTTP', 'HTTPS', 'TCP', 'UDP'])
+
+
+class HealthCheck(Model):
+    healthy_threshold = StringType(deserialize_from="healthyThreshold", serialize_when_none=False),
+    unhealthy_threshold = StringType(deserialize_from="unhealthyThreshold", serialize_when_none=False)
+    timeout_seconds = StringType(deserialize_from="timeoutSeconds", serialize_when_none=False)
+    interval_seconds = StringType(deserialize_from="intervalSeconds", serialize_when_none=False)
+    path = StringType(deserialize_from="path", serialize_when_none=False)
+    success_code = StringType(deserialize_from="successCodes", serialize_when_none=False)
+
+
+class PublicEndpoint(Model):
+    container_name = StringType(deserialize_from="containerName", serialize_when_none=False),
+    container_port = StringType(deserialize_from="containerPort", serialize_when_none=False),
+    health_check = ModelType(HealthCheck, deserialize_from="healthCheck", serialize_when_none=False)
 
 
 class ContainerServiceCurrentDeployment(Model):
     version = IntType(serialize_when_none=False)
     state = StringType(serialize_when_none=False, choices=['ACTIVATING', 'ACTIVE', 'INACTIVE', 'FAILED'])
-    containers = DictType(ModelType(CurrentDeploymentContainer))
+    public_endpoint = ModelType(PublicEndpoint, deserialize_from="publicEndpoint", serialize_when_none=False)
+    created_at = DateTimeType(deserialize_from="createdAt", serialize_when_none=False)
+
 
 class ContainerService(ResourceBase):
     container_service_name = StringType(deserialize_from="containerServiceName", serialize_when_none=False)
     power = StringType(serialize_when_none=False, choices=['nano', 'micro', 'small', 'medium', 'large', 'xlarge'])
     power_id = StringType(deserialize_from="powerId", serialize_when_none=False)
-    state = StringType(serialize_when_none=False, choices=['PENDING', 'READY', 'RUNNING', 'UPDATING', 'DELETING',
+    power_id = StringType(serialize_when_none=False, choices=['PENDING', 'READY', 'RUNNING', 'UPDATING', 'DELETING',
                                                            'DISABLED', 'DEPLOYING'])
     state_detail = ModelType(ContainerServiceStateDetail, deserialize_from="stateDetail", serialize_when_none=False)
     scale = IntType(serialize_when_none=False)
-    current_deployment = ModelType()
+    current_deployment = ModelType(ContainerServiceCurrentDeployment, deserialize_from="currentDeployment")
+    next_deployment = ModelType(ContainerServiceCurrentDeployment, deserialize_from="nextDeployment")
+    is_disabled = BooleanType(deserialize_from="isDisabled", serialize_when_none=False)
+    privateDomainName = StringType(deserialize_from="privateDomainName", serialized_name=False)
+    url = StringType(deserialize_from="url", serialize_when_none=False)
+
+    def reference(self, region_code):
+        return {
+            "resource_id": self.arn,
+            "external_link": f"https://lightsail.aws.amazon.com/ls/webapp/{region_code}/container-services/{self.name}/deployments"
+        }
+
+
+class InstanceHealthSummary(Model):
+    instance_name = StringType(deserialize_from="instanceName", serialize_when_none=False)
+    instance_health = StringType(deserialize_from="instanceHealth", serialize_when_none=False, choices=['initial', 'healthy',
+                                                                                                        'unhealthy', 'unused', 'draining', 'unavailable'])
+    instance_health_region = StringType(deserialize_from="instanceHealthReason", serialize_when_none=False, choices=['Lb.RegistrationInProgress', 'Lb.InitialHealthChecking', 'Lb.InternalError',
+                                                                                                                     'Instance.ResponseCodeMismatch', 'Instance.Timeout', 'Instance.FailedHealthChecks',
+                                                                                                                     'Instance.NotRegistered', 'Instance.NotInUse', 'Instance.DeregistrationInProgress', 'Instance.InvalidState', 'Instance.IpUnusable'])
+
+
+class TlsCertificateSummary(Model):
+    name = StringType(serialize_when_none=False)
+    is_attached = BooleanType(deserialize_from="isAttached", serialize_when_none=False)
+
+
+class LoadBalancer(ResourceBase):
+    dns_name = StringType(deserialize_from="dnsName", serialize_when_none=False)
+    state = StringType(deserialize_from="state", serialize_when_none=False, choices=['active', 'provisioning',
+                                                                                     'active_impaired', 'failed', 'unknown'])
+    protocol = StringType(serialize_when_none=False)
+    public_ports = ListType(StringType, deserialize_from="publicPorts", serialize_when_none=False)
+    health_check_path = StringType(deserialize_from="healthCheckPath", serialize_when_none=False)
+    instance_port = StringType(deserialize_from="instancePort", serialize_when_none=False)
+    instance_health_summary = ListType(ModelType(InstanceHealthSummary), default=[], serialize_when_none=False)
+    tls_certificate_summary = ListType(ModelType(TlsCertificateSummary), default=[], serialize_when_none=False)
+    ip_address_type = StringType(deserialize_from="ipAddressType", serialize_when_none=False, choices=['dualstack', 'ipv4'])
+
+    def reference(self, region_code):
+        return {
+            "resource_id": self.arn,
+            "external_link": f"https://lightsail.aws.amazon.com/ls/webapp/{region_code}/load-balancers/{self.name}/"
+        }

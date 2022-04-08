@@ -92,10 +92,10 @@ cst_instance._metadata = CloudServiceTypeMeta.set_meta(
 '''
 disk_total_count_conf = os.path.join(current_dir, 'widget/disk_total_count.yaml')
 disk_total_size_conf = os.path.join(current_dir, 'widget/disk_total_size.yaml')
-disk_size_by_account_conf = os.path.join(current_dir, 'widget/disk_size_by_account.yaml')
-disk_size_by_region_conf = os.path.join(current_dir, 'widget/disk_size_by_region.yaml')
-disk_size_by_az_conf = os.path.join(current_dir, 'widget/disk_size_by_az.yaml')
-disk_size_by_state_conf = os.path.join(current_dir, 'widget/disk_size_by_state.yaml')
+disk_size_by_account_conf = os.path.join(current_dir, 'widget/disk_total_size_by_account.yaml')
+disk_size_by_region_conf = os.path.join(current_dir, 'widget/disk_total_size_by_region.yaml')
+disk_size_by_az_conf = os.path.join(current_dir, 'widget/disk_total_size_by_az.yaml')
+disk_size_by_state_conf = os.path.join(current_dir, 'widget/disk_total_size_by_state.yaml')
 
 cst_disk = CloudServiceTypeResource()
 cst_disk.name = 'Disk'
@@ -226,6 +226,7 @@ cst_snapshot._metadata = CloudServiceTypeMeta.set_meta(
     widget=[
     ]
 )
+
 
 
 '''
@@ -444,102 +445,193 @@ cst_rdb._metadata = CloudServiceTypeMeta.set_meta(
     ]
 )
 
-
 '''
- Domain
+Container
 '''
-domain_total_count_conf = os.path.join(current_dir, 'widget/rdb_total_count.yaml')
-domain_count_by_account_conf = os.path.join(current_dir, 'widget/rdb_count_by_account.yaml')
+container_service_total_count_conf = os.path.join(current_dir, 'widget/container_service_total_count.yaml')
+container_service_count_by_region_conf = os.path.join(current_dir, 'widget/container_service_count_by_region.yaml')
+container_service_count_by_account_conf = os.path.join(current_dir, 'widget/container_service_count_by_account.yaml')
 
-cst_domain = CloudServiceTypeResource()
-cst_domain.name = 'Domain'
-cst_domain.provider = 'aws'
-cst_domain.group = 'Lightsail'
-cst_domain.labels = ['Networking']
-cst_domain.is_primary = True
-cst_domain.is_major = True
-cst_domain.service_code = 'AmazonLightsail'
-cst_domain.tags = {
+cst_container = CloudServiceTypeResource()
+cst_container.name = 'Container'
+cst_container.provider = 'aws'
+cst_container.group = 'Lightsail'
+cst_container.labels = ['Container']
+cst_container.is_primary = True
+cst_container.is_major = True
+cst_container.service_code = 'AmazonLightsail'
+cst_container.tags = {
     'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-Lightsail.svg',
 }
 
-cst_domain._metadata = CloudServiceTypeMeta.set_meta(
+cst_container._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
         TextDyField.data_source('Name', 'name'),
-        TextDyField.data_source('Engine', 'data.engine'),
-        EnumDyField.data_source('State', 'data.state', default_state={
-            'safe': ['available'],
-            'warning': ['creating', 'deleting', 'maintenance', 'modifying', 'rebooting',
-                        'renaming', 'starting', 'stopping', 'upgrading'],
-            'alert': ['failed', 'inaccessible-encryption-credentials', 'restore-error', 'stopped', 'storage-full']
-        }),
-        TextDyField.data_source('CPU ', 'data.hardware.cpu_count'),
-        TextDyField.data_source('Memory ', 'data.hardware.ram_size_in_gb'),
-        TextDyField.data_source('Disk (GB)', 'data.hardware.disk_size_in_gb'),
-        TextDyField.data_source('Availability Zone', 'data.location.availability_zone'),
-        TextDyField.data_source('ARN', 'data.arn', options={
+        TextDyField.data_source('Type', 'data.power'),
+        TextDyField.data_source('State', 'data.state'),
+        TextDyField.data_source('Scale ', 'data.scale'),
+        TextDyField.data_source('Disabled', 'data.is_disabled', options={
             'is_optional': True
         }),
-        TextDyField.data_source('Region', 'data.location.region_name', options={
+        TextDyField.data_source('PrivateDomainName', 'data.privateDomainName', options={
             'is_optional': True
         }),
-        TextDyField.data_source('Master Endpoint', 'data.master_endpoint.address', options={
+        TextDyField.data_source('Url', 'data.url', options={
             'is_optional': True
-        }),
-        TextDyField.data_source('Port', 'data.master_endpoint.port', options={
-            'is_optional': True
-        }),
-        TextDyField.data_source('Blueprint ID', 'data.relation_database_blueprint_id', options={
-            'is_optional': True
-        }),
-        TextDyField.data_source('Bundle ID', 'data.relation_database_bundle_id', options={
-            'is_optional': True
-        }),
-        TextDyField.data_source('Engine Version', 'data.engine_version', options={
-            'is_optional': True
-        }),
-        TextDyField.data_source('Master Database User', 'data.master_database_name', options={
-            'is_optional': True
-        }),
-        TextDyField.data_source('Secondary Availability Zone', 'data.secondary_availability_zone', options={
-            'is_optional': True
-        }),
-        TextDyField.data_source('Backup Retention Enabled', 'data.backup_retention_enabled', options={
-            'is_optional': True
-        }),
-        TextDyField.data_source('CA Certificate Identifier', 'data.ca_certificate_identifier', options={
-            'is_optional': True
-        }),
-        TextDyField.data_source('Publicly Accessible', 'data.publicly_accessible', options={
-            'is_optional': True
-        }),
+        })
     ],
     search=[
         SearchField.set(name='Name', key='name'),
+        SearchField.set(name='Type', key='data.power'),
         SearchField.set(name='State', key='data.state'),
-        SearchField.set(name='Engine', key='data.engine'),
-        SearchField.set(name='Engine Version', key='data.engine_version'),
-        SearchField.set(name='ARN', key='data.arn'),
-        SearchField.set(name='Support Code', key='data.support_code'),
-        SearchField.set(name='Availability Zone', key='data.location.availability_zone'),
-        SearchField.set(name='CPU', key='data.hardware.cpu_count', data_type='Integer'),
-        SearchField.set(name='Memory', key='data.hardware.ram_size_in_gb', data_type='Float'),
-        SearchField.set(name='Disk (GB)', key='data.hardware.disk_size_in_gb', data_type='Integer'),
-        SearchField.set(name='Master Endpoint', key='data.master_endpoint.address'),
-        SearchField.set(name='Port', key='data.master_endpoint.port', data_type='Integer'),
-        SearchField.set(name='Blueprint ID', key='data.relation_database_blueprint_id'),
-        SearchField.set(name='Bundle ID', key='data.support_code'),
-        SearchField.set(name='Publicly Accessible', key='data.publicly_accessible', data_type='Boolean'),
-        SearchField.set(name='Master Database User', key='data.master_database_name'),
-        SearchField.set(name='Backup Retention Enabled', key='data.backup_retention_enabled'),
-        SearchField.set(name='CA Certificate Identifier', key='data.ca_certificate_identifier'),
+        SearchField.set(name='Scale', key='data.scale'),
+        SearchField.set(name='Disabled', key='data.is_disabled'),
+        SearchField.set(name='PrivateDomainName', key='data.privateDomainName'),
+        SearchField.set(name='Url', key='data.url')
     ],
     widget=[
-        CardWidget.set(**get_data_from_yaml(rdb_total_count_conf)),
-        ChartWidget.set(**get_data_from_yaml(rdb_count_by_region_conf)),
-        ChartWidget.set(**get_data_from_yaml(rdb_count_by_account_conf)),
+        CardWidget.set(**get_data_from_yaml(container_service_total_count_conf)),
+        CardWidget.set(**get_data_from_yaml(container_service_count_by_region_conf)),
+        CardWidget.set(**get_data_from_yaml(container_service_count_by_account_conf))
     ]
 )
+
+
+'''
+LoadBalancer
+'''
+loadbalancer_total_count_conf = os.path.join(current_dir, 'widget/loadbalancer_total_count.yaml')
+loadbalancer_count_by_region_conf = os.path.join(current_dir, 'widget/loadbalancer_count_by_region.yaml')
+loadbalancer_count_by_account_conf = os.path.join(current_dir, 'widget/loadbalancer_count_by_account.yaml')
+
+cst_loadbalancer = CloudServiceTypeResource()
+cst_loadbalancer.name = 'LoadBalancer'
+cst_loadbalancer.provider = 'aws'
+cst_loadbalancer.group = 'Lightsail'
+cst_loadbalancer.labels = ['Networking']
+cst_loadbalancer.is_primary = True
+cst_loadbalancer.is_major = True
+cst_loadbalancer.service_code = 'AmazonLightsail'
+cst_loadbalancer.tags = {
+    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-Lightsail.svg',
+}
+
+cst_loadbalancer._metadata = CloudServiceTypeMeta.set_meta(
+    fields=[
+        TextDyField.data_source('Name', 'name'),
+        TextDyField.data_source('SupportCode', 'data.support_code'),
+        TextDyField.data_source('Availability Zone', 'data.availability_zone'),
+        TextDyField.data_source('Region Name', 'data.region_name', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('DNS Name', 'data.dns_name', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('State', 'data.state', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Protocol', 'data.protocol', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Public Ports', 'data.public_ports', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Health Check Path', 'data.health_check_path', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Instance Port', 'data.instance_port', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('IP Address Type', 'data.ip_address_type', options={
+            'is_optional': True
+        })
+    ],
+
+    search=[
+        SearchField.set(name='Name', key='name'),
+        SearchField.set(name='SupportCode', key='data.support_code'),
+        SearchField.set(name='Availability Zone', key='data.availability_zone'),
+        SearchField.set(name='Region Name', key='data.region_name'),
+        SearchField.set(name='DNS Name', key='data.dns_name'),
+        SearchField.set(name='State', key='data.state'),
+        SearchField.set(name='Protocol', key='data.protocol'),
+        SearchField.set(name='Public Ports', key='data.public_ports'),
+        SearchField.set(name='Health Check Path', key='data.health_check_path'),
+        SearchField.set(name='Instance Port', key='data.instance_port'),
+        SearchField.set(name='IP Address Type', key='data.ip_address_type')
+    ],
+    widget=[
+        CardWidget.set(**get_data_from_yaml(loadbalancer_total_count_conf)),
+        CardWidget.set(**get_data_from_yaml(loadbalancer_count_by_region_conf)),
+        CardWidget.set(**get_data_from_yaml(loadbalancer_count_by_account_conf))
+    ]
+)
+
+'''
+Distribution
+'''
+distribution_total_count_conf = os.path.join(current_dir, 'widget/distribution_total_count.yaml')
+distribution_count_by_region_conf = os.path.join(current_dir, 'widget/distribution_count_by_region.yaml')
+distribution_count_by_account_conf = os.path.join(current_dir, 'widget/distribution_count_by_account.yaml')
+
+cst_distribution = CloudServiceTypeResource()
+cst_distribution.name = 'Distribution'
+cst_distribution.provider = 'aws'
+cst_distribution.group = 'Lightsail'
+cst_distribution.labels = ['Networking']
+cst_distribution.is_primary = True
+cst_distribution.is_major = True
+cst_distribution.service_code = 'AmazonLightsail'
+cst_distribution.tags = {
+    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-Lightsail.svg',
+}
+
+cst_distribution._metadata = CloudServiceTypeMeta.set_meta(
+    fields=[
+        TextDyField.data_source('Name', 'name'),
+        TextDyField.data_source('SupportCode', 'data.support_code'),
+        TextDyField.data_source('Availability Zone', 'data.location.availabilityZone'),
+        TextDyField.data_source('Region Name', 'data.location.region_name', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('DNS Name', 'data.domain_name', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Status', 'data.status', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Enabled', 'data.is_enabled', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Alternative Domain Names', 'data.alternative_domain_names', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Certificate Name', 'data.certificate_name', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Origin', 'data.origin.name', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Origin', 'data.origin', options={
+            'is_optional': True
+        })
+    ],
+
+    search=[
+        SearchField.set(name='Name', key='name'),
+        SearchField.set(name='SupportCode', key='data.support_code'),
+        SearchField.set(name='Availability Zone', key='data.availability_zone'),
+        SearchField.set(name='Region Name', key='data.region_name'),
+        SearchField.set(name='DNS Name', key='data.dns_name'),
+        SearchField.set(name='Enabled', key='data.is_enabled')
+    ],
+    widget=[
+        CardWidget.set(**get_data_from_yaml(distribution_total_count_conf)),
+        CardWidget.set(**get_data_from_yaml(distribution_count_by_region_conf)),
+        CardWidget.set(**get_data_from_yaml(distribution_count_by_account_conf))
+    ]
+)
+
 
 CLOUD_SERVICE_TYPES = [
     CloudServiceTypeResponse({'resource': cst_instance}),
@@ -548,5 +640,7 @@ CLOUD_SERVICE_TYPES = [
     CloudServiceTypeResponse({'resource': cst_bucket}),
     CloudServiceTypeResponse({'resource': cst_ip}),
     CloudServiceTypeResponse({'resource': cst_rdb}),
-    CloudServiceTypeResponse({'resource': cst_domain}),
+    CloudServiceTypeResponse({'resource': cst_container}),
+    CloudServiceTypeResponse({'resource': cst_loadbalancer}),
+    CloudServiceTypeResponse({'resource': cst_distribution})
 ]
