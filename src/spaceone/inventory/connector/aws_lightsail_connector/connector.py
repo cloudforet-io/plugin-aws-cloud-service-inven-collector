@@ -94,7 +94,6 @@ class LightsailConnector(SchematicAWSConnector):
             for collect_resource in collect_resources:
                 if (collect_resource['request_method'] == self.request_domain_data) or (collect_resource['request_method'] == self.request_distribution_data):
                     if region_name == 'us-east-1':
-                        _LOGGER.debug(f'collect_resource => {collect_resource}')
                         resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
                 else:
                     resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
@@ -190,10 +189,6 @@ class LightsailConnector(SchematicAWSConnector):
         cloud_service_type = 'Bucket'
         self.cloud_service_type = cloud_service_type
 
-        responses = self.client.get_buckets()
-
-        _LOGGER.debug(f'request_buckets_data() responses => {responses}')
-
         for data in self.client.get_buckets().get('buckets', []):
             try:
                 bucket = Bucket(data, strict=False)
@@ -269,14 +264,9 @@ class LightsailConnector(SchematicAWSConnector):
 
         responses = self.client.get_container_services()
 
-        _LOGGER.debug(f'get_container_services() responses => {responses}')
-
         for raw in responses.get('containerServices', []):
             try:
-                _LOGGER.debug(f'request_container_service_data raw => {raw}')
                 container_service = ContainerService(raw, strict=False)
-
-                _LOGGER.debug(f'request_container_service_data container_service => {container_service}')
 
                 yield {
                     'data': container_service,
@@ -303,10 +293,7 @@ class LightsailConnector(SchematicAWSConnector):
         for data in response_iterator:
             for raw in data.get('loadBalancers', []):
                 try:
-                    _LOGGER.debug(f'request_loadbalancer_data() responses => {raw}')
                     lb = LoadBalancer(raw, strict=False)
-
-                    _LOGGER.debug(f'loadbalancer => {lb.to_primitive()}')
 
                     yield {
                         'data': lb,
@@ -352,13 +339,9 @@ class LightsailConnector(SchematicAWSConnector):
 
         responses = self.client.get_distributions()
 
-        _LOGGER.debug(f'request_distribution_data() responses => {responses}')
-
         for data in responses.get('distributions', []):
             try:
-                _LOGGER.debug(f'request_distribution_data() data => {data}')
                 distribution = Distribution(data, strict=False)
-                _LOGGER.debug(f'distribution => {distribution}')
 
                 yield {
                     'data': distribution,
