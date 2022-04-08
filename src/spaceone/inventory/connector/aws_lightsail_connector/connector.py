@@ -94,7 +94,6 @@ class LightsailConnector(SchematicAWSConnector):
             for collect_resource in collect_resources:
                 if (collect_resource['request_method'] == self.request_domain_data) or (collect_resource['request_method'] == self.request_distribution_data):
                     if region_name == 'us-east-1':
-                        _LOGGER.debug(f'collect_resource => {collect_resource}')
                         resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
                 else:
                     resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
@@ -190,10 +189,6 @@ class LightsailConnector(SchematicAWSConnector):
         cloud_service_type = 'Bucket'
         self.cloud_service_type = cloud_service_type
 
-        responses = self.client.get_buckets()
-
-        _LOGGER.debug(f'request_buckets_data() responses => {responses}')
-
         for data in self.client.get_buckets().get('buckets', []):
             try:
                 bucket = Bucket(data, strict=False)
@@ -262,3 +257,99 @@ class LightsailConnector(SchematicAWSConnector):
                     resource_id = raw.get('arn', '')
                     error_resource_response = self.generate_error(region_name, resource_id, e)
                     yield {'data': error_resource_response}
+
+    def request_container_service_data(self, region_name):
+        cloud_service_type = 'Container'
+        self.cloud_service_type = cloud_service_type
+
+        responses = self.client.get_container_services()
+
+        for raw in responses.get('containerServices', []):
+            try:
+                container_service = ContainerService(raw, strict=False)
+
+                yield {
+                    'data': container_service,
+                    'name': container_service.get('containerServiceName', ''),
+                    'account': self.account_id
+                }
+
+            except Exception as e:
+                resource_id = raw.get('arn', '')
+                error_resource_response = self.generate_error(region_name, resource_id, e)
+                yield {'data': error_resource_response}
+
+    def request_loadbalancer_data(self, region_name):
+        cloud_service_type = 'LoadBalancer'
+        self.cloud_service_type = cloud_service_type
+
+        paginator = self.client.get_paginator('get_load_balancers')
+        response_iterator = paginator.paginate(
+            PaginationConfig={
+                'MaxItems': 10000,
+            }
+        )
+
+        for data in response_iterator:
+            for raw in data.get('loadBalancers', []):
+                try:
+                    lb = LoadBalancer(raw, strict=False)
+
+                    yield {
+                        'data': lb,
+                        'name': lb.get('name', ''),
+                        'account': self.account_id
+                    }
+
+                except Exception as e:
+                    resource_id = raw.get('arn', '')
+                    error_resource_response = self.generate_error(region_name, resource_id, e)
+                    yield {'data': error_resource_response}
+
+    def request_domain_data(self, region_name):
+        cloud_service_type = 'Domain'
+        self.cloud_service_type = cloud_service_type
+
+        paginator = self.client.get_paginator('get_domains')
+        response_iterator = paginator.paginate(
+            PaginationConfig={
+                'MaxItems': 10000,
+            }
+        )
+
+        for data in response_iterator:
+            for raw in data.get('domains', []):
+                try:
+                    domain = Domain(raw, strict=False)
+
+                    yield {
+                        'data': domain,
+                        'name': domain.get('name', ''),
+                        'account': self.account_id
+                    }
+
+                except Exception as e:
+                    resource_id = raw.get('arn', '')
+                    error_resource_response = self.generate_error(region_name, resource_id, e)
+                    yield {'data': error_resource_response}
+
+    def request_distribution_data(self, region_name):
+        cloud_service_type = 'Distribution'
+        self.cloud_service_type = cloud_service_type
+
+        responses = self.client.get_distributions()
+
+        for data in responses.get('distributions', []):
+            try:
+                distribution = Distribution(data, strict=False)
+
+                yield {
+                    'data': distribution,
+                    'name': distribution.get('name', ''),
+                    'account': self.account_id
+                }
+
+            except Exception as e:
+                resource_id = data.get('arn', '')
+                error_resource_response = self.generate_error(region_name, resource_id, e)
+                yield {'data': error_resource_response}
