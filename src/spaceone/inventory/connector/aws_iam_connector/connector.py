@@ -27,6 +27,7 @@ class IAMConnector(SchematicAWSConnector):
 
     service_name = 'iam'
     cloud_service_group = 'IAM'
+    cloud_service_types = CLOUD_SERVICE_TYPES
 
     def get_resources(self):
         _LOGGER.debug("[get_resources] START: IAM")
@@ -36,9 +37,7 @@ class IAMConnector(SchematicAWSConnector):
         policy_errors = []
         user_errors = []
 
-        # init cloud service type
-        for cst in CLOUD_SERVICE_TYPES:
-            resources.append(cst)
+        resources.extend(self.set_service_code_in_cloud_service_type())
 
         try:
             policies, policy_errors = self.list_local_managed_policies()

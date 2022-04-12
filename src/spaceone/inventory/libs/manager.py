@@ -36,4 +36,3 @@ class AWSManager(BaseManager):
                          'resource': {'cloud_service_group': connector.cloud_service_group,
                                       'cloud_service_type': connector.cloud_service_type}}
                     )]
-            

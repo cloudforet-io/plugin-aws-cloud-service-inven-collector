@@ -48,6 +48,7 @@ PROTOCOL_NUMBER_INFO = {'0': 'HOPOPT', '1': 'ICMP', '2': 'IGMP', '3': 'GGP', '4'
 class VPCConnector(SchematicAWSConnector):
     service_name = 'ec2'
     cloud_service_group = 'VPC'
+    cloud_service_types = CLOUD_SERVICE_TYPES
 
     customer_gateways = None
     vpn_gateways = None
@@ -141,9 +142,7 @@ class VPCConnector(SchematicAWSConnector):
             }
         ]
 
-        # init cloud service type
-        for cst in CLOUD_SERVICE_TYPES:
-            resources.append(cst)
+        resources.extend(self.set_service_code_in_cloud_service_type())
 
         # Region
         for region_name in self.region_names:

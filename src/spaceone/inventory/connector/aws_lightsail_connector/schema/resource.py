@@ -548,4 +548,3 @@ class DistributionResource(LightsailResource):
 
 class DistributionResponse(CloudServiceResponse):
     resource = PolyModelType(DistributionResource)
-

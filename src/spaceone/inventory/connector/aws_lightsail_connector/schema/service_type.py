@@ -178,8 +178,6 @@ cst_snapshot.name = 'Snapshot'
 cst_snapshot.provider = 'aws'
 cst_snapshot.group = 'Lightsail'
 cst_snapshot.labels = ['Storage']
-cst_snapshot.is_primary = True
-cst_snapshot.is_major = True
 cst_snapshot.service_code = 'AmazonLightsail'
 cst_snapshot.tags = {
     'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-Lightsail.svg',
@@ -306,8 +304,6 @@ cst_ip.name = 'StaticIP'
 cst_ip.provider = 'aws'
 cst_ip.group = 'Lightsail'
 cst_ip.labels = ['Networking']
-cst_ip.is_primary = True
-cst_ip.is_major = True
 cst_ip.service_code = 'AmazonLightsail'
 cst_ip.tags = {
     'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-Lightsail.svg',

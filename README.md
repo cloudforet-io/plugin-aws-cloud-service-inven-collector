@@ -1,13 +1,22 @@
-# plugin-aws-cloud-service-inven-collector
+<h1 align="center">AWS Cloud Service Collector</h1>  
 
-![AWS Cloud Services](https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/aws-cloudservice.svg)
+<br/>  
+<div align="center" style="display:flex;">  
+  <img width="245" src="https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/aws-cloudservice.svg">
+  <p> 
+    <br>
+    <img alt="Version"  src="https://img.shields.io/badge/version-1.13.7-blue.svg?cacheSeconds=2592000"  />    
+    <a href="https://www.apache.org/licenses/LICENSE-2.0"  target="_blank"><img alt="License: Apache 2.0"  src="https://img.shields.io/badge/License-Apache 2.0-yellow.svg" /></a> 
+  </p> 
+</div>    
+
 **Plugin to collect AWS Cloud Services**
 
 > SpaceONE's [plugin-aws-cloud-service-inven-collector](https://github.com/spaceone-dev/plugin-aws-cloud-services) is a convenient tool to get cloud service data from AWS.
 
 
 Find us also at [Dockerhub](https://hub.docker.com/repository/docker/spaceone/plugin-aws-cloud-service-inven-collector)
-> Latest stable version : 1.13.5
+> Latest stable version : 1.13.7
 
 Please contact us if you need any further information. (<support@spaceone.dev>)
 
@@ -156,37 +165,39 @@ The following is a list of services being collected and service code information
 
 |No.|Service name|Service Code|
 |---|------|---|
-|1|AWS Certifcate Manager|acm|
-|2|API Gateway (REST API)|apigateway|
-|3|API Gateway V2 (Websocket)|apigatewayv2|
-|4|Auto Scaling Group|autoscaling|
-|5|CloudFront|cloudfront|
-|6|CloudTrail|cloudtrail|
-|7|Direct Connect|directconnect|
-|8|DocumentDB|docdb|
-|9|DynamoDB|dynamodb|
-|10|Elastic Block Store (EBS)|ebs|
-|11|EC2 (SecurityGroup, AMI, EIP)|ec2|
-|12|Elastic Container Registry (ECR)|ecr|
-|13|Elastic Container Service (ECS)|ecs|
-|14|Elastic File System (EFS)|efs|
-|15|Elastic Kubernetes Service (EKS)|eks|
-|16|Elasticache|elasticache|
-|17|Elastic Load Balancer (ELB)|elbv2|
-|18|Identity Access Management (IAM)|iam|
-|19|Kinesis Data Stream|kinesis|
-|20|Kinesis Firehose|firehose|
-|21|Key Management System (KMS)|kms|
-|22|Lambda|lambda|
-|21|Managed Streaming for Apache Kafka (MSK)|msk|
-|22|Relational Database Service (RDS)|rds|
-|23|Redshift|redshift|
-|24|Route53|route53|
-|25|Simple Cloud Storage (S3)|s3|
-|26|Secrets Manager|secretsmanager|
-|27|Simple Notification Service (SNS)|sns|
-|28|Simple Queue Service (SQS)|sqs|
-|29|Virtual Private Cloud (VPC)|vpc|
+|1|AWS Certifcate Manager|AWSCertificateManager|
+|2|API Gateway (REST API)|AmazonApiGateway|
+|3|API Gateway V2 (Websocket)|AmazonApiGateway|
+|4|Auto Scaling Group|AmazonEC2|
+|5|CloudFront|AmazonCloudFront|
+|6|CloudTrail|AWSCloudTrail|
+|7|Direct Connect|AWSDirectConnect|
+|8|DocumentDB|AmazonDocDB|
+|9|DynamoDB|AmazonDynamoDB|
+|10|Elastic Block Store (EBS)|AmazonEC2|
+|11|EC2 (SecurityGroup, AMI, EIP)|AmazonEC2|
+|12|Elastic Container Registry (ECR)|AmazonECR|
+|13|Elastic Container Service (ECS)|AmazonECS|
+|14|Elastic File System (EFS)|AmazonEFS|
+|15|Elastic Kubernetes Service (EKS)|AmazonEKS|
+|16|Elasticache|AmazonElastiCache|
+|17|Elastic Load Balancer (ELB)|AWSELB|
+|18|Identity Access Management (IAM)|-|
+|19|Kinesis Data Stream|AmazonKinesis|
+|20|Kinesis Firehose|AmazonKinesisFirehose|
+|21|Key Management System (KMS)|awskms|
+|22|Lambda|AWSLambda|
+|21|Managed Streaming for Apache Kafka (MSK)|AmazonMSK|
+|22|Relational Database Service (RDS)|AmazonRDS|
+|23|Redshift|AmazonRedshift|
+|24|Route53|AmazonRoute53|
+|25|Simple Cloud Storage (S3)|AmazonS3|
+|26|Secrets Manager|AWSSecretsManager|
+|27|Simple Notification Service (SNS)|AmazonSNS|
+|28|Simple Queue Service (SQS)|AWSQueueService|
+|29|Virtual Private Cloud (VPC)|AmazonVPC|
+|30|Lightsail|AmazonLightsail|
+
 
 ---
 
@@ -331,14 +342,33 @@ options:
 
 Update plugin through spacectl command with the created yaml file.
 
-<pre><code>
-> spacectl exec update_plugin inventory.Collector -f update_collector.yaml
-</code></pre>
+### Service Code Mapper : Convert service code in Cloud Service Type what you want.
 
+If `service_code_mappers` is added in options, You can replace the service code specified in the cloud service type.
+The service code set by default can be checked in the Service List item of this document.
+
+The `service_code_mappers` items that can be specified are as follows.
+
+<pre>
+<code>
+{
+    "service_code_mappers": {
+        "AmazonEC2": "Amazon Elastic Computing",
+        "AmazonRDS": "Amazon Relation Database",
+    }
+}
+</code>
+</pre>
+
+---
 
 ## Release Note
 
-### Ver 1.13.1-3
+### Ver 1.13.7
+* Add feature to convert service_code to what you want using options ([#417](https://github.com/spaceone-dev/plugin-aws-cloud-service-inven-collector/issues/417))
+
+### Ver 1.13.1-6
+
 * Fix some bugs..!
 
 ### Ver 1.13

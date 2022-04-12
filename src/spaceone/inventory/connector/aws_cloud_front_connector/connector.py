@@ -17,14 +17,14 @@ class CFConnector(SchematicAWSConnector):
     service_name = 'cloudfront'
     cloud_service_group = 'CloudFront'
     cloud_service_type = 'Distribution'
+    cloud_service_types = CLOUD_SERVICE_TYPES
 
     def get_resources(self):
         _LOGGER.debug("[get_resources] START: Cloudfront")
         resources = []
         start_time = time.time()
 
-        for cst in CLOUD_SERVICE_TYPES:
-            resources.append(cst)
+        resources.extend(self.set_service_code_in_cloud_service_type())
 
         try:
             for data in self.request_data():

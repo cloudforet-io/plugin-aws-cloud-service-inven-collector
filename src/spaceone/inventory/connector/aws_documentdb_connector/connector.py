@@ -16,6 +16,7 @@ EXCLUDE_REGION = ['us-west-1', 'ap-east-1', 'eu-north-1', 'me-south-1', 'sa-east
 class DocumentDBConnector(SchematicAWSConnector):
     service_name = 'docdb'
     cloud_service_group = 'DocumentDB'
+    cloud_service_types = CLOUD_SERVICE_TYPES
 
     _parameter_groups = []
     _subnet_groups = []
@@ -25,9 +26,7 @@ class DocumentDBConnector(SchematicAWSConnector):
         resources = []
         start_time = time.time()
 
-        # init cloud service type
-        for cst in CLOUD_SERVICE_TYPES:
-            resources.append(cst)
+        resources.extend(self.set_service_code_in_cloud_service_type())
 
         for region_name in self.region_names:
             if region_name in EXCLUDE_REGION:

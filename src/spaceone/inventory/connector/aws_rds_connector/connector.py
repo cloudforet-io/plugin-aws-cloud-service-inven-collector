@@ -21,6 +21,7 @@ DEFAULT_RDS_FILTER = ['aurora', 'aurora-mysql', 'mysql', 'mariadb', 'postgres',
 class RDSConnector(SchematicAWSConnector):
     service_name = 'rds'
     cloud_service_group = 'RDS'
+    cloud_service_types = CLOUD_SERVICE_TYPES
 
     def get_resources(self):
         _LOGGER.debug("[get_resources] START: RDS")
@@ -55,9 +56,7 @@ class RDSConnector(SchematicAWSConnector):
             }
         ]
 
-        # init cloud service type
-        for cst in CLOUD_SERVICE_TYPES:
-            resources.append(cst)
+        resources.extend(self.set_service_code_in_cloud_service_type())
 
         for region_name in self.region_names:
             self.reset_region(region_name)

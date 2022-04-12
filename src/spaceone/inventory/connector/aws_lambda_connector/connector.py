@@ -18,6 +18,7 @@ _LOGGER = logging.getLogger(__name__)
 class LambdaConnector(SchematicAWSConnector):
     service_name = 'lambda'
     cloud_service_group = 'Lambda'
+    cloud_service_types = CLOUD_SERVICE_TYPES
 
     def get_resources(self):
         _LOGGER.debug("[get_resources] START: Lambda")
@@ -37,9 +38,7 @@ class LambdaConnector(SchematicAWSConnector):
             }
         ]
 
-        # init cloud service type
-        for cst in CLOUD_SERVICE_TYPES:
-            resources.append(cst)
+        resources.extend(self.set_service_code_in_cloud_service_type())
 
         for region_name in self.region_names:
             self.reset_region(region_name)

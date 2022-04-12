@@ -8,7 +8,8 @@ from spaceone.inventory.connector.aws_elasticache_connector.schema.resource impo
     MemcachedResource, MemcachedResponse
 from spaceone.inventory.connector.aws_elasticache_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
-from spaceone.inventory.libs.schema.resource import ReferenceModel
+from spaceone.inventory.libs.schema.resource import ReferenceModel, CloudWatchModel
+
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -16,15 +17,14 @@ _LOGGER = logging.getLogger(__name__)
 class ElastiCacheConnector(SchematicAWSConnector):
     service_name = 'elasticache'
     cloud_service_group = 'ElastiCache'
+    cloud_service_types = CLOUD_SERVICE_TYPES
 
     def get_resources(self):
         _LOGGER.debug("[get_resources] START: ElastiCache")
         resources = []
         start_time = time.time()
 
-        # init cloud service type
-        for cst in CLOUD_SERVICE_TYPES:
-            resources.append(cst)
+        resources.extend(self.set_service_code_in_cloud_service_type())
 
         for region_name in self.region_names:
             self.reset_region(region_name)
@@ -171,7 +171,8 @@ class ElastiCacheConnector(SchematicAWSConnector):
 
         return nodes
 
-    def set_configuration_endpoint_display(self, endpoint):
+    @staticmethod
+    def set_configuration_endpoint_display(endpoint):
         if endpoint:
             return f'{endpoint.get("Address")}:{endpoint.get("Port")}'
         else:

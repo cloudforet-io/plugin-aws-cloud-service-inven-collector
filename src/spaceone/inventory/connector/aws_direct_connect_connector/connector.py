@@ -9,7 +9,6 @@ from spaceone.inventory.connector.aws_direct_connect_connector.schema.resource i
     VirtualPrivateGatewayResponse, LAGResource, LAGResponse
 from spaceone.inventory.connector.aws_direct_connect_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
-from spaceone.inventory.libs.schema.resource import ReferenceModel
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -17,11 +16,14 @@ _LOGGER = logging.getLogger(__name__)
 class DirectConnectConnector(SchematicAWSConnector):
     service_name = 'directconnect'
     cloud_service_group = 'DirectConnect'
+    cloud_service_types = CLOUD_SERVICE_TYPES
 
     def get_resources(self):
         _LOGGER.debug("[get_resources] START: Direct Connect")
         resources = []
         start_time = time.time()
+
+        resources.extend(self.set_service_code_in_cloud_service_type())
 
         collect_resources = [
             {
@@ -45,10 +47,6 @@ class DirectConnectConnector(SchematicAWSConnector):
                 'response_schema': LAGResponse
             },
         ]
-
-        # init cloud service type
-        for cst in CLOUD_SERVICE_TYPES:
-            resources.append(cst)
 
         # merge data
         for region_name in self.region_names:

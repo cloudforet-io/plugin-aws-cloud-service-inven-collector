@@ -16,6 +16,7 @@ class SQSConnector(SchematicAWSConnector):
     service_name = 'sqs'
     cloud_service_group = 'SQS'
     cloud_service_type = 'Queue'
+    cloud_service_types = CLOUD_SERVICE_TYPES
 
     def get_resources(self) -> List[SQSResponse]:
         _LOGGER.debug("[get_resources] START: SQS")
@@ -28,9 +29,7 @@ class SQSConnector(SchematicAWSConnector):
             'response_schema': SQSResponse
         }
 
-        # init cloud service type
-        for cst in CLOUD_SERVICE_TYPES:
-            resources.append(cst)
+        resources.extend(self.set_service_code_in_cloud_service_type())
 
         # merge data
         for region_name in self.region_names:

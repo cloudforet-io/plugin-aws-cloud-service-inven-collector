@@ -103,7 +103,8 @@ class AWSConnector(BaseConnector):
 
 class SchematicAWSConnector(AWSConnector):
     function_response_schema = CloudServiceResponse
-    
+    cloud_service_types = []
+
     cloud_service_group = ''
     cloud_service_type = ''
 
@@ -161,9 +162,6 @@ class SchematicAWSConnector(AWSConnector):
             
         return resources
 
-    def get_resource_tags(self, tags_obj):
-        return [CloudServiceResourceTags({'key': tag.key, 'value': tag.value}, strict=False) for tag in tags_obj]
-
     def generate_error(self, region_name, resource_id, error_message):
         _LOGGER.error(f'[generate_error] [{self.service_name}] [{region_name}] {error_message}')
 
@@ -182,7 +180,20 @@ class SchematicAWSConnector(AWSConnector):
 
         return error_resource_response
 
-    def datetime_to_iso8601(self, value: datetime.datetime):
+    def set_service_code_in_cloud_service_type(self):
+        if 'service_code_mappers' in self.options:
+            svc_code_maps = self.options['service_code_mappers']
+
+            for cst in self.cloud_service_types:
+                if getattr(cst.resource, 'service_code') and cst.resource.service_code in svc_code_maps:
+                    cst.resource.service_code = svc_code_maps[cst.resource.service_code]
+
+            return self.cloud_service_types
+        else:
+            return self.cloud_service_types
+
+    @staticmethod
+    def datetime_to_iso8601(value: datetime.datetime):
         if isinstance(value, datetime.datetime):
             value = value.replace(tzinfo=None)
             return f"{value.isoformat(timespec='seconds')}TZD"
@@ -192,3 +203,7 @@ class SchematicAWSConnector(AWSConnector):
     @staticmethod
     def convert_tags(tags):
         return [{'key': tag, 'value': tags[tag]} for tag in tags]
+
+    @staticmethod
+    def get_resource_tags(tags_obj):
+        return [CloudServiceResourceTags({'key': tag.key, 'value': tag.value}, strict=False) for tag in tags_obj]

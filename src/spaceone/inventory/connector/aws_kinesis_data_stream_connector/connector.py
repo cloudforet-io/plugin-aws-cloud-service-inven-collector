@@ -15,6 +15,7 @@ class KinesisDataStreamConnector(SchematicAWSConnector):
     service_name = "kinesis"
     cloud_service_group = 'KinesisDataStream'
     cloud_service_type = 'DataStream'
+    cloud_service_types = CLOUD_SERVICE_TYPES
 
     def get_resources(self):
         _LOGGER.debug("[get_resources] START: Kinesis Data Stream")
@@ -29,8 +30,7 @@ class KinesisDataStreamConnector(SchematicAWSConnector):
             }
         ]
 
-        for cst in CLOUD_SERVICE_TYPES:
-            resources.append(cst)
+        resources.extend(self.set_service_code_in_cloud_service_type())
 
         for region_name in self.region_names:
             self.reset_region(region_name)
