@@ -37,7 +37,7 @@ CLOUD_SERVICE_GROUP_MAP = {
     'KinesisDataStream': 'KinesisDataStreamConnectorManager',
     'MSK': 'MSKConnectorManager',
     'KinesisFirehose': 'KinesisFirehoseConnectorManager',
-    # 'Lightsail': 'LightsailConnectorManager'
+    'Lightsail': 'LightsailConnectorManager'
 }
 
 REGION_INFO = {

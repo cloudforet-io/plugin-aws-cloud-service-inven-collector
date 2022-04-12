@@ -1,0 +1,15 @@
+---
+cloud_service_group: Lightsail
+cloud_service_type: Instance
+name: Count by Blueprint
+query:
+  aggregate:
+    - group:
+        keys:
+          - name: name
+            key: data.blueprint_name
+        fields:
+          - name: value
+            operator: count
+options:
+  chart_type: TREEMAP

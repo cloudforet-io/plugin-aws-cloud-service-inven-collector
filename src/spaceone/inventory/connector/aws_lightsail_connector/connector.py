@@ -22,6 +22,7 @@ class LightsailConnector(SchematicAWSConnector):
     service_name = 'lightsail'
     cloud_service_group = 'Lightsail'
     cloud_service_type = 'Instance'
+    cloud_service_types = CLOUD_SERVICE_TYPES
 
     def get_resources(self):
         _LOGGER.debug("[get_resources] START: Lightsail")
@@ -81,9 +82,7 @@ class LightsailConnector(SchematicAWSConnector):
             }
         ]
 
-        # init cloud service type
-        for cst in CLOUD_SERVICE_TYPES:
-            resources.append(cst)
+        resources.extend(self.set_service_code_in_cloud_service_type())
 
         for region_name in self.region_names:
             if region_name in EXCLUDE_REGION:

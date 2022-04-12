@@ -401,3 +401,27 @@ class InstanceHealthSummary(Model):
     instance_health_region = StringType(deserialize_from="instanceHealthReason", serialize_when_none=False, choices=['Lb.RegistrationInProgress', 'Lb.InitialHealthChecking', 'Lb.InternalError',
                                                                                                                      'Instance.ResponseCodeMismatch', 'Instance.Timeout', 'Instance.FailedHealthChecks',
                                                                                                                      'Instance.NotRegistered', 'Instance.NotInUse', 'Instance.DeregistrationInProgress', 'Instance.InvalidState', 'Instance.IpUnusable'])
+
+
+class TlsCertificateSummary(Model):
+    name = StringType(serialize_when_none=False)
+    is_attached = BooleanType(deserialize_from="isAttached", serialize_when_none=False)
+
+
+class LoadBalancer(ResourceBase):
+    dns_name = StringType(deserialize_from="dnsName", serialize_when_none=False)
+    state = StringType(deserialize_from="state", serialize_when_none=False, choices=['active', 'provisioning',
+                                                                                     'active_impaired', 'failed', 'unknown'])
+    protocol = StringType(serialize_when_none=False)
+    public_ports = ListType(StringType, deserialize_from="publicPorts", serialize_when_none=False)
+    health_check_path = StringType(deserialize_from="healthCheckPath", serialize_when_none=False)
+    instance_port = StringType(deserialize_from="instancePort", serialize_when_none=False)
+    instance_health_summary = ListType(ModelType(InstanceHealthSummary), default=[], serialize_when_none=False)
+    tls_certificate_summary = ListType(ModelType(TlsCertificateSummary), default=[], serialize_when_none=False)
+    ip_address_type = StringType(deserialize_from="ipAddressType", serialize_when_none=False, choices=['dualstack', 'ipv4'])
+
+    def reference(self, region_code):
+        return {
+            "resource_id": self.arn,
+            "external_link": f"https://lightsail.aws.amazon.com/ls/webapp/{region_code}/load-balancers/{self.name}/"
+        }

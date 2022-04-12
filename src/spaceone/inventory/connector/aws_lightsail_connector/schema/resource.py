@@ -375,3 +375,176 @@ class DomainResource(LightsailResource):
 
 class DomainResponse(CloudServiceResponse):
     resource = PolyModelType(DomainResource)
+
+
+'''
+Container
+'''
+container = ItemDynamicLayout.set_fields('Container', fields=[
+    TextDyField.data_source('ARN', 'data.arn'),
+    TextDyField.data_source('Name', 'data.name'),
+    TextDyField.data_source('Support Code', 'data.support_code'),
+    DateTimeDyField.data_source('Created At', 'data.created_at'),
+    TextDyField.data_source('Availability Zone', 'data.location.availability_zone'),
+    TextDyField.data_source('Region', 'data.location.region_name'),
+    TextDyField.data_source('Name', 'data.container_service_name'),
+    TextDyField.data_source('Power', 'data.power'),
+    TextDyField.data_source('Power ID', 'data.power_id'),
+    TextDyField.data_source('State', 'data.power_id'),
+    TextDyField.data_source('Scale', 'data.scale'),
+    EnumDyField.data_source('Disabled', 'data.is_disabled', default_badge={
+        'indigo.500': ['true'], 'coral.600': ['false']
+    }),
+    TextDyField.data_source('Private Domain Name', 'data.privateDomainName'),
+    TextDyField.data_source('URL', 'data.url')
+])
+
+container_state_detail = ItemDynamicLayout.set_fields('State', root_path='data.state_detail', fields=[
+    TextDyField.data_source('Code', 'code'),
+    TextDyField.data_source('Message', 'message')
+])
+
+container_current_deployment = ItemDynamicLayout.set_fields('Current Deployment', root_path='data.current_deployment', fields=[
+    TextDyField.data_source('Version', 'version'),
+    TextDyField.data_source('State', 'state'),
+    TextDyField.data_source('Name', 'public_endpoint.container_name'),
+    TextDyField.data_source('Port', 'public_endpoint.container_port'),
+    TextDyField.data_source('Health Status', 'public_endpoint.health_check.success_code')
+])
+
+container_next_deployment = ItemDynamicLayout.set_fields('Next Deployment', root_path='data.next_deployment', fields=[
+    TextDyField.data_source('Version', 'version'),
+    TextDyField.data_source('State', 'state'),
+    TextDyField.data_source('Name', 'public_endpoint.container_name'),
+    TextDyField.data_source('Port', 'public_endpoint.container_port'),
+    TextDyField.data_source('Health Status', 'public_endpoint.health_check.success_code')
+])
+
+container_tags = SimpleTableDynamicLayout.set_tags()
+
+container_metadata = CloudServiceMeta.set_layouts(layouts=[container, container_state_detail, container_current_deployment,
+                                                           container_next_deployment, container_tags])
+
+
+class ContainerServiceResource(LightsailResource):
+    cloud_service_type = StringType(default='Container')
+    data = ModelType(ContainerService)
+    _metadata = ModelType(CloudServiceMeta, default=container_metadata, serialized_name='metadata')
+
+
+class ContainerServiceResponse(CloudServiceResponse):
+    resource = PolyModelType(ContainerServiceResource)
+
+
+'''
+LoadBalancer
+'''
+loadbalancer = ItemDynamicLayout.set_fields('LoadBalancer', fields=[
+    TextDyField.data_source('ARN', 'data.arn'),
+    TextDyField.data_source('Name', 'data.name'),
+    TextDyField.data_source('Support Code', 'data.support_code'),
+    DateTimeDyField.data_source('Created At', 'data.created_at'),
+    TextDyField.data_source('Availability Zone', 'data.location.availability_zone'),
+    TextDyField.data_source('Region', 'data.location.region_name'),
+    TextDyField.data_source('DNS', 'data.dns_name'),
+    TextDyField.data_source('State', 'data.state'),
+    TextDyField.data_source('Protocol', 'data.protocol'),
+    ListDyField.data_source('Public Ports', 'data.public_ports', default_badge={
+        'type': 'outline'
+    }),
+    TextDyField.data_source('Health Check Path', 'data.health_check_path'),
+    TextDyField.data_source('Instance Port', 'data.instance_port'),
+    TextDyField.data_source('IP Address Type', 'data.ip_address_type')
+])
+
+loadbalancer_instance_health_summary = TableDynamicLayout.set_fields('Instance Health', root_path='data.instance_health_summary', fields=[
+    TextDyField.data_source('Instance Name', 'instance_name'),
+    TextDyField.data_source('Health', 'instance_health'),
+    TextDyField.data_source('Region', 'instance_health_region')
+])
+
+loadbalancer_tls_certificate_summary = TableDynamicLayout.set_fields('TLS Certificate', root_path='data.tls_certificate_summary', fields=[
+    TextDyField.data_source('Name', 'name'),
+    EnumDyField.data_source('Attached', 'is_attached', default_badge={
+        'indigo.500': ['true'], 'coral.600': ['false']
+    }),
+])
+
+loadbalancer_metadata = CloudServiceMeta.set_layouts(layouts=[loadbalancer, loadbalancer_instance_health_summary, loadbalancer_tls_certificate_summary])
+
+
+class LoadBalancerResource(LightsailResource):
+    cloud_service_type = StringType(default='LoadBalancer')
+    data = ModelType(LoadBalancer)
+    _metadata = ModelType(CloudServiceMeta, default=loadbalancer_metadata, serialized_name='metadata')
+
+
+class LoadBalancerResponse(CloudServiceResponse):
+    resource = PolyModelType(LoadBalancerResource)
+
+
+'''
+Distribution
+'''
+
+distribution = ItemDynamicLayout.set_fields('Distribution', fields=[
+    TextDyField.data_source('ARN', 'data.arn'),
+    TextDyField.data_source('Name', 'data.name'),
+    TextDyField.data_source('Support Code', 'data.support_code'),
+    DateTimeDyField.data_source('Created At', 'data.created_at'),
+    TextDyField.data_source('Availability Zone', 'data.location.availability_zone'),
+    TextDyField.data_source('Region', 'data.location.region_name'),
+    ListDyField.data_source('Alternative Domain Names', 'data.alternative_domain_names', default_badge={
+        'type': 'outline'
+    }),
+    TextDyField.data_source('Status', 'data.status'),
+    EnumDyField.data_source('Disabled', 'data.is_disabled', default_badge={
+        'indigo.500': ['true'], 'coral.600': ['false']
+    }),
+    TextDyField.data_source('Domain Name', 'data.domain_name'),
+    TextDyField.data_source('Bundle ID', 'data.bundle_id'),
+    TextDyField.data_source('Certificate Name', 'data.certificate_name'),
+    TextDyField.data_source('Origin Public DNS', 'data.origin_public_dns'),
+    EnumDyField.data_source('Able To Update Bundle', 'data.able_to_update_bundle', default_badge={
+        'indigo.500': ['true'], 'coral.600': ['false']
+    }),
+    TextDyField.data_source('IP Address Type', 'data.ip_address_type'),
+    TextDyField.data_source('Default Cache Behavior', 'data.default_cache_behavior.behavior'),
+
+])
+
+distribution_origin = ItemDynamicLayout.set_fields('Origin', root_path='data.origin', fields=[
+    TextDyField.data_source('Name', 'name'),
+    TextDyField.data_source('Resource Type', 'resource_type'),
+    TextDyField.data_source('Region Name', 'region_name'),
+    TextDyField.data_source('Protocol Policy', 'protocol_policy')
+])
+
+distribution_cache_behavior_settings = ItemDynamicLayout.set_fields('Cache Behavior Settings', root_path='data.cache_behavior_settings', fields=[
+    TextDyField.data_source('Default TTL', 'default_ttl'),
+    TextDyField.data_source('Mininum TTL', 'minimum_ttl'),
+    TextDyField.data_source('Maximum TTL', 'maximum_ttl'),
+    TextDyField.data_source('Allowed Http Methods', 'allowed_http_methods'),
+    TextDyField.data_source('Cached Http Methods', 'cached_http_methods'),
+    TextDyField.data_source('Forwarded Cookies', 'forwarded_cookies'),
+    TextDyField.data_source('Forwarded Headers', 'forwarded_headers'),
+    TextDyField.data_source('Forwarded Query', 'forwarded_query_strings')
+])
+
+distribution_cache_behavior = TableDynamicLayout.set_fields('Cache Behavior', root_path='data.cache_behavior', fields=[
+    TextDyField.data_source('Path', 'path'),
+    TextDyField.data_source('Behavior', 'behavior')
+])
+
+
+distribution_metadata = CloudServiceMeta.set_layouts(layouts=[distribution, distribution_origin, distribution_cache_behavior, distribution_cache_behavior_settings])
+
+
+class DistributionResource(LightsailResource):
+    cloud_service_type = StringType(default='Distribution')
+    data = ModelType(Distribution)
+    _metadata = ModelType(CloudServiceMeta, default=distribution_metadata, serialized_name='metadata')
+
+
+class DistributionResponse(CloudServiceResponse):
+    resource = PolyModelType(DistributionResource)
