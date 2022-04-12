@@ -84,8 +84,8 @@ Disk
 disk = ItemDynamicLayout.set_fields('Disk', fields=[
     TextDyField.data_source('ARN', 'data.arn'),
     TextDyField.data_source('Name', 'data.name'),
+    TextDyField.data_source('State', 'data.state'),
     TextDyField.data_source('Support Code', 'data.support_code'),
-    DateTimeDyField.data_source('Created At', 'data.created_at'),
     TextDyField.data_source('Availability Zone', 'data.location.availability_zone'),
     TextDyField.data_source('Region', 'data.location.region_name'),
     SizeField.data_source('Size', 'data.size_in_gb', options={
@@ -95,18 +95,18 @@ disk = ItemDynamicLayout.set_fields('Disk', fields=[
     EnumDyField.data_source('System Disk', 'data.is_system_disk', default_badge={
         'indigo.500': ['true'], 'coral.600': ['false']
     }),
-    TextDyField.data_source('IOPS', 'disk.iops'),
-    TextDyField.data_source('Path', 'disk.path'),
-    TextDyField.data_source('State', 'disk.state'),
-    TextDyField.data_source('Attached To', 'disk.attached_to'),
+    TextDyField.data_source('IOPS', 'data.iops'),
+    TextDyField.data_source('Path', 'data.path'),
+    TextDyField.data_source('Attached To', 'data.attached_to'),
     EnumDyField.data_source('Attached', 'data.is_attached', default_badge={
         'indigo.500': ['true'], 'coral.600': ['false']
     }),
     TextDyField.data_source('Attachment State', 'data.attachment_state'),
-    SizeField.data_source('GB In Use', 'data.gb_in_use', options={
+    SizeField.data_source('GB In Use', 'data.size_in_gb', options={
         'display_unit': 'GB',
         'source_unit': 'GB'
-    })
+    }),
+    DateTimeDyField.data_source('Created At', 'data.created_at')
 ])
 
 disk_addons = TableDynamicLayout.set_fields('Snapshot Time', root_path='data.add_ons', fields=[
@@ -241,7 +241,6 @@ staticip = ItemDynamicLayout.set_fields('StaticIP', fields=[
     TextDyField.data_source('ARN', 'data.arn'),
     TextDyField.data_source('Name', 'data.name'),
     TextDyField.data_source('Support Code', 'data.support_code'),
-    DateTimeDyField.data_source('Created At', 'data.created_at'),
     TextDyField.data_source('Availability Zone', 'data.location.availability_zone'),
     TextDyField.data_source('Region', 'data.location.region_name'),
     TextDyField.data_source('IP', 'data.ip_address'),
@@ -249,6 +248,7 @@ staticip = ItemDynamicLayout.set_fields('StaticIP', fields=[
     EnumDyField.data_source('Attached', 'data.is_attached', default_badge={
         'indigo.500': ['true'], 'coral.600': ['false']
     }),
+    DateTimeDyField.data_source('Created At', 'data.created_at'),
 ])
 
 staticip_metadata = CloudServiceMeta.set_layouts(layouts=[staticip])
@@ -307,16 +307,18 @@ rds_hardware = ItemDynamicLayout.set_fields('Hardware', root_path='data.hardware
     })
 ])
 
+
+rds_master_endpoint = ItemDynamicLayout.set_fields('Master Endpoint', root_path='data.master_endpoint', fields=[
+    TextDyField.data_source('Address', 'address'),
+    TextDyField.data_source('Port', 'port')
+])
+
+
 rds_pending_modified_values = ItemDynamicLayout.set_fields('Pending Modified Values', root_path='data.pending_modified_values', fields=[
     TextDyField.data_source('Engine Version', 'engine_version'),
     EnumDyField.data_source('Backup Retention Enabled', 'backup_retention_enabled', default_badge={
         'indigo.500': ['true'], 'coral.600': ['false']
     }),
-])
-
-rds_master_endpoint = ItemDynamicLayout.set_fields('Master Endpoint', root_path='data.master_endpoint', fields=[
-    TextDyField.data_source('Port', 'port'),
-    TextDyField.data_source('Address', 'address')
 ])
 
 rds_pending_maintenance_actions = TableDynamicLayout.set_fields('Pending Maintenance Actions', root_path='data.pending_maintenance_actions', fields=[
@@ -327,7 +329,7 @@ rds_pending_maintenance_actions = TableDynamicLayout.set_fields('Pending Mainten
 
 rds_tags = SimpleTableDynamicLayout.set_tags()
 
-rds_metadata = CloudServiceMeta.set_layouts(layouts=[rds, rds_hardware, rds_pending_modified_values, rds_master_endpoint,
+rds_metadata = CloudServiceMeta.set_layouts(layouts=[rds, rds_hardware, rds_master_endpoint, rds_pending_modified_values,
                                                      rds_pending_maintenance_actions, rds_tags])
 
 
@@ -381,13 +383,11 @@ class DomainResponse(CloudServiceResponse):
 Container
 '''
 container = ItemDynamicLayout.set_fields('Container', fields=[
+    TextDyField.data_source('Name', 'data.container_service_name'),
     TextDyField.data_source('ARN', 'data.arn'),
-    TextDyField.data_source('Name', 'data.name'),
     TextDyField.data_source('Support Code', 'data.support_code'),
-    DateTimeDyField.data_source('Created At', 'data.created_at'),
     TextDyField.data_source('Availability Zone', 'data.location.availability_zone'),
     TextDyField.data_source('Region', 'data.location.region_name'),
-    TextDyField.data_source('Name', 'data.container_service_name'),
     TextDyField.data_source('Power', 'data.power'),
     TextDyField.data_source('Power ID', 'data.power_id'),
     TextDyField.data_source('State', 'data.power_id'),
@@ -396,7 +396,8 @@ container = ItemDynamicLayout.set_fields('Container', fields=[
         'indigo.500': ['true'], 'coral.600': ['false']
     }),
     TextDyField.data_source('Private Domain Name', 'data.privateDomainName'),
-    TextDyField.data_source('URL', 'data.url')
+    TextDyField.data_source('URL', 'data.url'),
+    DateTimeDyField.data_source('Created At', 'data.created_at')
 ])
 
 container_state_detail = ItemDynamicLayout.set_fields('State', root_path='data.state_detail', fields=[
@@ -409,7 +410,11 @@ container_current_deployment = ItemDynamicLayout.set_fields('Current Deployment'
     TextDyField.data_source('State', 'state'),
     TextDyField.data_source('Name', 'public_endpoint.container_name'),
     TextDyField.data_source('Port', 'public_endpoint.container_port'),
-    TextDyField.data_source('Health Status', 'public_endpoint.health_check.success_code')
+    TextDyField.data_source('Health Check Interval Seconds', 'public_endpoint.health_check.interval_seconds'),
+    TextDyField.data_source('Health Check Timeout Seconds', 'public_endpoint.health_check.timeout_seconds'),
+    TextDyField.data_source('Health Check Unhealthy Threshold', 'public_endpoint.health_check.unhealthy_threshold'),
+    TextDyField.data_source('Health Check Path', 'public_endpoint.health_check.path'),
+    DateTimeDyField.data_source('Created At', 'created_at')
 ])
 
 container_next_deployment = ItemDynamicLayout.set_fields('Next Deployment', root_path='data.next_deployment', fields=[
@@ -440,10 +445,9 @@ class ContainerServiceResponse(CloudServiceResponse):
 LoadBalancer
 '''
 loadbalancer = ItemDynamicLayout.set_fields('LoadBalancer', fields=[
-    TextDyField.data_source('ARN', 'data.arn'),
     TextDyField.data_source('Name', 'data.name'),
+    TextDyField.data_source('ARN', 'data.arn'),
     TextDyField.data_source('Support Code', 'data.support_code'),
-    DateTimeDyField.data_source('Created At', 'data.created_at'),
     TextDyField.data_source('Availability Zone', 'data.location.availability_zone'),
     TextDyField.data_source('Region', 'data.location.region_name'),
     TextDyField.data_source('DNS', 'data.dns_name'),
@@ -454,7 +458,8 @@ loadbalancer = ItemDynamicLayout.set_fields('LoadBalancer', fields=[
     }),
     TextDyField.data_source('Health Check Path', 'data.health_check_path'),
     TextDyField.data_source('Instance Port', 'data.instance_port'),
-    TextDyField.data_source('IP Address Type', 'data.ip_address_type')
+    TextDyField.data_source('IP Address Type', 'data.ip_address_type'),
+    DateTimeDyField.data_source('Created At', 'data.created_at')
 ])
 
 loadbalancer_instance_health_summary = TableDynamicLayout.set_fields('Instance Health', root_path='data.instance_health_summary', fields=[
@@ -488,16 +493,14 @@ Distribution
 '''
 
 distribution = ItemDynamicLayout.set_fields('Distribution', fields=[
-    TextDyField.data_source('ARN', 'data.arn'),
     TextDyField.data_source('Name', 'data.name'),
+    TextDyField.data_source('ARN', 'data.arn'),
+    TextDyField.data_source('Status', 'data.status'),
     TextDyField.data_source('Support Code', 'data.support_code'),
-    DateTimeDyField.data_source('Created At', 'data.created_at'),
-    TextDyField.data_source('Availability Zone', 'data.location.availability_zone'),
     TextDyField.data_source('Region', 'data.location.region_name'),
     ListDyField.data_source('Alternative Domain Names', 'data.alternative_domain_names', default_badge={
         'type': 'outline'
     }),
-    TextDyField.data_source('Status', 'data.status'),
     EnumDyField.data_source('Disabled', 'data.is_disabled', default_badge={
         'indigo.500': ['true'], 'coral.600': ['false']
     }),
@@ -510,7 +513,7 @@ distribution = ItemDynamicLayout.set_fields('Distribution', fields=[
     }),
     TextDyField.data_source('IP Address Type', 'data.ip_address_type'),
     TextDyField.data_source('Default Cache Behavior', 'data.default_cache_behavior.behavior'),
-
+    DateTimeDyField.data_source('Created At', 'data.created_at'),
 ])
 
 distribution_origin = ItemDynamicLayout.set_fields('Origin', root_path='data.origin', fields=[
