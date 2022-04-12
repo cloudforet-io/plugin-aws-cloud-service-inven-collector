@@ -119,7 +119,7 @@ class LightsailConnector(SchematicAWSConnector):
 
                     yield {
                         'data': instance,
-                        'name': instance.get('name', ''),
+                        'name': instance.name,
                         'instance_type': instance.bundle_id,
                         'account': self.account_id
                     }
@@ -147,7 +147,7 @@ class LightsailConnector(SchematicAWSConnector):
 
                     yield {
                         'data': disk,
-                        'name': disk.get('name', ''),
+                        'name': disk.name,
                         'instance_size': float(disk.size_in_gb),
                         'account': self.account_id
                     }
@@ -175,7 +175,7 @@ class LightsailConnector(SchematicAWSConnector):
 
                     yield {
                         'data': disk_snapshot,
-                        'name': disk_snapshot.get('name', ''),
+                        'name': disk_snapshot.name,
                         'instance_size': float(disk_snapshot.size_in_gb),
                         'account': self.account_id
                     }
@@ -195,7 +195,7 @@ class LightsailConnector(SchematicAWSConnector):
 
                 yield {
                     'data': bucket,
-                    'name': bucket.get('name', ''),
+                    'name': bucket.name,
                     'account': self.account_id
                 }
 
@@ -222,7 +222,7 @@ class LightsailConnector(SchematicAWSConnector):
 
                     yield {
                         'data': static_ip,
-                        'name': static_ip.get('name', ''),
+                        'name': static_ip.name,
                         'account': self.account_id
                     }
 
@@ -249,7 +249,7 @@ class LightsailConnector(SchematicAWSConnector):
 
                     yield {
                         'data': rdb,
-                        'name': rdb.get('name', ''),
+                        'name': rdb.name,
                         'account': self.account_id
                     }
 
@@ -270,7 +270,7 @@ class LightsailConnector(SchematicAWSConnector):
 
                 yield {
                     'data': container_service,
-                    'name': container_service.get('containerServiceName', ''),
+                    'name': container_service.container_service_name,
                     'account': self.account_id
                 }
 
@@ -297,7 +297,7 @@ class LightsailConnector(SchematicAWSConnector):
 
                     yield {
                         'data': lb,
-                        'name': lb.get('name', ''),
+                        'name': lb.name,
                         'account': self.account_id
                     }
 
@@ -324,7 +324,7 @@ class LightsailConnector(SchematicAWSConnector):
 
                     yield {
                         'data': domain,
-                        'name': domain.get('name', ''),
+                        'name': domain.name,
                         'account': self.account_id
                     }
 
@@ -345,7 +345,7 @@ class LightsailConnector(SchematicAWSConnector):
 
                 yield {
                     'data': distribution,
-                    'name': distribution.get('name', ''),
+                    'name': distribution.name,
                     'account': self.account_id
                 }
 
