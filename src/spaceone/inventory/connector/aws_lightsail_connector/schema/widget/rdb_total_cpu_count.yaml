@@ -1,0 +1,15 @@
+---
+cloud_service_group: Lightsail
+cloud_service_type: Database
+name: Total Count
+query:
+  aggregate:
+    - group:
+        fields:
+          - name: value
+            operator: data.hardware.cpu_count
+options:
+  value_options:
+    key: value
+    options:
+      default: 0
