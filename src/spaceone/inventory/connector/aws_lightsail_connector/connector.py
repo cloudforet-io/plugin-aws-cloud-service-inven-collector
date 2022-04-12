@@ -91,7 +91,9 @@ class LightsailConnector(SchematicAWSConnector):
             self.reset_region(region_name)
 
             for collect_resource in collect_resources:
+                # domain/distribution resources are global
                 if (collect_resource['request_method'] == self.request_domain_data) or (collect_resource['request_method'] == self.request_distribution_data):
+                    # Global resource query api to us-east-1 region
                     if region_name == 'us-east-1':
                         resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
                 else:

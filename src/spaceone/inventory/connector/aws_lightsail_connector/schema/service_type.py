@@ -40,8 +40,7 @@ cst_instance._metadata = CloudServiceTypeMeta.set_meta(
             'warning': ['provisioning'],
             'alert': ['stopped']
         }),
-
-        TextDyField.data_source('Availability Zone', ']'),
+        TextDyField.data_source('Availability Zone', 'data.location.availability_zone'),
         TextDyField.data_source('Public IP', 'data.public_ip_address'),
         TextDyField.data_source('Private IP', 'data.private_ip_address'),
         TextDyField.data_source('ARN', 'data.arn', options={
@@ -112,7 +111,7 @@ cst_disk.tags = {
 cst_disk._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
         TextDyField.data_source('Name', 'name'),
-        EnumDyField.data_source('State', 'data.state.name', default_state={
+        EnumDyField.data_source('State', 'data.state', default_state={
             'safe': ['in-use'],
             'available': ['available'],
             'warning': ['pending'],
@@ -173,6 +172,10 @@ cst_disk._metadata = CloudServiceTypeMeta.set_meta(
 '''
  Snapshot
 '''
+snapshot_total_count_conf = os.path.join(current_dir, 'widget/snapshot_total_count.yaml')
+snapshot_count_by_region_conf = os.path.join(current_dir, 'widget/snapshot_count_by_region.yaml')
+snapshot_count_by_account_conf = os.path.join(current_dir, 'widget/snapshot_count_by_account.yaml')
+
 cst_snapshot = CloudServiceTypeResource()
 cst_snapshot.name = 'Snapshot'
 cst_snapshot.provider = 'aws'
@@ -188,7 +191,10 @@ cst_snapshot._metadata = CloudServiceTypeMeta.set_meta(
         TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('State', 'data.state'),
         TextDyField.data_source('Size (GB)', 'data.size_in_gb'),
-        TextDyField.data_source('Availability Zone', 'data.location.availability_zone'),
+        TextDyField.data_source('Auto Snapshot', 'data.is_from_auto_snapshot'),
+        TextDyField.data_source('Availability Zone', 'data.location.availability_zone', options={
+            'is_optional': True
+        }),
         TextDyField.data_source('ARN', 'data.arn', options={
             'is_optional': True
         }),
@@ -197,31 +203,19 @@ cst_snapshot._metadata = CloudServiceTypeMeta.set_meta(
         }),
         TextDyField.data_source('Region', 'data.location.region_name', options={
             'is_optional': True
-        }),
-        TextDyField.data_source('Object Versioning', 'data.object_versioning', options={
-            'is_optional': True
-        }),
-        ListDyField.data_source('Readonly Access Accounts', 'data.readonly_access_accounts', options={
-            'delimiter': '<br>',
-            'is_optional': True
-        }),
-        TextDyField.data_source('Access Log Config', 'data.access_log_config.enabled', options={
-            'is_optional': True
-        }),
+        })
     ],
     search=[
         SearchField.set(name='Name', key='name'),
-        SearchField.set(name='ARN', key='data.arn'),
-        SearchField.set(name='URL', key='data.url'),
-        SearchField.set(name='Availability Zone', key='data.location.availability_zone'),
-        SearchField.set(name='Bundle ID', key='data.bundle_id'),
-        SearchField.set(name='Access Object', key='data.access_rules.get_object'),
-        SearchField.set(name='Object Versioning ', key='data.object_versioning'),
-        SearchField.set(name='Readonly Access Accounts', key='data.readonly_access_accounts'),
-        SearchField.set(name='Access Log Config Enabled ', key='data.access_log_config.enabled', data_type='Boolean'),
-        SearchField.set(name='Access Log Destination', key='data.access_log_config.destination')
+        SearchField.set(name='State', key='data.state'),
+        SearchField.set(name='Region', key='data.location.region_name'),
+        SearchField.set(name='Size (GB)', key='data.size_in_gb'),
+        SearchField.set(name='Auto Snapshot', key='data.is_from_auto_snapshot'),
     ],
     widget=[
+        CardWidget.set(**get_data_from_yaml(snapshot_total_count_conf)),
+        ChartWidget.set(**get_data_from_yaml(snapshot_count_by_region_conf)),
+        ChartWidget.set(**get_data_from_yaml(snapshot_count_by_account_conf)),
     ]
 )
 
@@ -250,18 +244,16 @@ cst_bucket._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
         TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('State', 'data.state.code'),
-        TextDyField.data_source('Object Access', 'data.access_rules.get_object'),
+        TextDyField.data_source('Region', 'data.location.region_name'),
         TextDyField.data_source('URL', 'data.url'),
-        TextDyField.data_source('Availability Zone', 'data.location.availability_zone'),
+        TextDyField.data_source('Object Access', 'data.access_rules.get_object'),
         TextDyField.data_source('ARN', 'data.arn', options={
             'is_optional': True
         }),
         TextDyField.data_source('Bundle ID', 'data.bundle_id', options={
             'is_optional': True
         }),
-        TextDyField.data_source('Region', 'data.location.region_name', options={
-            'is_optional': True
-        }),
+
         TextDyField.data_source('Object Versioning', 'data.object_versioning', options={
             'is_optional': True
         }),
@@ -275,15 +267,13 @@ cst_bucket._metadata = CloudServiceTypeMeta.set_meta(
     ],
     search=[
         SearchField.set(name='Name', key='name'),
-        SearchField.set(name='ARN', key='data.arn'),
+        SearchField.set(name='State', key='data.state.code'),
+        SearchField.set(name='Region', key='data.state.code'),
         SearchField.set(name='URL', key='data.url'),
-        SearchField.set(name='Availability Zone', key='data.location.availability_zone'),
         SearchField.set(name='Bundle ID', key='data.bundle_id'),
-        SearchField.set(name='Access Object', key='data.access_rules.get_object'),
         SearchField.set(name='Object Versioning ', key='data.object_versioning'),
         SearchField.set(name='Readonly Access Accounts', key='data.readonly_access_accounts'),
-        SearchField.set(name='Access Log Config Enabled ', key='data.access_log_config.enabled', data_type='Boolean'),
-        SearchField.set(name='Access Log Destination', key='data.access_log_config.destination')
+        SearchField.set(name='Access Log Config Enabled ', key='data.access_log_config.enabled', data_type='Boolean')
     ],
     widget=[
         CardWidget.set(**get_data_from_yaml(bucket_total_count_conf)),
@@ -314,14 +304,14 @@ cst_ip._metadata = CloudServiceTypeMeta.set_meta(
         TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('IP Address', 'data.ip_address'),
         TextDyField.data_source('Attached to ', 'data.attached_to'),
-        TextDyField.data_source('Availability Zone', 'data.location.availability_zone'),
+        TextDyField.data_source('Is Attached', 'data.is_attached.enabled'),
         TextDyField.data_source('ARN', 'data.arn', options={
             'is_optional': True
         }),
-        TextDyField.data_source('Region', 'data.location.region_name', options={
+        TextDyField.data_source('Availability Zone', 'data.location.availability_zone', options={
             'is_optional': True
         }),
-        TextDyField.data_source('Is Attached', 'data.is_attached.enabled', options={
+        TextDyField.data_source('Region', 'data.location.region_name', options={
             'is_optional': True
         }),
     ],
@@ -366,7 +356,6 @@ cst_rdb.tags = {
 cst_rdb._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
         TextDyField.data_source('Name', 'name'),
-        TextDyField.data_source('Engine', 'data.engine'),
         EnumDyField.data_source('State', 'data.state', default_state={
             'safe': ['available'],
             'warning': ['creating', 'deleting', 'maintenance', 'modifying', 'rebooting',
@@ -376,6 +365,7 @@ cst_rdb._metadata = CloudServiceTypeMeta.set_meta(
         TextDyField.data_source('CPU ', 'data.hardware.cpu_count'),
         TextDyField.data_source('Memory ', 'data.hardware.ram_size_in_gb'),
         TextDyField.data_source('Disk (GB)', 'data.hardware.disk_size_in_gb'),
+        TextDyField.data_source('Engine', 'data.engine'),
         TextDyField.data_source('Availability Zone', 'data.location.availability_zone'),
         TextDyField.data_source('ARN', 'data.arn', options={
             'is_optional': True
@@ -464,11 +454,9 @@ cst_container._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
         TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('Type', 'data.power'),
-        TextDyField.data_source('State', 'data.state'),
+        TextDyField.data_source('State', 'data.current_deployment.state'),
         TextDyField.data_source('Scale ', 'data.scale'),
-        TextDyField.data_source('Disabled', 'data.is_disabled', options={
-            'is_optional': True
-        }),
+        TextDyField.data_source('Disabled', 'data.is_disabled'),
         TextDyField.data_source('PrivateDomainName', 'data.privateDomainName', options={
             'is_optional': True
         }),
@@ -479,7 +467,7 @@ cst_container._metadata = CloudServiceTypeMeta.set_meta(
     search=[
         SearchField.set(name='Name', key='name'),
         SearchField.set(name='Type', key='data.power'),
-        SearchField.set(name='State', key='data.state'),
+        SearchField.set(name='State', key='data.current_deployment.state'),
         SearchField.set(name='Scale', key='data.scale'),
         SearchField.set(name='Disabled', key='data.is_disabled'),
         SearchField.set(name='PrivateDomainName', key='data.privateDomainName'),
@@ -515,21 +503,15 @@ cst_loadbalancer.tags = {
 cst_loadbalancer._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
         TextDyField.data_source('Name', 'name'),
-        TextDyField.data_source('SupportCode', 'data.support_code'),
+        TextDyField.data_source('State', 'data.state'),
+        TextDyField.data_source('Protocol', 'data.protocol'),
+        TextDyField.data_source('Public Ports', 'data.public_ports'),
+        TextDyField.data_source('DNS Name', 'data.dns_name'),
         TextDyField.data_source('Availability Zone', 'data.availability_zone'),
+        TextDyField.data_source('SupportCode', 'data.support_code', options={
+            'is_optional': True
+        }),
         TextDyField.data_source('Region Name', 'data.region_name', options={
-            'is_optional': True
-        }),
-        TextDyField.data_source('DNS Name', 'data.dns_name', options={
-            'is_optional': True
-        }),
-        TextDyField.data_source('State', 'data.state', options={
-            'is_optional': True
-        }),
-        TextDyField.data_source('Protocol', 'data.protocol', options={
-            'is_optional': True
-        }),
-        TextDyField.data_source('Public Ports', 'data.public_ports', options={
             'is_optional': True
         }),
         TextDyField.data_source('Health Check Path', 'data.health_check_path', options={
@@ -585,18 +567,14 @@ cst_distribution.tags = {
 cst_distribution._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
         TextDyField.data_source('Name', 'name'),
-        TextDyField.data_source('SupportCode', 'data.support_code'),
-        TextDyField.data_source('Availability Zone', 'data.location.availabilityZone'),
+        TextDyField.data_source('Status', 'data.status'),
+        TextDyField.data_source('Availability Zone', 'data.location.region_name'),
+        TextDyField.data_source('DNS Name', 'data.domain_name'),
+        TextDyField.data_source('Enabled', 'data.is_enabled'),
+        TextDyField.data_source('SupportCode', 'data.support_code', options={
+            'is_optional': True
+        }),
         TextDyField.data_source('Region Name', 'data.location.region_name', options={
-            'is_optional': True
-        }),
-        TextDyField.data_source('DNS Name', 'data.domain_name', options={
-            'is_optional': True
-        }),
-        TextDyField.data_source('Status', 'data.status', options={
-            'is_optional': True
-        }),
-        TextDyField.data_source('Enabled', 'data.is_enabled', options={
             'is_optional': True
         }),
         TextDyField.data_source('Alternative Domain Names', 'data.alternative_domain_names', options={
@@ -607,15 +585,12 @@ cst_distribution._metadata = CloudServiceTypeMeta.set_meta(
         }),
         TextDyField.data_source('Origin', 'data.origin.name', options={
             'is_optional': True
-        }),
-        TextDyField.data_source('Origin', 'data.origin', options={
-            'is_optional': True
         })
     ],
 
     search=[
         SearchField.set(name='Name', key='name'),
-        SearchField.set(name='SupportCode', key='data.support_code'),
+        SearchField.set(name='Status', key='data.status'),
         SearchField.set(name='Availability Zone', key='data.availability_zone'),
         SearchField.set(name='Region Name', key='data.region_name'),
         SearchField.set(name='DNS Name', key='data.dns_name'),
@@ -625,6 +600,40 @@ cst_distribution._metadata = CloudServiceTypeMeta.set_meta(
         CardWidget.set(**get_data_from_yaml(distribution_total_count_conf)),
         CardWidget.set(**get_data_from_yaml(distribution_count_by_region_conf)),
         CardWidget.set(**get_data_from_yaml(distribution_count_by_account_conf))
+    ]
+)
+
+'''
+Domain
+'''
+domain_total_count_conf = os.path.join(current_dir, 'widget/distribution_total_count.yaml')
+domain_count_by_account_conf = os.path.join(current_dir, 'widget/distribution_count_by_account.yaml')
+
+cst_domain = CloudServiceTypeResource()
+cst_domain.name = 'Domain'
+cst_domain.provider = 'aws'
+cst_domain.group = 'Lightsail'
+cst_domain.labels = ['Networking']
+cst_domain.is_primary = True
+cst_domain.is_major = True
+cst_domain.service_code = 'AmazonLightsail'
+cst_domain.tags = {
+    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-Lightsail.svg',
+}
+
+cst_domain._metadata = CloudServiceTypeMeta.set_meta(
+    fields=[
+        TextDyField.data_source('Name', 'name'),
+        TextDyField.data_source('Region', 'data.location.region_name')
+    ],
+
+    search=[
+        SearchField.set(name='Name', key='name'),
+        SearchField.set(name='Region', key='data.location.region_name'),
+    ],
+    widget=[
+        CardWidget.set(**get_data_from_yaml(domain_total_count_conf)),
+        CardWidget.set(**get_data_from_yaml(domain_count_by_account_conf))
     ]
 )
 
@@ -638,5 +647,6 @@ CLOUD_SERVICE_TYPES = [
     CloudServiceTypeResponse({'resource': cst_rdb}),
     CloudServiceTypeResponse({'resource': cst_container}),
     CloudServiceTypeResponse({'resource': cst_loadbalancer}),
-    CloudServiceTypeResponse({'resource': cst_distribution})
+    CloudServiceTypeResponse({'resource': cst_distribution}),
+    CloudServiceTypeResponse({'resource': cst_domain})
 ]
