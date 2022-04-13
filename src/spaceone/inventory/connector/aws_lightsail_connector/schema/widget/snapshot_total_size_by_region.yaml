@@ -1,0 +1,27 @@
+---
+cloud_service_group: Lightsail
+cloud_service_type: Snapshot
+name: Count by Region
+query:
+  aggregate:
+    - group:
+        keys:
+          - name: name
+            key: region_code
+        fields:
+          - name: value
+            key: data.size_in_gb
+            operator: sum
+options:
+  chart_type: COLUMN
+  name_options:
+    key: name
+    reference:
+      resource_type: "inventory.Region"
+      reference_key: region_code
+  value_options:
+    key: value
+    type: size
+    options:
+      source_unit: GB
+      default: 0

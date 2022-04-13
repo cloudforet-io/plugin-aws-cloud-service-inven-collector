@@ -2,6 +2,7 @@ import time
 import logging
 from typing import List
 import json
+from datetime import datetime, timedelta
 
 from spaceone.core.utils import *
 from spaceone.inventory.connector.aws_lightsail_connector.schema.data import Instance, Disk, Bucket, DiskSnapshot, \
@@ -192,6 +193,11 @@ class LightsailConnector(SchematicAWSConnector):
 
         for data in self.client.get_buckets().get('buckets', []):
             try:
+                size, count = self.get_bucket_count_and_size(data.get('name'))
+                data.update({
+                    'object_count': count,
+                    'object_total_size': size
+                })
                 bucket = Bucket(data, strict=False)
 
                 yield {
@@ -354,3 +360,43 @@ class LightsailConnector(SchematicAWSConnector):
                 resource_id = data.get('arn', '')
                 error_resource_response = self.generate_error(region_name, resource_id, e)
                 yield {'data': error_resource_response}
+
+    def get_bucket_count_and_size(self, bucket_name):
+        size = float(self._get_bucket_metric_data(bucket_name, "NumberOfObjects"))
+        count = float(self._get_bucket_metric_data(bucket_name, "BucketSizeBytes"))
+
+        return size, count
+
+    def _get_bucket_metric_data(self, bucket_name, metric_name):
+        start_time, end_time = self._get_start_end_time()
+
+        if metric_name == "NumberOfObjects":
+            response = self.client.get_bucket_metric_data(
+                bucketName=bucket_name,
+                metricName="NumberOfObjects",
+                startTime=start_time,
+                endTime=end_time,
+                period=86400, # Number of seconds, bucket storage metrics are reported once per day.
+                statistics=["Average"],
+                unit="Count"
+            )
+        else:
+            # If metricName is BucketSizeBytes
+            response = self.client.get_bucket_metric_data(
+                bucketName=bucket_name,
+                metricName="BucketSizeBytes",
+                startTime=start_time,
+                endTime=end_time,
+                period=86400, # Number of seconds, bucket storage metrics are reported once per day.
+                statistics=["Average"],
+                unit="Bytes"
+            )
+
+        return response.get("metricData")[0].get("average", 0) if len(response.get("metricData")) > 0 else 0
+
+    @staticmethod
+    def _get_start_end_time():
+        end = datetime.datetime.utcnow()
+        start = end - timedelta(days=7)
+
+        return start, end

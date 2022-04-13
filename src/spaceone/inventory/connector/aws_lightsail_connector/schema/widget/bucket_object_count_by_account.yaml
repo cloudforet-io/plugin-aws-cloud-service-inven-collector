@@ -1,0 +1,16 @@
+---
+cloud_service_group: Lightsail
+cloud_service_type: Bucket
+name: Object Count by Account
+query:
+  aggregate:
+    - group:
+        keys:
+          - name: name
+            key: account
+        fields:
+          - name: value
+            key: data.object_count
+            operator: sum
+options:
+  chart_type: DONUT

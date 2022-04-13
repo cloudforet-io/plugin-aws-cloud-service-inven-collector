@@ -1,7 +1,7 @@
 import os
 from spaceone.inventory.libs.common_parser import *
 from spaceone.inventory.libs.schema.dynamic_widget import ChartWidget, CardWidget
-from spaceone.inventory.libs.schema.dynamic_field import TextDyField, SearchField, EnumDyField, ListDyField
+from spaceone.inventory.libs.schema.dynamic_field import TextDyField, SearchField, EnumDyField, ListDyField, SizeField
 from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, \
     CloudServiceTypeMeta
 
@@ -179,6 +179,9 @@ cst_disk._metadata = CloudServiceTypeMeta.set_meta(
 snapshot_total_count_conf = os.path.join(current_dir, 'widget/snapshot_total_count.yaml')
 snapshot_count_by_region_conf = os.path.join(current_dir, 'widget/snapshot_count_by_region.yaml')
 snapshot_count_by_account_conf = os.path.join(current_dir, 'widget/snapshot_count_by_account.yaml')
+snapshot_total_size_conf = os.path.join(current_dir, 'widget/snapshot_total_size.yaml')
+snapshot_total_size_by_account_conf = os.path.join(current_dir, 'widget/snapshot_total_size_by_account.yaml')
+snapshot_total_size_by_region_conf = os.path.join(current_dir, 'widget/snapshot_total_size_by_region.yaml')
 
 cst_snapshot = CloudServiceTypeResource()
 cst_snapshot.name = 'Snapshot'
@@ -219,6 +222,9 @@ cst_snapshot._metadata = CloudServiceTypeMeta.set_meta(
     ],
     widget=[
         CardWidget.set(**get_data_from_yaml(snapshot_total_count_conf)),
+        CardWidget.set(**get_data_from_yaml(snapshot_total_size_conf)),
+        ChartWidget.set(**get_data_from_yaml(snapshot_total_size_by_region_conf)),
+        ChartWidget.set(**get_data_from_yaml(snapshot_total_size_by_account_conf)),
         ChartWidget.set(**get_data_from_yaml(snapshot_count_by_region_conf)),
         ChartWidget.set(**get_data_from_yaml(snapshot_count_by_account_conf)),
     ]
@@ -232,6 +238,12 @@ cst_snapshot._metadata = CloudServiceTypeMeta.set_meta(
 bucket_total_count_conf = os.path.join(current_dir, 'widget/bucket_total_count.yaml')
 bucket_count_by_region_conf = os.path.join(current_dir, 'widget/bucket_count_by_region.yaml')
 bucket_count_by_account_conf = os.path.join(current_dir, 'widget/bucket_count_by_account.yaml')
+bucket_object_count_by_account_conf = os.path.join(current_dir, 'widget/bucket_object_count_by_account.yaml')
+bucket_object_count_by_region_conf = os.path.join(current_dir, 'widget/bucket_object_count_by_region.yaml')
+bucket_object_total_count_conf = os.path.join(current_dir, 'widget/bucket_object_total_count.yaml')
+bucket_object_total_size_conf = os.path.join(current_dir, 'widget/bucket_object_total_size.yaml')
+bucket_object_total_size_by_account_conf = os.path.join(current_dir, 'widget/bucket_object_total_size_by_account.yaml')
+bucket_object_total_size_by_region_conf = os.path.join(current_dir, 'widget/bucket_object_total_size_by_region.yaml')
 
 cst_bucket = CloudServiceTypeResource()
 cst_bucket.name = 'Bucket'
@@ -252,7 +264,8 @@ cst_bucket._metadata = CloudServiceTypeMeta.set_meta(
             'safe': ['OK'],
             'alert': ['Unknown']
         }),
-        TextDyField.data_source('Region', 'data.location.region_name'),
+        TextDyField.data_source('Object Counts', 'data.object_count'),
+        SizeField.data_source('Object Total Size', 'data.object_total_size'),
         TextDyField.data_source('URL', 'data.url'),
         TextDyField.data_source('Object Access', 'data.access_rules.get_object'),
         TextDyField.data_source('ARN', 'data.arn', options={
@@ -285,8 +298,14 @@ cst_bucket._metadata = CloudServiceTypeMeta.set_meta(
     ],
     widget=[
         CardWidget.set(**get_data_from_yaml(bucket_total_count_conf)),
+        CardWidget.set(**get_data_from_yaml(bucket_object_total_count_conf)),
+        CardWidget.set(**get_data_from_yaml(bucket_object_total_size_conf)),
         ChartWidget.set(**get_data_from_yaml(bucket_count_by_region_conf)),
         ChartWidget.set(**get_data_from_yaml(bucket_count_by_account_conf)),
+        ChartWidget.set(**get_data_from_yaml(bucket_object_count_by_region_conf)),
+        ChartWidget.set(**get_data_from_yaml(bucket_object_total_size_by_region_conf)),
+        ChartWidget.set(**get_data_from_yaml(bucket_object_count_by_account_conf)),
+        ChartWidget.set(**get_data_from_yaml(bucket_object_total_size_by_account_conf)),
     ]
 )
 
@@ -296,6 +315,7 @@ cst_bucket._metadata = CloudServiceTypeMeta.set_meta(
 static_ip_total_count_conf = os.path.join(current_dir, 'widget/static_ip_total_count.yaml')
 static_ip_count_by_region_conf = os.path.join(current_dir, 'widget/static_ip_count_by_region.yaml')
 static_ip_count_by_account_conf = os.path.join(current_dir, 'widget/static_ip_count_by_account.yaml')
+static_ip_use_count_by_status_conf = os.path.join(current_dir, 'widget/static_ip_use_count_by_status.yaml')
 
 cst_ip = CloudServiceTypeResource()
 cst_ip.name = 'StaticIP'
@@ -311,10 +331,10 @@ cst_ip._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
         TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('IP Address', 'data.ip_address'),
-        TextDyField.data_source('Is Attached', 'data.is_attached'),
-        EnumDyField.data_source('Attached to ', 'data.attached_to', default_badge={
+        TextDyField.data_source('Is Attached', 'data.is_attached', default_badge={
             'indigo.500': ['true'], 'coral.600': ['false']
         }),
+        EnumDyField.data_source('Attached to ', 'data.attached_to'),
         TextDyField.data_source('ARN', 'data.arn', options={
             'is_optional': True
         }),
@@ -338,6 +358,7 @@ cst_ip._metadata = CloudServiceTypeMeta.set_meta(
         CardWidget.set(**get_data_from_yaml(static_ip_total_count_conf)),
         ChartWidget.set(**get_data_from_yaml(static_ip_count_by_region_conf)),
         ChartWidget.set(**get_data_from_yaml(static_ip_count_by_account_conf)),
+        ChartWidget.set(**get_data_from_yaml(static_ip_use_count_by_status_conf)),
     ]
 )
 
@@ -347,7 +368,7 @@ cst_ip._metadata = CloudServiceTypeMeta.set_meta(
 rdb_total_count_conf = os.path.join(current_dir, 'widget/rdb_total_count.yaml')
 rdb_total_cpu_count_conf = os.path.join(current_dir, 'widget/rdb_total_cpu_count.yaml')
 rdb_total_memory_size_conf = os.path.join(current_dir, 'widget/rdb_total_memory_size.yaml')
-rdb_total_disk_size_conf = os.path.join(current_dir, 'widget/rdb_total_disk.yaml')
+rdb_total_disk_size_conf = os.path.join(current_dir, 'widget/rdb_total_disk_size.yaml')
 rdb_count_by_region_conf = os.path.join(current_dir, 'widget/rdb_count_by_region.yaml')
 rdb_count_by_account_conf = os.path.join(current_dir, 'widget/rdb_count_by_account.yaml')
 
@@ -436,6 +457,9 @@ cst_rdb._metadata = CloudServiceTypeMeta.set_meta(
     ],
     widget=[
         CardWidget.set(**get_data_from_yaml(rdb_total_count_conf)),
+        CardWidget.set(**get_data_from_yaml(rdb_total_cpu_count_conf)),
+        CardWidget.set(**get_data_from_yaml(rdb_total_memory_size_conf)),
+        CardWidget.set(**get_data_from_yaml(rdb_total_disk_size_conf)),
         ChartWidget.set(**get_data_from_yaml(rdb_count_by_region_conf)),
         ChartWidget.set(**get_data_from_yaml(rdb_count_by_account_conf)),
     ]
@@ -463,7 +487,6 @@ cst_container.tags = {
 cst_container._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
         TextDyField.data_source('Name', 'name'),
-        TextDyField.data_source('State', 'data.state'),
         EnumDyField.data_source('State', 'data.state', default_state={
             'safe': ['READY', 'RUNNING'],
             'warning': ['PENDING', 'UPDATING', 'DELETING', 'DISABLED', 'DEPLOYING']

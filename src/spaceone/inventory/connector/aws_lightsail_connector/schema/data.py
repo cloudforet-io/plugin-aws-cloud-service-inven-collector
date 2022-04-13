@@ -149,6 +149,8 @@ class Bucket(ResourceBase):
                                          deserialize_from="resourcesReceivingAccess", default=[])
     state = ModelType(BucketState, serialize_when_none=False)
     access_log_config = ModelType(BucketAccessLogConfig, deserialize_from="accessLogConfig", serialize_when_none=False)
+    object_count = FloatType(serialize_when_none=False, deserialize_from="object_count")
+    object_total_size = FloatType(serialize_when_none=False, deserialize_from="object_total_size")
 
     def reference(self, region_code):
         return {
