@@ -318,7 +318,7 @@ class CacheBehaviorSettings(Model):
 class Distribution(ResourceBase):
     alternative_domain_names = ListType(StringType, deserialize_from="alternativeDomainNames", default=[])
     status = StringType(serialize_when_none=False)
-    is_enabled = BooleanType(serialize_when_none=False)
+    is_enabled = BooleanType(deserialize_from="isEnabled", serialize_when_none=False)
     domain_name = StringType(deserialize_from="domainName", serialize_when_none=False)
     bundle_id = StringType(deserialize_from="bundleId", serialize_when_none=False)
     certificate_name = StringType(deserialize_from="certificateName", serialize_when_none=False)
@@ -377,7 +377,7 @@ class ContainerService(ResourceBase):
     container_service_name = StringType(deserialize_from="containerServiceName", serialize_when_none=False)
     power = StringType(serialize_when_none=False, choices=['nano', 'micro', 'small', 'medium', 'large', 'xlarge'])
     power_id = StringType(deserialize_from="powerId", serialize_when_none=False)
-    power_id = StringType(serialize_when_none=False, choices=['PENDING', 'READY', 'RUNNING', 'UPDATING', 'DELETING',
+    state = StringType(serialize_when_none=False, choices=['PENDING', 'READY', 'RUNNING', 'UPDATING', 'DELETING',
                                                            'DISABLED', 'DEPLOYING'])
     state_detail = ModelType(ContainerServiceStateDetail, deserialize_from="stateDetail", serialize_when_none=False)
     scale = IntType(serialize_when_none=False)

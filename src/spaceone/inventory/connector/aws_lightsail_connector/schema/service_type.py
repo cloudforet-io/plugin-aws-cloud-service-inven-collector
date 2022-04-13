@@ -31,18 +31,22 @@ cst_instance.tags = {
 cst_instance._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
         TextDyField.data_source('Name', 'name'),
-        TextDyField.data_source('Blueprint', 'data.blueprint_name'),
-        TextDyField.data_source('Bundle ID', 'data.bundle_id'),
-        TextDyField.data_source('Core', 'data.hardware.cpu_count'),
-        TextDyField.data_source('Memory', 'data.hardware.ram_size_in_gb'),
         EnumDyField.data_source('State', 'data.state.name', default_state={
             'safe': ['running'],
             'warning': ['provisioning'],
             'alert': ['stopped']
         }),
+        TextDyField.data_source('Core', 'data.hardware.cpu_count'),
+        TextDyField.data_source('Memory', 'data.hardware.ram_size_in_gb'),
         TextDyField.data_source('Availability Zone', 'data.location.availability_zone'),
         TextDyField.data_source('Public IP', 'data.public_ip_address'),
         TextDyField.data_source('Private IP', 'data.private_ip_address'),
+        TextDyField.data_source('Blueprint', 'data.blueprint_name', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Bundle ID', 'data.bundle_id', options={
+            'is_optional': True
+        }),
         TextDyField.data_source('ARN', 'data.arn', options={
             'is_optional': True
         }),
@@ -189,12 +193,14 @@ cst_snapshot.tags = {
 cst_snapshot._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
         TextDyField.data_source('Name', 'name'),
-        TextDyField.data_source('State', 'data.state'),
+        EnumDyField.data_source('State', 'data.state', default_state={
+            'safe': ['completed'],
+            'warning': ['pending'],
+            'disable': ['unknown'],
+            'alert': ['error']
+        }),
         TextDyField.data_source('Size (GB)', 'data.size_in_gb'),
         TextDyField.data_source('Auto Snapshot', 'data.is_from_auto_snapshot'),
-        TextDyField.data_source('Availability Zone', 'data.location.availability_zone', options={
-            'is_optional': True
-        }),
         TextDyField.data_source('ARN', 'data.arn', options={
             'is_optional': True
         }),
@@ -208,7 +214,6 @@ cst_snapshot._metadata = CloudServiceTypeMeta.set_meta(
     search=[
         SearchField.set(name='Name', key='name'),
         SearchField.set(name='State', key='data.state'),
-        SearchField.set(name='Region', key='data.location.region_name'),
         SearchField.set(name='Size (GB)', key='data.size_in_gb'),
         SearchField.set(name='Auto Snapshot', key='data.is_from_auto_snapshot'),
     ],
@@ -243,7 +248,10 @@ cst_bucket.tags = {
 cst_bucket._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
         TextDyField.data_source('Name', 'name'),
-        TextDyField.data_source('State', 'data.state.code'),
+        EnumDyField.data_source('State', 'data.state.code', default_state={
+            'safe': ['OK'],
+            'alert': ['Unknown']
+        }),
         TextDyField.data_source('Region', 'data.location.region_name'),
         TextDyField.data_source('URL', 'data.url'),
         TextDyField.data_source('Object Access', 'data.access_rules.get_object'),
@@ -303,8 +311,10 @@ cst_ip._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
         TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('IP Address', 'data.ip_address'),
-        TextDyField.data_source('Attached to ', 'data.attached_to'),
-        TextDyField.data_source('Is Attached', 'data.is_attached.enabled'),
+        TextDyField.data_source('Is Attached', 'data.is_attached'),
+        EnumDyField.data_source('Attached to ', 'data.attached_to', default_badge={
+            'indigo.500': ['true'], 'coral.600': ['false']
+        }),
         TextDyField.data_source('ARN', 'data.arn', options={
             'is_optional': True
         }),
@@ -357,7 +367,7 @@ cst_rdb._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
         TextDyField.data_source('Name', 'name'),
         EnumDyField.data_source('State', 'data.state', default_state={
-            'safe': ['available'],
+            'available': ['available'],
             'warning': ['creating', 'deleting', 'maintenance', 'modifying', 'rebooting',
                         'renaming', 'starting', 'stopping', 'upgrading'],
             'alert': ['failed', 'inaccessible-encryption-credentials', 'restore-error', 'stopped', 'storage-full']
@@ -453,10 +463,16 @@ cst_container.tags = {
 cst_container._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
         TextDyField.data_source('Name', 'name'),
+        TextDyField.data_source('State', 'data.state'),
+        EnumDyField.data_source('State', 'data.state', default_state={
+            'safe': ['READY', 'RUNNING'],
+            'warning': ['PENDING', 'UPDATING', 'DELETING', 'DISABLED', 'DEPLOYING']
+        }),
         TextDyField.data_source('Type', 'data.power'),
-        TextDyField.data_source('State', 'data.current_deployment.state'),
         TextDyField.data_source('Scale ', 'data.scale'),
-        TextDyField.data_source('Disabled', 'data.is_disabled'),
+        EnumDyField.data_source('Disabled', 'data.is_disabled', default_badge={
+            'indigo.500': ['true'], 'coral.600': ['false']
+        }),
         TextDyField.data_source('PrivateDomainName', 'data.privateDomainName', options={
             'is_optional': True
         }),
@@ -503,11 +519,15 @@ cst_loadbalancer.tags = {
 cst_loadbalancer._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
         TextDyField.data_source('Name', 'name'),
-        TextDyField.data_source('State', 'data.state'),
+        EnumDyField.data_source('State', 'data.state', default_state={
+            'safe': ['active'],
+            'warning': ['provisioning'],
+            'disable': ['unknown'],
+            'alert': ['active_impaired', 'failed']
+        }),
+        TextDyField.data_source('DNS Name', 'data.dns_name'),
         TextDyField.data_source('Protocol', 'data.protocol'),
         TextDyField.data_source('Public Ports', 'data.public_ports'),
-        TextDyField.data_source('DNS Name', 'data.dns_name'),
-        TextDyField.data_source('Availability Zone', 'data.availability_zone'),
         TextDyField.data_source('SupportCode', 'data.support_code', options={
             'is_optional': True
         }),
@@ -528,7 +548,6 @@ cst_loadbalancer._metadata = CloudServiceTypeMeta.set_meta(
     search=[
         SearchField.set(name='Name', key='name'),
         SearchField.set(name='SupportCode', key='data.support_code'),
-        SearchField.set(name='Availability Zone', key='data.availability_zone'),
         SearchField.set(name='Region Name', key='data.region_name'),
         SearchField.set(name='DNS Name', key='data.dns_name'),
         SearchField.set(name='State', key='data.state'),
@@ -570,7 +589,9 @@ cst_distribution._metadata = CloudServiceTypeMeta.set_meta(
         TextDyField.data_source('Status', 'data.status'),
         TextDyField.data_source('Availability Zone', 'data.location.region_name'),
         TextDyField.data_source('DNS Name', 'data.domain_name'),
-        TextDyField.data_source('Enabled', 'data.is_enabled'),
+        EnumDyField.data_source('Enabled', 'data.is_enabled', default_badge={
+            'indigo.500': ['true'], 'coral.600': ['false']
+        }),
         TextDyField.data_source('SupportCode', 'data.support_code', options={
             'is_optional': True
         }),
@@ -623,13 +644,11 @@ cst_domain.tags = {
 
 cst_domain._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'name'),
-        TextDyField.data_source('Region', 'data.location.region_name')
+        TextDyField.data_source('Name', 'name')
     ],
 
     search=[
-        SearchField.set(name='Name', key='name'),
-        SearchField.set(name='Region', key='data.location.region_name'),
+        SearchField.set(name='Name', key='name')
     ],
     widget=[
         CardWidget.set(**get_data_from_yaml(domain_total_count_conf)),
