@@ -1,0 +1,15 @@
+---
+cloud_service_group: Lightsail
+cloud_service_type: StaticIP
+name: In-use/Unused Count
+query:
+  aggregate:
+    - group:
+        keys:
+          - name: name
+            key: data.is_attached
+        fields:
+          - name: value
+            operator: count
+options:
+  chart_type: DONUT

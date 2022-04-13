@@ -1,0 +1,18 @@
+---
+cloud_service_group: Lightsail
+cloud_service_type: Snapshot
+name: Total Size
+query:
+  aggregate:
+    - group:
+        fields:
+          - name: value
+            key: data.size_in_gb
+            operator: sum
+options:
+  value_options:
+    key: value
+    type: size
+    options:
+      source_unit: GB
+      default: 0
