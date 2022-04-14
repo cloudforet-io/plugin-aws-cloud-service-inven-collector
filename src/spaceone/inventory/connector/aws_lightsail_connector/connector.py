@@ -194,6 +194,7 @@ class LightsailConnector(SchematicAWSConnector):
         for data in self.client.get_buckets().get('buckets', []):
             try:
                 size, count = self.get_bucket_count_and_size(data.get('name'))
+
                 data.update({
                     'object_count': count,
                     'object_total_size': size
@@ -363,14 +364,14 @@ class LightsailConnector(SchematicAWSConnector):
                 yield {'data': error_resource_response}
 
     def get_bucket_count_and_size(self, bucket_name):
-        size = float(self._get_bucket_metric_data(bucket_name, "NumberOfObjects"))
-        count = float(self._get_bucket_metric_data(bucket_name, "BucketSizeBytes"))
+        count = float(self._get_bucket_metric_data(bucket_name, "NumberOfObjects"))
+        size = float(self._get_bucket_metric_data(bucket_name, "BucketSizeBytes"))
 
         return size, count
 
     def _get_bucket_metric_data(self, bucket_name, metric_name):
         start_time, end_time = self._get_start_end_time()
-
+        # Only two types available NumberOfObjects|BucketSizeBytes
         if metric_name == "NumberOfObjects":
             response = self.client.get_bucket_metric_data(
                 bucketName=bucket_name,
@@ -392,12 +393,11 @@ class LightsailConnector(SchematicAWSConnector):
                 statistics=["Average"],
                 unit="Bytes"
             )
-
         return response.get("metricData")[0].get("average", 0) if len(response.get("metricData")) > 0 else 0
 
     @staticmethod
     def _get_start_end_time():
         end = datetime.datetime.utcnow()
-        start = end - timedelta(days=7)
+        start = end - timedelta(days=2)
 
         return start, end
