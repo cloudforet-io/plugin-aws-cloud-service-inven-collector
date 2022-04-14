@@ -105,8 +105,6 @@ cst_disk.name = 'Disk'
 cst_disk.provider = 'aws'
 cst_disk.group = 'Lightsail'
 cst_disk.labels = ['Compute', 'Storage']
-cst_disk.is_primary = True
-cst_disk.is_major = True
 cst_disk.service_code = 'AmazonLightsail'
 cst_disk.tags = {
     'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-Lightsail.svg',
@@ -250,8 +248,6 @@ cst_bucket.name = 'Bucket'
 cst_bucket.provider = 'aws'
 cst_bucket.group = 'Lightsail'
 cst_bucket.labels = ['Storage']
-cst_bucket.is_primary = True
-cst_bucket.is_major = True
 cst_bucket.service_code = 'AmazonLightsail'
 cst_bucket.tags = {
     'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-Lightsail.svg',
@@ -377,8 +373,6 @@ cst_rdb.name = 'Database'
 cst_rdb.provider = 'aws'
 cst_rdb.group = 'Lightsail'
 cst_rdb.labels = ['Database']
-cst_rdb.is_primary = True
-cst_rdb.is_major = True
 cst_rdb.service_code = 'AmazonLightsail'
 cst_rdb.tags = {
     'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-Lightsail.svg',
@@ -532,8 +526,6 @@ cst_loadbalancer.name = 'LoadBalancer'
 cst_loadbalancer.provider = 'aws'
 cst_loadbalancer.group = 'Lightsail'
 cst_loadbalancer.labels = ['Networking']
-cst_loadbalancer.is_primary = True
-cst_loadbalancer.is_major = True
 cst_loadbalancer.service_code = 'AmazonLightsail'
 cst_loadbalancer.tags = {
     'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-Lightsail.svg',
@@ -599,8 +591,6 @@ cst_distribution.name = 'Distribution'
 cst_distribution.provider = 'aws'
 cst_distribution.group = 'Lightsail'
 cst_distribution.labels = ['Networking']
-cst_distribution.is_primary = True
-cst_distribution.is_major = True
 cst_distribution.service_code = 'AmazonLightsail'
 cst_distribution.tags = {
     'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-Lightsail.svg',
@@ -658,8 +648,6 @@ cst_domain.name = 'Domain'
 cst_domain.provider = 'aws'
 cst_domain.group = 'Lightsail'
 cst_domain.labels = ['Networking']
-cst_domain.is_primary = True
-cst_domain.is_major = True
 cst_domain.service_code = 'AmazonLightsail'
 cst_domain.tags = {
     'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-Lightsail.svg',
