@@ -61,7 +61,7 @@ REGION_INFO = {
                        'tags': {'latitude': '37.528547', 'longitude': '126.871867', 'continent': 'asia_pacific'}},
     'ap-southeast-1': {'name': 'Asia Pacific (Singapore)',
                        'tags': {'latitude': '1.321259', 'longitude': '103.695942', 'continent': 'asia_pacific'}},
-    'ap-southeast-2	': {'name': 'Asia Pacific (Sydney)',
+    'ap-southeast-2': {'name': 'Asia Pacific (Sydney)',
                         'tags': {'latitude': '-33.921423', 'longitude': '151.188076', 'continent': 'asia_pacific'}},
     'ap-northeast-1': {'name': 'Asia Pacific (Tokyo)',
                        'tags': {'latitude': '35.648411', 'longitude': '139.792566', 'continent': 'asia_pacific'}},

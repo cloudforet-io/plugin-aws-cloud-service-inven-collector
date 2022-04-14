@@ -331,10 +331,10 @@ cst_ip._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
         TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('IP Address', 'data.ip_address'),
-        TextDyField.data_source('Is Attached', 'data.is_attached', default_badge={
+        EnumDyField.data_source('Is Attached', 'data.is_attached', default_badge={
             'indigo.500': ['true'], 'coral.600': ['false']
         }),
-        EnumDyField.data_source('Attached to ', 'data.attached_to'),
+        TextDyField.data_source('Attached To ', 'data.attached_to'),
         TextDyField.data_source('ARN', 'data.arn', options={
             'is_optional': True
         }),

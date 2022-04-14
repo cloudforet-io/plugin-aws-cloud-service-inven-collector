@@ -1,13 +1,14 @@
 ---
 cloud_service_group: Lightsail
 cloud_service_type: Database
-name: Total Count
+name: Total Disk Size
 query:
   aggregate:
     - group:
         fields:
           - name: value
-            operator: data.hardware.disk_size_in_gb
+            key: data.hardware.disk_size_in_gb
+            operator: sum
 options:
   value_options:
     key: value
