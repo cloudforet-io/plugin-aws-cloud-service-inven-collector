@@ -529,9 +529,12 @@ distribution_cache_behavior_settings = ItemDynamicLayout.set_fields('Cache Behav
     TextDyField.data_source('Maximum TTL', 'maximum_ttl'),
     TextDyField.data_source('Allowed Http Methods', 'allowed_http_methods'),
     TextDyField.data_source('Cached Http Methods', 'cached_http_methods'),
-    TextDyField.data_source('Forwarded Cookies', 'forwarded_cookies'),
-    TextDyField.data_source('Forwarded Headers', 'forwarded_headers'),
-    TextDyField.data_source('Forwarded Query', 'forwarded_query_strings')
+    ListDyField.data_source('Forwarded Cookies Header Allow List', 'forwarded_cookies.header_allow_list'),
+    TextDyField.data_source('Forwarded Cookies Option', 'forwarded_cookies.option'),
+    ListDyField.data_source('Forwarded Headers Header Allow List', 'forwarded_headers.header_allow_list'),
+    TextDyField.data_source('Forwarded Headers Option', 'forwarded_headers.option'),
+    ListDyField.data_source('Forwarded Query String Allow List', 'forwarded_query_strings.query_string_allow_list'),
+    TextDyField.data_source('Forwarded Query Option', 'forwarded_query_strings.option')
 ])
 
 distribution_cache_behavior = TableDynamicLayout.set_fields('Cache Behavior', root_path='data.cache_behavior', fields=[
