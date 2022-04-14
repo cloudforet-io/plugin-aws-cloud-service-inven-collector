@@ -203,6 +203,7 @@ class LightsailConnector(SchematicAWSConnector):
                 yield {
                     'data': bucket,
                     'name': bucket.name,
+                    'instance_size': size,
                     'account': self.account_id
                 }
 
