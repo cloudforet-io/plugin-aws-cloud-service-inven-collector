@@ -119,7 +119,16 @@ Please contact us if you need any further information. (<support@spaceone.dev>)
         * Customer Gateway
         * VPN Connection
         * VPN Gateway
-
+    * [Lightsail](/src/spaceone/inventory/connector/aws_lightsail_connector/README.md)
+        * Instance
+        * Disk
+        * Snapshot
+        * Bucket
+        * Static IP
+        * Database
+        * Container
+        * Load Balancer
+        * Distribution
 ---
 
 ## AWS Service Endpoint (in use)
@@ -263,7 +272,8 @@ authentication privilege for followings:
                 "sns:Get*",
                 "sns:List*",
                 "sqs:Get*",
-                "sqs:List*"
+                "sqs:List*",
+                "Lightsail:Get*"
             ],
             "Effect": "Allow",
             "Resource": "*"
@@ -318,7 +328,8 @@ The cloud_service_types items that can be specified are as follows.
         'ACM',
         'KinesisDataStream',
         'KinesisFirehose',
-        'MSK'
+        'MSK',
+        'Lightsail'
     ]
 }
 </code>
@@ -365,6 +376,7 @@ The `service_code_mappers` items that can be specified are as follows.
 ## Release Note
 
 ### Ver 1.13.8
+* Add Lightsail Service ([#414](https://github.com/spaceone-dev/plugin-aws-cloud-service-inven-collector/issues/414))
 * update Cloud Service Type (is_primary is True) in CertificateManager.Certificate ([#427](https://github.com/spaceone-dev/plugin-aws-cloud-service-inven-collector/issues/427))
 
 ### Ver 1.13.7
