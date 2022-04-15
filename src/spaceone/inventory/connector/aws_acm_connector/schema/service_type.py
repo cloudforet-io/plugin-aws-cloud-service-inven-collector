@@ -16,6 +16,7 @@ cst_certi.name = 'Certificate'
 cst_certi.provider = 'aws'
 cst_certi.group = 'CertificateManager'
 cst_certi.labels = ['Security']
+cst_certi.is_primary = True
 cst_certi.service_code = 'AWSCertificateManager'
 cst_certi.tags = {
     'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/AWS-Certificate-Manager.svg',
