@@ -5,7 +5,7 @@
   <img width="245" src="https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/aws-cloudservice.svg">
   <p> 
     <br>
-    <img alt="Version"  src="https://img.shields.io/badge/version-1.13.7-blue.svg?cacheSeconds=2592000"  />    
+    <img alt="Version"  src="https://img.shields.io/badge/version-1.13.8-blue.svg?cacheSeconds=2592000"  />    
     <a href="https://www.apache.org/licenses/LICENSE-2.0"  target="_blank"><img alt="License: Apache 2.0"  src="https://img.shields.io/badge/License-Apache 2.0-yellow.svg" /></a> 
   </p> 
 </div>    
@@ -16,7 +16,7 @@
 
 
 Find us also at [Dockerhub](https://hub.docker.com/repository/docker/spaceone/plugin-aws-cloud-service-inven-collector)
-> Latest stable version : 1.13.7
+> Latest stable version : 1.13.8
 
 Please contact us if you need any further information. (<support@spaceone.dev>)
 
@@ -364,8 +364,10 @@ The `service_code_mappers` items that can be specified are as follows.
 
 ## Release Note
 
+### Ver 1.13.8
+
 ### Ver 1.13.7
-* Add feature to convert service_code to what you want using options ([#417](https://github.com/spaceone-dev/plugin-aws-cloud-service-inven-collector/issues/417))
+* update Cloud Service Type (is_primary is True) in CertificateManager.Certificate ([#427](The ACM (CertificateManager) service is not visible in the Console.))
 
 ### Ver 1.13.1-6
 
