@@ -365,7 +365,7 @@ The `service_code_mappers` items that can be specified are as follows.
 ## Release Note
 
 ### Ver 1.13.8
-* update Cloud Service Type (is_primary is True) in CertificateManager.Certificate ([#427](The ACM (CertificateManager) service is not visible in the Console.))
+* update Cloud Service Type (is_primary is True) in CertificateManager.Certificate ([#427](https://github.com/spaceone-dev/plugin-aws-cloud-service-inven-collector/issues/427))
 
 ### Ver 1.13.7
 * Add feature to convert service_code to what you want using options ([#417](https://github.com/spaceone-dev/plugin-aws-cloud-service-inven-collector/issues/417))
