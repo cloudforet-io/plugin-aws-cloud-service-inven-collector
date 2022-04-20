@@ -70,14 +70,19 @@ class AWSConnector(BaseConnector):
         self.account_id = kwargs.get('account_id')
         self.region_names = kwargs.get('regions', [])
 
-    @property
-    def session(self):
-        return self.init_property('_session', partial(get_session, self.secret_data, self.region_name))
-
     def reset_region(self, region_name):
         self.region_name = region_name
         self._client = None
         self._session = None
+
+    def set_client(self, service_name):
+        self.service_name = service_name
+        self._client = self.session.client(self.service_name)
+        return self._client
+
+    @property
+    def session(self):
+        return self.init_property('_session', partial(get_session, self.secret_data, self.region_name))
 
     @property
     def init_client(self):
@@ -95,10 +100,15 @@ class AWSConnector(BaseConnector):
     def generate_arn(partition=ARN_DEFAULT_PARTITION, service="", region="", account_id="", resource_type="", resource_id=""):
         return f'arn:{partition}:{service}:{region}:{account_id}:{resource_type}/{resource_id}'
 
-    def set_client(self, service_name):
-        self.service_name = service_name
-        self._client = self.session.client(self.service_name)
-        return self._client
+    @staticmethod
+    def divide_to_chunks(resources, n):
+        """
+         For some API parameters, there is a limit to the number that can be described at one time.
+         This method divides the list value of a resource by a certain number and divides it.
+         The "resources" argument is a list value of resources, and divides it into a list of "n" arguments.
+        """
+        for i in range(0, len(resources), n):
+            yield resources[i:i + n]
 
 
 class SchematicAWSConnector(AWSConnector):
@@ -163,7 +173,7 @@ class SchematicAWSConnector(AWSConnector):
         return resources
 
     def generate_error(self, region_name, resource_id, error_message):
-        _LOGGER.error(f'[generate_error] [{self.service_name}] [{region_name}] {error_message}')
+        _LOGGER.error(f'[generate_error] [{self.service_name}] [{region_name}] {error_message}', exc_info=True)
 
         if type(error_message) is dict:
             error_resource_response = ErrorResourceResponse(

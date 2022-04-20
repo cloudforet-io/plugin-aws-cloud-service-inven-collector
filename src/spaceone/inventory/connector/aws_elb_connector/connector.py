@@ -14,6 +14,7 @@ from spaceone.inventory.libs.connector import SchematicAWSConnector
 from spaceone.inventory.libs.schema.resource import ReferenceModel, ErrorResourceResponse
 
 _LOGGER = logging.getLogger(__name__)
+MAX_TAG_RESOURCES = 20
 
 
 class ELBConnector(SchematicAWSConnector):
@@ -286,14 +287,11 @@ class ELBConnector(SchematicAWSConnector):
         return response.get('Listeners', [])
 
     def request_tags(self, resource_arns):
-        def chunks(l, n):
-            for i in range(0, len(l), n):
-                yield l[i:i + n]
-
         all_tags = []
-        for _arns in list(chunks(resource_arns, 20)):
+
+        for _arns in self.divide_to_chunks(resource_arns, MAX_TAG_RESOURCES):
             response = self.client.describe_tags(ResourceArns=_arns)
-            all_tags = all_tags + response.get('TagDescriptions', [])
+            all_tags.extend(response.get('TagDescriptions', []))
 
         return all_tags
 
