@@ -9,6 +9,11 @@ from spaceone.inventory.libs.connector import SchematicAWSConnector
 
 _LOGGER = logging.getLogger(__name__)
 
+MAX_CLUSTERS = 100
+MAX_SERVICES = 10
+MAX_TASKS = 100
+MAX_CONTAINER_INSTANCES = 100
+
 
 class ECSConnector(SchematicAWSConnector):
     service_name = 'ecs'
@@ -39,30 +44,34 @@ class ECSConnector(SchematicAWSConnector):
 
     def request_data(self, region_name) -> List[Cluster]:
         cluster_arns = self.list_clusters()
-        response = self.client.describe_clusters(clusters=list(cluster_arns))
 
-        for raw in response.get('clusters', []):
-            try:
-                raw.update({
-                    'services': self.set_services(raw['clusterArn']),
-                    'tasks': self.set_tasks(raw['clusterArn']),
-                    'container_instances': self.set_container_instances(raw['clusterArn']),
-                    'account_id': self.account_id
-                })
+        for _arns in self.divide_to_chunks(cluster_arns, MAX_CLUSTERS):
+            response = self.client.describe_clusters(clusters=_arns)
 
-                cluster_vo = Cluster(raw, strict=False)
-                yield {
-                    'data': cluster_vo,
-                    'name': cluster_vo.cluster_name,
-                    'account': self.account_id
-                }
+            for raw in response.get('clusters', []):
+                try:
+                    raw.update({
+                        'services': self.set_services(raw['clusterArn']),
+                        'tasks': self.set_tasks(raw['clusterArn']),
+                        'container_instances': self.set_container_instances(raw['clusterArn']),
+                        'account_id': self.account_id
+                    })
 
-            except Exception as e:
-                resource_id = raw.get('clusterArn', '')
-                error_resource_response = self.generate_error(region_name, resource_id, e)
-                yield {'data': error_resource_response}
+                    cluster_vo = Cluster(raw, strict=False)
+                    yield {
+                        'data': cluster_vo,
+                        'name': cluster_vo.cluster_name,
+                        'account': self.account_id
+                    }
+
+                except Exception as e:
+                    resource_id = raw.get('clusterArn', '')
+                    error_resource_response = self.generate_error(region_name, resource_id, e)
+                    yield {'data': error_resource_response}
 
     def list_clusters(self):
+        clusters = []
+
         paginator = self.client.get_paginator('list_clusters')
         response_iterator = paginator.paginate(
             PaginationConfig={
@@ -71,47 +80,52 @@ class ECSConnector(SchematicAWSConnector):
             }
         )
         for data in response_iterator:
-            for raw in data.get('clusterArns', []):
-                yield raw
+            clusters.extend(data.get('clusterArns', []))
+
+        return clusters
 
     def set_services(self, cluster_arn):
+        services = []
         service_arns = self.list_services(cluster_arn)
 
-        if len(service_arns) > 0:
-            response = self.client.describe_services(cluster=cluster_arn, services=service_arns)
-            return list(map(lambda _service: Service(_service, strict=False), response.get('services', [])))
+        if service_arns:
+            for _arns in self.divide_to_chunks(service_arns, MAX_SERVICES):
+                response = self.client.describe_services(cluster=cluster_arn, services=_arns)
+                services.extend(list(map(lambda _service: Service(_service, strict=False),
+                                         response.get('services', []))))
 
-        return []
+        return services
 
     def set_tasks(self, cluster_arn):
         tasks = []
         task_arns = self.list_tasks(cluster_arn)
 
-        if len(task_arns) > 0:
-            response = self.client.describe_tasks(cluster=cluster_arn, tasks=task_arns)
+        if task_arns:
+            for _arns in self.divide_to_chunks(task_arns, MAX_TASKS):
+                response = self.client.describe_tasks(cluster=cluster_arn, tasks=_arns)
 
-            for task in response.get('tasks', []):
-                if task_name := self._get_task_name(task.get('taskArn', '')):
-                    task['task'] = task_name
+                for task in response.get('tasks', []):
+                    if task_name := self._get_task_name(task.get('taskArn', '')):
+                        task['task'] = task_name
 
-                if task_definition := self._get_task_definition_name(task.get('taskDefinitionArn', '')):
-                    task['task_definition'] = task_definition
+                    if task_definition := self._get_task_definition_name(task.get('taskDefinitionArn', '')):
+                        task['task_definition'] = task_definition
 
-                tasks.append(Task(task, strict=False))
+                    tasks.append(Task(task, strict=False))
 
         return tasks
 
     def set_container_instances(self, cluster_arn):
+        container_instances = []
         container_instance_arns = self.list_container_instances(cluster_arn)
 
-        if len(container_instance_arns) > 0:
-            response = self.client.describe_container_instances(cluster=cluster_arn,
-                                                                containerInstances=container_instance_arns)
+        if container_instance_arns:
+            for _arns in self.divide_to_chunks(container_instance_arns, MAX_CONTAINER_INSTANCES):
+                response = self.client.describe_container_instances(cluster=cluster_arn, containerInstances=_arns)
+                container_instances.extend(list(map(lambda _instance: ContainerInstance(_instance, strict=False),
+                                                    response.get('containerInstances', []))))
 
-            return list(map(lambda _instance: ContainerInstance(_instance, strict=False),
-                            response.get('containerInstances', [])))
-
-        return []
+        return container_instances
 
     def list_services(self, cluster_arn):
         service_arns = []
@@ -125,7 +139,7 @@ class ECSConnector(SchematicAWSConnector):
         )
 
         for data in response_iterator:
-            service_arns = service_arns + data.get('serviceArns', [])
+            service_arns.extend(data.get('serviceArns', []))
 
         return service_arns
 
@@ -140,7 +154,7 @@ class ECSConnector(SchematicAWSConnector):
             }
         )
         for data in response_iterator:
-            task_arns = task_arns + data.get('taskArns', [])
+            task_arns.extend(data.get('taskArns', []))
 
         return task_arns
 
@@ -155,7 +169,7 @@ class ECSConnector(SchematicAWSConnector):
             }
         )
         for data in response_iterator:
-            instance_arns = instance_arns + data.get('containerInstanceArns', [])
+            instance_arns.extend(data.get('containerInstanceArns', []))
 
         return instance_arns
 
