@@ -16,7 +16,7 @@ from spaceone.inventory.connector.aws_lightsail_connector.schema.service_type im
 from spaceone.inventory.libs.connector import SchematicAWSConnector
 
 _LOGGER = logging.getLogger(__name__)
-EXCLUDE_REGION = ['ap-northeast-3', 'sa-east-1', 'us-west-1']
+EXCLUDE_REGION = ['ap-northeast-3', 'sa-east-1', 'us-west-1', 'me-south-1']
 
 
 class LightsailConnector(SchematicAWSConnector):
