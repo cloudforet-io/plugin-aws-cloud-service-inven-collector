@@ -1,13 +1,13 @@
 ---
 cloud_service_group: CloudFront
 cloud_service_type: Distribution
-name: Status Count by Account
+name: Count by Distribution Status
 query:
   aggregate:
     - group:
         keys:
           - name: name
-            key: data.state_display
+            key: data.status
         fields:
           - name: value
             operator: count

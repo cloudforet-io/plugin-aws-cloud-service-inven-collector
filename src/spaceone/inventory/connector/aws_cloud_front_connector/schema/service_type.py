@@ -9,7 +9,8 @@ current_dir = os.path.abspath(os.path.dirname(__file__))
 total_count_widget_conf = os.path.join(current_dir, 'widget/total_count.yaml')
 origin_total_widget_conf = os.path.join(current_dir, 'widget/origin_total_count.yaml')
 count_by_account_widget_conf = os.path.join(current_dir, 'widget/count_by_account.yaml')
-count_by_status_widget_conf = os.path.join(current_dir, 'widget/count_by_status.yaml')
+count_by_region_widget_conf = os.path.join(current_dir, 'widget/count_by_region.yaml')
+count_by_distribution_status_widget_conf = os.path.join(current_dir, 'widget/count_by_distribution_status.yaml')
 
 cst_distribution = CloudServiceTypeResource()
 cst_distribution.name = 'Distribution'
@@ -32,7 +33,7 @@ cst_distribution._metadata = CloudServiceTypeMeta.set_meta(
         ListDyField.data_source('CNAME', 'data.alias_icp_recordals', options={
             'sub_key': 'cname', 'delimiter': '<br>'
         }),
-        EnumDyField.data_source('State', 'data.state_display', default_state={
+        EnumDyField.data_source('Status', 'data.state_display', default_state={
             'safe': ['Enabled'],
             'alert': ['Disabled'],
         }),
@@ -64,7 +65,8 @@ cst_distribution._metadata = CloudServiceTypeMeta.set_meta(
         CardWidget.set(**get_data_from_yaml(total_count_widget_conf)),
         CardWidget.set(**get_data_from_yaml(origin_total_widget_conf)),
         ChartWidget.set(**get_data_from_yaml(count_by_account_widget_conf)),
-        ChartWidget.set(**get_data_from_yaml(count_by_status_widget_conf))
+        ChartWidget.set(**get_data_from_yaml(count_by_distribution_status_widget_conf)),
+        ChartWidget.set(**get_data_from_yaml(count_by_region_widget_conf))
     ]
 )
 
