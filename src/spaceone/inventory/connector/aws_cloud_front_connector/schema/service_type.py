@@ -32,7 +32,7 @@ cst_distribution._metadata = CloudServiceTypeMeta.set_meta(
         ListDyField.data_source('CNAME', 'data.alias_icp_recordals', options={
             'sub_key': 'cname', 'delimiter': '<br>'
         }),
-        EnumDyField.data_source('State', 'data.state_display', default_state={
+        EnumDyField.data_source('Status', 'data.state_display', default_state={
             'safe': ['Enabled'],
             'alert': ['Disabled'],
         }),
