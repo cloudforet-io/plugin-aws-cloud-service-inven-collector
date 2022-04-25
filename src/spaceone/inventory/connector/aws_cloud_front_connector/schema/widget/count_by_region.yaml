@@ -1,15 +1,20 @@
 ---
 cloud_service_group: CloudFront
 cloud_service_type: Distribution
-name: Status Count by Account
+name: Count by Region
 query:
   aggregate:
     - group:
         keys:
           - name: name
-            key: data.state_display
+            key: region_code
         fields:
           - name: value
             operator: count
 options:
-  chart_type: TREEMAP
+  chart_type: COLUMN
+  name_options:
+    key: name
+    reference:
+      resource_type: "inventory.Region"
+      reference_key: region_code
