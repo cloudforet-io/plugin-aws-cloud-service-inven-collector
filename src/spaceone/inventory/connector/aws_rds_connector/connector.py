@@ -13,7 +13,7 @@ from spaceone.inventory.libs.connector import SchematicAWSConnector
 from spaceone.inventory.libs.schema.resource import ReferenceModel, CloudWatchModel
 
 _LOGGER = logging.getLogger(__name__)
-DEFAULT_RDS_FILTER = ['aurora', 'aurora-mysql', 'mysql', 'mariadb', 'postgres',
+DEFAULT_RDS_FILTER = ['aurora', 'aurora-mysql', 'mysql', 'mariadb', 'postgres', 'aurora-postgresql',
                       'oracle-ee', 'oracle-se1', 'oracle-se2', 'oracle-se',
                       'sqlserver-ex', 'sqlserver-web', 'sqlserver-se', 'sqlserver-ee']
 
