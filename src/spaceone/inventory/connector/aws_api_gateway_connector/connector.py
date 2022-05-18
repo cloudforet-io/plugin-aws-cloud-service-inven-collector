@@ -69,6 +69,9 @@ class APIGatewayConnector(SchematicAWSConnector):
             for raw in data.get('items', []):
                 try:
                     _res = self.client.get_resources(restApiId=raw.get('id'), limit=500)
+                    # for avoid to API Rate limitation.
+                    time.sleep(0.5)
+
                     raw.update({
                         'protocol': 'REST',
                         'endpoint_type': self.get_endpoint_type(raw.get('endpointConfiguration', {}).get('types')),
