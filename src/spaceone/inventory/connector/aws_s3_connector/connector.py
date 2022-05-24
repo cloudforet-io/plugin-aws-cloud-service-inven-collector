@@ -333,7 +333,8 @@ class S3Connector(SchematicAWSConnector):
 
         return total_size
 
-    def get_metric_data(self, client, params):
+    @staticmethod
+    def get_metric_data(client, params):
         metric_id = f'metric_{utils.random_string()[:12]}'
         extra_opts = {}
 
@@ -362,7 +363,6 @@ class S3Connector(SchematicAWSConnector):
         results = response.get('MetricDataResults', [])
         target_value = results[0].get('Values') if len(results) > 0 else []
         return target_value[len(target_value)-1] if len(target_value) > 0 else 0.0
-
 
     @staticmethod
     def _get_metric_param(metric_name, dimensions):
