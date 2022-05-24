@@ -210,7 +210,6 @@ class S3Connector(SchematicAWSConnector):
             _LOGGER.error(f'[S3 {bucket_name}: Get Request Payment] {e}')
             return None
 
-
     def get_notification_configurations(self, bucket_name):
         try:
             response = self.client.get_bucket_notification_configuration(Bucket=bucket_name)
@@ -281,21 +280,58 @@ class S3Connector(SchematicAWSConnector):
     def get_count_and_size(self, bucket_name, region_name):
         try:
             cloudwatch_client = self.session.client('cloudwatch', region_name=region_name)
-            count_dimensions = [{"Name": "BucketName", "Value": bucket_name},
-                                {"Name": "StorageType", "Value": "AllStorageTypes"}]
 
-            size_dimensions = [{"Name": "BucketName", "Value": bucket_name},
-                               {"Name": "StorageType", "Value": "StandardStorage"}]
-            count_param = self._get_metric_param('NumberOfObjects', count_dimensions)
-            size_param = self._get_metric_param('BucketSizeBytes', size_dimensions)
-
-            count = int(self.get_metric_data(cloudwatch_client, count_param))
-            size = float(self.get_metric_data(cloudwatch_client, size_param))
+            count = self.get_object_count(cloudwatch_client, bucket_name)
+            size = self.get_object_total_size(cloudwatch_client, bucket_name)
 
             return count, size
         except Exception as e:
             _LOGGER.error(f'[S3 {bucket_name}: Get Count, Size] {e}')
             return 0, 0
+
+    def get_object_count(self, cw_client, bucket_name):
+        count_dimensions = [{"Name": "BucketName", "Value": bucket_name},
+                            {"Name": "StorageType", "Value": "AllStorageTypes"}]
+
+        count_param = self._get_metric_param('NumberOfObjects', count_dimensions)
+        return int(self.get_metric_data(cw_client, count_param))
+
+    def get_object_total_size(self, cw_client, bucket_name):
+        total_size = 0.0
+
+        storage_types = [
+            'StandardStorage',
+            'IntelligentTieringFAStorage',
+            'IntelligentTieringIAStorage',
+            'IntelligentTieringAAStorage',
+            'IntelligentTieringAIAStorage',
+            'IntelligentTieringDAAStorage',
+            'StandardIAStorage',
+            'StandardIASizeOverhead',
+            'StandardIAObjectOverhead',
+            'OneZoneIAStorage',
+            'OneZoneIASizeOverhead',
+            'ReducedRedundancyStorage',
+            'GlacierInstantRetrievalStorage',
+            'GlacierStorage',
+            'GlacierStagingStorage',
+            'GlacierObjectOverhead',
+            'GlacierS3ObjectOverhead',
+            'DeepArchiveStorage',
+            'DeepArchiveObjectOverhead',
+            'DeepArchiveS3ObjectOverhead',
+            'DeepArchiveStagingStorage'
+        ]
+
+        for storage_type in storage_types:
+            size_dimensions = [{"Name": "BucketName", "Value": bucket_name},
+                               {"Name": "StorageType", "Value": storage_type}]
+
+            size_param = self._get_metric_param('BucketSizeBytes', size_dimensions)
+            total_size += float(self.get_metric_data(cw_client, size_param))
+            time.sleep(0.3)
+
+        return total_size
 
     def get_metric_data(self, client, params):
         metric_id = f'metric_{utils.random_string()[:12]}'
@@ -331,6 +367,7 @@ class S3Connector(SchematicAWSConnector):
     @staticmethod
     def _get_metric_param(metric_name, dimensions):
         end = datetime.utcnow()
+
         return {'id': f'metric_{utils.random_string()[:12]}',
                 'namespace': 'AWS/S3',
                 'dimensions': dimensions,
