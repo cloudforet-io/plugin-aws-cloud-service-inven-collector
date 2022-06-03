@@ -50,6 +50,7 @@ cst_api._metadata = CloudServiceTypeMeta.set_meta(
     search=[
         SearchField.set(name='ID', key='data.id'),
         SearchField.set(name='ARN', key='data.arn'),
+        SearchField.set(name='Protocol', key='instance_type'),
         SearchField.set(name='Endpoint Type', key='data.endpoint_type'),
     ],
     widget=[
