@@ -294,6 +294,9 @@ class DistributionData(Model):
     def set_cloudwatch(self, region_code='us-east-1'):
         return {
             "namespace": "AWS/CloudFront",
-            "dimensions": [CloudWatchDimensionModel({'Name': 'DistributionId', 'Value': self.id})],
+            "dimensions": [
+                CloudWatchDimensionModel({'Name': 'DistributionId', 'Value': self.id}),
+                CloudWatchDimensionModel({'Name': 'Region', 'Value': 'Global'})
+            ],
             "region_name": region_code
         }
