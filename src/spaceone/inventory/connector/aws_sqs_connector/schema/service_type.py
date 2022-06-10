@@ -26,7 +26,6 @@ cst_que.tags = {
 
 cst_que._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('name', 'name'),
         TextDyField.data_source('url', 'data.url'),
         TextDyField.data_source('ARN', 'data.kms.alias', options={
             'is_optional': True
@@ -75,7 +74,6 @@ cst_que._metadata = CloudServiceTypeMeta.set_meta(
         })
     ],
     search=[
-        SearchField.set(name='Name', key='name'),
         SearchField.set(name='ARN', key='data.arn'),
         SearchField.set(name='URL', key='data.url'),
         SearchField.set(name='Maximum Message Size (Bytes)', key='data.maximum_message_size', data_type='integer'),

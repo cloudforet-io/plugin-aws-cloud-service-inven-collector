@@ -30,7 +30,6 @@ cst_sg.tags = {
 cst_sg._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
         TextDyField.data_source('ID', 'data.group_id'),
-        TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('VPC ID', 'data.vpc_id'),
         TextDyField.data_source('Description', 'data.description'),
         TextDyField.data_source('Account ID', 'account')

@@ -31,7 +31,6 @@ cst_redshift_cluster.tags = {
 
 cst_redshift_cluster._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Cluster', 'name'),
         EnumDyField.data_source('Status', 'data.cluster_status', default_state={
             'safe': ['available'],
             'warning': ['prep-for-resize', 'resize-cleanup', 'cancelling-resize', 'creating', 'deleting', 'final-snapshot',
@@ -107,7 +106,6 @@ cst_redshift_cluster._metadata = CloudServiceTypeMeta.set_meta(
         })
     ],
     search=[
-        SearchField.set(name='Cluster Identifier', key='name'),
         SearchField.set(name='ARN', key='data.arn'),
         SearchField.set(name='Cluster Version', key='data.cluster_version'),
         SearchField.set(name='Node Type', key='instance_type'),

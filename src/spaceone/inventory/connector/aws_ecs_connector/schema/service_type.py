@@ -28,7 +28,6 @@ cst_ecs_cluster.tags = {
 
 cst_ecs_cluster._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'name'),
         EnumDyField.data_source('Status', 'data.status', default_state={
             'safe': ['ACTIVE'],
             'warning': ['PROVISIONING', 'DEPROVISIONING'],
@@ -99,7 +98,6 @@ cst_ecs_cluster._metadata = CloudServiceTypeMeta.set_meta(
         })
     ],
     search=[
-        SearchField.set(name='Cluster Name', key='name'),
         SearchField.set(name='ARN', key='data.cluster_arn'),
         SearchField.set(name='Status', key='data.status'),
         SearchField.set(name='Active Services Count', key='data.active_services_count', data_type='integer'),

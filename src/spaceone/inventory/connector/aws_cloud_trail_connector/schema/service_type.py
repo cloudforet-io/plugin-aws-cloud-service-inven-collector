@@ -14,7 +14,6 @@ cst_trail.tags = {
 
 cst_trail._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Trail Name', 'name'),
         TextDyField.data_source('Home Region', 'data.home_region'),
         TextDyField.data_source('Multi-Region Trail', 'data.is_multi_region_trail'),
         TextDyField.data_source('Insight', 'data.has_insight_selectors'),

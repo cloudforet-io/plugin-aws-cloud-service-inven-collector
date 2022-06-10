@@ -25,7 +25,6 @@ cst_hostedzone.tags = {
 
 cst_hostedzone._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Domain Name', 'name'),
         EnumDyField.data_source('Type', 'instance_type', default_badge={
             'indigo.500': ['Public'], 'coral.600': ['Private']
         }),
@@ -53,7 +52,6 @@ cst_hostedzone._metadata = CloudServiceTypeMeta.set_meta(
         })
     ],
     search=[
-        SearchField.set(name='Name', key='name'),
         SearchField.set(name='ARN', key='data.arn'),
         SearchField.set(name='Type', key='instance_type'),
         SearchField.set(name='Host Zone ID', key='data.hosted_zone_id'),

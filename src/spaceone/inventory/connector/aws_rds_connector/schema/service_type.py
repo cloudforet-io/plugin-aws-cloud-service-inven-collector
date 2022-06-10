@@ -29,7 +29,6 @@ cst_rds_database.tags = {
 
 cst_rds_database._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('DB Identifier', 'data.db_identifier'),
         TextDyField.data_source('Role', 'data.role'),
         TextDyField.data_source('Engine', 'data.engine'),
         EnumDyField.data_source('Status', 'data.status', default_state={
@@ -49,7 +48,6 @@ cst_rds_database._metadata = CloudServiceTypeMeta.set_meta(
         })
     ],
     search=[
-        SearchField.set(name='DB Identifier', key='data.db_identifier'),
         SearchField.set(name='ARN', key='data.arn'),
         SearchField.set(name='Role', key='data.role',
                         enums={
@@ -118,7 +116,6 @@ cst_rds_instance.tags = {
 
 cst_rds_instance._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('DB Identifier', 'data.db_instance_identifier'),
         TextDyField.data_source('Engine', 'data.engine'),
         EnumDyField.data_source('Status', 'data.db_instance_status', default_state={
             'safe': ['available'],
@@ -237,7 +234,6 @@ cst_rds_instance._metadata = CloudServiceTypeMeta.set_meta(
         })
     ],
     search=[
-        SearchField.set(name='DB Identifier', key='data.db_instance_identifier'),
         SearchField.set(name='ARN', key='data.db_instance_arn'),
         SearchField.set(name='Status', key='data.db_instance_status',
                         enums={
@@ -299,7 +295,6 @@ cst_rds_snapshot.tags = {
 }
 cst_rds_snapshot._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Snapshot', 'data.db_snapshot_identifier'),
         TextDyField.data_source('DB Instance', 'data.db_instance_identifier'),
         EnumDyField.data_source('Status', 'data.status', default_state={
             'warning': ['creating', 'deleting'],
@@ -347,7 +342,6 @@ cst_rds_snapshot._metadata = CloudServiceTypeMeta.set_meta(
         })
     ],
     search=[
-        SearchField.set(name='Snapshot Identifier', key='data.db_snapshot_identifier'),
         SearchField.set(name='ARN', key='data.db_snapshot_arn'),
         SearchField.set(name='DB Instance Identifier', key='data.db_instance_identifier'),
         SearchField.set(name='Engine', key='data.engine'),
@@ -383,7 +377,6 @@ cst_rds_subnetgrp.tags = {
 }
 cst_rds_subnetgrp._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'data.db_subnet_group_name'),
         TextDyField.data_source('Description', 'data.db_subnet_group_description'),
         EnumDyField.data_source('Status', 'data.subnet_group_status', default_state={
             'safe': ['Complete']
@@ -407,7 +400,6 @@ cst_rds_subnetgrp._metadata = CloudServiceTypeMeta.set_meta(
         })
     ],
     search=[
-        SearchField.set(name='Name', key='data.db_subnet_group_name'),
         SearchField.set(name='ARN', key='data.db_subnet_group_arn'),
         SearchField.set(name='VPC ID', key='data.vpc_id'),
         SearchField.set(name='Subnet ID', key='data.subnets.subnet_identifier'),
@@ -430,7 +422,6 @@ cst_rds_paramgrp.tags = {
 }
 cst_rds_paramgrp._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'data.db_parameter_group_name'),
         TextDyField.data_source('Family', 'data.db_parameter_group_family'),
         TextDyField.data_source('Description', 'data.description'),
         TextDyField.data_source('ARN', 'data.db_parameter_group_arn', options={
@@ -444,7 +435,6 @@ cst_rds_paramgrp._metadata = CloudServiceTypeMeta.set_meta(
         })
     ],
     search=[
-        SearchField.set(name='Name', key='data.db_parameter_group_name'),
         SearchField.set(name='ARN', key='data.db_parameter_group_arn'),
         SearchField.set(name='Family', key='data.db_parameter_group_family'),
         SearchField.set(name='AWS Account ID', key='data.account_id'),
@@ -465,7 +455,6 @@ cst_rds_optgrp.tags = {
 }
 cst_rds_optgrp._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'data.option_group_name'),
         TextDyField.data_source('Description', 'data.option_group_description'),
         TextDyField.data_source('Engine', 'data.engine_name'),
         TextDyField.data_source('Engine version', 'data.major_engine_version'),
@@ -483,7 +472,6 @@ cst_rds_optgrp._metadata = CloudServiceTypeMeta.set_meta(
         })
     ],
     search=[
-        SearchField.set(name='Name', key='data.option_group_name'),
         SearchField.set(name='ARN', key='data.option_group_arn'),
         SearchField.set(name='Engine', key='data.engine_name'),
         SearchField.set(name='Major Engine Version', key='data.major_engine_version'),

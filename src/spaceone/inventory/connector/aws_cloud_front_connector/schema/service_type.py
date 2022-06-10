@@ -26,7 +26,6 @@ cst_distribution.tags = {
 
 cst_distribution._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Domain Name', 'name'),
         EnumDyField.data_source('Distribution Status', 'data.status', default_state={
             'safe': ['Deployed']
         }),

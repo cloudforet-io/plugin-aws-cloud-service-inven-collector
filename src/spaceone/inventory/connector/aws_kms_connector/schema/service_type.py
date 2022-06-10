@@ -25,7 +25,6 @@ cst_kms_cluster.tags = {
 cst_kms_cluster._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
         TextDyField.data_source('ID', 'data.key_id'),
-        TextDyField.data_source('Alias', 'name'),
         EnumDyField.data_source('Status', 'data.key_state', default_state={
             'safe': ['Enabled'],
             'warning': ['PendingDeletion', 'PendingImport'],
@@ -76,7 +75,6 @@ cst_kms_cluster._metadata = CloudServiceTypeMeta.set_meta(
     search=[
         SearchField.set(name='KMS ID', key='data.key_id'),
         SearchField.set(name='ARN', key='data.arn'),
-        SearchField.set(name='Alias', key='name'),
         SearchField.set(name='Enabled', key='data.enabled', data_type='boolean'),
         SearchField.set(name='Key Status', key='data.key_state',
                         enums={

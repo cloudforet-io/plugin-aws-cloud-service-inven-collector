@@ -30,7 +30,6 @@ cst_bucket.tags = {
 
 cst_bucket._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'name'),
         EnumDyField.data_source('Access', 'data.public_access', default_badge={
             'indigo.500': ['Private'],
             'coral.600': ['Public']
@@ -85,7 +84,6 @@ cst_bucket._metadata = CloudServiceTypeMeta.set_meta(
         })
     ],
     search=[
-        SearchField.set(name='Bucket Name', key='name'),
         SearchField.set(name='ARN', key='data.arn'),
         SearchField.set(name='Object Counts', key='data.object_count', data_type='integer'),
         SearchField.set(name='Object Total Size (Bytes)', key='instance_size', data_type='integer')

@@ -15,7 +15,6 @@ cst_memcached.tags = {
 
 cst_memcached._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Cluster Name', 'name'),
         EnumDyField.data_source('Status', 'data.cache_cluster_status', default_state={
             'safe': ['available'],
         }),
@@ -86,7 +85,6 @@ cst_redis.tags = {
 
 cst_redis._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Cluster Name', 'name'),
         TextDyField.data_source('Mode', 'data.mode'),
         EnumDyField.data_source('Status', 'data.status', default_state={
             'safe': ['available'],

@@ -30,7 +30,6 @@ cst_filesystem.tags = {
 
 cst_filesystem._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'name'),
         EnumDyField.data_source('State', 'data.life_cycle_state', default_state={
             'safe': ['available'],
             'warning': ['creating', 'updating', 'deleting'],

@@ -28,7 +28,6 @@ cst_eip.tags = {
 
 cst_eip._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('Public IP', 'data.public_ip'),
         TextDyField.data_source('Private IP', 'data.private_ip_address'),
         TextDyField.data_source('Address Pool', 'data.public_ipv4_pool'),

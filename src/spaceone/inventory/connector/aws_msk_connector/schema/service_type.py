@@ -30,7 +30,6 @@ cst_cluster.tags = {
 
 cst_cluster._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Cluster name', 'name'),
         EnumDyField.data_source('Status', 'data.state', default_state={
             'safe': ['ACTIVE'],
             'warning': ['CREATING', 'DELETING', 'HEALING', 'MAINTENANCE', 'REBOOTING_BROKER'],
@@ -91,7 +90,6 @@ cst_cluster._metadata = CloudServiceTypeMeta.set_meta(
         })
     ],
     search=[
-        SearchField.set(name='Cluster name', key='name'),
         SearchField.set(name='Cluster ARN', key='data.cluster_arn'),
         SearchField.set(name='Kafka Version', key='data.current_broker_software_info.kafka_version'),
         SearchField.set(name='Broker Type', key='data.broker_node_group_info.instance_type'),
@@ -120,7 +118,6 @@ cst_config.tags = {
 
 cst_config._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Configuration name', 'name'),
         EnumDyField.data_source('Status', 'data.state', default_state={
             'safe': ['ACTIVE'],
             'warning': ['DELETING'],
@@ -139,7 +136,6 @@ cst_config._metadata = CloudServiceTypeMeta.set_meta(
         })
     ],
     search=[
-        SearchField.set(name='Configuration name', key='name'),
         SearchField.set(name='Status', key='data.state'),
         SearchField.set(name='Configuration ARN', key='data.arn'),
     ]

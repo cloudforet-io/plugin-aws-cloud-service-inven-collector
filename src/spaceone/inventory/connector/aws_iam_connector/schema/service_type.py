@@ -22,7 +22,6 @@ cst_group.tags = {
 
 cst_group._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Group Name', 'data.group_name'),
         TextDyField.data_source('User Count', 'data.user_count'),
         DateTimeDyField.data_source('Creation Time', 'data.create_date'),
         TextDyField.data_source('ARN', 'data.arn', options={
@@ -69,7 +68,6 @@ cst_group._metadata = CloudServiceTypeMeta.set_meta(
         })
     ],
     search=[
-        SearchField.set(name='Group Name', key='data.group_name'),
         SearchField.set(name='Group ARN', key='data.arn'),
         SearchField.set(name='User Name', key='data.users.user_name'),
         SearchField.set(name='Policy Name', key='data.attached_permission.policy_name'),
@@ -98,7 +96,6 @@ cst_user.tags = {
 
 cst_user._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('User Name', 'data.user_name'),
         ListDyField.data_source('Groups', 'data.groups', options={
             'delimiter': '<br>',
             'sub_key': 'group_name'
@@ -168,7 +165,6 @@ cst_user._metadata = CloudServiceTypeMeta.set_meta(
         })
     ],
     search=[
-        SearchField.set(name='User Name', key='data.user_name'),
         SearchField.set(name='User ARN', key='data.arn'),
         SearchField.set(name='Group Name', key='data.user_name'),
         SearchField.set(name='Access Key Age', key='data.access_key_age', data_type='integer'),
@@ -230,7 +226,6 @@ cst_role.tags = {
 
 cst_role._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Role Name', 'data.role_name'),
         TextDyField.data_source('Last Activity', 'data.last_activity'),
         ListDyField.data_source('Trusted Entities', 'data.trusted_entities', options={
             'delimiter': '<br>'
@@ -281,7 +276,6 @@ cst_role._metadata = CloudServiceTypeMeta.set_meta(
         })
     ],
     search=[
-        SearchField.set(name='Role Name', key='data.role_name'),
         SearchField.set(name='Role ARN', key='data.arn'),
         SearchField.set(name='Trust Relationships', key='data.trust_relationship.trust_relationship'),
         SearchField.set(name='Policy Name', key='data.policies.policy_name'),
@@ -307,7 +301,6 @@ cst_policy.tags = {
 
 cst_policy._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Policy Name', 'data.policy_name'),
         TextDyField.data_source('Policy ID', 'data.policy_id'),
         TextDyField.data_source('Attachment Count', 'data.attachment_count'),
         TextDyField.data_source('ARN', 'data.arn', options={
@@ -335,7 +328,6 @@ cst_policy._metadata = CloudServiceTypeMeta.set_meta(
         })
     ],
     search=[
-        SearchField.set(name='Policy Name', key='data.policy_name'),
         SearchField.set(name='Policy ARN', key='data.arn'),
         SearchField.set(name='Policy ID', key='data.policy_id'),
         SearchField.set(name='Permission Usage Count', key='data.permissions_boundary_usage_count',
@@ -364,7 +356,6 @@ cst_identity_provider.tags = {
 
 cst_identity_provider._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source(name='Identity Provider URL', key='data.url'),
         EnumDyField.data_source(name='provider_type', key='data.provider_type', default_badge={'indigo.500': ['OIDC']}),
         TextDyField.data_source('ARN', 'data.arn', options={
             'is_optional': True
@@ -382,7 +373,6 @@ cst_identity_provider._metadata = CloudServiceTypeMeta.set_meta(
         })
     ],
     search=[
-        SearchField.set(name='Identity Provider URL', key='data.url'),
         SearchField.set(name='Identity Provider ARN', key='data.arn'),
         SearchField.set(name='Provider Type', key='data.provider_type'),
         SearchField.set(name='Creation Time', key='data.create_date', data_type='datetime')

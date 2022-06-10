@@ -27,7 +27,6 @@ cst_ecr_repo.tags = {
 
 cst_ecr_repo._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Repository name', 'name'),
         TextDyField.data_source('URI', 'data.repository_uri'),
         TextDyField.data_source('Registry ARN ', 'data.repository_arn', options={
             'is_optional': True
@@ -41,7 +40,6 @@ cst_ecr_repo._metadata = CloudServiceTypeMeta.set_meta(
     ],
     search=[
         SearchField.set(name='Repository ID', key='data.registry_id'),
-        SearchField.set(name='Name', key='name'),
         SearchField.set(name='ARN', key='data.repository_arn'),
         SearchField.set(name='URI', key='data.repository_uri'),
         SearchField.set(name='Image URI', key='data.images.image_uri')
