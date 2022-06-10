@@ -29,7 +29,6 @@ cst_connection.tags = {
 
 cst_connection_meta = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'name'),
         EnumDyField.data_source('State', 'data.connection_state', default_state={
             'safe': ['available'],
             'available': ['requested'],
@@ -88,7 +87,7 @@ cst_connection_meta = CloudServiceTypeMeta.set_meta(
     ],
     widget=[
         CardWidget.set(**get_data_from_yaml(connection_total_count_conf)),
-#         CardWidget.set(**get_data_from_yaml(connection_bandwidth_total_sum_conf)),
+        # CardWidget.set(**get_data_from_yaml(connection_bandwidth_total_sum_conf)),
         ChartWidget.set(**get_data_from_yaml(connection_count_by_region_widget_conf)),
         ChartWidget.set(**get_data_from_yaml(connection_count_by_account_widget_conf))
     ]
@@ -114,7 +113,6 @@ cst_dc_gw.tags = {
 cst_dc_gw_meta = CloudServiceTypeMeta.set_meta(
     fields=[
         TextDyField.data_source('ID', 'data.direct_connect_gateway_id'),
-        TextDyField.data_source('Name', 'name'),
         EnumDyField.data_source('State', 'data.direct_connect_gateway_state', default_state={
             'safe': ['available'],
             'disable': ['deleted'],
@@ -219,7 +217,6 @@ cst_lags.tags = {
 cst_lags_meta = CloudServiceTypeMeta.set_meta(
     fields=[
         TextDyField.data_source('ID', 'data.lag_id'),
-        TextDyField.data_source('Name', 'name'),
         EnumDyField.data_source('State', 'data.lag_state', default_state={
             'available': ['requested'],
             'safe': ['available'],

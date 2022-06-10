@@ -28,7 +28,6 @@ cst_table.tags = {
 }
 cst_table._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'name'),
         EnumDyField.data_source('Status', 'data.table_status', default_state={
             'safe': ['ACTIVE'],
             'warning': ['CREATING', 'UPDATING', 'DELETING', 'ARCHIVING'],

@@ -32,7 +32,6 @@ cst_cluster.tags = {
 }
 cst_cluster._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Cluster', 'name'),
         EnumDyField.data_source('Status', 'data.status', default_state={
             'safe': ['available'],
             'warning': ['maintenance', 'backing-up', 'creating', 'migrating', 'modifying', 'renaming',
@@ -170,7 +169,6 @@ cst_subnet_group.tags = {
 }
 cst_subnet_group._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'name'),
         EnumDyField.data_source('Status', 'data.subnet_group_status', default_state={
             'safe': ['Complete']
         }),
@@ -205,7 +203,6 @@ cst_parameter_group.tags = {
 }
 cst_parameter_group._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('Family', 'data.db_parameter_group_family'),
         TextDyField.data_source('Description', 'data.description'),
         TextDyField.data_source('Parameter Group ARN', 'data.db_cluster_parameter_group_arn', options={

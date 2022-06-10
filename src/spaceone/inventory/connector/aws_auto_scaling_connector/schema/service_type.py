@@ -30,7 +30,6 @@ cst_asg.tags = {
 
 cst_asg._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('Desired', 'data.desired_capacity'),
         TextDyField.data_source('Min', 'data.min_size'),
         TextDyField.data_source('Max', 'data.max_size'),
@@ -132,7 +131,6 @@ launch_configuration.tags = {
 
 launch_configuration._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('AMI ID', 'data.image_id'),
         TextDyField.data_source('Instance Type', 'data.instance_type'),
         TextDyField.data_source('Spot Price', 'data.spot_price'),
@@ -182,7 +180,6 @@ launch_template.tags = {
 
 launch_template._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('AMI ID', 'data.launch_template_data.image_id'),
         TextDyField.data_source('Owner', 'data.created_by'),
         EnumDyField.data_source('Default Version', 'data.default_version', default_badge={

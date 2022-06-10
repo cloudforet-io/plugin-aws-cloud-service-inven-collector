@@ -28,7 +28,6 @@ cst_vpc.tags = {
 
 cst_vpc._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('VPC ID', 'data.vpc_id'),
         EnumDyField.data_source('State', 'data.state', default_state={
             'safe': ['available'],
@@ -129,7 +128,6 @@ cst_vpc._metadata = CloudServiceTypeMeta.set_meta(
     ],
     search=[
         SearchField.set(name='VPC ID', key='data.vpc_id'),
-        SearchField.set(name='Name', key='name'),
         SearchField.set(name='State', key='data.state',
                         enums={
                             'available': {'label': 'Available', 'icon': {'color': 'green.500'}},
@@ -178,7 +176,6 @@ cst_subnet.tags = {
 
 cst_subnet._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('Subnet ID', 'data.subnet_id'),
         EnumDyField.data_source('State', 'data.state', default_state={
             'safe': ['available'],
@@ -238,7 +235,6 @@ cst_subnet._metadata = CloudServiceTypeMeta.set_meta(
     ],
     search=[
         SearchField.set(name='Subnet ID', key='data.subnet_id'),
-        SearchField.set(name='Name', key='name'),
         SearchField.set(name='State', key='data.state',
                         enums={
                             'available': {'label': 'Available', 'icon': {'color': 'green.500'}},
@@ -281,7 +277,6 @@ cst_rt.tags = {
 
 cst_rt._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('Route Table ID', 'data.route_table_id'),
         ListDyField.data_source('Subnet associations', 'data.subnet_associations', options={
             'sub_key': 'subnet_id',
@@ -316,7 +311,6 @@ cst_rt._metadata = CloudServiceTypeMeta.set_meta(
     ],
     search=[
         SearchField.set(name='Route Table ID', key='data.route_table_id'),
-        SearchField.set(name='Name', key='name'),
         SearchField.set(name='Associated Subnet ID', key='data.subnet_associations.subnet_id'),
         SearchField.set(name='Main', key='data.main',
                         enums={
@@ -347,7 +341,6 @@ cst_igw.tags = {
 
 cst_igw._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('Internet Gateway ID', 'data.internet_gateway_id'),
         EnumDyField.data_source('State', 'data.state', default_state={
             'available': ['available'],
@@ -365,7 +358,6 @@ cst_igw._metadata = CloudServiceTypeMeta.set_meta(
     ],
     search=[
         SearchField.set(name='Internet Gateway ID', key='data.internet_gateway_id'),
-        SearchField.set(name='Name', key='name'),
         SearchField.set(name='State', key='data.state',
                         enums={
                             'available': {'label': 'Available', 'icon': {'color': 'blue.400'}},
@@ -402,7 +394,6 @@ cst_eoigw.tags = {
 }
 cst_eoigw._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('Egress Only Internet Gateway ID', 'data.egress_only_internet_gateway_id'),
         ListDyField.data_source('State', 'data.attachments', options={
             'delimiter': '<br>',
@@ -418,7 +409,6 @@ cst_eoigw._metadata = CloudServiceTypeMeta.set_meta(
     ],
     search=[
         SearchField.set(name='Egress Only Gateway ID', key='data.egress_only_internet_gateway_id'),
-        SearchField.set(name='Name', key='name'),
         SearchField.set(name='State', key='data.attachments.state',
                         enums={
                             'available': {'label': 'Available', 'icon': {'color': 'blue.400'}},
@@ -455,7 +445,6 @@ cst_natgw.tags = {
 }
 cst_natgw._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('NAT Gateway ID', 'data.nat_gateway_id'),
         EnumDyField.data_source('Status', 'data.state', default_state={
             'safe': ['available'],
@@ -541,7 +530,6 @@ cst_peerconn.tags = {
 }
 cst_peerconn._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('Peering Connection ID', 'data.vpc_peering_connection_id'),
         EnumDyField.data_source('Status', 'data.status.code', default_state={
             'safe': ['active'],
@@ -561,7 +549,6 @@ cst_peerconn._metadata = CloudServiceTypeMeta.set_meta(
     ],
     search=[
         SearchField.set(name='Peering Connection ID', key='data.vpc_peering_connection_id'),
-        SearchField.set(name='Name', key='name'),
         SearchField.set(name='ARN', key='data.arn'),
         SearchField.set(name='Status', key='data.status.code',
                         enums={
@@ -602,7 +589,6 @@ cst_nacl.tags = {
 }
 cst_nacl._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('Network ACL ID', 'data.network_acl_id'),
         EnumDyField.data_source('Default', 'data.is_default', default_badge={
             'indigo.500': ['true'], 'coral.600': ['false']
@@ -622,7 +608,6 @@ cst_nacl._metadata = CloudServiceTypeMeta.set_meta(
     ],
     search=[
         SearchField.set(name='Network ACL ID', key='data.network_acl_id'),
-        SearchField.set(name='Name', key='name'),
         SearchField.set(name='Default', key='data.is_default', data_type='boolean'),
         SearchField.set(name='VPC ID', key='data.vpc_id'),
         SearchField.set(name='Inbound Protocol', key='data.inbound_entries.protocol'),
@@ -665,7 +650,6 @@ cst_endpoint.tags = {
 }
 cst_endpoint._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('Endpoint ID', 'data.vpc_endpoint_id'),
         EnumDyField.data_source('Status', 'data.state', default_state={
             'safe': ['available'],
@@ -710,7 +694,6 @@ cst_endpoint._metadata = CloudServiceTypeMeta.set_meta(
     ],
     search=[
         SearchField.set(name='Endpoint ID', key='data.vpc_endpoint_id'),
-        SearchField.set(name='Name', key='name'),
         SearchField.set(name='Status', key='data.state',
                         enums={
                             'available': {'label': 'Available', 'icon': {'color': 'green.500'}},
@@ -757,7 +740,6 @@ cst_transitgw.tags = {
 }
 cst_transitgw._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('Transit Gateway ID', 'data.transit_gateway_id'),
         TextDyField.data_source('Owner ID', 'data.owner_id'),
         EnumDyField.data_source('State', 'data.state', default_state={
@@ -811,7 +793,6 @@ cst_transitgw._metadata = CloudServiceTypeMeta.set_meta(
     ],
     search=[
         SearchField.set(name='Transit Gateway ID', key='data.transit_gateway_id'),
-        SearchField.set(name='Name', key='name'),
         SearchField.set(name='State', key='data.state',
                         enums={
                             'available': {'label': 'Available', 'icon': {'color': 'green.500'}},
@@ -852,7 +833,6 @@ cst_customgw.tags = {
 }
 cst_customgw._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('ID', 'data.customer_gateway_id'),
         EnumDyField.data_source('State', 'data.state', default_state={
             'safe': ['available'],
@@ -891,7 +871,6 @@ cst_customgw._metadata = CloudServiceTypeMeta.set_meta(
     ],
     search=[
         SearchField.set(name='Customer Gateway ID', key='data.customer_gateway_id'),
-        SearchField.set(name='Name', key='name'),
         SearchField.set(name='State', key='data.state',
                         enums={
                             'available': {'label': 'Available', 'icon': {'color': 'green.500'}},
@@ -938,7 +917,6 @@ cst_vpnconn.tags = {
 }
 cst_vpnconn._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('VPN ID', 'data.vpn_connection_id'),
         EnumDyField.data_source('State', 'data.state', default_state={
             'safe': ['available'],
@@ -974,7 +952,6 @@ cst_vpnconn._metadata = CloudServiceTypeMeta.set_meta(
     ],
     search=[
         SearchField.set(name='VPN Connection ID', key='data.vpn_connection_id'),
-        SearchField.set(name='Name', key='name'),
         SearchField.set(name='State', key='data.state',
                         enums={
                             'available': {'label': 'Available', 'icon': {'color': 'green.500'}},
@@ -1023,7 +1000,6 @@ cst_vpngw.tags = {
 }
 cst_vpngw._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('ID', 'data.vpn_gateway_id'),
         TextDyField.data_source('State', 'data.state'),
         TextDyField.data_source('Type', 'instance_type'),
@@ -1044,7 +1020,6 @@ cst_vpngw._metadata = CloudServiceTypeMeta.set_meta(
     ],
     search=[
         SearchField.set(name='Virtual Private Gateway ID', key='data.vpn_gateway_id'),
-        SearchField.set(name='Name', key='name'),
         SearchField.set(name='State', key='data.state',
                         enums={
                             'available': {'label': 'Available', 'icon': {'color': 'green.500'}},

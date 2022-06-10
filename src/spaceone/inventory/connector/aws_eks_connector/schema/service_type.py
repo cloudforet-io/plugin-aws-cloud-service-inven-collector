@@ -28,7 +28,6 @@ cst_eks_cluster.tags = {
 
 cst_eks_cluster._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('Version', 'data.version'),
         EnumDyField.data_source('Status', 'data.status', default_state={
             'safe': ['ACTIVE'],
@@ -88,7 +87,6 @@ cst_eks_cluster._metadata = CloudServiceTypeMeta.set_meta(
         })
     ],
     search=[
-        SearchField.set(name='Cluster Name', key='name'),
         SearchField.set(name='ARN', key='data.arn'),
         SearchField.set(name='Status', key='data.status',
                         enums={
@@ -124,7 +122,6 @@ cst_eks_nodegrp.tags = {
 
 cst_eks_nodegrp._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Node Group Name', 'name'),
         TextDyField.data_source('EKS Cluster Name', 'data.cluster_name'),
         TextDyField.data_source('Version', 'data.version'),
         EnumDyField.data_source('Status', 'data.status', default_state={

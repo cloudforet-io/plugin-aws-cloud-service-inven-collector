@@ -24,7 +24,6 @@ cst_certi.tags = {
 
 cst_certi._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Domain Name', 'name'),
         ListDyField.data_source('Additional Names', 'data.additional_names_display', options={
             "delimiter": "<br>"
         }),

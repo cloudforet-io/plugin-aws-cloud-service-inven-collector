@@ -26,7 +26,6 @@ cst_firehose.tags = {
 
 cst_firehose._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source("Name", "name"),
         EnumDyField.data_source(
             "Status",
             "data.delivery_stream_status",
@@ -59,7 +58,6 @@ cst_firehose._metadata = CloudServiceTypeMeta.set_meta(
         })
     ],
     search=[
-        SearchField.set(name="Stream Name", key="name"),
         SearchField.set(name="Stream ARN", key="data.delivery_stream_arn"),
         SearchField.set(name="Stream Status", key="data.delivery_stream_status"),
         SearchField.set(name="Source Name", key="data.source.source_name"),

@@ -24,7 +24,6 @@ cst_secret.tags = {
 
 cst_secret._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('Description', 'data.description'),
         DateTimeDyField.data_source('Last Retrieved', 'data.last_accessed_date'),
         TextDyField.data_source('ARN', 'data.arn', options={
@@ -61,7 +60,6 @@ cst_secret._metadata = CloudServiceTypeMeta.set_meta(
         })
     ],
     search=[
-        SearchField.set(name='Name', key='name'),
         SearchField.set(name='ARN', key='data.arn'),
         SearchField.set(name='Last Changed Time', key='data.last_changed_date', data_type='datetime'),
         SearchField.set(name='Last Accessed Time', key='data.last_accessed_date', data_type='datetime'),

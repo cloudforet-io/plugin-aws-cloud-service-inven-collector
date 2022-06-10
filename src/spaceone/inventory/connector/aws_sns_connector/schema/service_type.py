@@ -25,7 +25,6 @@ cst_topic.tags = {
 
 cst_topic._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('ARN', 'data.topic_arn', options={
             'is_optional': True
         }),
@@ -52,7 +51,6 @@ cst_topic._metadata = CloudServiceTypeMeta.set_meta(
         })
     ],
     search=[
-        SearchField.set(name='Topic Name', key='name'),
         SearchField.set(name='Topic ARN', key='data.topic_arn'),
         SearchField.set(name='Subscription ARN', key='data.subscriptions.subscription_arn'),
         SearchField.set(name='Endpoint', key='data.subscriptions.endpoint'),

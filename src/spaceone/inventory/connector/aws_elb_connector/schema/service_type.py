@@ -30,7 +30,6 @@ cst_elb.tags = {
 
 cst_elb._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('DNS Name', 'data.dns_name'),
         EnumDyField.data_source('State', 'data.state.code', default_state={
             'safe': ['active'],
@@ -119,7 +118,6 @@ cst_elb._metadata = CloudServiceTypeMeta.set_meta(
         })
     ],
     search=[
-        SearchField.set(name='Name', key='name'),
         SearchField.set(name='ARN', key='data.load_balancer_arn'),
         SearchField.set(name='DNS Name', key='data.dns_name'),
         SearchField.set(name='State', key='data.state'),
@@ -183,7 +181,6 @@ cst_tg.tags = {
 
 cst_tg._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('Port', 'data.port'),
         TextDyField.data_source('Protocol', 'data.protocol'),
         TextDyField.data_source('Target Type', 'instance_type'),
@@ -232,7 +229,6 @@ cst_tg._metadata = CloudServiceTypeMeta.set_meta(
                                 options={'is_optional': True})
     ],
     search=[
-        SearchField.set(name='Name', key='name'),
         SearchField.set(name='ARN', key='data.'),
         SearchField.set(name='Protocol', key='data.protocol',
                         enums={

@@ -33,7 +33,6 @@ cst_function.tags = {
 
 cst_function._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('Runtime', 'data.runtime'),
         SizeField.data_source('Code Size', 'instance_size'),
         SizeField.data_source('Memory Size', 'data.memory_size', options={
@@ -96,7 +95,6 @@ cst_function._metadata = CloudServiceTypeMeta.set_meta(
         })
     ],
     search=[
-        SearchField.set(name='Name', key='name'),
         SearchField.set(name='ARN', key='data.arn'),
         SearchField.set(name='Runtime', key='data.runtime'),
         SearchField.set(name='State', key='data.state.type',
@@ -138,7 +136,6 @@ cst_layer.tags = {
 
 cst_layer._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('Version', 'data.latest_matching_version.version'),
         TextDyField.data_source('Description', 'data.latest_matching_version.description'),
         ListDyField.data_source('Compatible Runtimes', 'data.latest_matching_version.compatible_runtimes', options={
@@ -146,7 +143,6 @@ cst_layer._metadata = CloudServiceTypeMeta.set_meta(
         })
     ],
     search=[
-        SearchField.set(name='Name', key='name'),
         SearchField.set(name='ARN', key='data.layer_arn'),
         SearchField.set(name='Compatible Runtimes', key='data.latest_matching_version.compatible_runtimes'),
         SearchField.set(name='Version', key='data.version', data_type='integer')

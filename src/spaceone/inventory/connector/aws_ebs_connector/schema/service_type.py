@@ -34,7 +34,6 @@ cst_ebs.tags = {
 }
 cst_ebs._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('Volume ID', 'data.volume_id'),
         EnumDyField.data_source('State', 'data.state', default_state={
             'safe': ['in-use'],
@@ -129,7 +128,6 @@ cst_snapshot.tags = {
 }
 cst_snapshot._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('Snapshot ID', 'data.snapshot_id'),
         SizeField.data_source('Size', 'instance_size', options={
             'source_unit': 'GB',

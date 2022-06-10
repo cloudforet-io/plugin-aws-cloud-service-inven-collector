@@ -30,7 +30,6 @@ cst_instance.tags = {
 
 cst_instance._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'name'),
         EnumDyField.data_source('State', 'data.state.name', default_state={
             'safe': ['running'],
             'warning': ['provisioning'],
@@ -67,7 +66,6 @@ cst_instance._metadata = CloudServiceTypeMeta.set_meta(
         })
     ],
     search=[
-        SearchField.set(name='Name', key='name'),
         SearchField.set(name='ARN', key='data.arn'),
         SearchField.set(name='Bundle ID', key='data.bundle_id'),
         SearchField.set(name='Blueprint', key='data.blueprint_name'),
@@ -112,7 +110,6 @@ cst_disk.tags = {
 
 cst_disk._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'name'),
         EnumDyField.data_source('State', 'data.state', default_state={
             'safe': ['in-use'],
             'available': ['available'],
@@ -147,7 +144,6 @@ cst_disk._metadata = CloudServiceTypeMeta.set_meta(
         }),
     ],
     search=[
-        SearchField.set(name='Name', key='name'),
         SearchField.set(name='State', key='data.state.name'),
         SearchField.set(name='ARN', key='data.arn'),
         SearchField.set(name='Availability Zone', key='data.location.availability_zone'),
@@ -193,7 +189,6 @@ cst_snapshot.tags = {
 
 cst_snapshot._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'name'),
         EnumDyField.data_source('State', 'data.state', default_state={
             'safe': ['completed'],
             'warning': ['pending'],
@@ -213,7 +208,6 @@ cst_snapshot._metadata = CloudServiceTypeMeta.set_meta(
         })
     ],
     search=[
-        SearchField.set(name='Name', key='name'),
         SearchField.set(name='State', key='data.state'),
         SearchField.set(name='Size (GB)', key='data.size_in_gb'),
         SearchField.set(name='Auto Snapshot', key='data.is_from_auto_snapshot'),
@@ -255,7 +249,6 @@ cst_bucket.tags = {
 
 cst_bucket._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'name'),
         EnumDyField.data_source('State', 'data.state.code', default_state={
             'safe': ['OK'],
             'alert': ['Unknown']
@@ -283,7 +276,6 @@ cst_bucket._metadata = CloudServiceTypeMeta.set_meta(
         }),
     ],
     search=[
-        SearchField.set(name='Name', key='name'),
         SearchField.set(name='State', key='data.state.code'),
         SearchField.set(name='Region', key='data.state.code'),
         SearchField.set(name='URL', key='data.url'),
@@ -325,7 +317,6 @@ cst_ip.tags = {
 
 cst_ip._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('IP Address', 'data.ip_address'),
         EnumDyField.data_source('Is Attached', 'data.is_attached', default_badge={
             'indigo.500': ['true'], 'coral.600': ['false']
@@ -342,7 +333,6 @@ cst_ip._metadata = CloudServiceTypeMeta.set_meta(
         }),
     ],
     search=[
-        SearchField.set(name='Name', key='name'),
         SearchField.set(name='IP Address', key='data.ip_address'),
         SearchField.set(name='ARN', key='data.arn'),
         SearchField.set(name='Support Code', key='data.support_code'),
@@ -380,7 +370,6 @@ cst_rdb.tags = {
 
 cst_rdb._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'name'),
         EnumDyField.data_source('State', 'data.state', default_state={
             'available': ['available'],
             'warning': ['creating', 'deleting', 'maintenance', 'modifying', 'rebooting',
@@ -430,7 +419,6 @@ cst_rdb._metadata = CloudServiceTypeMeta.set_meta(
         }),
     ],
     search=[
-        SearchField.set(name='Name', key='name'),
         SearchField.set(name='State', key='data.state'),
         SearchField.set(name='Engine', key='data.engine'),
         SearchField.set(name='Engine Version', key='data.engine_version'),
@@ -480,7 +468,6 @@ cst_container.tags = {
 
 cst_container._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'name'),
         EnumDyField.data_source('State', 'data.state', default_state={
             'safe': ['READY', 'RUNNING'],
             'warning': ['PENDING', 'UPDATING', 'DELETING', 'DISABLED', 'DEPLOYING']
@@ -498,7 +485,6 @@ cst_container._metadata = CloudServiceTypeMeta.set_meta(
         })
     ],
     search=[
-        SearchField.set(name='Name', key='name'),
         SearchField.set(name='Type', key='data.power'),
         SearchField.set(name='State', key='data.current_deployment.state'),
         SearchField.set(name='Scale', key='data.scale'),
@@ -533,7 +519,6 @@ cst_loadbalancer.tags = {
 
 cst_loadbalancer._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'name'),
         EnumDyField.data_source('State', 'data.state', default_state={
             'safe': ['active'],
             'warning': ['provisioning'],
@@ -561,7 +546,6 @@ cst_loadbalancer._metadata = CloudServiceTypeMeta.set_meta(
     ],
 
     search=[
-        SearchField.set(name='Name', key='name'),
         SearchField.set(name='SupportCode', key='data.support_code'),
         SearchField.set(name='Region Name', key='data.region_name'),
         SearchField.set(name='DNS Name', key='data.dns_name'),
@@ -598,7 +582,6 @@ cst_distribution.tags = {
 
 cst_distribution._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Name', 'name'),
         TextDyField.data_source('Status', 'data.status'),
         TextDyField.data_source('Availability Zone', 'data.location.region_name'),
         TextDyField.data_source('DNS Name', 'data.domain_name'),
@@ -623,7 +606,6 @@ cst_distribution._metadata = CloudServiceTypeMeta.set_meta(
     ],
 
     search=[
-        SearchField.set(name='Name', key='name'),
         SearchField.set(name='Status', key='data.status'),
         SearchField.set(name='Availability Zone', key='data.availability_zone'),
         SearchField.set(name='Region Name', key='data.region_name'),
@@ -654,13 +636,8 @@ cst_domain.tags = {
 }
 
 cst_domain._metadata = CloudServiceTypeMeta.set_meta(
-    fields=[
-        TextDyField.data_source('Name', 'name')
-    ],
-
-    search=[
-        SearchField.set(name='Name', key='name')
-    ],
+    fields=[],
+    search=[],
     widget=[
         CardWidget.set(**get_data_from_yaml(domain_total_count_conf)),
         CardWidget.set(**get_data_from_yaml(domain_count_by_account_conf))
