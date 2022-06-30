@@ -1,4 +1,3 @@
-import time
 import logging
 from typing import List
 
@@ -24,7 +23,7 @@ class AutoScalingConnector(SchematicAWSConnector):
     cloud_service_types = CLOUD_SERVICE_TYPES
 
     def get_resources(self):
-        _LOGGER.debug("[get_resources] START: Auto Scaling")
+        _LOGGER.debug(f"[get_resources][account_id: {self.account_id}] START: Auto Scaling")
         resources = []
         start_time = time.time()
 
@@ -56,7 +55,7 @@ class AutoScalingConnector(SchematicAWSConnector):
             for collect_resource in collect_resources:
                 resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
 
-        _LOGGER.debug(f'[get_resources] FINISHED: Auto Scaling ({time.time() - start_time} sec)')
+        _LOGGER.debug(f'[get_resources][account_id: {self.account_id}] FINISHED: Auto Scaling ({time.time() - start_time} sec)')
         return resources
 
     def request_auto_scaling_group_data(self, region_name) -> List[AutoScalingGroup]:
