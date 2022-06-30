@@ -1,9 +1,9 @@
 import logging
 
 from schematics import Model
-from schematics.types import ModelType, StringType, IntType, FloatType, DateTimeType, serializable, ListType, \
-    BooleanType
-from spaceone.inventory.libs.schema.resource import CloudWatchModel, CloudWatchDimensionModel
+from schematics.types import ModelType, StringType, IntType, FloatType, DateTimeType, ListType, BooleanType
+from spaceone.inventory.libs.schema.resource import AWSCloudService, CloudWatchDimensionModel
+
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -16,8 +16,6 @@ class Tags(Model):
 '''
 NOTIFICATION CONFIGURATION
 '''
-
-
 class NotificationConfiguration(Model):
     auto_scaling_group_name = StringType(deserialize_from="AutoScalingGroupName", serialize_when_none=False)
     topic_arn = StringType(deserialize_from="TopicARN", serialize_when_none=False)
@@ -27,8 +25,6 @@ class NotificationConfiguration(Model):
 '''
 LIFECYCLE HOOK
 '''
-
-
 class LifecycleHook(Model):
     lifecycle_hook_name = StringType(deserialize_from="LifecycleHookName", serialize_when_none=False)
     auto_scaling_group_name = StringType(deserialize_from="AutoScalingGroupName", serialize_when_none=False)
@@ -44,8 +40,6 @@ class LifecycleHook(Model):
 '''
 SCHEDULED ACTION
 '''
-
-
 class ScheduledAction(Model):
     auto_scaling_group_name = StringType(deserialize_from="AutoScalingGroupName", serialize_when_none=False)
     scheduled_action_name = StringType(deserialize_from="ScheduledActionName", serialize_when_none=False)
@@ -62,8 +56,6 @@ class ScheduledAction(Model):
 '''
 POLICY
 '''
-
-
 class PredefinedMetricSpecification(Model):
     predefined_metric_type = StringType(deserialize_from="PredefinedMetricType", choices=("ASGAverageCPUUtilization",
                                                                                           "ASGAverageNetworkIn",
@@ -158,7 +150,7 @@ class AutoScalingLaunchConfigurationBlockDeviceMappings(Model):
     no_device = BooleanType(deserialize_from="NoDevice", serialize_when_none=False)
 
 
-class LaunchConfiguration(Model):
+class LaunchConfiguration(AWSCloudService):
     launch_configuration_name = StringType(deserialize_from="LaunchConfigurationName", serialize_when_none=False)
     launch_configuration_arn = StringType(deserialize_from="LaunchConfigurationARN", serialize_when_none=False)
     image_id = StringType(deserialize_from="ImageId", serialize_when_none=False)
@@ -183,7 +175,6 @@ class LaunchConfiguration(Model):
     associate_public_ip_address = BooleanType(deserialize_from="AssociatePublicIpAddress", serialize_when_none=False)
     placement_tenancy = StringType(deserialize_from="PlacementTenancy", serialize_when_none=False)
     region_name = StringType(serialize_when_none=False)
-    account_id = StringType(serialize_when_none=False)
 
     def reference(self, region_code):
         return {
@@ -302,7 +293,8 @@ class LaunchTemplateData(Model):
                                      serialize_when_none=False)
 
 
-class LaunchTemplateDetail(Model):
+class LaunchTemplateDetail(AWSCloudService):
+    arn = StringType()
     launch_template_id = StringType(deserialize_from="LaunchTemplateId", serialize_when_none=False)
     launch_template_name = StringType(deserialize_from="LaunchTemplateName", serialize_when_none=False)
     version = IntType(deserialize_from="Version", serialize_when_none=False)
@@ -311,8 +303,6 @@ class LaunchTemplateDetail(Model):
     created_by = StringType(deserialize_from="CreatedBy", serialize_when_none=False)
     default_version = BooleanType(deserialize_from="DefaultVersion", serialize_when_none=False)
     launch_template_data = ModelType(LaunchTemplateData, serialize_when_none=False)
-    account_id = StringType(default='')
-    arn = StringType()
 
     def reference(self, region_code):
         return {
@@ -324,8 +314,6 @@ class LaunchTemplateDetail(Model):
 '''
 AUTO SCALING GROUPS
 '''
-
-
 class LaunchTemplate(Model):
     launch_template_id = StringType(deserialize_from="LaunchTemplateId", serialize_when_none=False)
     launch_template_name = StringType(deserialize_from="LaunchTemplateName", serialize_when_none=False)
@@ -413,7 +401,7 @@ class LoadBalancer(Model):
     scheme = StringType(choices=('internet-facing', 'internal'), deserialize_from="Scheme")
 
 
-class AutoScalingGroup(Model):
+class AutoScalingGroup(AWSCloudService):
     auto_scaling_group_name = StringType(deserialize_from="AutoScalingGroupName")
     auto_scaling_group_arn = StringType(deserialize_from="AutoScalingGroupARN")
     launch_configuration_name = StringType(deserialize_from="LaunchConfigurationName", serialize_when_none=False)
@@ -449,14 +437,11 @@ class AutoScalingGroup(Model):
                                serialize_when_none=False)
     status = StringType(deserialize_from="Status", serialize_when_none=False)
     autoscaling_tags = ListType(ModelType(AutoScalingGroupTags), default=[])
-    tags = ListType(ModelType(Tags), default=[])
     termination_policies = ListType(StringType, deserialize_from="TerminationPolicies", serialize_when_none=False)
     new_instances_protected_from_scale_in = BooleanType(deserialize_from="NewInstancesProtectedFromScaleIn",
                                                         serialize_when_none=False)
     service_linked_role_arn = StringType(deserialize_from="ServiceLinkedRoleARN", serialize_when_none=False)
     max_instance_lifetime = IntType(deserialize_from="MaxInstanceLifetime", serialize_when_none=False)
-    account_id = StringType(default='')
-    cloudwatch = ModelType(CloudWatchModel, serialize_when_none=False)
 
     def reference(self, region_code):
         return {
