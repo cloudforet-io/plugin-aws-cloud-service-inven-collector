@@ -20,7 +20,7 @@ class CFConnector(SchematicAWSConnector):
     cloud_service_types = CLOUD_SERVICE_TYPES
 
     def get_resources(self):
-        _LOGGER.debug("[get_resources] START: Cloudfront")
+        _LOGGER.debug(f"[get_resources][account_id: {self.account_id}] START: Cloudfront")
         resources = []
         start_time = time.time()
 
@@ -47,7 +47,7 @@ class CFConnector(SchematicAWSConnector):
             resource_id = ''
             resources.append(self.generate_error('global', resource_id, e))
 
-        _LOGGER.debug(f'[get_resources] Cloud Front Finished {time.time() - start_time} Seconds')
+        _LOGGER.debug(f'[get_resources][account_id: {self.account_id}] Cloud Front Finished {time.time() - start_time} Seconds')
         return resources
 
     def request_data(self) -> List[DistributionData]:
