@@ -1,4 +1,3 @@
-import time
 import logging
 from typing import List
 
@@ -21,7 +20,7 @@ class APIGatewayConnector(SchematicAWSConnector):
     cloud_service_types = CLOUD_SERVICE_TYPES
 
     def get_resources(self):
-        _LOGGER.debug("[get_resources] START: API Gateway")
+        _LOGGER.debug(f"[get_resources][account_id: {self.account_id}] START: API Gateway")
         resources = []
         start_time = time.time()
 
@@ -50,7 +49,7 @@ class APIGatewayConnector(SchematicAWSConnector):
                                                              region_name,
                                                              collect_resource))
 
-        _LOGGER.debug(f'[get_resources] FINISHED: API Gateway ({time.time() - start_time} sec)')
+        _LOGGER.debug(f'[get_resources][account_id: {self.account_id}] FINISHED: API Gateway ({time.time() - start_time} sec)')
         return resources
 
     def request_rest_api_data(self, region_name) -> List[RestAPI]:
