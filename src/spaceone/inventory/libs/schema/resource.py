@@ -130,6 +130,7 @@ class AWSTags(Model):
 
 class AWSCloudService(Model):
     tags = ListType(ModelType(AWSTags), default=[])
+    cloudwatch = ModelType(CloudWatchModel, serialize_when_none=False)
     cloudtrail = ModelType(CloudTrailModel, serialize_when_none=False)
 
 
