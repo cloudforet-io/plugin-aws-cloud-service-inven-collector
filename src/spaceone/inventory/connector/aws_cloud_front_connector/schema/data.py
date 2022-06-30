@@ -1,16 +1,10 @@
 import logging
 
 from schematics import Model
-from schematics.types import ModelType, StringType, IntType, DateTimeType, serializable, ListType, BooleanType
-from spaceone.inventory.libs.schema.resource import CloudWatchModel, CloudWatchDimensionModel
-
+from schematics.types import ModelType, StringType, IntType, DateTimeType, ListType, BooleanType
+from spaceone.inventory.libs.schema.resource import CloudWatchDimensionModel, AWSCloudService
 
 _LOGGER = logging.getLogger(__name__)
-
-
-class Tags(Model):
-    key = StringType(deserialize_from="Key")
-    value = StringType(deserialize_from="Value")
 
 
 class CustomHeadersItems(Model):
@@ -255,7 +249,7 @@ class ViewerCertificate(Model):
     certificate_source = StringType(deserialize_from="CertificateSource", choices=('cloudfront', 'iam', 'acm'))
 
 
-class DistributionData(Model):
+class DistributionData(AWSCloudService):
     id = StringType(deserialize_from="Id")
     arn = StringType(deserialize_from="ARN")
     status = StringType(deserialize_from="Status")
@@ -281,9 +275,6 @@ class DistributionData(Model):
     is_ipv6_enabled = BooleanType(deserialize_from="IsIPV6Enabled", serialize_when_none=False)
     alias_icp_recordals = ListType(ModelType(AliasICPRecordals), deserialize_from="AliasICPRecordals",
                                    serialize_when_none=False)
-    account_id = StringType()
-    tags = ListType(ModelType(Tags), default=[])
-    cloudwatch = ModelType(CloudWatchModel, serialize_when_none=False)
 
     def reference(self):
         return {
