@@ -4,13 +4,10 @@ from schematics import Model
 from schematics.types import ModelType, StringType, IntType, DateTimeType, serializable, ListType, BooleanType, \
     DictType
 from spaceone.inventory.libs.schema.resource import CloudWatchModel, CloudWatchDimensionModel
+from spaceone.inventory.libs.schema.resource import AWSCloudService
+
 
 _LOGGER = logging.getLogger(__name__)
-
-
-class Tags(Model):
-    key = StringType()
-    value = StringType()
 
 '''
 HTTP WEBSOCKET
@@ -24,7 +21,7 @@ class CorsConfiguration(Model):
     max_age = IntType(deserialize_from="MaxAge", serialize_when_none=False)
 
 
-class HTTPWebsocket(Model):
+class HTTPWebsocket(AWSCloudService):
     arn = StringType()
     name = StringType(deserialize_from="Name")
     api_endpoint = StringType(deserialize_from="ApiEndpoint", serialize_when_none=False)
@@ -39,11 +36,8 @@ class HTTPWebsocket(Model):
     import_info = ListType(StringType,deserialize_from="ImportInfo", serialize_when_none=False)
     protocol_type = StringType(deserialize_from="ProtocolType", choices=("WEBSOCKET", "HTTP"))
     route_selection_expression = StringType(deserialize_from="RouteSelectionExpression", serialize_when_none=False)
-    tags = ListType(ModelType(Tags), default=[])
     version = StringType(deserialize_from="Version", serialize_when_none=False)
     warnings = ListType(StringType, deserialize_from="Warnings", serialize_when_none=False)
-    account_id = StringType(default="")
-    cloudwatch = ModelType(CloudWatchModel, serialize_when_none=False)
 
     def reference(self, region_code):
         return {
@@ -130,7 +124,7 @@ class Resource(Model):
     resource_methods = DictType(ModelType(ResourceMethodInfo), deserialize_from="resourceMethods", default={})
 
 
-class RestAPI(Model):
+class RestAPI(AWSCloudService):
     arn = StringType(default="")
     id = StringType(deserialize_from="id")
     name = StringType(deserialize_from="name")
@@ -147,9 +141,6 @@ class RestAPI(Model):
                                        serialize_when_none=False)
     policy = StringType(deserialize_from="policy", serialize_when_none=False)
     resources = ListType(ModelType(Resource), default=[])
-    tags = ListType(ModelType(Tags), default=[])
-    account_id = StringType(default="")
-    cloudwatch = ModelType(CloudWatchModel, serialize_when_none=False)
 
     def reference(self, region_code):
         return {
