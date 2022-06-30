@@ -76,12 +76,12 @@ class APIGatewayConnector(SchematicAWSConnector):
                         'endpoint_type': self.get_endpoint_type(raw.get('endpointConfiguration', {}).get('types')),
                         'resources': list(map(lambda _resource_raw: self.set_rest_api_resource(_resource_raw),
                                               _res.get('items', []))),
-                        'account_id': self.account_id,
                         'arn': self.generate_arn(service=self.rest_service_name, region=region_name,
                                                  account_id="", resource_type='restapis',
                                                  resource_id=f"{raw.get('id')}/*"),
                         'tags': list(map(lambda tag: Tags(tag, strict=False),
-                                         self.convert_tags(raw.get('tags', {}))))
+                                         self.convert_tags(raw.get('tags', {})))),
+                        'cloudtrail': self.set_cloudtrail(region_name, raw['id'])
                     })
     
                     rest_api_vo = RestAPI(raw, strict=False)
@@ -116,11 +116,11 @@ class APIGatewayConnector(SchematicAWSConnector):
                     raw.update({
                         'protocol': raw.get('ProtocolType'),
                         'endpoint_type': 'Regional',
-                        'account_id': self.account_id,
                         'arn': self.generate_arn(service=self.websocket_service_name, region=region_name,
                                                  account_id="", resource_type='api',
                                                  resource_id=raw.get('ApiId')),
-                        'tags': self.convert_tags(raw.get('tags', {}))
+                        'tags': self.convert_tags(raw.get('tags', {})),
+                        'cloudtrail': self.set_cloudtrail(region_name, raw['ApiId'])
                     })
     
                     http_websocket_vo = HTTPWebsocket(raw, strict=False)
