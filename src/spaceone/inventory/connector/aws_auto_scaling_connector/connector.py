@@ -10,6 +10,8 @@ from spaceone.inventory.connector.aws_auto_scaling_connector.schema.resource imp
     LaunchTemplateResponse
 from spaceone.inventory.connector.aws_auto_scaling_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
+from spaceone.inventory.libs.schema.resource import AWSTags
+
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -105,7 +107,7 @@ class AutoScalingConnector(SchematicAWSConnector):
                         'autoscaling_tags': list(map(lambda tag: AutoScalingGroupTags(tag, strict=False),
                                                      raw.get('Tags', []))),
                         'instances': self.get_asg_instances(raw.get('Instances', [])),
-                        'tags': list(map(lambda tag: Tags(tag, strict=False),
+                        'tags': list(map(lambda tag: AWSTags(tag, strict=False),
                                          self.get_general_tags(raw.get('Tags', [])))),
                         'cloudtrail': self.set_cloudtrail(region_name, raw['AutoScalingGroupName'])
                     })

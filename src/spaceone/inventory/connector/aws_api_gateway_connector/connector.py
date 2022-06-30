@@ -2,11 +2,12 @@ import logging
 from typing import List
 
 from spaceone.core.utils import *
-from spaceone.inventory.connector.aws_api_gateway_connector.schema.data import RestAPI, Resource, HTTPWebsocket, Tags
+from spaceone.inventory.connector.aws_api_gateway_connector.schema.data import RestAPI, Resource, HTTPWebsocket
 from spaceone.inventory.connector.aws_api_gateway_connector.schema.resource import RestAPIResource, \
     HTTPWebsocketResource, RestAPIResponse, HTTPWebsocketResponse
 from spaceone.inventory.connector.aws_api_gateway_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
+from spaceone.inventory.libs.schema.resource import AWSTags
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -79,7 +80,7 @@ class APIGatewayConnector(SchematicAWSConnector):
                         'arn': self.generate_arn(service=self.rest_service_name, region=region_name,
                                                  account_id="", resource_type='restapis',
                                                  resource_id=f"{raw.get('id')}/*"),
-                        'tags': list(map(lambda tag: Tags(tag, strict=False),
+                        'tags': list(map(lambda tag: AWSTags(tag, strict=False),
                                          self.convert_tags(raw.get('tags', {})))),
                         'cloudtrail': self.set_cloudtrail(region_name, raw['id'])
                     })
