@@ -1,9 +1,8 @@
 import logging
 
 from schematics import Model
-from schematics.types import ModelType, StringType, IntType, DateTimeType, serializable, ListType, BooleanType, \
-    DictType
-from spaceone.inventory.libs.schema.resource import CloudWatchModel, CloudWatchDimensionModel
+from schematics.types import ModelType, StringType, IntType, DateTimeType, ListType, BooleanType, DictType
+from spaceone.inventory.libs.schema.resource import CloudWatchDimensionModel
 from spaceone.inventory.libs.schema.resource import AWSCloudService
 
 
