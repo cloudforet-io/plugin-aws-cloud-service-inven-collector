@@ -56,6 +56,7 @@ class APIGatewayConnector(SchematicAWSConnector):
     def request_rest_api_data(self, region_name) -> List[RestAPI]:
         # Get REST API
         rest_client = self.set_client(self.rest_service_name)
+        cloudtrail_resource_type = 'AWS::ApiGateway::RestApi'
 
         paginator = rest_client.get_paginator('get_rest_apis')
         response_iterator = paginator.paginate(
@@ -82,7 +83,7 @@ class APIGatewayConnector(SchematicAWSConnector):
                                                  resource_id=f"{raw.get('id')}/*"),
                         'tags': list(map(lambda tag: AWSTags(tag, strict=False),
                                          self.convert_tags(raw.get('tags', {})))),
-                        'cloudtrail': self.set_cloudtrail(region_name, raw['id'])
+                        'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type, raw['id'])
                     })
     
                     rest_api_vo = RestAPI(raw, strict=False)
@@ -102,6 +103,7 @@ class APIGatewayConnector(SchematicAWSConnector):
     def request_websocket_data(self, region_name) -> List[HTTPWebsocket]:
         # Get HTTP or WebSocket
         websocket_client = self.set_client(self.websocket_service_name)
+        cloudtrail_resource_type = 'AWS::ApiGateway::RestApi'
 
         paginator = websocket_client.get_paginator('get_apis')
         response_iterator = paginator.paginate(
@@ -121,7 +123,7 @@ class APIGatewayConnector(SchematicAWSConnector):
                                                  account_id="", resource_type='api',
                                                  resource_id=raw.get('ApiId')),
                         'tags': self.convert_tags(raw.get('tags', {})),
-                        'cloudtrail': self.set_cloudtrail(region_name, raw['ApiId'])
+                        'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type, raw['ApiId'])
                     })
     
                     http_websocket_vo = HTTPWebsocket(raw, strict=False)

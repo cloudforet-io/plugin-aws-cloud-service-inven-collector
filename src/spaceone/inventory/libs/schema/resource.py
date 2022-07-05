@@ -60,7 +60,8 @@ class CloudTrailLookupResource(Model):
 
 
 class CloudTrailModel(Model):
-    region_name = StringType()
+    region_name = StringType(serialize_when_none=False)
+    resource_type = StringType(serialize_when_none=False)
     LookupAttributes = ListType(ModelType(CloudTrailLookupResource), default=[])
 
 

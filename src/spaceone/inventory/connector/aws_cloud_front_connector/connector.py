@@ -51,6 +51,7 @@ class CFConnector(SchematicAWSConnector):
         return resources
 
     def request_data(self) -> List[DistributionData]:
+        cloudtrail_resource_type = 'AWS::CloudFront::Distribution'
         paginator = self.client.get_paginator('list_distributions')
         response_iterator = paginator.paginate(
             PaginationConfig={
@@ -64,7 +65,7 @@ class CFConnector(SchematicAWSConnector):
                     raw.update({
                         'state_display': self.get_state_display(raw.get('Enabled')),
                         'tags': list(self.list_tags_for_resource(raw.get('ARN'))),
-                        'cloudtrail': self.set_cloudtrail('us-east-1', raw['Id'])
+                        'cloudtrail': self.set_cloudtrail('us-east-1', cloudtrail_resource_type, raw['Id'])
                     })
                     distribution_vo = DistributionData(raw, strict=False)
                     yield distribution_vo

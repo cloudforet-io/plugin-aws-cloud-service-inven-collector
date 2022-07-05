@@ -42,6 +42,7 @@ class ACMConnector(SchematicAWSConnector):
         return resources
 
     def request_data(self, region_name) -> List[Certificate]:
+        cloudtrail_resource_type = 'AWS::ACM::Certificate'
         paginator = self.client.get_paginator('list_certificates')
         response_iterator = paginator.paginate(
             PaginationConfig={
@@ -63,7 +64,7 @@ class ACMConnector(SchematicAWSConnector):
                         'additional_names_display': self.get_additional_names_display(certificate_info.get('SubjectAlternativeNames')),
                         'in_use_display': self.get_in_use_display(certificate_info.get('InUseBy')),
                         'tags': self.get_tags(certificate_info.get('CertificateArn')),
-                        'cloudtrail': self.set_cloudtrail(region_name, raw['CertificateArn'])
+                        'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type, raw['CertificateArn'])
                     })
     
                     certificate_vo = Certificate(certificate_info, strict=False)

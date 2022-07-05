@@ -219,7 +219,7 @@ class SchematicAWSConnector(AWSConnector):
         return [CloudServiceResourceTags({'key': tag.key, 'value': tag.value}, strict=False) for tag in tags_obj]
 
     @staticmethod
-    def set_cloudtrail(region_name, resource_name):
+    def set_cloudtrail(region_name, resource_type, resource_name):
         cloudtrail = {
             'LookupAttributes': [
                 {
@@ -227,6 +227,7 @@ class SchematicAWSConnector(AWSConnector):
                     "AttributeValue": resource_name,
                 }
             ],
-            'region_name': region_name
+            'region_name': region_name,
+            'resource_type': resource_type
         }
         return CloudTrailModel(cloudtrail, strict=False)
