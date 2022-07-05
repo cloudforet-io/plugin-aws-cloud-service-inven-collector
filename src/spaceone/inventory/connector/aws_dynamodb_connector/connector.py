@@ -21,7 +21,7 @@ class DynamoDBConnector(SchematicAWSConnector):
 
     def get_resources(self) -> List[TableResource]:
         resources = []
-        _LOGGER.debug("[get_resources] START: DynamoDB")
+        _LOGGER.debug(f"[get_resources][account_id: {self.account_id}] START: DynamoDB")
         start_time = time.time()
 
         collect_resource = {
@@ -36,7 +36,7 @@ class DynamoDBConnector(SchematicAWSConnector):
             self.reset_region(region_name)
             resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
 
-        _LOGGER.debug(f'[get_resources] FINISHED: DynamoDB ({time.time() - start_time} sec)')
+        _LOGGER.debug(f'[get_resources][account_id: {self.account_id}] FINISHED: DynamoDB ({time.time() - start_time} sec)')
         return resources
 
     def request_data(self, region_name) -> List[Table]:

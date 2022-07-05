@@ -1,14 +1,12 @@
-import time
 import logging
 from typing import List
 
 from spaceone.core.utils import *
 from spaceone.inventory.connector.aws_msk_connector.schema.data import Cluster, Configuration
-from spaceone.inventory.connector.aws_msk_connector.schema.resource import MSKResource, ClusterResource, ClusterResponse,\
-                                                                            ConfigurationResource, ConfigurationResponse
+from spaceone.inventory.connector.aws_msk_connector.schema.resource import ClusterResource, ClusterResponse,\
+    ConfigurationResource, ConfigurationResponse
 from spaceone.inventory.connector.aws_msk_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
-from spaceone.inventory.libs.schema.resource import ReferenceModel
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -23,7 +21,7 @@ class MSKConnector(SchematicAWSConnector):
     cloud_service_types = CLOUD_SERVICE_TYPES
 
     def get_resources(self):
-        _LOGGER.debug("[get_resources] START: MSK")
+        _LOGGER.debug(f"[get_resources][account_id: {self.account_id}] START: MSK")
         resources = []
         start_time = time.time()
 
@@ -51,12 +49,13 @@ class MSKConnector(SchematicAWSConnector):
             for collect_resource in collect_resources:
                 resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
 
-        _LOGGER.debug(f'[get_resources] FINISHED: MSK ({time.time() - start_time} sec)')
+        _LOGGER.debug(f'[get_resources][account_id: {self.account_id}] FINISHED: MSK ({time.time() - start_time} sec)')
         return resources
 
     def request_cluster_data(self, region_name) -> List[Cluster]:
         cloud_service_group = 'MSK'
         cloud_service_type = 'Cluster'
+        cloudtrail_resource_type = 'AWS::MSK::Cluster'
         self.cloud_service_type = cloud_service_type
 
         paginator = self.client.get_paginator('list_clusters')
@@ -73,7 +72,8 @@ class MSKConnector(SchematicAWSConnector):
                     raw.update({
                         'tags': self.convert_tags(raw.get('Tags', {})),
                         'node_info_list': self.get_nodes(raw.get('ClusterArn')),
-                        'cluster_operation_info': self.get_operation_cluster(raw.get('ClusterArn'))
+                        'cluster_operation_info': self.get_operation_cluster(raw.get('ClusterArn')),
+                        'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type, raw['ClusterArn']),
                     })
 
                     cluster_vo = Cluster(raw, strict=False)
@@ -93,6 +93,7 @@ class MSKConnector(SchematicAWSConnector):
         cloud_service_group = 'MSK'
         cloud_service_type = 'ClusterConfiguration'
         self.cloud_service_type = cloud_service_type
+        cloudtrail_resource_type = 'AWS::MSK::Cluster'
 
         paginator = self.client.get_paginator('list_configurations')
         response_iterator = paginator.paginate(
@@ -106,7 +107,8 @@ class MSKConnector(SchematicAWSConnector):
             for raw in data.get('Configurations'):
                 try:
                     raw.update({
-                        'revisions_configurations': self.get_revisions(raw.get('Arn'))
+                        'revisions_configurations': self.get_revisions(raw.get('Arn')),
+                        'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type, raw['Arn']),
                     })
                     configuration_vo = Configuration(raw, strict=False)
                     yield {

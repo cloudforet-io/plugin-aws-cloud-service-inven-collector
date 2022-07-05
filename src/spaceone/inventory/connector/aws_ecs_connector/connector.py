@@ -22,7 +22,7 @@ class ECSConnector(SchematicAWSConnector):
     cloud_service_types = CLOUD_SERVICE_TYPES
 
     def get_resources(self) -> List[ClusterResource]:
-        _LOGGER.debug("[get_resources] START: ECS")
+        _LOGGER.debug(f"[get_resources][account_id: {self.account_id}] START: ECS")
         resources = []
         start_time = time.time()
 
@@ -39,7 +39,7 @@ class ECSConnector(SchematicAWSConnector):
             self.reset_region(region_name)
             resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
 
-        _LOGGER.debug(f'[get_resources] FINISHED: ECS ({time.time() - start_time} sec)')
+        _LOGGER.debug(f'[get_resources][account_id: {self.account_id}] FINISHED: ECS ({time.time() - start_time} sec)')
         return resources
 
     def request_data(self, region_name) -> List[Cluster]:

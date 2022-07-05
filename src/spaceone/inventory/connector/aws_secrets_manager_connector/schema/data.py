@@ -1,7 +1,7 @@
 import logging
-
 from schematics import Model
 from schematics.types import ModelType, StringType, IntType, DateTimeType, ListType, BooleanType
+from spaceone.inventory.libs.schema.resource import AWSCloudService
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -14,12 +14,7 @@ class SecretVersionsToStages(Model):
     string = ListType(StringType,deserialize_from="string")
 
 
-class SecretTags(Model):
-    key = StringType(deserialize_from="Key")
-    value = StringType(deserialize_from="Value")
-
-
-class Secret(Model):
+class Secret(AWSCloudService):
     arn = StringType(deserialize_from="ARN")
     name = StringType(deserialize_from="Name")
     description = StringType(deserialize_from="Description")
@@ -31,10 +26,8 @@ class Secret(Model):
     last_changed_date = DateTimeType(deserialize_from="LastChangedDate")
     last_accessed_date = DateTimeType(deserialize_from="LastAccessedDate")
     deleted_date = DateTimeType(deserialize_from="DeletedDate")
-    tags = ListType(ModelType(SecretTags), deserialize_from="Tags", default=[])
     secret_versions_to_stages = ModelType(SecretVersionsToStages, deserialize_from="SecretVersionsToStages")
     owning_service = StringType(deserialize_from="OwningService")
-    account_id = StringType(default='')
 
     def reference(self, region_code):
         return {

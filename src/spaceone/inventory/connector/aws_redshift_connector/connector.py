@@ -1,10 +1,8 @@
-import time
 import logging
 from typing import List
 
 from spaceone.core.utils import *
-from spaceone.inventory.connector.aws_redshift_connector.schema.data import Cluster, Snapshot, SnapshotSchedule, \
-    ScheduledAction, Tags
+from spaceone.inventory.connector.aws_redshift_connector.schema.data import Cluster, Tags
 from spaceone.inventory.connector.aws_redshift_connector.schema.resource import ClusterResource, ClusterResponse
 from spaceone.inventory.connector.aws_redshift_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
@@ -20,7 +18,7 @@ class RedshiftConnector(SchematicAWSConnector):
     cloud_service_types = CLOUD_SERVICE_TYPES
 
     def get_resources(self) -> List[ClusterResource]:
-        _LOGGER.debug("[get_resources] START: Redshift")
+        _LOGGER.debug(f"[get_resources][account_id: {self.account_id}] START: Redshift")
         resources = []
         start_time = time.time()
 
@@ -36,10 +34,11 @@ class RedshiftConnector(SchematicAWSConnector):
             self.reset_region(region_name)
             resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
 
-        _LOGGER.debug(f'[get_resources] FINISHED: Redshift ({time.time() - start_time} sec)')
+        _LOGGER.debug(f'[get_resources][account_id: {self.account_id}] FINISHED: Redshift ({time.time() - start_time} sec)')
         return resources
 
     def request_data(self, region_name) -> List[Cluster]:
+        cloudtrail_resource_type = 'AWS::Redshift::Cluster'
         paginator = self.client.get_paginator('describe_clusters')
         response_iterator = paginator.paginate(
             PaginationConfig={
@@ -52,10 +51,11 @@ class RedshiftConnector(SchematicAWSConnector):
                 try:
                     raw.update({
                         'region_name': region_name,
-                        'account_id': self.account_id,
                         'arn': self.generate_arn(service=self.service_name, region=region_name,
                                                  account_id=self.account_id, resource_type='cluster',
                                                  resource_id=raw.get('ClusterIdentifier')),
+                        'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type,
+                                                          raw['ClusterIdentifier']),
                         'tags': list(self.describe_tags({"service": self.service_name,
                                                          "region": region_name,
                                                          "account_id": self.account_id,

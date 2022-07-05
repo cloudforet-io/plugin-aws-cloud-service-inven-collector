@@ -1,8 +1,8 @@
 import logging
-
 from schematics import Model
 from schematics.types import ModelType, StringType, IntType, DateTimeType, ListType, BooleanType
-from spaceone.inventory.libs.schema.resource import CloudWatchModel, CloudWatchDimensionModel
+from spaceone.inventory.libs.schema.resource import CloudWatchModel, CloudWatchDimensionModel, AWSCloudService
+
 _LOGGER = logging.getLogger(__name__)
 
 
@@ -75,7 +75,7 @@ class VPNConnectionTunnelOption(Model):
     ike_versions = ListType(ModelType(VPNConnectionTunnelOptionIkeVersions), deserialize_from="IkeVersions")
 
 
-class Options(Model):
+class VPNConnectionOptions(Model):
     enable_acceleration = BooleanType(deserialize_from="EnableAcceleration")
     static_routes_only = BooleanType(deserialize_from="StaticRoutesOnly")
     tunnel_options = ListType(ModelType(VPNConnectionTunnelOption), deserialize_from="TunnelOptions")
@@ -87,7 +87,7 @@ class VPNConnectionRoutes(Model):
     state = StringType(deserialize_from="State", choices=("pending", "available", "deleting", "deleted"))
 
 
-class VPNConnection(Model):
+class VPNConnection(AWSCloudService):
     name = StringType(default="")
     customer_gateway_configuration = StringType(deserialize_from="CustomerGatewayConfiguration")
     customer_gateway_id = StringType(deserialize_from="CustomerGatewayId")
@@ -98,11 +98,9 @@ class VPNConnection(Model):
     vpn_connection_id = StringType(deserialize_from="VpnConnectionId")
     vpn_gateway_id = StringType(deserialize_from="VpnGatewayId")
     transit_gateway_id = StringType(deserialize_from="TransitGatewayId")
-    options = ModelType(Options, deserialize_from="Options")
+    options = ModelType(VPNConnectionOptions, deserialize_from="Options")
     routes = ListType(ModelType(VPNConnectionRoutes), deserialize_from="Routes")
-    tags = ListType(ModelType(Tags), deserialize_from="Tags", default=[])
     vgw_telemetry = ListType(ModelType(VPNConnectionVgwTelemetry), deserialize_from="VgwTelemetry")
-    account_id = StringType(default="")
 
     def reference(self, region_code):
         return {
@@ -119,7 +117,7 @@ class VPNGatewayVpcAttachments(Model):
     vpc_id = StringType(deserialize_from="VpcId")
 
 
-class VPNGateway(Model):
+class VPNGateway(AWSCloudService):
     name = StringType(default="")
     availability_zone = StringType(deserialize_from="AvailabilityZone")
     state = StringType(deserialize_from="State", choices=("pending", "available", "deleting", "deleted"))
@@ -127,9 +125,7 @@ class VPNGateway(Model):
     vpc_attachments = ListType(ModelType(VPNGatewayVpcAttachments), deserialize_from="VpcAttachments")
     vpn_gateway_id = StringType(deserialize_from="VpnGatewayId")
     amazon_side_asn = IntType(deserialize_from="AmazonSideAsn")
-    tags = ListType(ModelType(Tags), deserialize_from="Tags", default=[])
     vpn_connection = ModelType(VPNConnection)
-    account_id = StringType(default="")
 
     def reference(self, region_code):
         return {
@@ -141,7 +137,7 @@ class VPNGateway(Model):
 '''
 CUSTOMER GATEWAY
 '''
-class CustomerGateway(Model):
+class CustomerGateway(AWSCloudService):
     name = StringType(default="")
     bgp_asn = StringType(deserialize_from="BgpAsn")
     customer_gateway_id = StringType(deserialize_from="CustomerGatewayId")
@@ -150,10 +146,8 @@ class CustomerGateway(Model):
     state = StringType(deserialize_from="State", choices=("pending", "available", "deleting", "deleted"))
     type = StringType(deserialize_from="Type")
     device_name = StringType(deserialize_from="DeviceName")
-    tags = ListType(ModelType(Tags), deserialize_from="Tags", default=[])
     vpn_connection = ModelType(VPNConnection)
     region_name = StringType(default="")
-    account_id = StringType(default="")
 
     def reference(self, region_code):
         return {
@@ -202,7 +196,7 @@ class TransitGatewayRouteTables(Model):
 '''
 TRANSIT GATEWAY
 '''
-class Options(Model):
+class TransitGatewayOptions(Model):
     amazon_side_asn = IntType(deserialize_from="AmazonSideAsn")
     auto_accept_shared_attachments = StringType(deserialize_from="AutoAcceptSharedAttachments",
                                                 choices=("enable", "disable"))
@@ -217,7 +211,7 @@ class Options(Model):
     multicast_support = StringType(deserialize_from="MulticastSupport", choices=("enable", "disable"))
 
 
-class TransitGateway(Model):
+class TransitGateway(AWSCloudService):
     name = StringType(default="")
     transit_gateway_id = StringType(deserialize_from="TransitGatewayId")
     transit_gateway_arn = StringType(deserialize_from="TransitGatewayArn")
@@ -225,12 +219,9 @@ class TransitGateway(Model):
     owner_id = StringType(deserialize_from="OwnerId")
     description = StringType(deserialize_from="Description")
     creation_time = DateTimeType(deserialize_from="CreationTime")
-    options = ModelType(Options, deserialize_from="Options")
+    options = ModelType(TransitGatewayOptions, deserialize_from="Options")
     transit_gateway_route_table = ModelType(TransitGatewayRouteTables)
-    tags = ListType(ModelType(Tags), deserialize_from="Tags", default=[])
     vpn_connections = ListType(ModelType(VPNConnection))
-    account_id = StringType(default="")
-    cloudwatch = ModelType(CloudWatchModel, serialize_when_none=False)
 
     def reference(self, region_code):
         return {
@@ -282,7 +273,7 @@ class NetworkACLTotalEntries(NetworkACLEntries):
     direction = StringType()
 
 
-class NetworkACL(Model):
+class NetworkACL(AWSCloudService):
     arn = StringType(default="")
     name = StringType(default="")
     associations = ListType(ModelType(NetworkACLAssociations), deserialize_from="Associations")
@@ -291,10 +282,8 @@ class NetworkACL(Model):
     entries = ListType(ModelType(NetworkACLTotalEntries))
     is_default = BooleanType(deserialize_from="IsDefault")
     network_acl_id = StringType(deserialize_from="NetworkAclId")
-    tags = ListType(ModelType(Tags), deserialize_from="Tags", default=[])
     vpc_id = StringType(deserialize_from="VpcId")
     owner_id = StringType(deserialize_from="OwnerId")
-    account_id = StringType(default="")
 
     def reference(self, region_code):
         return {
@@ -337,16 +326,14 @@ class Status(Model):
     message = StringType(deserialize_from="Message")
 
 
-class PeeringConnection(Model):
+class PeeringConnection(AWSCloudService):
     arn = StringType(default="")
     name = StringType(default="")
     accepter_vpc_info = ModelType(RequesterVpcInfo, deserialize_from="AccepterVpcInfo")
     expiration_time = DateTimeType(deserialize_from="ExpirationTime")
     requester_vpc_info = ModelType(RequesterVpcInfo, deserialize_from="RequesterVpcInfo")
     status = ModelType(Status, deserialize_from="Status")
-    tags = ListType(ModelType(Tags), deserialize_from="Tags", default=[])
     vpc_peering_connection_id = StringType(deserialize_from="VpcPeeringConnectionId")
-    account_id = StringType(default="")
 
     def reference(self, region_code):
         return {
@@ -372,7 +359,7 @@ class NATGatewayNatGatewayAddresses(Model):
     public_ip = StringType(deserialize_from="PublicIp")
 
 
-class NATGateway(Model):
+class NATGateway(AWSCloudService):
     arn = StringType(default="")
     name = StringType(default="")
     create_time = DateTimeType(deserialize_from="CreateTime")
@@ -385,9 +372,6 @@ class NATGateway(Model):
     state = StringType(deserialize_from="State", choices=("pending", "failed", "available", "deleting", "deleted"))
     subnet_id = StringType(deserialize_from="SubnetId")
     vpc_id = StringType(deserialize_from="VpcId")
-    tags = ListType(ModelType(Tags), deserialize_from="Tags", default=[])
-    account_id = StringType(default="")
-    cloudwatch = ModelType(CloudWatchModel, serialize_when_none=False)
 
     def reference(self, region_code):
         return {
@@ -439,10 +423,8 @@ class Endpoint(Model):
     network_interface_ids = ListType(StringType, deserialize_from="NetworkInterfaceIds")
     dns_entries = ListType(ModelType(EndpointsDnsEntries), deserialize_from="DnsEntries")
     creation_timestamp = DateTimeType(deserialize_from="CreationTimestamp")
-    tags = ListType(ModelType(Tags), deserialize_from="Tags", default=[])
     owner_id = StringType(deserialize_from="OwnerId")
     last_error = ModelType(LastError, deserialize_from="LastError")
-    account_id = StringType(default="")
 
     def reference(self, region_code):
         return {
@@ -459,13 +441,11 @@ class EgressOnlyInternetGatewayAttachments(Model):
     vpc_id = StringType(deserialize_from="VpcId")
 
 
-class EgressOnlyInternetGateway(Model):
+class EgressOnlyInternetGateway(AWSCloudService):
     arn = StringType(default="")
     name = StringType(default="")
     attachments = ListType(ModelType(EgressOnlyInternetGatewayAttachments), deserialize_from="Attachments")
     egress_only_internet_gateway_id = StringType(deserialize_from="EgressOnlyInternetGatewayId")
-    tags = ListType(ModelType(Tags), deserialize_from="Tags", default=[])
-    account_id = StringType(default="")
 
     def reference(self, region_code):
         return {
@@ -482,16 +462,14 @@ class InternetGatewayAttachments(Model):
     vpc_id = StringType(deserialize_from="VpcId")
 
 
-class InternetGateway(Model):
+class InternetGateway(AWSCloudService):
     arn = StringType(default="")
     name = StringType(default="")
     state = StringType()
     attachments = ListType(ModelType(InternetGatewayAttachments), deserialize_from="Attachments")
     internet_gateway_id = StringType(deserialize_from="InternetGatewayId")
     owner_id = StringType(deserialize_from="OwnerId")
-    tags = ListType(ModelType(Tags), deserialize_from="Tags", default=[])
     region_name = StringType(default="")
-    account_id = StringType(default="")
 
     def reference(self, region_code):
         return {
@@ -543,7 +521,7 @@ class RouteTableRoutes(Model):
     vpc_peering_connection_id = StringType(deserialize_from="VpcPeeringConnectionId", serialize_when_none=False)
 
 
-class RouteTable(Model):
+class RouteTable(AWSCloudService):
     arn = StringType(default="")
     name = StringType(default="")
     subnet_associations = ListType(ModelType(RouteTableAssociations), deserialize_from="SubnetAssociations", default=[])
@@ -551,11 +529,9 @@ class RouteTable(Model):
     propagating_vgws = ListType(ModelType(RouteTablePropagatingVgws), deserialize_from="PropagatingVgws", default=[])
     route_table_id = StringType(deserialize_from="RouteTableId", serialize_when_none=False)
     routes = ListType(ModelType(RouteTableRoutes), deserialize_from="Routes", default=[])
-    tags = ListType(ModelType(Tags), deserialize_from="Tags", default=[])
     vpc_id = StringType(deserialize_from="VpcId")
     owner_id = StringType(deserialize_from="OwnerId")
     main = StringType(default="")
-    account_id = StringType(default="")
 
     def reference(self, region_code):
         return {
@@ -603,7 +579,7 @@ class SubnetIpv6CidrBlockAssociationSet(Model):
     ipv6_cidr_block_state = ModelType(Ipv6CidrBlockState, deserialize_from="Ipv6CidrBlockState")
 
 
-class Subnet(Model):
+class Subnet(AWSCloudService):
     name = StringType(default="")
     availability_zone = StringType(deserialize_from="AvailabilityZone")
     availability_zone_id = StringType(deserialize_from="AvailabilityZoneId")
@@ -618,14 +594,12 @@ class Subnet(Model):
     assign_ipv6_address_on_creation = BooleanType(deserialize_from="AssignIpv6AddressOnCreation")
     ipv6_cidr_block_association_set = ListType(ModelType(SubnetIpv6CidrBlockAssociationSet),
                                                deserialize_from="Ipv6CidrBlockAssociationSet")
-    tags = ListType(ModelType(Tags), deserialize_from="Tags", default=[])
     subnet_arn = StringType(deserialize_from="SubnetArn")
     outpost_arn = StringType(deserialize_from="OutpostArn")
     nat_gateways = ListType(ModelType(NATGateway))
     route_table = ModelType(RouteTable)
     network_acl = ModelType(NetworkACL)
     region_name = StringType(default="")
-    account_id = StringType(default="")
     subnet_type = StringType(choices=["public", "private"], default="private")
 
     def reference(self, region_code):
@@ -657,7 +631,7 @@ class VPCCidrBlockAssociationSet(Model):
     cidr_block_state = ModelType(CidrBlockState, deserialize_from="CidrBlockState")
 
 
-class VPC(Model):
+class VPC(AWSCloudService):
     arn = StringType(default="")
     name = StringType(default="")
     cidr_block = StringType(deserialize_from="CidrBlock")
@@ -672,7 +646,6 @@ class VPC(Model):
     cidr_block_association_set = ListType(ModelType(VPCCidrBlockAssociationSet),
                                           deserialize_from="CidrBlockAssociationSet")
     is_default = BooleanType(deserialize_from="IsDefault")
-    tags = ListType(ModelType(Tags), deserialize_from="Tags", default=[])
     subnets = ListType(ModelType(Subnet))
     route_tables = ListType(ModelType(RouteTable))
     main_route_table_id = StringType()

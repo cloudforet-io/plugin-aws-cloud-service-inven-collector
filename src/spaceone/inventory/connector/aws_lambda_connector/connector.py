@@ -1,11 +1,8 @@
-import time
 import logging
 from typing import List
-from botocore.exceptions import ClientError
-
 from spaceone.core.utils import *
 from spaceone.inventory.connector.aws_lambda_connector.schema.data import LambdaFunctionData, \
-    EnvironmentVariable, LambdaState, LastUpdateStatus, VPCConfig, Environment, Layer
+    EnvironmentVariable, LambdaState, LastUpdateStatus, Environment, Layer
 from spaceone.inventory.connector.aws_lambda_connector.schema.resource import LambdaFunctionResponse, \
     LambdaFunctionResource, LambdaLayerResource, LambdaLayerResponse
 from spaceone.inventory.connector.aws_lambda_connector.schema.service_type import CLOUD_SERVICE_TYPES
@@ -21,7 +18,7 @@ class LambdaConnector(SchematicAWSConnector):
     cloud_service_types = CLOUD_SERVICE_TYPES
 
     def get_resources(self):
-        _LOGGER.debug("[get_resources] START: Lambda")
+        _LOGGER.debug(f"[get_resources][account_id: {self.account_id}] START: Lambda")
         resources = []
         start_time = time.time()
 
@@ -46,7 +43,7 @@ class LambdaConnector(SchematicAWSConnector):
             for collect_resource in collect_resources:
                 resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
 
-        _LOGGER.debug(f'[get_resources] FINISHED: Lambda ({time.time() - start_time} sec)')
+        _LOGGER.debug(f'[get_resources][account_id: {self.account_id}] FINISHED: Lambda ({time.time() - start_time} sec)')
         return resources
 
     @property
@@ -56,6 +53,8 @@ class LambdaConnector(SchematicAWSConnector):
     def request_functions_data(self, region_name) -> List[LambdaFunctionData]:
         cloud_service_group = 'Lambda'
         cloud_service_type = 'Function'
+        cloudtrail_resource_type = 'AWS::Lambda::Function'
+
         self.cloud_service_type = cloud_service_type
 
         paginator = self.client.get_paginator('list_functions')
@@ -70,6 +69,7 @@ class LambdaConnector(SchematicAWSConnector):
                 try:
                     func = LambdaFunctionData(raw, strict=False)
                     func.region_name = region_name
+                    func.cloudtrail = self.set_cloudtrail(region_name, cloudtrail_resource_type, func.name)
 
                     if raw.get('State'):
                         func.state = LambdaState({
@@ -106,6 +106,8 @@ class LambdaConnector(SchematicAWSConnector):
     def request_layer_data(self, region_name) -> List[Layer]:
         cloud_service_group = 'Lambda'
         cloud_service_type = 'Layer'
+        cloudtrail_resource_type = 'AWS::Lambda::Layer'
+
         self.cloud_service_type = cloud_service_type
 
         paginator = self.client.get_paginator('list_layers')
@@ -124,7 +126,10 @@ class LambdaConnector(SchematicAWSConnector):
                             'version': latest_matching_version.get('Version')
                         })
 
-                    raw.update({'region_name': region_name})
+                    raw.update({
+                        'region_name': region_name,
+                        'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type, raw['LayerArn'])
+                    })
 
                     layer_vo = Layer(raw, strict=False)
                     yield {

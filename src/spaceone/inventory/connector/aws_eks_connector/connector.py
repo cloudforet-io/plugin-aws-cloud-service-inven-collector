@@ -1,14 +1,13 @@
 import logging
-import time
 from typing import List
 
 from spaceone.core.utils import *
-from spaceone.inventory.connector.aws_eks_connector.schema.data import Cluster, NodeGroup, Update, Tags
+from spaceone.inventory.connector.aws_eks_connector.schema.data import Cluster, NodeGroup, Update
 from spaceone.inventory.connector.aws_eks_connector.schema.resource import ClusterResource, ClusterResponse, \
     NodeGroupResource, NodeGroupResponse
 from spaceone.inventory.connector.aws_eks_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
-from spaceone.inventory.libs.schema.resource import ReferenceModel
+from spaceone.inventory.libs.schema.resource import ReferenceModel, AWSTags
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -20,7 +19,7 @@ class EKSConnector(SchematicAWSConnector):
     cloud_service_types = CLOUD_SERVICE_TYPES
 
     def get_resources(self):
-        _LOGGER.debug("[get_resources] START: EKS")
+        _LOGGER.debug(f"[get_resources][account_id: {self.account_id}] START: EKS")
         resources = []
         self.node_groups = []
         start_time = time.time()
@@ -42,7 +41,6 @@ class EKSConnector(SchematicAWSConnector):
                 resources.append(NodeGroupResponse(
                     {'resource': NodeGroupResource({
                         'name': node_group_vo.nodegroup_name,
-                        'account': self.account_id,
                         'launched_at': self.datetime_to_iso8601(node_group_vo.created_at),
                         'data': node_group_vo,
                         'tags': [{'key': tag.key, 'value': tag.value} for tag in node_group_vo.tags],
@@ -52,11 +50,12 @@ class EKSConnector(SchematicAWSConnector):
 
             self.node_groups = []
 
-        _LOGGER.debug(f'[get_resources] FINISHED: EKS ({time.time() - start_time} sec)')
+        _LOGGER.debug(f'[get_resources][account_id: {self.account_id}] FINISHED: EKS ({time.time() - start_time} sec)')
         return resources
 
     def request_data(self, region_name) -> List[Cluster]:
         self.cloud_service_type = 'Cluster'
+        cloudtrail_resource_type = 'AWS::EKS::Cluster'
 
         paginator = self.client.get_paginator('list_clusters')
         response_iterator = paginator.paginate(
@@ -76,12 +75,13 @@ class EKSConnector(SchematicAWSConnector):
                     if cluster := raw.get('cluster'):
                         cluster.update({
                             'updates': list(self.list_updates(_cluster_name)),
-                            'account_id': self.account_id,
-                            'tags': list(map(lambda tag: Tags(tag, strict=False),
+                            'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type, cluster['name']),
+                            'tags': list(map(lambda tag: AWSTags(tag, strict=False),
                                              self.convert_tags(cluster.get('tags', {}))))
                         })
 
-                        node_groups, node_group_errors = self.list_node_groups(_cluster_name, cluster.get('arn'))
+                        node_groups, node_group_errors = self.list_node_groups(_cluster_name, cluster.get('arn'),
+                                                                               region_name)
 
                         cluster.update({
                             'node_groups': node_groups
@@ -106,8 +106,9 @@ class EKSConnector(SchematicAWSConnector):
         for error in errors:
             yield {'data': error}
 
-    def list_node_groups(self, cluster_name, cluster_arn):
+    def list_node_groups(self, cluster_name, cluster_arn, region_name):
         self.cloud_service_type = 'NodeGroup'
+        cloudtrail_resource_type = 'AWS::EKS::Nodegroup'
 
         asgs = self.get_auto_scaling_groups()
         paginator = self.client.get_paginator('list_nodegroups')
@@ -129,8 +130,9 @@ class EKSConnector(SchematicAWSConnector):
                     node_group = node_group_response.get('nodegroup', {})
                     node_group.update({
                         'cluster_arn': cluster_arn,
-                        'account_id': self.account_id,
-                        'tags': list(map(lambda tag: Tags(tag, strict=False),
+                        'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type,
+                                                          node_group['nodegroupName']),
+                        'tags': list(map(lambda tag: AWSTags(tag, strict=False),
                                          self.convert_tags(node_group.get('tags', {}))))
                     })
                     asg_names = [asg.get("name", "") for asg in
@@ -188,7 +190,8 @@ class EKSConnector(SchematicAWSConnector):
                 })
         return asgs
 
-    def get_matched_auto_scaling_groups(self, asgs, asg_names):
+    @staticmethod
+    def get_matched_auto_scaling_groups(asgs, asg_names):
         matched_asgs = []
         for asg in asgs:
             if asg.get("name", "") in asg_names:

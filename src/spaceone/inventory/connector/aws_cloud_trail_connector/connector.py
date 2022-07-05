@@ -2,11 +2,11 @@ import time
 import logging
 from typing import List
 
-from spaceone.inventory.connector.aws_cloud_trail_connector.schema.data import Trail, EventSelector, InsightSelector, \
-    CloudTrailTags
+from spaceone.inventory.connector.aws_cloud_trail_connector.schema.data import Trail, EventSelector, InsightSelector
 from spaceone.inventory.connector.aws_cloud_trail_connector.schema.resource import TrailResource, TrailResponse
 from spaceone.inventory.connector.aws_cloud_trail_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
+from spaceone.inventory.libs.schema.resource import AWSTags
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -19,7 +19,7 @@ class CloudTrailConnector(SchematicAWSConnector):
     cloud_service_types = CLOUD_SERVICE_TYPES
 
     def get_resources(self) -> List[TrailResource]:
-        _LOGGER.debug("[get_resources] START: CloudTrail")
+        _LOGGER.debug(f"[get_resources][account_id: {self.account_id}] START: CloudTrail")
         resources = []
         start_time = time.time()
 
@@ -36,10 +36,11 @@ class CloudTrailConnector(SchematicAWSConnector):
             self.reset_region(region_name)
             resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
 
-        _LOGGER.debug(f'[get_resources] FINISHED: CloudTrail ({time.time() - start_time} sec)')
+        _LOGGER.debug(f'[get_resources][account_id: {self.account_id}] FINISHED: CloudTrail ({time.time() - start_time} sec)')
         return resources
 
     def request_data(self, region_name) -> List[Trail]:
+        cloudtrail_resource_type = 'AWS::CloudTrail::Trail'
         response = self.client.describe_trails()
 
         trails = response.get('trailList', [])
@@ -57,7 +58,8 @@ class CloudTrailConnector(SchematicAWSConnector):
                             raw['insight_selectors'] = InsightSelector(insight_selectors, strict=False)
 
                     raw.update({
-                        'tags': self._match_tags(raw.get('TrailARN'), tags)
+                        'tags': self._match_tags(raw.get('TrailARN'), tags),
+                        'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type, raw['TrailARN'])
                     })
 
                     trail_vo = Trail(raw, strict=False)
@@ -102,10 +104,13 @@ class CloudTrailConnector(SchematicAWSConnector):
     @staticmethod
     def _match_tags(trail_arn, tags):
         return_tags = []
-        for tag in tags:
-            if tag['ResourceId'] == trail_arn:
-                for _tag in tag['TagsList']:
-                    return_tags.append(CloudTrailTags(_tag, strict=False))
+        try:
+            for tag in tags:
+                if tag['ResourceId'] == trail_arn:
+                    for _tag in tag['TagsList']:
+                        return_tags.append(AWSTags(_tag, strict=False))
+        except Exception as e:
+            _LOGGER.error(e)
 
         return return_tags
 

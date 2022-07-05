@@ -1,4 +1,4 @@
-from schematics.types import DictType, ListType, ModelType, PolyModelType, StringType
+from schematics.types import ModelType, PolyModelType, StringType
 from spaceone.inventory.connector.aws_vpc_connector.schema.data import VPC, Subnet, RouteTable, InternetGateway, \
     EgressOnlyInternetGateway, Endpoint, NATGateway, PeeringConnection, NetworkACL, TransitGateway, CustomerGateway, \
     VPNConnection, VPNGateway

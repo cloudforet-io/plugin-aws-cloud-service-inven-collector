@@ -1,15 +1,11 @@
 import logging
 from arnparse import arnparse
 from schematics import Model
-from spaceone.inventory.libs.schema.resource import CloudWatchModel, CloudWatchDimensionModel
+from spaceone.inventory.libs.schema.resource import CloudWatchDimensionModel, AWSCloudService
 from schematics.types import ModelType, StringType, IntType, DateTimeType, ListType, BooleanType
 
 _LOGGER = logging.getLogger(__name__)
 
-
-class Tags(Model):
-    key = StringType(deserialize_from="Key")
-    value = StringType(deserialize_from="Value")
 
 '''
 Listener
@@ -126,7 +122,7 @@ class Matcher(Model):
     http_code = StringType(deserialize_from="HttpCode")
 
 
-class TargetGroup(Model):
+class TargetGroup(AWSCloudService):
     target_group_arn = StringType(deserialize_from="TargetGroupArn")
     target_group_name = StringType(deserialize_from="TargetGroupName")
     protocol = StringType(deserialize_from="Protocol", choices=("HTTP", "HTTPS", "TCP", "TLS", "UDP", "TCP_UDP"))
@@ -144,8 +140,6 @@ class TargetGroup(Model):
     matcher = ModelType(Matcher, deserialize_from="Matcher")
     load_balancer_arns = ListType(StringType, deserialize_from="LoadBalancerArns")
     target_type = StringType(deserialize_from="TargetType", choices=("instance", "ip", "lambda"))
-    account_id = StringType(default="")
-    tags = ListType(ModelType(Tags), default=[])
     attributes = ModelType(TargetGroupAttributes)
 
     def reference(self, region_code):
@@ -221,7 +215,7 @@ class Instance(Model):
     tags = ListType(ModelType(InstanceTags), deserialize_from="Tags", default=[])
 
 
-class LoadBalancer(Model):
+class LoadBalancer(AWSCloudService):
     load_balancer_arn = StringType(deserialize_from="LoadBalancerArn")
     dns_name = StringType(deserialize_from="DNSName")
     canonical_hosted_zone_id = StringType(deserialize_from="CanonicalHostedZoneId")
@@ -234,13 +228,10 @@ class LoadBalancer(Model):
     availability_zones = ListType(ModelType(LoadBalancerAvailabilityZones), deserialize_from="AvailabilityZones")
     security_groups = ListType(StringType, deserialize_from="SecurityGroups", default=[])
     ip_address_type = StringType(deserialize_from="IpAddressType", choices=("ipv4", "dualstack"))
-    account_id = StringType(default="")
-    tags = ListType(ModelType(Tags), default=[])
     listeners = ListType(ModelType(Listener))
     target_groups = ListType(ModelType(TargetGroup), default=[])
     attributes = ModelType(LoadBalancerAttributes)
     instances = ListType(ModelType(Instance), default=[])
-    cloudwatch = ModelType(CloudWatchModel, serialize_when_none=False)
 
     def reference(self, region_code):
         return {

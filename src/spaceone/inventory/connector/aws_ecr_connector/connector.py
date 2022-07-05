@@ -27,7 +27,7 @@ class ECRConnector(SchematicAWSConnector):
         return images
 
     def get_resources(self) -> List[ECRRepositoryResource]:
-        _LOGGER.debug("[get_resources] START: ECR")
+        _LOGGER.debug(f"[get_resources][account_id: {self.account_id}] START: ECR")
         resources = []
         start_time = time.time()
 
@@ -44,7 +44,7 @@ class ECRConnector(SchematicAWSConnector):
             self.reset_region(region_name)
             resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
 
-        _LOGGER.debug(f'[get_resources] FINISHED: ECR ({time.time() - start_time} sec)')
+        _LOGGER.debug(f'[get_resources][account_id: {self.account_id}] FINISHED: ECR ({time.time() - start_time} sec)')
         return resources
 
     def request_data(self, region_name) -> List[Repository]:

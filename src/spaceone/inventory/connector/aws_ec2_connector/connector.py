@@ -20,7 +20,7 @@ class EC2Connector(SchematicAWSConnector):
     include_vpc_default = False
 
     def get_resources(self) -> List[SecurityGroupResource]:
-        _LOGGER.debug("[get_resources] START: EC2")
+        _LOGGER.debug(f"[get_resources][account_id: {self.account_id}] START: EC2")
         resources = []
         start_time = time.time()
 
@@ -45,11 +45,12 @@ class EC2Connector(SchematicAWSConnector):
             for collect_resource in collect_resources:
                 resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
 
-        _LOGGER.debug(f'[get_resources] FINISHED: EC2 ({time.time() - start_time} sec)')
+        _LOGGER.debug(f'[get_resources][account_id: {self.account_id}] FINISHED: EC2 ({time.time() - start_time} sec)')
         return resources
 
     def request_ami_data(self, region_name) -> List[Image]:
         self.cloud_service_type = 'AMI'
+        cloudtrail_resource_type = 'AWS::EC2::Ami'
 
         results = self.client.describe_images(Owners=['self'])
 
@@ -68,6 +69,8 @@ class EC2Connector(SchematicAWSConnector):
                 except Exception as e:
                     _LOGGER.debug(f"[ami][request_ami_data] SKIP: {e}")
 
+                image.update({'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type,
+                                                                image['ImageId'])})
 
                 image_vo = Image(image, strict=False)
                 yield {
@@ -84,6 +87,7 @@ class EC2Connector(SchematicAWSConnector):
 
     def request_security_group_data(self, region_name) -> List[SecurityGroup]:
         self.cloud_service_type = 'SecurityGroup'
+        cloudtrail_resource_type = 'AWS::EC2::SecurityGroup'
 
         # Get default VPC
         default_vpcs = self._get_default_vpc()
@@ -149,10 +153,10 @@ class EC2Connector(SchematicAWSConnector):
                                                           strict=False))
 
                     raw.update({
-                        'account_id': self.account_id,
                         'ip_permissions': inbound_rules,
                         'ip_permissions_egress': outbound_rules,
-                        'instances': self.get_security_group_map_instances(raw, instances)
+                        'instances': self.get_security_group_map_instances(raw, instances),
+                        'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type, raw['GroupId']),
                     })
 
                     sg_vo = SecurityGroup(raw, strict=False)

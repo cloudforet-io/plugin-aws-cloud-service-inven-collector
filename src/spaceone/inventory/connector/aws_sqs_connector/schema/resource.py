@@ -1,8 +1,8 @@
-from schematics.types import DictType, ListType, ModelType, PolyModelType, StringType
+from schematics.types import ModelType, PolyModelType, StringType
 from spaceone.inventory.connector.aws_sqs_connector.schema.data import QueData
 from spaceone.inventory.libs.schema.resource import CloudServiceMeta, CloudServiceResource, CloudServiceResponse
 from spaceone.inventory.libs.schema.dynamic_field import TextDyField, DateTimeDyField, EnumDyField, SizeField
-from spaceone.inventory.libs.schema.dynamic_layout import ItemDynamicLayout, TableDynamicLayout
+from spaceone.inventory.libs.schema.dynamic_layout import ItemDynamicLayout
 
 sqs = ItemDynamicLayout.set_fields('Queue', fields=[
     TextDyField.data_source('ARN', 'data.arn'),

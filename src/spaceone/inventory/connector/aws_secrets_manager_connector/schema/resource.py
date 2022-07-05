@@ -1,4 +1,4 @@
-from schematics.types import DictType, ListType, ModelType, PolyModelType, StringType
+from schematics.types import ModelType, PolyModelType, StringType
 from spaceone.inventory.connector.aws_secrets_manager_connector.schema.data import Secret
 from spaceone.inventory.libs.schema.resource import CloudServiceMeta, CloudServiceResource, CloudServiceResponse
 from spaceone.inventory.libs.schema.dynamic_field import TextDyField, DateTimeDyField, EnumDyField

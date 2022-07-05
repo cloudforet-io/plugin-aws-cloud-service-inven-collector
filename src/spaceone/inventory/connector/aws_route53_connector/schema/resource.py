@@ -1,8 +1,7 @@
-from schematics.types import ModelType, StringType, PolyModelType, DictType, ListType
-
+from schematics.types import ModelType, StringType, PolyModelType
 from spaceone.inventory.connector.aws_route53_connector.schema.data import HostedZone
 from spaceone.inventory.libs.schema.resource import CloudServiceResource, CloudServiceResponse, CloudServiceMeta
-from spaceone.inventory.libs.schema.dynamic_field import TextDyField, ListDyField, BadgeDyField, EnumDyField
+from spaceone.inventory.libs.schema.dynamic_field import TextDyField, ListDyField, EnumDyField
 from spaceone.inventory.libs.schema.dynamic_layout import ItemDynamicLayout, TableDynamicLayout
 
 hosted_zone = ItemDynamicLayout.set_fields('Hosted Zones', fields=[

@@ -19,7 +19,7 @@ class Route53Connector(SchematicAWSConnector):
     cloud_service_types = CLOUD_SERVICE_TYPES
 
     def get_resources(self) -> List[HostedZoneResource]:
-        _LOGGER.debug("[get_resources] START: Route53")
+        _LOGGER.debug(f"[get_resources][account_id: {self.account_id}] START: Route53")
         resources = []
         start_time = time.time()
 
@@ -49,10 +49,11 @@ class Route53Connector(SchematicAWSConnector):
             resource_id = ''
             resources.append(self.generate_error('global', resource_id, e))
 
-        _LOGGER.debug(f'[get_resources] FINISHED: Route53 ({time.time() - start_time} sec)')
+        _LOGGER.debug(f'[get_resources][account_id: {self.account_id}] FINISHED: Route53 ({time.time() - start_time} sec)')
         return resources
 
     def request_data(self) -> List[HostedZone]:
+        cloudtrail_resource_type = 'AWS::Route53::HostedZone'
         paginator = self.client.get_paginator('list_hosted_zones')
         response_iterator = paginator.paginate(
             PaginationConfig={
@@ -68,10 +69,11 @@ class Route53Connector(SchematicAWSConnector):
                         'type': self.set_hosted_zone_type(raw['Config']['PrivateZone']),
                         'hosted_zone_id': self.get_hosted_zone_id(raw['Id']),
                         'record_sets': list(self.describe_record_sets(raw['Id'])),
-                        'account_id': self.account_id,
                         'arn': self.generate_arn(service=self.service_name, region="", account_id="",
                                                  resource_type="hostedzone", resource_id=raw['Id'])
                     })
+
+                    raw.update({'cloudtrail': self.set_cloudtrail('us-east-1', cloudtrail_resource_type, raw['hosted_zone_id'])})
 
                     yield HostedZone(raw, strict=False)
                 except Exception as e:

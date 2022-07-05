@@ -19,7 +19,7 @@ class DirectConnectConnector(SchematicAWSConnector):
     cloud_service_types = CLOUD_SERVICE_TYPES
 
     def get_resources(self):
-        _LOGGER.debug("[get_resources] START: Direct Connect")
+        _LOGGER.debug(f"[get_resources][account_id: {self.account_id}] START: Direct Connect")
         resources = []
         start_time = time.time()
 

@@ -1,13 +1,11 @@
 import logging
-
-from schematics import Model
 from schematics.types import ModelType, StringType, DateTimeType, ListType, BooleanType
-from spaceone.inventory.libs.schema.resource import CloudWatchModel, CloudWatchDimensionModel
+from spaceone.inventory.libs.schema.resource import CloudWatchModel, CloudWatchDimensionModel, AWSCloudService
 
 _LOGGER = logging.getLogger(__name__)
 
 
-class Key(Model):
+class Key(AWSCloudService):
     aws_account_id = StringType(deserialize_from="AWSAccountId")
     key_id = StringType(deserialize_from="KeyId")
     arn = StringType(deserialize_from="Arn")
@@ -45,8 +43,6 @@ class Key(Model):
                                                                                              "SYMMETRIC_DEFAULT"))
     encryption_algorithms = ListType(StringType, deserialize_from="EncryptionAlgorithms")
     signing_algorithms = ListType(StringType, deserialize_from="SigningAlgorithms")
-    account_id = StringType(default="")
-    cloudwatch = ModelType(CloudWatchModel, serialize_when_none=False)
 
     def reference(self, region_code):
         return {

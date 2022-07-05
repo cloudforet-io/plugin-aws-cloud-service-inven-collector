@@ -9,6 +9,7 @@ from schematics.types import (
     ListType,
     BooleanType,
 )
+from spaceone.inventory.libs.schema.resource import AWSCloudService
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -80,7 +81,7 @@ class ConsumersVO(Model):
     consumers = ListType(ModelType(Consumers), default=[])
 
 
-class StreamDescription(Model):
+class StreamDescription(AWSCloudService):
     stream_name = StringType(deserialize_from="StreamName")
     stream_arn = StringType(deserialize_from="StreamARN")
     stream_status = StringType(

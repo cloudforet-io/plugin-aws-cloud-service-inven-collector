@@ -18,7 +18,7 @@ class EBSConnector(SchematicAWSConnector):
     cloud_service_types = CLOUD_SERVICE_TYPES
 
     def get_resources(self):
-        _LOGGER.debug("[get_resources] START: EBS")
+        _LOGGER.debug(f"[get_resources][account_id: {self.account_id}] START: EBS")
         resources = []
         start_time = time.time()
 
@@ -43,7 +43,7 @@ class EBSConnector(SchematicAWSConnector):
             for collect_resource in collect_resources:
                 resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
 
-        _LOGGER.debug(f'[get_resources] FINISHED: EBS ({time.time() - start_time} sec)')
+        _LOGGER.debug(f'[get_resources][account_id: {self.account_id}] FINISHED: EBS ({time.time() - start_time} sec)')
         return resources
 
     def request_volume_data(self, region_name) -> List[Volume]:

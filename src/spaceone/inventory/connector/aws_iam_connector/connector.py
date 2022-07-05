@@ -1,7 +1,7 @@
 import time
 import logging
 from typing import List
-from datetime import date, datetime, timezone
+from datetime import datetime, timezone
 
 from spaceone.inventory.connector.aws_iam_connector.schema.data import Policy, AccessKeyLastUsed, User, Group, Role, \
     IdentityProvider
@@ -30,7 +30,7 @@ class IAMConnector(SchematicAWSConnector):
     cloud_service_types = CLOUD_SERVICE_TYPES
 
     def get_resources(self):
-        _LOGGER.debug("[get_resources] START: IAM")
+        _LOGGER.debug(f"[get_resources][account_id: {self.account_id}] START: IAM")
         start_time = time.time()
         resources = []
 
@@ -115,11 +115,12 @@ class IAMConnector(SchematicAWSConnector):
         resources.extend(policy_errors)
         resources.extend(user_errors)
 
-        _LOGGER.debug(f'[get_resources] FINISHED: IAM ({time.time() - start_time} sec)')
+        _LOGGER.debug(f'[get_resources][account_id: {self.account_id}] FINISHED: IAM ({time.time() - start_time} sec)')
         return resources
 
     def request_group_data(self, users, policies) -> List[Group]:
         self.cloud_service_type = 'Group'
+        cloudtrail_resource_type = 'AWS::IAM::Group'
 
         paginator = self.client.get_paginator('list_groups')
         response_iterator = paginator.paginate(
@@ -141,7 +142,9 @@ class IAMConnector(SchematicAWSConnector):
                     group.update({
                         'users': matched_users,
                         'user_count': len(group_user_info),
-                        'attached_permission': matched_policies
+                        'attached_permission': matched_policies,
+                        'cloudtrail': self.set_cloudtrail('us-east-1', cloudtrail_resource_type,
+                                                          group['GroupName']),
                     })
 
                     yield Group(group, strict=False)
@@ -152,6 +155,7 @@ class IAMConnector(SchematicAWSConnector):
 
     def request_user_data(self, policies) -> List[User]:
         self.cloud_service_type = 'User'
+        cloudtrail_resource_type = 'AWS::IAM::User'
 
         paginator = self.client.get_paginator('list_users')
         query = self._generate_default_query()
@@ -195,6 +199,7 @@ class IAMConnector(SchematicAWSConnector):
                             'console_password': 'Enabled' if login_profile is not None else 'Disabled',
                             'assigned_mfa_device': user_info.get('Arn') if len(mfa_devices) > 0 else 'Not assigned'
                         },
+                        'cloudtrail': self.set_cloudtrail('us-east-1', cloudtrail_resource_type, user['UserName']),
                         'tags': user_info.get('Tags', [])
                     })
                     users.append(User(user, strict=False))
@@ -207,6 +212,7 @@ class IAMConnector(SchematicAWSConnector):
 
     def request_role_data(self, policies) -> List[Role]:
         self.cloud_service_type = 'Role'
+        cloudtrail_resource_type = 'AWS::IAM::Role'
 
         paginator = self.client.get_paginator('list_roles')
         query = self._generate_default_query()
@@ -236,6 +242,7 @@ class IAMConnector(SchematicAWSConnector):
                         'policies': matched_policies,
                         'role_last_used': role_last_used,
                         'last_activity': last_activity,
+                        'cloudtrail': self.set_cloudtrail('us-east-1', cloudtrail_resource_type, role['RoleName']),
                         'tags': role_info.get('Tags', [])
                     })
 
@@ -247,6 +254,7 @@ class IAMConnector(SchematicAWSConnector):
 
     def request_identity_provider_data(self) -> List[IdentityProvider]:
         self.cloud_service_type = 'IdentityProvider'
+        cloudtrail_resource_type = 'AWS::IAM::OpenIDConnectProvider'
 
         response = self.client.list_open_id_connect_providers()
 
@@ -256,6 +264,7 @@ class IAMConnector(SchematicAWSConnector):
                 identity_provider = self.get_open_id_connect_provider_info_with_arn(arn)
                 identity_provider.update({
                     'arn': arn,
+                    'cloudtrail': self.set_cloudtrail('us-east-1', cloudtrail_resource_type, arn_dict['Arn']),
                     'provider_type': self._get_provider_type(identity_provider.get('Url', ''))
                 })
 
@@ -293,6 +302,7 @@ class IAMConnector(SchematicAWSConnector):
 
     def list_local_managed_policies(self, **query):
         self.cloud_service_type = 'Policy'
+        cloudtrail_resource_type = 'AWS::IAM::Policy'
 
         policies = []
         errors = []
@@ -314,6 +324,8 @@ class IAMConnector(SchematicAWSConnector):
                                    'policy_usage': self.list_policy_usage(policy_arn),
                                    'permission': permission_summary,
                                    'permission_versions': self.list_policy_versions(policy_arn),
+                                   'cloudtrail': self.set_cloudtrail('us-east-1', cloudtrail_resource_type,
+                                                                     policy['Arn']),
                                    'policy_type': 'Custom Managed'})
 
                     policies.append(Policy(policy, strict=False))

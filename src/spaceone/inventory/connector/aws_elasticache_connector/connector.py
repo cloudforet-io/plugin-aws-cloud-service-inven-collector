@@ -1,6 +1,4 @@
-import time
 import logging
-from typing import List
 
 from spaceone.core.utils import *
 from spaceone.inventory.connector.aws_elasticache_connector.schema.data import Redis, Memcached
@@ -20,7 +18,7 @@ class ElastiCacheConnector(SchematicAWSConnector):
     cloud_service_types = CLOUD_SERVICE_TYPES
 
     def get_resources(self):
-        _LOGGER.debug("[get_resources] START: ElastiCache")
+        _LOGGER.debug(f"[get_resources][account_id: {self.account_id}] START: ElastiCache")
         resources = []
         start_time = time.time()
 
@@ -50,11 +48,12 @@ class ElastiCacheConnector(SchematicAWSConnector):
 
                     resources.append(RedisResponse({'resource': redis_vo}))
 
-        _LOGGER.debug(f'[get_resources] FINISHED: ElastiCache ({time.time() - start_time} sec)')
+        _LOGGER.debug(f'[get_resources][account_id: {self.account_id}] FINISHED: ElastiCache ({time.time() - start_time} sec)')
         return resources
 
     def get_memcached_data(self, region_name, cache_clusters):
         self.cloud_service_type = 'Memcached'
+        cloudtrail_resource_type = None
 
         for cluster in cache_clusters:
             try:
@@ -62,8 +61,9 @@ class ElastiCacheConnector(SchematicAWSConnector):
                     cluster.update({
                         'configuration_endpoint_display': self.set_configuration_endpoint_display(cluster.get('ConfigurationEndpoint')),
                         'nodes': self.get_memcached_nodes(cluster),
+                        'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type,
+                                                          cluster['CacheClusterId']),
                         'tags': self.list_tags(cluster['ARN']),
-                        'account_id': self.account_id,
                     })
 
                     memcached_vo = Memcached(cluster, strict=False)
@@ -86,6 +86,7 @@ class ElastiCacheConnector(SchematicAWSConnector):
 
     def get_redis_data(self, region_name, cache_clusters):
         self.cloud_service_type = 'Redis'
+        cloudtrail_resource_type = None
 
         for replication_group in self.describe_replication_groups():
             try:
@@ -98,8 +99,9 @@ class ElastiCacheConnector(SchematicAWSConnector):
                     'subnet_group_name': self.get_redis_subnet_group_name(replication_group, cache_clusters),
                     'parameter_group_name': self.get_redis_parameter_group_name(replication_group, cache_clusters),
                     'node_count': self.get_node_count(replication_group.get('MemberClusters', [])),
+                    'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type,
+                                                      replication_group['ReplicationGroupId']),
                     'nodes': self.get_redis_nodes_info(replication_group, cache_clusters),
-                    'account_id': self.account_id
                 })
 
                 if replication_group.get('mode') == 'Redis':
@@ -109,7 +111,7 @@ class ElastiCacheConnector(SchematicAWSConnector):
                     })
                 elif replication_group.get('mode') == 'Clustered Redis':
                     replication_group.update({
-                        'shards': self.get_redis_shards_info(replication_group, cache_clusters)
+                        'shards': self.get_redis_shards_info(replication_group)
                     })
 
                 redis_vo = Redis(replication_group, strict=False)
@@ -157,7 +159,8 @@ class ElastiCacheConnector(SchematicAWSConnector):
         response = self.client.list_tags_for_resource(ResourceName=arn)
         return [{'key': tag.get('Key'), 'value': tag.get('Value')}for tag in response.get('TagList', [])]
 
-    def get_memcached_nodes(self, cluster):
+    @staticmethod
+    def get_memcached_nodes(cluster):
         nodes = []
         for i in range(cluster.get('NumCacheNodes', 0)):
             nodes.append({
@@ -282,7 +285,7 @@ class ElastiCacheConnector(SchematicAWSConnector):
         return nodes
 
     @staticmethod
-    def get_redis_shards_info(replication_group, cache_clusters):
+    def get_redis_shards_info(replication_group):
         shards = []
 
         for node_group in replication_group.get('NodeGroups', []):

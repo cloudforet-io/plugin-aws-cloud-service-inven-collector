@@ -1,5 +1,4 @@
 import logging
-import time
 from typing import List
 
 from spaceone.core.utils import *
@@ -18,7 +17,7 @@ class KinesisDataStreamConnector(SchematicAWSConnector):
     cloud_service_types = CLOUD_SERVICE_TYPES
 
     def get_resources(self):
-        _LOGGER.debug("[get_resources] START: Kinesis Data Stream")
+        _LOGGER.debug(f"[get_resources][account_id: {self.account_id}] START: Kinesis Data Stream")
         resources = []
         start_time = time.time()
 
@@ -42,10 +41,12 @@ class KinesisDataStreamConnector(SchematicAWSConnector):
                     )
                 )
 
-        _LOGGER.debug(f'[get_resources] FINISHED: Kinesis Data Stream ({time.time() - start_time} sec)')
+        _LOGGER.debug(f'[get_resources][account_id: {self.account_id}] FINISHED: Kinesis Data Stream ({time.time() - start_time} sec)')
         return resources
 
     def request_data(self, region_name) -> List[StreamDescription]:
+        cloudtrail_resource_type = 'AWS::Kinesis::Stream'
+
         paginator = self.client.get_paginator("list_streams")
         response_iterator = paginator.paginate(
             PaginationConfig={
@@ -88,8 +89,9 @@ class KinesisDataStreamConnector(SchematicAWSConnector):
                                 "num_of_consumers": num_of_con,
                                 "consumers": consumers,
                             },
+                            'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type,
+                                                              stream_info['StreamARN']),
                             "tags": self.get_tags(stream_info.get("StreamName")),
-                            "account_id": self.account_id,
                         }
                     )
                     stream_vo = StreamDescription(stream_info, strict=False)

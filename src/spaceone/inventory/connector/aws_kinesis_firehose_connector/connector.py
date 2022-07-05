@@ -1,8 +1,4 @@
 import logging
-import re
-import time
-from typing import List
-
 from spaceone.core.utils import *
 from spaceone.inventory.connector.aws_kinesis_firehose_connector.schema.data import DeliveryStreamDescription
 from spaceone.inventory.connector.aws_kinesis_firehose_connector.schema.resource import DeliveryStreamResource, \
@@ -20,7 +16,7 @@ class KinesisFirehoseConnector(SchematicAWSConnector):
     cloud_service_types = CLOUD_SERVICE_TYPES
 
     def get_resources(self):
-        _LOGGER.debug("[get_resources] START: Kinesis Firehose")
+        _LOGGER.debug(f"[get_resources][account_id: {self.account_id}] START: Kinesis Firehose")
         resources = []
         start_time = time.time()
 
@@ -44,7 +40,7 @@ class KinesisFirehoseConnector(SchematicAWSConnector):
                     )
                 )
 
-        _LOGGER.debug(f'[get_resources] FINISHED: Kinesis Firehose ({time.time() - start_time} sec)')
+        _LOGGER.debug(f'[get_resources][account_id: {self.account_id}] FINISHED: Kinesis Firehose ({time.time() - start_time} sec)')
         return resources
 
     def list_delivery_streams(self):
@@ -52,6 +48,8 @@ class KinesisFirehoseConnector(SchematicAWSConnector):
         return response.get("DeliveryStreamNames", [])
 
     def request_data(self, region_name):
+        cloudtrail_resource_type = 'AWS::KinesisFirehose::DeliveryStream'
+
         for stream_name in self.list_delivery_streams():
             try:
                 stream_response = self.client.describe_delivery_stream(DeliveryStreamName=stream_name)
@@ -60,6 +58,8 @@ class KinesisFirehoseConnector(SchematicAWSConnector):
                 delivery_stream_info.update(
                     {
                         "Source": self.get_source(delivery_stream_info.get("Source", {})),
+                        'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type,
+                                                          delivery_stream_info['DeliveryStreamARN']),
                         # "destinations_ref": destinations_ref,
                         # "additional_tabs": additional_tabs
                     }

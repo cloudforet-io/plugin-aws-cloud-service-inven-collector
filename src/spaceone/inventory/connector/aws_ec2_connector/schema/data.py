@@ -1,7 +1,8 @@
 import logging
 
 from schematics import Model
-from schematics.types import ModelType, StringType, IntType, DateTimeType, serializable, ListType, BooleanType
+from schematics.types import ModelType, StringType, IntType, ListType, BooleanType
+from spaceone.inventory.libs.schema.resource import AWSCloudService
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -9,11 +10,6 @@ _LOGGER = logging.getLogger(__name__)
 """
 AMI
 """
-class Tags(Model):
-    key = StringType(deserialize_from="Key", serialize_when_none=False)
-    value = StringType(deserialize_from="Value", serialize_when_none=False)
-
-
 class ImageBlockDeviceMappingsEBS(Model):
     delete_on_termination = BooleanType(deserialize_from="DeleteOnTermination", serialize_when_none=False)
     iops = IntType(deserialize_from="Iops", serialize_when_none=False)
@@ -48,7 +44,7 @@ class LaunchPermission(Model):
     user_id = StringType(deserialize_from='UserId', serialize_when_none=False)
 
 
-class Image(Model):
+class Image(AWSCloudService):
     image_id = StringType(deserialize_from="ImageId", serialize_when_none=False)
     name = StringType(deserialize_from="Name", serialize_when_none=False)
     architecture = StringType(deserialize_from="Architecture", choices=("i386", "x86_64", "arm64"),
@@ -80,7 +76,6 @@ class Image(Model):
                                   serialize_when_none=False)
     sriov_net_support = StringType(deserialize_from="SriovNetSupport", serialize_when_none=False)
     state_reason = ModelType(ImageStateReason, deserialize_from="StateReason", serialize_when_none=False)
-    tags = ListType(ModelType(Tags), deserialize_from="Tags", default=[])
     virtualization_type = StringType(deserialize_from="VirtualizationType", choices=("hvm", "paravirtual"),
                                      serialize_when_none=False)
     launch_permissions = ListType(ModelType(LaunchPermission), serialize_when_none=False)
@@ -166,17 +161,15 @@ class SecurityGroupIpPermission(Model):
     description_display = StringType(default="")
 
 
-class SecurityGroup(Model):
+class SecurityGroup(AWSCloudService):
     description = StringType(deserialize_from="Description")
     group_name = StringType(deserialize_from="GroupName")
     ip_permissions = ListType(ModelType(SecurityGroupIpPermission))
     owner_id = StringType(deserialize_from="OwnerId")
     group_id = StringType(deserialize_from="GroupId")
     ip_permissions_egress = ListType(ModelType(SecurityGroupIpPermission))
-    tags = ListType(ModelType(Tags), deserialize_from="Tags", default=[])
     vpc_id = StringType(deserialize_from="VpcId")
     instances = ListType(ModelType(Instance), default=[])
-    account_id = StringType(default="")
 
     def reference(self, region_code):
         return {

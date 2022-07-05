@@ -1,9 +1,9 @@
 import logging
 
 from schematics import Model
-from schematics.types import ModelType, StringType, IntType, DateTimeType, serializable, ListType, BooleanType, \
+from schematics.types import ModelType, StringType, IntType, DateTimeType, ListType, BooleanType, \
     FloatType
-from spaceone.inventory.libs.schema.resource import CloudWatchModel, CloudWatchDimensionModel
+from spaceone.inventory.libs.schema.resource import CloudWatchDimensionModel, AWSCloudService
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -47,12 +47,7 @@ class SizeInBytes(Model):
     value_in_standard = IntType(deserialize_from="ValueInStandard")
 
 
-class FileSystemTags(Model):
-    key = StringType(deserialize_from="Key")
-    value = StringType(deserialize_from="Value")
-
-
-class FileSystem(Model):
+class FileSystem(AWSCloudService):
     arn = StringType()
     owner_id = StringType(deserialize_from="OwnerId")
     creation_token = StringType(deserialize_from="CreationToken")
@@ -68,11 +63,8 @@ class FileSystem(Model):
     kms_key_id = StringType(deserialize_from="KmsKeyId")
     throughput_mode = StringType(deserialize_from="ThroughputMode", choices=("bursting", "provisioned"))
     provisioned_throughput_in_mibps = FloatType(deserialize_from="ProvisionedThroughputInMibps")
-    tags = ListType(ModelType(FileSystemTags), deserialize_from="Tags", default=[])
-    account_id = StringType(default="")
     life_cycle_policies = ListType(ModelType(LifecyclePolicy), default=[])
     mount_targets = ListType(ModelType(MountTarget))
-    cloudwatch = ModelType(CloudWatchModel, serialize_when_none=False)
     size = FloatType(default=0.0)
 
     def reference(self, region_code):

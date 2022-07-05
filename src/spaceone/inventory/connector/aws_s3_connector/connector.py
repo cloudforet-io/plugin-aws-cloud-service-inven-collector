@@ -1,7 +1,6 @@
 import time
 import logging
 from typing import List
-from botocore.exceptions import ClientError
 from spaceone.core import utils
 from datetime import datetime, timedelta
 from spaceone.inventory.connector.aws_s3_connector.schema.data import Bucket, Versioning, ServerAccessLogging, \
@@ -23,7 +22,7 @@ class S3Connector(SchematicAWSConnector):
     cloud_service_types = CLOUD_SERVICE_TYPES
 
     def get_resources(self) -> List[BucketResource]:
-        _LOGGER.debug("[get_resources] START: S3")
+        _LOGGER.debug(f"[get_resources][account_id: {self.account_id}] START: S3")
         resources = []
         start_time = time.time()
 
@@ -58,10 +57,11 @@ class S3Connector(SchematicAWSConnector):
             resource_id = ''
             resources.append(self.generate_error('global', resource_id, e))
 
-        _LOGGER.debug(f'[get_resources] FINISHED: S3 ({time.time() - start_time} sec)')
+        _LOGGER.debug(f'[get_resources][account_id: {self.account_id}] FINISHED: S3 ({time.time() - start_time} sec)')
         return resources
 
     def request_data(self) -> List[Bucket]:
+        cloudtrail_resource_type = 'AWS::S3::Bucket'
         response = self.client.list_buckets()
 
         for raw in response.get('Buckets', []):
@@ -76,8 +76,8 @@ class S3Connector(SchematicAWSConnector):
                                              account_id="",
                                              resource_type=bucket_name,
                                              resource_id="*"),
-                    'account_id': self.account_id,
-                    'region_name': region_name
+                    'region_name': region_name,
+                    'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type, raw['Name']),
                 })
 
                 if versioning := self.get_bucket_versioning(bucket_name):

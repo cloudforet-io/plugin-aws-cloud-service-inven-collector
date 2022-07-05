@@ -24,7 +24,7 @@ class RDSConnector(SchematicAWSConnector):
     cloud_service_types = CLOUD_SERVICE_TYPES
 
     def get_resources(self):
-        _LOGGER.debug("[get_resources] START: RDS")
+        _LOGGER.debug(f"[get_resources][account_id: {self.account_id}] START: RDS")
         resources = []
         start_time = time.time()
 
@@ -89,11 +89,12 @@ class RDSConnector(SchematicAWSConnector):
             for collect_resource in collect_resources:
                 resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
 
-        _LOGGER.debug(f'[get_resources] FINISHED: RDS ({time.time() - start_time} sec)')
+        _LOGGER.debug(f'[get_resources][account_id: {self.account_id}] FINISHED: RDS ({time.time() - start_time} sec)')
         return resources
 
     def db_cluster_data(self, region_name) -> List[Database]:
         self.cloud_service_type = 'Database'
+        cloudtrail_resource_type = 'AWS::RDS::DBCluster'
 
         # Cluster
         for cluster, cluster_identifier in self.describe_clusters(region_name):
@@ -107,8 +108,8 @@ class RDSConnector(SchematicAWSConnector):
                     'availability_zone': self.get_region(cluster.availability_zones),
                     'size': f'{len(cluster.db_cluster_members)} instances',
                     'multi_az': cluster.multi_az,
-                    'account_id': self.account_id,
                     'cluster': cluster,
+                    'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type, cluster.database_name),
                     'tags': cluster.tags
                 }
                 yield Database(db, strict=False), DBClusterResource, cluster_identifier
@@ -117,6 +118,7 @@ class RDSConnector(SchematicAWSConnector):
                 error_resource_response = self.generate_error(region_name, resource_id, e)
                 yield error_resource_response, '', ''
 
+        cloudtrail_resource_type = 'AWS::RDS::DBInstance'
         # Instance Only
         for instance, instance_identifier in self.describe_instances(region_name):
             try:
@@ -132,6 +134,8 @@ class RDSConnector(SchematicAWSConnector):
                         'multi_az': instance.multi_az,
                         'account_id': self.account_id,
                         'instance': instance,
+                        'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type,
+                                                          instance.db_instance_identifier),
                         'tags': instance.tags
                     }
                     yield Database(db, strict=False), DBInstanceResource, instance_identifier
@@ -170,6 +174,7 @@ class RDSConnector(SchematicAWSConnector):
             }
 
     def describe_instances(self, region_name) -> List[Instance]:
+        cloudtrail_resource_type = 'AWS::RDS::DBInstance'
         paginator = self.client.get_paginator('describe_db_instances')
         response_iterator = paginator.paginate(
             PaginationConfig={
@@ -181,12 +186,15 @@ class RDSConnector(SchematicAWSConnector):
             for raw in data.get('DBInstances', []):
                 if raw.get('Engine') in DEFAULT_RDS_FILTER:
                     raw.update({
-                        'tags': self.list_tags_for_resource(raw['DBInstanceArn'])
+                        'tags': self.list_tags_for_resource(raw['DBInstanceArn']),
+                        'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type,
+                                                          raw['DBInstanceIdentifier']),
                     })
                     yield Instance(raw, strict=False), raw.get('DBInstanceIdentifier', '')
 
     def snapshot_request_data(self, region_name) -> List[Snapshot]:
         self.cloud_service_type = 'Snapshot'
+        cloudtrail_resource_type = 'AWS::RDS::DBSnapshot'
 
         paginator = self.client.get_paginator('describe_db_snapshots')
         response_iterator = paginator.paginate(
@@ -201,7 +209,8 @@ class RDSConnector(SchematicAWSConnector):
                     if raw.get('Engine') in DEFAULT_RDS_FILTER:
                         raw.update({
                             'region_name': region_name,
-                            'account_id': self.account_id,
+                            'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type,
+                                                              raw['DBSnapshotIdentifier']),
                             'tags': self.list_tags_for_resource(raw['DBSnapshotArn'])
                         })
                         snapshot_vo = Snapshot(raw, strict=False)
@@ -219,6 +228,7 @@ class RDSConnector(SchematicAWSConnector):
 
     def subnet_group_request_data(self, region_name) -> List[SubnetGroup]:
         self.cloud_service_type = 'SubnetGroup'
+        cloudtrail_resource_type = 'AWS::RDS::DBSubnetGroup'
 
         paginator = self.client.get_paginator('describe_db_subnet_groups')
         response_iterator = paginator.paginate(
@@ -232,7 +242,8 @@ class RDSConnector(SchematicAWSConnector):
                 try:
                     raw.update({
                         'region_name': region_name,
-                        'account_id': self.account_id,
+                        'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type,
+                                                          raw['DBSubnetGroupName']),
                         'tags': self.list_tags_for_resource(raw['DBSubnetGroupArn'])
                     })
                     subnet_group_vo = SubnetGroup(raw, strict=False)
@@ -249,6 +260,7 @@ class RDSConnector(SchematicAWSConnector):
 
     def parameter_group_request_data(self, region_name) -> List[ParameterGroup]:
         self.cloud_service_type = 'ParameterGroup'
+        cloudtrail_resource_type = 'AWS::RDS::DBParameterGroup'
 
         paginator = self.client.get_paginator('describe_db_parameter_groups')
         response_iterator = paginator.paginate(
@@ -262,9 +274,10 @@ class RDSConnector(SchematicAWSConnector):
                 try:
                     raw.update({
                         'region_name': region_name,
-                        'account_id': self.account_id,
                         'db_parameter_group_type': 'DbParameterGroup',
                         'parameters': list(self.describe_db_parameters(raw.get('DBParameterGroupName'))),
+                        'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type,
+                                                          raw['DBParameterGroupName']),
                         'tags': self.list_tags_for_resource(raw['DBParameterGroupArn'])
                     })
                     param_group_vo = ParameterGroup(raw, strict=False)
@@ -282,6 +295,7 @@ class RDSConnector(SchematicAWSConnector):
 
     def option_group_request_data(self, region_name) -> List[OptionGroup]:
         self.cloud_service_type = 'OptionGroup'
+        cloudtrail_resource_type = 'AWS::RDS::DBOptionGroup'
 
         paginator = self.client.get_paginator('describe_option_groups')
         response_iterator = paginator.paginate(
@@ -295,7 +309,8 @@ class RDSConnector(SchematicAWSConnector):
                 try:
                     raw.update({
                         'region_name': region_name,
-                        'account_id': self.account_id,
+                        'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type,
+                                                          raw['OptionGroupName']),
                         'tags': self.list_tags_for_resource(raw['OptionGroupArn'])
                     })
                     option_group_vo = OptionGroup(raw, strict=False)

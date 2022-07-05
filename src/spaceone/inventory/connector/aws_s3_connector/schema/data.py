@@ -2,7 +2,8 @@ import logging
 
 from schematics import Model
 from schematics.types import ModelType, StringType, IntType, ListType, FloatType
-from spaceone.inventory.libs.schema.resource import CloudWatchModel, CloudWatchDimensionModel
+from spaceone.inventory.libs.schema.resource import CloudWatchModel, CloudWatchDimensionModel, AWSCloudService
+
 _LOGGER = logging.getLogger(__name__)
 
 TOPIC_EVENTS = ("s3:ReducedRedundancyLostObject", "s3:ObjectCreated:*", "s3:ObjectCreated:Put", "s3:ObjectCreated:Post",
@@ -163,7 +164,7 @@ class Versioning(Model):
     mfa_delete = StringType(deserialize_from="MFADelete", choices=("Enabled", "Disabled"), serialize_when_none=False)
 
 
-class Bucket(Model):
+class Bucket(AWSCloudService):
     arn = StringType(default="")
     name = StringType(deserialize_from="Name")
     public_access = StringType(choices=("Public", "Private"))
@@ -177,7 +178,6 @@ class Bucket(Model):
     request_payment = ModelType(RequestPayment, serialize_when_none=False)
     notification_configurations = ListType(ModelType(NotificationConfiguration), default=[])
     region_name = StringType(default="")
-    account_id = StringType(default="")
     cloudwatch = ModelType(CloudWatchModel, serialize_when_none=False)
     object_count = IntType(default=0)
     object_total_size = FloatType(default=0.0)
