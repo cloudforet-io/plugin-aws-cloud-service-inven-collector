@@ -1,22 +1,15 @@
 import logging
 
 from schematics import Model
-from schematics.types import ModelType, StringType, IntType, DateTimeType, serializable, ListType, BooleanType
-from spaceone.inventory.libs.schema.resource import CloudWatchModel, CloudWatchDimensionModel
+from schematics.types import ModelType, StringType, IntType, DateTimeType, ListType, BooleanType
+from spaceone.inventory.libs.schema.resource import CloudWatchDimensionModel, AWSCloudService
 
 _LOGGER = logging.getLogger(__name__)
 
 '''
-TAG
-'''
-class Tag(Model):
-    key = StringType(deserialize_from="Key")
-    value = StringType(deserialize_from="Value")
-
-'''
 SNAPSHOT
 '''
-class Snapshot(Model):
+class Snapshot(AWSCloudService):
     availability_zones = ListType(StringType, deserialize_from="AvailabilityZones")
     db_cluster_snapshot_identifier = StringType(deserialize_from="DBClusterSnapshotIdentifier")
     db_cluster_identifier = StringType(deserialize_from="DBClusterIdentifier")
@@ -34,7 +27,6 @@ class Snapshot(Model):
     kms_key_id = StringType(deserialize_from="KmsKeyId")
     db_cluster_snapshot_arn = StringType(deserialize_from="DBClusterSnapshotArn")
     source_db_cluster_snapshot_arn = StringType(deserialize_from="SourceDBClusterSnapshotArn")
-    tags = ListType(ModelType(Tag), default=[])
 
     def reference(self, region_code):
         return {
@@ -62,14 +54,12 @@ class Parameter(Model):
 '''
 PARAMETER GROUP
 '''
-class ParameterGroup(Model):
+class ParameterGroup(AWSCloudService):
     db_cluster_parameter_group_name = StringType(deserialize_from="DBClusterParameterGroupName")
     db_parameter_group_family = StringType(deserialize_from="DBParameterGroupFamily")
     description = StringType(deserialize_from="Description")
     db_cluster_parameter_group_arn = StringType(deserialize_from="DBClusterParameterGroupArn")
     parameters = ListType(ModelType(Parameter))
-    account_id = StringType(default="")
-    tags = ListType(ModelType(Tag), default=[])
 
     def reference(self, region_code):
         return {
@@ -91,15 +81,13 @@ class SubnetGroupSubnets(Model):
     subnet_status = StringType(deserialize_from="SubnetStatus")
 
 
-class SubnetGroup(Model):
+class SubnetGroup(AWSCloudService):
     db_subnet_group_name = StringType(deserialize_from="DBSubnetGroupName")
     db_subnet_group_description = StringType(deserialize_from="DBSubnetGroupDescription")
     vpc_id = StringType(deserialize_from="VpcId")
     subnet_group_status = StringType(deserialize_from="SubnetGroupStatus")
     subnets = ListType(ModelType(SubnetGroupSubnets), deserialize_from="Subnets")
     db_subnet_group_arn = StringType(deserialize_from="DBSubnetGroupArn")
-    account_id = StringType(default='')
-    tags = ListType(ModelType(Tag), default=[])
 
     def reference(self, region_code):
         return {
@@ -114,10 +102,6 @@ class Endpoint(Model):
     address = StringType(deserialize_from="Address")
     port = IntType(deserialize_from="Port")
     hosted_zone_id = StringType(deserialize_from="HostedZoneId")
-
-
-class SubnetAvailabilityZone(Model):
-    name = StringType(deserialize_from="Name")
 
 
 class DBSubnetGroupSubnets(Model):
@@ -169,7 +153,7 @@ class InstanceStatusInfos(Model):
     message = StringType(deserialize_from="Message")
 
 
-class Instance(Model):
+class Instance(AWSCloudService):
     db_instance_identifier = StringType(deserialize_from="DBInstanceIdentifier")
     db_instance_class = StringType(deserialize_from="DBInstanceClass")
     engine = StringType(deserialize_from="Engine")
@@ -196,8 +180,6 @@ class Instance(Model):
     promotion_tier = IntType(deserialize_from="PromotionTier")
     db_instance_arn = StringType(deserialize_from="DBInstanceArn")
     enabled_cloudwatch_logs_exports = ListType(StringType, deserialize_from="EnabledCloudwatchLogsExports")
-    tags = ListType(ModelType(Tag), default=[])
-    cloudwatch = ModelType(CloudWatchModel, serialize_when_none=False)
 
     def reference(self, region_code):
         return {
@@ -233,7 +215,7 @@ class ClusterAssociatedRoles(Model):
     status = StringType(deserialize_from="Status")
 
 
-class Cluster(Model):
+class Cluster(AWSCloudService):
     availability_zones = ListType(StringType, deserialize_from="AvailabilityZones")
     backup_retention_period = IntType(deserialize_from="BackupRetentionPeriod")
     db_cluster_identifier = StringType(deserialize_from="DBClusterIdentifier")
@@ -268,9 +250,6 @@ class Cluster(Model):
     deletion_protection = BooleanType(deserialize_from="DeletionProtection")
     instances = ListType(ModelType(Instance))
     snapshots = ListType(ModelType(Snapshot))
-    account_id = StringType(default='')
-    tags = ListType(ModelType(Tag), default=[])
-    cloudwatch = ModelType(CloudWatchModel, serialize_when_none=False)
 
     def reference(self, region_code):
         return {

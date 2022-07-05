@@ -1,7 +1,7 @@
 import logging
-
 from schematics import Model
-from schematics.types import ModelType, StringType, IntType, DateTimeType, serializable, ListType, BooleanType
+from schematics.types import ModelType, StringType, ListType, BooleanType
+from spaceone.inventory.libs.schema.resource import AWSCloudService
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -35,12 +35,7 @@ class EventSelector(Model):
 '''
 TRAIL
 '''
-class CloudTrailTags(Model):
-    key = StringType(deserialize_from="Key", serialize_when_none=False)
-    value = StringType(deserialize_from="Value", serialize_when_none=False)
-
-
-class Trail(Model):
+class Trail(AWSCloudService):
     name = StringType(deserialize_from="Name", serialize_when_none=False)
     s3_bucket_name = StringType(deserialize_from="S3BucketName", serialize_when_none=False)
     s3_key_prefix = StringType(deserialize_from="S3KeyPrefix", serialize_when_none=False)
@@ -59,7 +54,6 @@ class Trail(Model):
     is_organization_trail = BooleanType(deserialize_from="IsOrganizationTrail", serialize_when_none=False)
     event_selectors = ListType(ModelType(EventSelector), serialize_when_none=False)
     insight_selectors = ModelType(InsightSelector, serialize_when_none=False)
-    tags = ListType(ModelType(CloudTrailTags), default=[])
 
     def reference(self, region_name=None):
         return {

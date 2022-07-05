@@ -43,6 +43,7 @@ class ECSConnector(SchematicAWSConnector):
         return resources
 
     def request_data(self, region_name) -> List[Cluster]:
+        cloudtrail_resource_type = 'AWS::ECS::Cluster'
         cluster_arns = self.list_clusters()
 
         for _arns in self.divide_to_chunks(cluster_arns, MAX_CLUSTERS):
@@ -54,7 +55,7 @@ class ECSConnector(SchematicAWSConnector):
                         'services': self.set_services(raw['clusterArn']),
                         'tasks': self.set_tasks(raw['clusterArn']),
                         'container_instances': self.set_container_instances(raw['clusterArn']),
-                        'account_id': self.account_id
+                        'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type, raw['clusterName'])
                     })
 
                     cluster_vo = Cluster(raw, strict=False)

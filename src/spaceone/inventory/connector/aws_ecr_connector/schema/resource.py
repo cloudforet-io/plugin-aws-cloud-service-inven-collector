@@ -1,4 +1,4 @@
-from schematics.types import ModelType, StringType, PolyModelType, DictType, ListType
+from schematics.types import ModelType, StringType, PolyModelType
 
 from spaceone.inventory.connector.aws_ecr_connector.schema.data import Repository
 from spaceone.inventory.libs.schema.resource import CloudServiceResource, CloudServiceResponse, CloudServiceMeta

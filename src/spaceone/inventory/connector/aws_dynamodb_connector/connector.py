@@ -3,10 +3,12 @@ import logging
 from typing import List
 
 from spaceone.inventory.connector.aws_dynamodb_connector.schema.data import Table, TimeToLive, \
-    ContinuousBackup, ContributorInsight, Tag
+    ContinuousBackup, ContributorInsight
 from spaceone.inventory.connector.aws_dynamodb_connector.schema.resource import TableResource, TableResponse
 from spaceone.inventory.connector.aws_dynamodb_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
+from spaceone.inventory.libs.schema.resource import AWSTags
+
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -39,6 +41,8 @@ class DynamoDBConnector(SchematicAWSConnector):
 
     def request_data(self, region_name) -> List[Table]:
         _auto_scaling_policies = None
+        cloudtrail_resource_type = 'AWS::DynamoDB::Table'
+
         paginator = self.client.get_paginator('list_tables')
         response_iterator = paginator.paginate(
             PaginationConfig={
@@ -74,7 +78,7 @@ class DynamoDBConnector(SchematicAWSConnector):
                         'continuous_backup': self._get_continuous_backup(table_name),
                         'contributor_insight': self._get_contributor_insights(table_name),
                         'tags': self.request_tags(table.get('TableArn')),
-                        'account_id': self.account_id
+                        'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type, table['TableName']),
                     })
                     table_vo = Table(table, strict=False)
 
@@ -175,4 +179,4 @@ class DynamoDBConnector(SchematicAWSConnector):
 
     def request_tags(self, resource_arn):
         response = self.client.list_tags_of_resource(ResourceArn=resource_arn)
-        return list(map(lambda tag: Tag(tag, strict=False), response.get('Tags', [])))
+        return list(map(lambda tag: AWSTags(tag, strict=False), response.get('Tags', [])))

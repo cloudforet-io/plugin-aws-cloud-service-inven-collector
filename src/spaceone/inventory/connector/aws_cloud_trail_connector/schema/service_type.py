@@ -1,5 +1,6 @@
-from spaceone.inventory.libs.schema.dynamic_field import TextDyField, EnumDyField, SearchField
-from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, CloudServiceTypeMeta
+from spaceone.inventory.libs.schema.dynamic_field import TextDyField, SearchField
+from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, \
+    CloudServiceTypeMeta
 
 cst_trail = CloudServiceTypeResource()
 cst_trail.name = 'Trail'

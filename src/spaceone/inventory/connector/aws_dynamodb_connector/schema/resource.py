@@ -1,4 +1,4 @@
-from schematics.types import ModelType, StringType, PolyModelType, DictType, ListType
+from schematics.types import ModelType, StringType, PolyModelType
 
 from spaceone.inventory.connector.aws_dynamodb_connector.schema.data import Table
 from spaceone.inventory.libs.schema.resource import CloudServiceResource, CloudServiceResponse, CloudServiceMeta

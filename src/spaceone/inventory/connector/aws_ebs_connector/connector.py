@@ -1,4 +1,3 @@
-import time
 import logging
 from typing import List
 
@@ -8,6 +7,7 @@ from spaceone.inventory.connector.aws_ebs_connector.schema.resource import Volum
     SnapshotResource, SnapshotResponse
 from spaceone.inventory.connector.aws_ebs_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
+
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -48,6 +48,7 @@ class EBSConnector(SchematicAWSConnector):
 
     def request_volume_data(self, region_name) -> List[Volume]:
         self.cloud_service_type = 'Volume'
+        cloudtrail_resource_type = 'AWS::EC2::Volume'
 
         paginator = self.client.get_paginator('describe_volumes')
         response_iterator = paginator.paginate(
@@ -66,7 +67,7 @@ class EBSConnector(SchematicAWSConnector):
                     attr = self.client.describe_volume_attribute(Attribute='productCodes', VolumeId=raw['VolumeId'])
                     raw.update({
                         'attribute': Attribute(attr, strict=False),
-                        'account_id': self.account_id,
+                        'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type, raw['VolumeId']),
                         'size': self.get_size_gb_to_bytes(raw.get('Size', 0)),
                         'arn': self.generate_arn(service=self.service_name, region=region_name,
                                                  account_id=self.account_id, resource_type="volume",
@@ -97,6 +98,7 @@ class EBSConnector(SchematicAWSConnector):
 
     def request_snapshot_data(self, region_name) -> List[Snapshot]:
         self.cloud_service_type = 'Snapshot'
+        cloudtrail_resource_type = 'AWS::EC2::Snapshot'
 
         paginator = self.client.get_paginator('describe_snapshots')
         response_iterator = paginator.paginate(
@@ -114,7 +116,7 @@ class EBSConnector(SchematicAWSConnector):
                         raw['name'] = name
 
                     raw.update({
-                        'account_id': self.account_id,
+                        'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type, raw['SnapshotId']),
                         'arn': self.generate_arn(service=self.service_name, region=region_name,
                                                  account_id=self.account_id, resource_type="snapshot",
                                                  resource_id=raw.get('SnapshotId'))

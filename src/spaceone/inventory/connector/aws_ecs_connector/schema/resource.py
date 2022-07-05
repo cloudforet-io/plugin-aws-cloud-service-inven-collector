@@ -1,8 +1,8 @@
-from schematics.types import ModelType, StringType, PolyModelType, DictType, ListType
+from schematics.types import ModelType, StringType, PolyModelType
 
 from spaceone.inventory.connector.aws_ecs_connector.schema.data import Cluster
 from spaceone.inventory.libs.schema.resource import CloudServiceResource, CloudServiceResponse, CloudServiceMeta
-from spaceone.inventory.libs.schema.dynamic_field import TextDyField, BadgeDyField, EnumDyField
+from spaceone.inventory.libs.schema.dynamic_field import TextDyField, EnumDyField
 from spaceone.inventory.libs.schema.dynamic_layout import ItemDynamicLayout, TableDynamicLayout, SimpleTableDynamicLayout
 
 base = ItemDynamicLayout.set_fields('Clusters', fields=[

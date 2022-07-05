@@ -1,9 +1,9 @@
 import logging
 
 from schematics import Model
-from schematics.types import ModelType, StringType, IntType, DateTimeType, serializable, ListType, \
-    BooleanType, FloatType
-from spaceone.inventory.libs.schema.resource import CloudWatchModel, CloudWatchDimensionModel
+from schematics.types import ModelType, StringType, IntType, DateTimeType, ListType, BooleanType, FloatType
+from spaceone.inventory.libs.schema.resource import CloudWatchDimensionModel, AWSCloudService
+
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -349,7 +349,7 @@ class ClusterSettings(Model):
     value = StringType(deserialize_from="value")
 
 
-class Cluster(Model):
+class Cluster(AWSCloudService):
     cluster_arn = StringType(deserialize_from="clusterArn")
     cluster_name = StringType(deserialize_from="clusterName")
     status = StringType(deserialize_from="status")
@@ -358,7 +358,6 @@ class Cluster(Model):
     pending_tasks_count = IntType(deserialize_from="pendingTasksCount")
     active_services_count = IntType(deserialize_from="activeServicesCount")
     statistics = ListType(ModelType(ClusterStatistics), deserialize_from="statistics")
-    tags = ListType(ModelType(Tags), default=[])
     settings = ListType(ModelType(ClusterSettings), deserialize_from="settings")
     capacity_providers = ListType(StringType, deserialize_from="capacityProviders")
     default_capacity_provider_strategy = ListType(ModelType(CapacityProviderStrategy),
@@ -368,8 +367,6 @@ class Cluster(Model):
     services = ListType(ModelType(Service))
     tasks = ListType(ModelType(Task))
     container_instances = ListType(ModelType(ContainerInstance))
-    account_id = StringType(default="")
-    cloudwatch = ModelType(CloudWatchModel, serialize_when_none=False)
 
     def reference(self, region_code):
         return {

@@ -3,10 +3,12 @@ import logging
 from typing import List
 
 from spaceone.core.utils import *
-from spaceone.inventory.connector.aws_ecr_connector.schema.data import Repository, Image, Tag
+from spaceone.inventory.connector.aws_ecr_connector.schema.data import Repository, Image
 from spaceone.inventory.connector.aws_ecr_connector.schema.resource import ECRRepositoryResource, ECRResponse
 from spaceone.inventory.connector.aws_ecr_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
+from spaceone.inventory.libs.schema.resource import AWSTags
+
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -46,6 +48,7 @@ class ECRConnector(SchematicAWSConnector):
         return resources
 
     def request_data(self, region_name) -> List[Repository]:
+        cloudtrail_resource_type = 'AWS::ECR::Repository'
         paginator = self.client.get_paginator('describe_repositories')
         response_iterator = paginator.paginate(
             PaginationConfig={
@@ -59,7 +62,7 @@ class ECRConnector(SchematicAWSConnector):
                     raw.update({
                         'images': list(self._describe_images(raw)),
                         'tags': self.request_tags(raw.get('repositoryArn')),
-                        'account_id': self.account_id
+                        'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type, raw['repositoryName'])
                     })
                     repository_vo = Repository(raw, strict=False)
                     yield {
@@ -97,7 +100,7 @@ class ECRConnector(SchematicAWSConnector):
 
     def request_tags(self, resource_arn):
         response = self.client.list_tags_for_resource(resourceArn=resource_arn)
-        return list(map(lambda tag: Tag(tag, strict=False), response.get('tags', [])))
+        return list(map(lambda tag: AWSTags(tag, strict=False), response.get('tags', [])))
 
     @staticmethod
     def _generate_image_uri(repo_uri, image_tags):
