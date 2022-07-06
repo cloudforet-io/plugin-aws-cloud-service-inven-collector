@@ -2,12 +2,12 @@ import time
 import logging
 from typing import List
 
-from spaceone.inventory.connector.aws_cloud_front_connector.schema.data import DistributionData, Tags
+from spaceone.inventory.connector.aws_cloud_front_connector.schema.data import DistributionData
 from spaceone.inventory.connector.aws_cloud_front_connector.schema.resource import CloudFrontResponse,\
     DistributionResource
 from spaceone.inventory.connector.aws_cloud_front_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
-from spaceone.inventory.libs.schema.resource import ReferenceModel, CloudWatchModel
+from spaceone.inventory.libs.schema.resource import ReferenceModel, CloudWatchModel, AWSTags
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -20,7 +20,7 @@ class CFConnector(SchematicAWSConnector):
     cloud_service_types = CLOUD_SERVICE_TYPES
 
     def get_resources(self):
-        _LOGGER.debug("[get_resources] START: Cloudfront")
+        _LOGGER.debug(f"[get_resources][account_id: {self.account_id}] START: Cloudfront")
         resources = []
         start_time = time.time()
 
@@ -47,10 +47,11 @@ class CFConnector(SchematicAWSConnector):
             resource_id = ''
             resources.append(self.generate_error('global', resource_id, e))
 
-        _LOGGER.debug(f'[get_resources] Cloud Front Finished {time.time() - start_time} Seconds')
+        _LOGGER.debug(f'[get_resources][account_id: {self.account_id}] Cloud Front Finished {time.time() - start_time} Seconds')
         return resources
 
     def request_data(self) -> List[DistributionData]:
+        cloudtrail_resource_type = 'AWS::CloudFront::Distribution'
         paginator = self.client.get_paginator('list_distributions')
         response_iterator = paginator.paginate(
             PaginationConfig={
@@ -63,8 +64,8 @@ class CFConnector(SchematicAWSConnector):
                 try:
                     raw.update({
                         'state_display': self.get_state_display(raw.get('Enabled')),
-                        'account_id': self.account_id,
-                        'tags': list(self.list_tags_for_resource(raw.get('ARN')))
+                        'tags': list(self.list_tags_for_resource(raw.get('ARN'))),
+                        'cloudtrail': self.set_cloudtrail('us-east-1', cloudtrail_resource_type, raw['Id'])
                     })
                     distribution_vo = DistributionData(raw, strict=False)
                     yield distribution_vo
@@ -78,7 +79,7 @@ class CFConnector(SchematicAWSConnector):
         response = self.client.list_tags_for_resource(Resource=arn)
         tags = response.get('Tags', {})
         for _tag in tags.get('Items', []):
-            yield Tags(_tag, strict=False)
+            yield AWSTags(_tag, strict=False)
 
     @staticmethod
     def get_state_display(enabled):

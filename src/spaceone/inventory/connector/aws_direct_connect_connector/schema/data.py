@@ -1,9 +1,9 @@
 import logging
 
 from schematics import Model
-from schematics.types import ModelType, StringType, IntType, FloatType, DateTimeType, serializable, ListType, \
+from schematics.types import ModelType, StringType, IntType, FloatType, DateTimeType, ListType, \
     BooleanType
-from spaceone.inventory.libs.schema.resource import CloudWatchModel, CloudWatchDimensionModel
+from spaceone.inventory.libs.schema.resource import CloudWatchModel, CloudWatchDimensionModel, AWSCloudService
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -38,7 +38,7 @@ class LAGConnections(Model):
     provider_name = StringType(deserialize_from="providerName")
 
 
-class LAG(Model):
+class LAG(AWSCloudService):
     connections_bandwidth = StringType(deserialize_from="connectionsBandwidth")
     number_of_connections = IntType(deserialize_from="numberOfConnections")
     lag_id = StringType(deserialize_from="lagId")
@@ -54,7 +54,6 @@ class LAG(Model):
     allows_hosted_connections = BooleanType(deserialize_from="allowsHostedConnections")
     jumbo_frame_capable = BooleanType(deserialize_from="jumboFrameCapable")
     has_logical_redundancy = StringType(deserialize_from="hasLogicalRedundancy", choices=("unknown", "yes", "no"))
-    tags = ListType(ModelType(Tags), default=[])
     provider_name = StringType(deserialize_from="providerName")
 
     def reference(self, region_code):
@@ -67,7 +66,7 @@ class LAG(Model):
 '''
 VIRTUAL GATEWAY
 '''
-class VirtualPrivateGateway(Model):
+class VirtualPrivateGateway(AWSCloudService):
     virtual_gateway_id = StringType(deserialize_from="virtualGatewayId")
     virtual_gateway_state = StringType(deserialize_from="virtualGatewayState")
     owner_account = StringType(deserialize_from="ownerAccount")
@@ -82,7 +81,7 @@ class VirtualPrivateGateway(Model):
 '''
 DIRECT CONNECT GATEWAY
 '''
-class DirectConnectGateway(Model):
+class DirectConnectGateway(AWSCloudService):
     direct_connect_gateway_id = StringType(deserialize_from="directConnectGatewayId")
     direct_connect_gateway_name = StringType(deserialize_from="directConnectGatewayName")
     amazon_side_asn = IntType(deserialize_from="amazonSideAsn")
@@ -120,7 +119,7 @@ class VirtualInterfacebgpPeers(Model):
     aws_device_v2 = StringType(deserialize_from="awsDeviceV2")
 
 
-class VirtualInterface(Model):
+class VirtualInterface(AWSCloudService):
     owner_account = StringType(deserialize_from="ownerAccount")
     virtual_interface_id = StringType(deserialize_from="virtualInterfaceId")
     location = StringType(deserialize_from="location")
@@ -154,8 +153,6 @@ class VirtualInterface(Model):
                                    deserialize_from="bgpPeers"))
     region = StringType(deserialize_from="region")
     aws_device_v2 = StringType(deserialize_from="awsDeviceV2")
-    tags = ListType(ModelType(Tags), default=[])
-    cloudwatch = ModelType(CloudWatchModel, serialize_when_none=False)
 
     def reference(self, region_code):
         return {
@@ -174,7 +171,7 @@ class VirtualInterface(Model):
 '''
 CONNECTION
 '''
-class Connection(Model):
+class Connection(AWSCloudService):
     owner_account = StringType(deserialize_from="ownerAccount")
     connection_id = StringType(deserialize_from="connectionId")
     connection_name = StringType(deserialize_from="connectionName")
@@ -193,10 +190,8 @@ class Connection(Model):
     jumbo_frame_capable = BooleanType(deserialize_from="jumboFrameCapable")
     aws_device_v2 = StringType(deserialize_from="awsDeviceV2")
     has_logical_redundancy = StringType(deserialize_from="hasLogicalRedundancy", choices=("unknown", "yes", "no"))
-    tags = ListType(ModelType(Tags), default=[])
     provider_name = StringType(deserialize_from="providerName")
     virtual_interfaces = ListType(ModelType(VirtualInterface))
-    cloudwatch = ModelType(CloudWatchModel, serialize_when_none=False)
 
     def reference(self, region_code):
         return {

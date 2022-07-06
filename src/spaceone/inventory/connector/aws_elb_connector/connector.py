@@ -1,17 +1,12 @@
-import json
-import time
 import logging
-import traceback
-from typing import List
-
 from spaceone.core.utils import *
-from spaceone.inventory.connector.aws_elb_connector.schema.data import LoadBalancer, TargetGroup, Tags, \
-    LoadBalancerAttributes, TargetGroupAttributes, Listener, Instance
+from spaceone.inventory.connector.aws_elb_connector.schema.data import LoadBalancer, TargetGroup, LoadBalancerAttributes, \
+    TargetGroupAttributes, Listener, Instance
 from spaceone.inventory.connector.aws_elb_connector.schema.resource import LoadBalancerResource, TargetGroupResource, \
     LoadBalancerResponse, TargetGroupResponse
 from spaceone.inventory.connector.aws_elb_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
-from spaceone.inventory.libs.schema.resource import ReferenceModel, ErrorResourceResponse
+from spaceone.inventory.libs.schema.resource import AWSTags
 
 _LOGGER = logging.getLogger(__name__)
 MAX_TAG_RESOURCES = 20
@@ -23,7 +18,7 @@ class ELBConnector(SchematicAWSConnector):
     cloud_service_types = CLOUD_SERVICE_TYPES
 
     def get_resources(self):
-        _LOGGER.debug("[get_resources] START: ELB")
+        _LOGGER.debug(f"[get_resources][account_id: {self.account_id}] START: ELB")
         resources = []
         start_time = time.time()
 
@@ -47,11 +42,12 @@ class ELBConnector(SchematicAWSConnector):
             for collect_resource in collect_resources:
                 resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
 
-        _LOGGER.debug(f'[get_resources] FINISHED: ELB ({time.time() - start_time} sec)')
+        _LOGGER.debug(f'[get_resources][account_id: {self.account_id}] FINISHED: ELB ({time.time() - start_time} sec)')
         return resources
 
     def request_target_group_data(self, region_name):
         self.cloud_service_type = 'TargetGroup'
+        cloudtrail_resource_type = 'AWS::ElasticLoadBalancingV2::TargetGroup'
 
         raw_tgs = self.request_target_group(region_name)
         tg_arns = [raw_tg.get('TargetGroupArn') for raw_tg in raw_tgs if raw_tg.get('TargetGroupArn')]
@@ -64,8 +60,8 @@ class ELBConnector(SchematicAWSConnector):
                 match_tags = self.search_tags(all_tags, raw_tg.get('TargetGroupArn'))
                 raw_tg.update({
                     'region_name': region_name,
-                    'account_id': self.account_id,
-                    'tags': list(map(lambda match_tag: Tags(match_tag, strict=False), match_tags))
+                    'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type, raw_tg['TargetGroupArn']),
+                    'tags': list(map(lambda match_tag: AWSTags(match_tag, strict=False), match_tags))
                 })
 
                 target_group_vo = TargetGroup(raw_tg, strict=False)
@@ -85,6 +81,7 @@ class ELBConnector(SchematicAWSConnector):
 
     def request_load_balancer_data(self, region_name):
         self.cloud_service_type = 'LoadBalancer'
+        cloudtrail_resource_type = 'AWS::ElasticLoadBalancingV2::LoadBalancer'
 
         all_tags = []
         raw_lbs = self.request_loadbalancer(region_name)
@@ -110,9 +107,9 @@ class ELBConnector(SchematicAWSConnector):
 
                 raw_lb.update({
                     'region_name': region_name,
-                    'account_id': self.account_id,
                     'listeners': list(map(lambda _listener: Listener(_listener, strict=False), raw_listeners)),
-                    'tags': list(map(lambda match_tag: Tags(match_tag, strict=False), match_tags)),
+                    'tags': list(map(lambda match_tag: AWSTags(match_tag, strict=False), match_tags)),
+                    'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type, raw_lb['LoadBalancerArn']),
                     'target_groups': match_target_groups,
                     'instances': match_instances
                 })
@@ -204,6 +201,50 @@ class ELBConnector(SchematicAWSConnector):
 
         return target_groups
 
+    def request_listeners(self, lb_arn):
+        response = self.client.describe_listeners(LoadBalancerArn=lb_arn)
+        return response.get('Listeners', [])
+
+    def request_tags(self, resource_arns):
+        all_tags = []
+
+        for _arns in self.divide_to_chunks(resource_arns, MAX_TAG_RESOURCES):
+            response = self.client.describe_tags(ResourceArns=_arns)
+            all_tags.extend(response.get('TagDescriptions', []))
+
+        return all_tags
+
+    def match_target_group_from_lb(self, load_balancer_arn):
+        match_target_groups = []
+
+        for _tg in self.target_groups:
+            if _tg.load_balancer_arns:
+                for _tg_lb_arn in _tg.load_balancer_arns:
+                    if _tg_lb_arn == load_balancer_arn:
+                        match_target_groups.append(_tg)
+
+        return match_target_groups
+
+    def request_instances(self, region_name):
+        ec2_client = self.session.client('ec2', region_name=region_name)
+
+        instances = []
+        paginator = ec2_client.get_paginator('describe_instances')
+        response_iterator = paginator.paginate(
+            PaginationConfig={
+                'MaxItems': 10000,
+                'PageSize': 50,
+            },
+            Filters=[{'Name': 'instance-state-name',
+                      'Values': ['pending', 'running', 'shutting-down', 'stopping', 'stopped']}]
+        )
+
+        for data in response_iterator:
+            for _reservation in data.get('Reservations', []):
+                instances.extend(_reservation.get('Instances', []))
+
+        return instances
+
     def request_lb_attributes(self, lb_arn):
         attribute_info = {}
 
@@ -281,50 +322,6 @@ class ELBConnector(SchematicAWSConnector):
                 attribute_info['load_balancing_algorithm_type'] = attr.get('Value', '')
 
         return TargetGroupAttributes(attribute_info, strict=False)
-
-    def request_listeners(self, lb_arn):
-        response = self.client.describe_listeners(LoadBalancerArn=lb_arn)
-        return response.get('Listeners', [])
-
-    def request_tags(self, resource_arns):
-        all_tags = []
-
-        for _arns in self.divide_to_chunks(resource_arns, MAX_TAG_RESOURCES):
-            response = self.client.describe_tags(ResourceArns=_arns)
-            all_tags.extend(response.get('TagDescriptions', []))
-
-        return all_tags
-
-    def match_target_group_from_lb(self, load_balancer_arn):
-        match_target_groups = []
-
-        for _tg in self.target_groups:
-            if _tg.load_balancer_arns:
-                for _tg_lb_arn in _tg.load_balancer_arns:
-                    if _tg_lb_arn == load_balancer_arn:
-                        match_target_groups.append(_tg)
-
-        return match_target_groups
-
-    def request_instances(self, region_name):
-        ec2_client = self.session.client('ec2', region_name=region_name)
-
-        instances = []
-        paginator = ec2_client.get_paginator('describe_instances')
-        response_iterator = paginator.paginate(
-            PaginationConfig={
-                'MaxItems': 10000,
-                'PageSize': 50,
-            },
-            Filters=[{'Name': 'instance-state-name',
-                      'Values': ['pending', 'running', 'shutting-down', 'stopping', 'stopped']}]
-        )
-
-        for data in response_iterator:
-            for _reservation in data.get('Reservations', []):
-                instances.extend(_reservation.get('Instances', []))
-
-        return instances
 
     @staticmethod
     def search_tags(all_tags, resource_arn):

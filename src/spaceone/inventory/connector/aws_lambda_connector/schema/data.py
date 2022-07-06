@@ -1,7 +1,9 @@
 import logging
 
 from schematics import Model
-from schematics.types import ModelType, StringType, IntType, DateTimeType, ListType, BooleanType, serializable
+from schematics.types import ModelType, StringType, IntType, DateTimeType, ListType
+from spaceone.inventory.libs.schema.resource import AWSCloudService
+
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -24,7 +26,7 @@ class LatestMatchingVersion(Model):
     license_info = StringType(deserialize_from="LicenseInfo", serialize_when_none=False)
 
 
-class Layer(Model):
+class Layer(AWSCloudService):
     layer_name = StringType(deserialize_from="LayerName", serialize_when_none=False)
     layer_arn = StringType(deserialize_from="LayerArn", serialize_when_none=False)
     latest_matching_version = ModelType(LatestMatchingVersion, deserialize_from="LatestMatchingVersion"
@@ -94,7 +96,7 @@ class VPCConfig(Model):
     vpc_id = StringType(deserialize_from="VpcId", serialize_when_none=False)
 
 
-class LambdaFunctionData(Model):
+class LambdaFunctionData(AWSCloudService):
     name = StringType(deserialize_from='FunctionName', serialize_when_none=False)
     arn = StringType(deserialize_from='FunctionArn', serialize_when_none=False)
     master_arn = StringType(deserialize_from='MasterArn', serialize_when_none=False)

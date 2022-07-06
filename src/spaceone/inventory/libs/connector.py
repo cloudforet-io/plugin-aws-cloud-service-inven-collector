@@ -7,7 +7,7 @@ from boto3.session import Session
 from spaceone.core import utils
 from spaceone.core.connector import BaseConnector
 from spaceone.inventory.libs.schema.resource import CloudServiceResponse, ReferenceModel, CloudWatchModel, \
-    CloudServiceResourceTags, ErrorResourceResponse
+    CloudServiceResourceTags, ErrorResourceResponse, CloudTrailModel
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -127,10 +127,10 @@ class SchematicAWSConnector(AWSConnector):
     def collect_data_by_region(self, service_name, region_name, collect_resource_info):
         '''
         collect_resource_info = {
-                'request_method': self.request_something_like_data,
-                'resource': ResourceClass,
-                'response_schema': ResponseClass,
-                'kwargs': {}
+            'request_method': self.request_something_like_data,
+            'resource': ResourceClass,
+            'response_schema': ResponseClass,
+            'kwargs': {}
         }
         '''
         resources = []
@@ -217,3 +217,17 @@ class SchematicAWSConnector(AWSConnector):
     @staticmethod
     def get_resource_tags(tags_obj):
         return [CloudServiceResourceTags({'key': tag.key, 'value': tag.value}, strict=False) for tag in tags_obj]
+
+    @staticmethod
+    def set_cloudtrail(region_name, resource_type, resource_name):
+        cloudtrail = {
+            'LookupAttributes': [
+                {
+                    "AttributeKey": "ResourceName",
+                    "AttributeValue": resource_name,
+                }
+            ],
+            'region_name': region_name,
+            'resource_type': resource_type
+        }
+        return CloudTrailModel(cloudtrail, strict=False)

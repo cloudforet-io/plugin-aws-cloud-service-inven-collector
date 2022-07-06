@@ -1,15 +1,14 @@
 import logging
 
 from schematics import Model
-from schematics.types import ModelType, StringType, IntType, DateTimeType, serializable, ListType, BooleanType
-from spaceone.inventory.libs.schema.resource import CloudWatchModel, CloudWatchDimensionModel
+from schematics.types import ModelType, StringType, IntType, DateTimeType, ListType, BooleanType
+from spaceone.inventory.libs.schema.resource import CloudWatchDimensionModel, AWSCloudService
+
 _LOGGER = logging.getLogger(__name__)
 
 
-class Tags(Model):
-    key = StringType(deserialize_from="Key")
-    value = StringType(deserialize_from="Value")
-
+class SubnetAvailabilityZone(Model):
+    name = StringType(deserialize_from="Name")
 
 '''
 OPTION GROUP
@@ -50,7 +49,7 @@ class Option(Model):
                                               deserialize_from="VpcSecurityGroupMemberships")
 
 
-class OptionGroup(Model):
+class OptionGroup(AWSCloudService):
     option_group_name = StringType(deserialize_from="OptionGroupName")
     option_group_description = StringType(deserialize_from="OptionGroupDescription")
     engine_name = StringType(deserialize_from="EngineName")
@@ -59,7 +58,6 @@ class OptionGroup(Model):
     allows_vpc_and_non_vpc_instance_memberships = BooleanType(deserialize_from="AllowsVpcAndNonVpcInstanceMemberships")
     vpc_id = StringType(deserialize_from="VpcId")
     option_group_arn = StringType(deserialize_from="OptionGroupArn")
-    account_id = StringType()
 
     def reference(self, region_code):
         return {
@@ -82,18 +80,16 @@ class Parameter(Model):
     allowed_values = StringType(deserialize_from="AllowedValues")
     is_modifiable = BooleanType(deserialize_from="IsModifiable")
     minimum_engine_version = StringType(deserialize_from="MinimumEngineVersion")
-    apply_method = StringType(deserialize_from="ApplyMethod",choices=("immediate","pending-reboot"))
-    supported_engine_modes = ListType(StringType,deserialize_from="SupportedEngineModes")
+    apply_method = StringType(deserialize_from="ApplyMethod", choices=("immediate","pending-reboot"))
+    supported_engine_modes = ListType(StringType, deserialize_from="SupportedEngineModes")
 
 
-class ParameterGroup(Model):
+class ParameterGroup(AWSCloudService):
     db_parameter_group_name = StringType(deserialize_from="DBParameterGroupName")
     db_parameter_group_family = StringType(deserialize_from="DBParameterGroupFamily")
     description = StringType(deserialize_from="Description")
     db_parameter_group_arn = StringType(deserialize_from="DBParameterGroupArn")
-    account_id = StringType()
     parameters = ListType(ModelType(Parameter), default=[])
-    tags = ListType(ModelType(Tags), default=[])
     db_parameter_group_type = StringType()
 
     def reference(self, region_code):
@@ -106,13 +102,9 @@ class ParameterGroup(Model):
 '''
 SUBNET GROUP
 '''
-class SubnetAvailabilityZone(Model):
-    name = StringType(deserialize_from="Name")
-
-
 class SubnetGroupSubnets(Model):
     subnet_identifier = StringType(deserialize_from="SubnetIdentifier")
-    subnet_availability_zone = ModelType(SubnetAvailabilityZone,deserialize_from="SubnetAvailabilityZone")
+    subnet_availability_zone = ModelType(SubnetAvailabilityZone, deserialize_from="SubnetAvailabilityZone")
     subnet_status = StringType(deserialize_from="SubnetStatus")
 
 
@@ -123,8 +115,6 @@ class SubnetGroup(Model):
     subnet_group_status = StringType(deserialize_from="SubnetGroupStatus")
     subnets = ListType(ModelType(SubnetGroupSubnets), deserialize_from="Subnets")
     db_subnet_group_arn = StringType(deserialize_from="DBSubnetGroupArn")
-    account_id = StringType()
-    tags = ListType(ModelType(Tags), default=[])
 
     def reference(self, region_code):
         return {
@@ -169,8 +159,6 @@ class Snapshot(Model):
     iam_database_authentication_enabled = BooleanType(deserialize_from="IAMDatabaseAuthenticationEnabled")
     processor_features = ListType(ModelType(Features), deserialize_from="ProcessorFeatures")
     dbi_resource_id = StringType(deserialize_from="DbiResourceId")
-    account_id = StringType()
-    tags = ListType(ModelType(Tags), default=[])
 
     def reference(self, region_code):
         return {
@@ -186,10 +174,6 @@ class Endpoint(Model):
     address = StringType(deserialize_from="Address")
     port = IntType(deserialize_from="Port")
     hosted_zone_id = StringType(deserialize_from="HostedZoneId")
-
-
-class SubnetAvailabilityZone(Model):
-    name = StringType(deserialize_from="Name")
 
 
 class DBSubnetGroupSubnets(Model):
@@ -282,7 +266,7 @@ class InstanceAssociatedRoles(Model):
     status = StringType(deserialize_from="Status")
 
 
-class Instance(Model):
+class Instance(AWSCloudService):
     db_instance_identifier = StringType(deserialize_from="DBInstanceIdentifier", serialize_when_none=False)
     db_instance_class = StringType(deserialize_from="DBInstanceClass", serialize_when_none=False)
     engine = StringType(deserialize_from="Engine", serialize_when_none=False)
@@ -360,7 +344,6 @@ class Instance(Model):
     listener_endpoint = ModelType(ListenerEndpoint, deserialize_from="ListenerEndpoint",
                                   serialize_when_none=False)
     max_allocated_storage = IntType(deserialize_from="MaxAllocatedStorage", serialize_when_none=False)
-    tags = ListType(ModelType(Tags), default=[])
 
     def reference(self, region_code):
         return {
@@ -488,10 +471,9 @@ class Cluster(Model):
                                   deserialize_from="DomainMemberships",
                                   serialize_when_none=False)
     db_cluster_role = StringType()
-    tags = ListType(ModelType(Tags), default=[])
 
 
-class Database(Model):
+class Database(AWSCloudService):
     arn = StringType()
     db_identifier = StringType()
     status = StringType()
@@ -502,9 +484,6 @@ class Database(Model):
     multi_az = BooleanType()
     cluster = ModelType(Cluster, serialize_when_none=False)
     instance = ModelType(Instance, serialize_when_none=False)
-    account_id = StringType()
-    tags = ListType(ModelType(Tags), default=[])
-    cloudwatch = ModelType(CloudWatchModel, serialize_when_none=False)
 
     def reference(self, region_code):
         is_cluster = 'true' if self.role == 'cluster' else 'false'

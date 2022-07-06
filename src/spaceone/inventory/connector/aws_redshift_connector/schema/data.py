@@ -1,5 +1,5 @@
 from schematics import Model
-from spaceone.inventory.libs.schema.resource import CloudWatchModel, CloudWatchDimensionModel
+from spaceone.inventory.libs.schema.resource import CloudWatchModel, CloudWatchDimensionModel, AWSCloudService
 from schematics.types import ModelType, StringType, IntType, DateTimeType, ListType, BooleanType, \
     FloatType
 
@@ -213,7 +213,7 @@ class ClusterDeferredMaintenanceWindows(Model):
     defer_maintenance_end_time = DateTimeType(deserialize_from="DeferMaintenanceEndTime")
 
 
-class Cluster(Model):
+class Cluster(AWSCloudService):
     arn = StringType()
     cluster_identifier = StringType(deserialize_from="ClusterIdentifier")
     node_type = StringType(deserialize_from="NodeType")
@@ -267,8 +267,6 @@ class Cluster(Model):
     snapshots = ListType(ModelType(Snapshot), default=[])
     snapshot_schedules = ListType(ModelType(SnapshotSchedule))
     scheduled_actions = ListType(ModelType(ScheduledAction))
-    account_id = StringType(default="")
-    cloudwatch = ModelType(CloudWatchModel, serialize_when_none=False)
 
     def reference(self, region_code):
         return {

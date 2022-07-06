@@ -1,7 +1,6 @@
 import os
 from spaceone.inventory.libs.common_parser import *
-from spaceone.inventory.libs.schema.dynamic_field import TextDyField, SearchField, DateTimeDyField, EnumDyField, \
-    ListDyField
+from spaceone.inventory.libs.schema.dynamic_field import TextDyField, SearchField, DateTimeDyField, ListDyField
 from spaceone.inventory.libs.schema.dynamic_widget import CardWidget, ChartWidget
 from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, \
     CloudServiceTypeMeta

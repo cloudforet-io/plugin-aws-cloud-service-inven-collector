@@ -1,8 +1,8 @@
-from schematics.types import ModelType, StringType, PolyModelType, DictType, ListType
+from schematics.types import ModelType, StringType, PolyModelType
 
 from spaceone.inventory.connector.aws_elb_connector.schema.data import LoadBalancer, TargetGroup
 from spaceone.inventory.libs.schema.resource import CloudServiceResource, CloudServiceResponse, CloudServiceMeta
-from spaceone.inventory.libs.schema.dynamic_field import TextDyField, ListDyField, BadgeDyField, DateTimeDyField, \
+from spaceone.inventory.libs.schema.dynamic_field import TextDyField, ListDyField, DateTimeDyField, \
     EnumDyField
 from spaceone.inventory.libs.schema.dynamic_layout import ItemDynamicLayout, TableDynamicLayout, \
     SimpleTableDynamicLayout

@@ -19,7 +19,7 @@ class DirectConnectConnector(SchematicAWSConnector):
     cloud_service_types = CLOUD_SERVICE_TYPES
 
     def get_resources(self):
-        _LOGGER.debug("[get_resources] START: Direct Connect")
+        _LOGGER.debug(f"[get_resources][account_id: {self.account_id}] START: Direct Connect")
         resources = []
         start_time = time.time()
 
@@ -55,7 +55,7 @@ class DirectConnectConnector(SchematicAWSConnector):
             for collect_resource in collect_resources:
                 resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
 
-        _LOGGER.debug(f'[get_resources] FINISHED: Direct Connect ({time.time() - start_time} sec)')
+        _LOGGER.debug(f'[get_resources][account_id: {self.account_id}] FINISHED: Direct Connect ({time.time() - start_time} sec)')
         return resources
 
     def connection_request_data(self, region_name) -> List[Connection]:
@@ -70,6 +70,7 @@ class DirectConnectConnector(SchematicAWSConnector):
                 if bandwidth_size:
                     raw.update({'bandwidth_gbps': bandwidth_size})
 
+                raw.update({'cloudtrail': self.set_cloudtrail(region_name, None, raw['connectionId'])})
                 connection_vo = Connection(raw, strict=False)
                 yield {
                     'data': connection_vo,
@@ -91,6 +92,7 @@ class DirectConnectConnector(SchematicAWSConnector):
 
         for raw in response.get('directConnectGateways', []):
             try:
+                raw.update({'cloudtrail': self.set_cloudtrail('us-east-1', None, raw['directConnectGatewayId'])})
                 dc_gw_vo = DirectConnectGateway(raw, strict=False)
                 yield {
                     'data': dc_gw_vo,
@@ -110,6 +112,7 @@ class DirectConnectConnector(SchematicAWSConnector):
 
         for raw in response.get('virtualGateways', []):
             try:
+                raw.update({'cloudtrail': self.set_cloudtrail(region_name, None, raw['virtualGatewayId'])})
                 virtual_private_gw_vo = VirtualPrivateGateway(raw, strict=False)
 
                 yield {
@@ -128,6 +131,8 @@ class DirectConnectConnector(SchematicAWSConnector):
         response = self.client.describe_lags()
         for raw in response.get('lags', []):
             try:
+                raw.update({'cloudtrail': self.set_cloudtrail(region_name, None, raw['lagId'])})
+
                 for lag_connection in raw.get('connections', []):
                     bandwidth_size = self.convert_bandwidth_gbps(lag_connection.get('bandwidth', ''))
 
@@ -147,7 +152,8 @@ class DirectConnectConnector(SchematicAWSConnector):
                 error_resource_response = self.generate_error(region_name, resource_id, e)
                 yield {'data': error_resource_response}
 
-    def convert_bandwidth_gbps(self, bandwidth):
+    @staticmethod
+    def convert_bandwidth_gbps(bandwidth):
         try:
             if 'Mbps' in bandwidth:
                 bw_mbps = bandwidth.replace('Mbps', '')

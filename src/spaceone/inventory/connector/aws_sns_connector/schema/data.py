@@ -1,15 +1,10 @@
 import logging
 
 from schematics import Model
-from schematics.types import ModelType, StringType, IntType, DateTimeType, serializable, ListType, BooleanType
-from spaceone.inventory.libs.schema.resource import CloudWatchModel, CloudWatchDimensionModel
+from schematics.types import ModelType, StringType, IntType, ListType
+from spaceone.inventory.libs.schema.resource import CloudWatchModel, CloudWatchDimensionModel, AWSCloudService
 
 _LOGGER = logging.getLogger(__name__)
-
-
-class Tags(Model):
-    key = StringType(deserialize_from="Key")
-    value = StringType(deserialize_from="Value")
 
 
 class TopicKMS(Model):
@@ -29,7 +24,7 @@ class Subscription(Model):
     topic_arn = StringType(deserialize_from="TopicArn")
 
 
-class Topic(Model):
+class Topic(AWSCloudService):
     name = StringType(default="")
     display_name = StringType(deserialize_from="DisplayName")
     effective_delivery_policy = StringType(deserialize_from="EffectiveDeliveryPolicy")
@@ -41,10 +36,7 @@ class Topic(Model):
     subscriptions_pending = IntType(deserialize_from="SubscriptionsPending")
     topic_arn = StringType(deserialize_from="TopicArn")
     subscriptions = ListType(ModelType(Subscription))
-    tags = ListType(ModelType(Tags), default=[])
     region_name = StringType(default="")
-    account_id = StringType(default="")
-    cloudwatch = ModelType(CloudWatchModel, serialize_when_none=False)
 
     def reference(self, region_code):
         return {

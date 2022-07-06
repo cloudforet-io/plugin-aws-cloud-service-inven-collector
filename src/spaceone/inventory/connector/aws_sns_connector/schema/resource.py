@@ -1,8 +1,8 @@
-from schematics.types import ModelType, StringType, PolyModelType, DictType, ListType
+from schematics.types import ModelType, StringType, PolyModelType
 
 from spaceone.inventory.connector.aws_sns_connector.schema.data import Topic
 from spaceone.inventory.libs.schema.resource import CloudServiceResource, CloudServiceResponse, CloudServiceMeta
-from spaceone.inventory.libs.schema.dynamic_field import TextDyField, BadgeDyField, EnumDyField
+from spaceone.inventory.libs.schema.dynamic_field import TextDyField, EnumDyField
 from spaceone.inventory.libs.schema.dynamic_layout import ItemDynamicLayout, TableDynamicLayout, SimpleTableDynamicLayout
 
 sns = ItemDynamicLayout.set_fields('SNS', fields=[

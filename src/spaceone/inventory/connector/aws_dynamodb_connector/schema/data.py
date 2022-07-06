@@ -1,15 +1,11 @@
 import logging
 
 from schematics import Model
-from schematics.types import ModelType, StringType, IntType, DateTimeType, serializable, ListType, BooleanType
-from spaceone.inventory.libs.schema.resource import CloudWatchModel, CloudWatchDimensionModel
+from schematics.types import ModelType, StringType, IntType, DateTimeType, ListType, BooleanType
+from spaceone.inventory.libs.schema.resource import CloudWatchDimensionModel, AWSCloudService
 
 _LOGGER = logging.getLogger(__name__)
 
-
-class Tag(Model):
-    key = StringType(deserialize_from="Key")
-    value = StringType(deserialize_from="Value")
 
 '''
 CONTRIBUTOR INSIGHT
@@ -26,7 +22,7 @@ class ContributorInsight(Model):
     contributor_insights_status = StringType(deserialize_from="ContributorInsightsStatus",
                                              choices=("ENABLING", "ENABLED", "DISABLING", "DISABLED", "FAILED"))
     last_update_date_time = DateTimeType(deserialize_from="LastUpdateDateTime")
-    failure_exception = ModelType(FailureException,deserialize_from="FailureException")
+    failure_exception = ModelType(FailureException, deserialize_from="FailureException")
 
 
 '''
@@ -157,7 +153,7 @@ class TableReplicas(Model):
     global_secondary_indexes = ListType(ModelType(GlobalSecondaryIndexes), deserialize_from="GlobalSecondaryIndexes")
 
 
-class Table(Model):
+class Table(AWSCloudService):
     attribute_definitions = ListType(ModelType(TableAttributeDefinitions), deserialize_from="AttributeDefinitions")
     table_name = StringType(deserialize_from="TableName")
     key_schema = ListType(ModelType(TableKeySchema), deserialize_from="KeySchema")
@@ -194,12 +190,9 @@ class Table(Model):
     auto_scaling_policies = ListType(StringType, choices=("READ", "WRITE"))
     encryption_type = StringType(default="")
     index_count = IntType(default=0)
-    account_id = StringType(default="")
     time_to_live = ModelType(TimeToLive)
     continuous_backup = ModelType(ContinuousBackup)
     contributor_insight = ModelType(ContributorInsight)
-    tags = ListType(ModelType(Tag), default=[])
-    cloudwatch = ModelType(CloudWatchModel, serialize_when_none=False)
 
     def reference(self, region_code):
         return {

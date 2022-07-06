@@ -1,16 +1,11 @@
 import logging
 
 from schematics import Model
-from schematics.types import ModelType, StringType, IntType, FloatType, DateTimeType, serializable, ListType, \
-    BooleanType
-from spaceone.inventory.libs.schema.resource import CloudWatchModel, CloudWatchDimensionModel
+from schematics.types import ModelType, StringType, DateTimeType, ListType
+from spaceone.inventory.libs.schema.resource import AWSCloudService
+
 
 _LOGGER = logging.getLogger(__name__)
-
-
-class Tags(Model):
-    key = StringType(deserialize_from='Key')
-    value = StringType(deserialize_from='Value')
 
 
 class ResourceRecord(Model):
@@ -63,7 +58,7 @@ class Options(Model):
                                                              choices=('ENABLED', 'DISABLED'))
 
 
-class Certificate(Model):
+class Certificate(AWSCloudService):
     certificate_arn = StringType(deserialize_from="CertificateArn")
     identifier = StringType()
     domain_name = StringType(deserialize_from="DomainName")
@@ -104,12 +99,10 @@ class Certificate(Model):
     renewal_summary = ModelType(RenewalSummary, deserialize_from="RenewalSummary")
     key_usages = ListType(ModelType(KeyUsagesName), deserialize_from="KeyUsages")
     extended_key_usages = ListType(ModelType(ExtendedKeyUsagesName), deserialize_from="ExtendedKeyUsages")
-    certificate_authority_arn = StringType(deserialize_from="CertificateAuthorityArn")
+    certificate_authority_arn = StringType(deserialize_from="CertificateAuthorityArn", serialize_when_none=False)
     renewal_eligibility = StringType(deserialize_from="RenewalEligibility", choices=("ELIGIBLE", "INELIGIBLE"))
     renewal_eligibility_display = StringType()
     options = ModelType(Options, deserialize_from="Options")
-    tags = ListType(ModelType(Tags), default=[])
-    account_id = StringType(default='')
 
     def reference(self, region_code):
         return {

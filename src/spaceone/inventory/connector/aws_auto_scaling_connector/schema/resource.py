@@ -1,10 +1,8 @@
-from schematics.types import ModelType, StringType, PolyModelType, DictType, ListType
-
+from schematics.types import ModelType, StringType, PolyModelType
 from spaceone.inventory.connector.aws_auto_scaling_connector.schema.data import AutoScalingGroup, LaunchConfiguration, LaunchTemplateDetail
 from spaceone.inventory.libs.schema.dynamic_field import TextDyField, ListDyField, BadgeDyField, DateTimeDyField, \
     EnumDyField, SizeField
-from spaceone.inventory.libs.schema.dynamic_layout import ItemDynamicLayout, TableDynamicLayout, ListDynamicLayout, \
-    SimpleTableDynamicLayout
+from spaceone.inventory.libs.schema.dynamic_layout import ItemDynamicLayout, TableDynamicLayout, SimpleTableDynamicLayout
 from spaceone.inventory.libs.schema.resource import CloudServiceResource, CloudServiceResponse, CloudServiceMeta
 
 '''

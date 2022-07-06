@@ -1,9 +1,6 @@
 import time
 import logging
 from typing import List
-
-import boto3
-
 from spaceone.inventory.connector.aws_secrets_manager_connector.schema.data import Secret
 from spaceone.inventory.connector.aws_secrets_manager_connector.schema.resource import SecretResource, \
     SecretResponse
@@ -21,7 +18,7 @@ class SecretsManagerConnector(SchematicAWSConnector):
     cloud_service_types = CLOUD_SERVICE_TYPES
 
     def get_resources(self) -> List[SecretResource]:
-        _LOGGER.debug("[get_resources] START: Secrets Manager")
+        _LOGGER.debug(f"[get_resources][account_id: {self.account_id}] START: Secrets Manager")
         resources = []
         start_time = time.time()
 
@@ -38,10 +35,11 @@ class SecretsManagerConnector(SchematicAWSConnector):
             self.reset_region(region_name)
             resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
 
-        _LOGGER.debug(f'[get_resources] FINISHED: Secrets Manager ({time.time() - start_time} sec)')
+        _LOGGER.debug(f'[get_resources][account_id: {self.account_id}] FINISHED: Secrets Manager ({time.time() - start_time} sec)')
         return resources
 
     def request_data(self, region_name) -> List[Secret]:
+        cloudtrail_resource_type = 'AWS::SecretsManager::Secret'
         paginator = self.client.get_paginator('list_secrets')
         response_iterator = paginator.paginate(
             PaginationConfig={
@@ -53,8 +51,10 @@ class SecretsManagerConnector(SchematicAWSConnector):
         for data in response_iterator:
             for raw in data.get('SecretList', []):
                 try:
-                    raw['region_name'] = region_name
-                    raw['account_id'] = self.account_id
+                    raw.update({
+                        'region_name': region_name,
+                        'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type, raw['ARN']),
+                    })
 
                     secret_vo = Secret(raw, strict=False)
                     yield {

@@ -2,7 +2,7 @@ import time
 import logging
 from typing import List
 
-from spaceone.inventory.connector.aws_eip_connector.schema.data import ElasticIPAddress, ElasticIPAddressTags
+from spaceone.inventory.connector.aws_eip_connector.schema.data import ElasticIPAddress
 from spaceone.inventory.connector.aws_eip_connector.schema.resource import EIPResource, EIPResponse
 from spaceone.inventory.connector.aws_eip_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
@@ -17,7 +17,7 @@ class EIPConnector(SchematicAWSConnector):
     cloud_service_types = CLOUD_SERVICE_TYPES
 
     def get_resources(self) -> List[EIPResource]:
-        _LOGGER.debug("[get_resources] START: EIP")
+        _LOGGER.debug(f"[get_resources][account_id: {self.account_id}] START: EIP")
         resources = []
         start_time = time.time()
 
@@ -37,18 +37,21 @@ class EIPConnector(SchematicAWSConnector):
             self.reset_region(region_name)
             resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
 
-        _LOGGER.debug(f'[get_resources] FINISHED: EIP ({time.time() - start_time} sec)')
+        _LOGGER.debug(f'[get_resources][account_id: {self.account_id}] FINISHED: EIP ({time.time() - start_time} sec)')
         return resources
 
     def request_data(self, region_name) -> List[ElasticIPAddress]:
         nat_gateways = None
         network_interfaces = None
+        cloudtrail_resource_type = 'AWS::EC2::EIP'
+
         response = self.client.describe_addresses()
         eips = response.get('Addresses', [])
 
         if len(eips) > 0:
             nat_gateways = self._describe_nat_gateways()
-            network_interfaces = self._describe_network_interfaces([eip.get('NetworkInterfaceId') for eip in eips if eip.get('NetworkInterfaceId')])
+            network_interfaces = self._describe_network_interfaces([eip.get('NetworkInterfaceId') for eip in eips
+                                                                    if eip.get('NetworkInterfaceId')])
 
         for _ip in eips:
             try:
@@ -63,7 +66,8 @@ class EIPConnector(SchematicAWSConnector):
 
                 _ip.update({
                     'allocation_status': 'In-use' if _ip.get('AllocationId') else 'Unused',
-                    'name': self._get_name_from_tags(_ip.get('Tags', []))
+                    'name': self._get_name_from_tags(_ip.get('Tags', [])),
+                    'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type, _ip['AllocationId']),
                 })
 
                 eip_vo = ElasticIPAddress(_ip, strict=False)

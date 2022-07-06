@@ -2,10 +2,11 @@ import time
 import logging
 from typing import List
 
-from spaceone.inventory.connector.aws_sns_connector.schema.data import Topic, Subscription, Tags, TopicKMS
+from spaceone.inventory.connector.aws_sns_connector.schema.data import Topic, Subscription, TopicKMS
 from spaceone.inventory.connector.aws_sns_connector.schema.resource import TopicResource, TopicResponse
 from spaceone.inventory.connector.aws_sns_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
+from spaceone.inventory.libs.schema.resource import AWSTags
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -19,7 +20,7 @@ class SNSConnector(SchematicAWSConnector):
     cloud_service_types = CLOUD_SERVICE_TYPES
 
     def get_resources(self) -> List[TopicResource]:
-        _LOGGER.debug("[get_resources] START: SNS")
+        _LOGGER.debug(f"[get_resources][account_id: {self.account_id}] START: SNS")
         resources = []
         start_time = time.time()
 
@@ -36,10 +37,11 @@ class SNSConnector(SchematicAWSConnector):
             self.reset_region(region_name)
             resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
 
-        _LOGGER.debug(f'[get_resources] FINISHED: SNS ({time.time() - start_time} sec)')
+        _LOGGER.debug(f'[get_resources][account_id: {self.account_id}] FINISHED: SNS ({time.time() - start_time} sec)')
         return resources
 
     def request_data(self, region_name) -> List[Topic]:
+        cloudtrail_resource_type = 'AWS::SNS::Topic'
         paginator = self.client.get_paginator('list_topics')
         response_iterator = paginator.paginate(
             PaginationConfig={
@@ -57,13 +59,14 @@ class SNSConnector(SchematicAWSConnector):
                     subscription_response = self.client.list_subscriptions_by_topic(TopicArn=topic_arn)
                     tags_response = self.client.list_tags_for_resource(ResourceArn=topic_arn)
 
-                    topic['subscriptions'] = list(map(lambda subscription: Subscription(subscription, strict=False),
-                                                      subscription_response.get('Subscriptions', [])))
-
-                    topic['tags'] = list(map(lambda tag: Tags(tag, strict=False), tags_response.get('Tags', [])))
-                    topic['name'] = self._get_name_from_arn(topic_arn)
-                    topic['region_name'] = region_name
-                    topic['account_id'] = self.account_id
+                    topic.update({
+                        'subscriptions': list(map(lambda subscription: Subscription(subscription, strict=False),
+                                                  subscription_response.get('Subscriptions', []))),
+                        'tags': list(map(lambda tag: AWSTags(tag, strict=False), tags_response.get('Tags', []))),
+                        'name': self._get_name_from_arn(topic_arn),
+                        'region_name': region_name,
+                        'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type, raw['TopicArn'])
+                    })
 
                     if topic.get('KmsMasterKeyId', None) is not None:
                         kms = self.request_kms(topic.get('KmsMasterKeyId'))

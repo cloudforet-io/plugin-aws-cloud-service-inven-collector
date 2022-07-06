@@ -2,7 +2,7 @@ import logging
 
 from schematics import Model
 from schematics.types import ModelType, StringType, IntType, FloatType, DateTimeType, ListType, BooleanType
-from spaceone.inventory.libs.schema.resource import CloudWatchModel, CloudWatchDimensionModel
+from spaceone.inventory.libs.schema.resource import CloudWatchModel, CloudWatchDimensionModel, AWSCloudService
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -108,10 +108,6 @@ class LoggingInfo(Model):
 class StateInfo(Model):
     code = StringType(deserialize_from="Code")
     message = StringType(deserialize_from="Message")
-
-'''
-    LIST_CLUSTER_OPERATIONS()
-'''
 
 
 class MskCluster(Model):
@@ -220,7 +216,7 @@ class ClusterOperation(Model):
     operation_type = StringType(deserialize_from='OperationType')
 
 
-class Cluster(Model):
+class Cluster(AWSCloudService):
     active_operation_arn = StringType(deserialize_from="ActiveOperationArn", serialize_when_none=False)
     broker_node_group_info = ModelType(BrokerNodeGroupInfo, deserialize_from="BrokerNodeGroupInfo")
     client_authentication = ModelType(ClientAuthentication, deserialize_from="ClientAuthentication")
@@ -255,7 +251,7 @@ class Cluster(Model):
         }
 
 
-class Configuration(Model):
+class Configuration(AWSCloudService):
     arn = StringType(deserialize_from='Arn')
     creation_time = DateTimeType(deserialize_from='CreationTime')
     description = StringType(deserialize_from='Description')

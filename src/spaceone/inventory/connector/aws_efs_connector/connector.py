@@ -1,12 +1,12 @@
-import time
 import logging
 from typing import List
 
 from spaceone.core.utils import *
-from spaceone.inventory.connector.aws_efs_connector.schema.data import FileSystem, MountTarget, LifecyclePolicy
+from spaceone.inventory.connector.aws_efs_connector.schema.data import FileSystem, MountTarget
 from spaceone.inventory.connector.aws_efs_connector.schema.resource import FileSystemResource, FileSystemResponse
 from spaceone.inventory.connector.aws_efs_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
+
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -18,7 +18,7 @@ class EFSConnector(SchematicAWSConnector):
     cloud_service_types = CLOUD_SERVICE_TYPES
 
     def get_resources(self) -> List[FileSystemResource]:
-        _LOGGER.debug("[get_resources] START: EFS")
+        _LOGGER.debug(f"[get_resources][account_id: {self.account_id}] START: EFS")
         resources = []
         start_time = time.time()
 
@@ -35,10 +35,11 @@ class EFSConnector(SchematicAWSConnector):
             self.reset_region(region_name)
             resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
 
-        _LOGGER.debug(f'[get_resources] FINISHED: EFS ({time.time() - start_time} sec)')
+        _LOGGER.debug(f'[get_resources][account_id: {self.account_id}] FINISHED: EFS ({time.time() - start_time} sec)')
         return resources
 
     def request_data(self, region_name) -> List[FileSystem]:
+        cloudtrail_resource_type = 'AWS::EFS::FileSystem'
         paginator = self.client.get_paginator('describe_file_systems')
         response_iterator = paginator.paginate(
             PaginationConfig={
@@ -55,7 +56,7 @@ class EFSConnector(SchematicAWSConnector):
                         'size': float(size.get('Value', 0.0)),
                         'life_cycle_policies': self.describe_lifecycle_configuration(raw['FileSystemId']),
                         'mount_targets': list(self.describe_mount_targets(raw['FileSystemId'])),
-                        'account_id': self.account_id,
+                        'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type, raw['FileSystemId']),
                         'arn': self.generate_arn(service="elasticfilesystem", region=region_name,
                                                  account_id=self.account_id, resource_type='file-system',
                                                  resource_id=raw['FileSystemId'])

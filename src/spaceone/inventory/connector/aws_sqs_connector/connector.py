@@ -1,8 +1,5 @@
-import time
 import logging
 from typing import List
-import json
-
 from spaceone.core.utils import *
 from spaceone.inventory.connector.aws_sqs_connector.schema.data import QueData, RedrivePolicy
 from spaceone.inventory.connector.aws_sqs_connector.schema.resource import SQSResponse, QueResource
@@ -19,7 +16,7 @@ class SQSConnector(SchematicAWSConnector):
     cloud_service_types = CLOUD_SERVICE_TYPES
 
     def get_resources(self) -> List[SQSResponse]:
-        _LOGGER.debug("[get_resources] START: SQS")
+        _LOGGER.debug(f"[get_resources][account_id: {self.account_id}] START: SQS")
         resources = []
         start_time = time.time()
 
@@ -36,10 +33,11 @@ class SQSConnector(SchematicAWSConnector):
             self.reset_region(region_name)
             resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
 
-        _LOGGER.debug(f'[get_resources] FINISHED: SQS ({time.time() - start_time} sec)')
+        _LOGGER.debug(f'[get_resources][account_id: {self.account_id}] FINISHED: SQS ({time.time() - start_time} sec)')
         return resources
 
     def request_data(self, region_name) -> List[QueData]:
+        cloudtrail_resource_type = 'AWS::SQS::Queue'
         resource = self.session.resource('sqs')
 
         for que in resource.queues.all():
@@ -51,6 +49,8 @@ class SQSConnector(SchematicAWSConnector):
                 result = QueData(attr)
                 result.region_name = region_name
                 result.url = que.url
+                result.cloudtrail = self.set_cloudtrail(region_name, cloudtrail_resource_type, result.url)
+
                 yield {
                     'data': result,
                     'name': result.name,

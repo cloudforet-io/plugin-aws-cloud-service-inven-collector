@@ -3,6 +3,7 @@ import logging
 from schematics import Model
 from schematics.types import ModelType, StringType, IntType, DateTimeType, ListType, \
     BooleanType, FloatType
+from spaceone.inventory.libs.schema.resource import AWSCloudService
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -440,7 +441,7 @@ class Source(Model):
 #     s3_backup_info = ModelType(S3BackupInfo)
 
 
-class DeliveryStreamDescription(Model):
+class DeliveryStreamDescription(AWSCloudService):
     delivery_stream_name = StringType(deserialize_from='DeliveryStreamName')
     delivery_stream_arn = StringType(deserialize_from='DeliveryStreamARN')
     delivery_stream_status = StringType(deserialize_from='DeliveryStreamStatus', choices=(

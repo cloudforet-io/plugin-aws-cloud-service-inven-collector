@@ -1,5 +1,6 @@
 from spaceone.inventory.libs.schema.dynamic_field import TextDyField, SearchField, EnumDyField, ListDyField
-from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, CloudServiceTypeMeta
+from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, \
+    CloudServiceTypeMeta
 
 cst_memcached = CloudServiceTypeResource()
 cst_memcached.name = 'Memcached'

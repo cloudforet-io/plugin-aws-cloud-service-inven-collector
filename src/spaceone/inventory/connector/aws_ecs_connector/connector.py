@@ -22,7 +22,7 @@ class ECSConnector(SchematicAWSConnector):
     cloud_service_types = CLOUD_SERVICE_TYPES
 
     def get_resources(self) -> List[ClusterResource]:
-        _LOGGER.debug("[get_resources] START: ECS")
+        _LOGGER.debug(f"[get_resources][account_id: {self.account_id}] START: ECS")
         resources = []
         start_time = time.time()
 
@@ -39,10 +39,11 @@ class ECSConnector(SchematicAWSConnector):
             self.reset_region(region_name)
             resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
 
-        _LOGGER.debug(f'[get_resources] FINISHED: ECS ({time.time() - start_time} sec)')
+        _LOGGER.debug(f'[get_resources][account_id: {self.account_id}] FINISHED: ECS ({time.time() - start_time} sec)')
         return resources
 
     def request_data(self, region_name) -> List[Cluster]:
+        cloudtrail_resource_type = 'AWS::ECS::Cluster'
         cluster_arns = self.list_clusters()
 
         for _arns in self.divide_to_chunks(cluster_arns, MAX_CLUSTERS):
@@ -54,7 +55,7 @@ class ECSConnector(SchematicAWSConnector):
                         'services': self.set_services(raw['clusterArn']),
                         'tasks': self.set_tasks(raw['clusterArn']),
                         'container_instances': self.set_container_instances(raw['clusterArn']),
-                        'account_id': self.account_id
+                        'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type, raw['clusterName'])
                     })
 
                     cluster_vo = Cluster(raw, strict=False)

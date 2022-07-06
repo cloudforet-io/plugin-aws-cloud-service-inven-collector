@@ -1,6 +1,6 @@
 import logging
 from schematics import Model
-from schematics.types import IntType, ModelType, StringType, BooleanType, FloatType, DateTimeType, ListType, DictType
+from schematics.types import IntType, ModelType, StringType, BooleanType, FloatType, DateTimeType, ListType
 
 _LOGGER = logging.getLogger(__name__)
 

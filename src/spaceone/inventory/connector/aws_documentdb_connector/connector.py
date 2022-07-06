@@ -3,11 +3,13 @@ import logging
 from typing import List
 
 from spaceone.inventory.connector.aws_documentdb_connector.schema.data import Cluster, Instance, SubnetGroup, \
-    ParameterGroup, Parameter, Snapshot, Tag
+    ParameterGroup, Parameter, Snapshot
 from spaceone.inventory.connector.aws_documentdb_connector.schema.resource import ClusterResource, ClusterResponse,\
     SubnetGroupResource, SubnetGroupResponse, ParameterGroupResource, ParameterGroupResponse
 from spaceone.inventory.connector.aws_documentdb_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
+from spaceone.inventory.libs.schema.resource import AWSTags
+
 
 _LOGGER = logging.getLogger(__name__)
 EXCLUDE_REGION = ['us-west-1', 'af-south-1', 'ap-east-1', 'ap-southeast-3', 'ap-northeast-3', 'eu-north-1', 'me-south-1']
@@ -22,7 +24,7 @@ class DocumentDBConnector(SchematicAWSConnector):
     _subnet_groups = []
 
     def get_resources(self):
-        _LOGGER.debug("[get_resources] START: DocumentDB")
+        _LOGGER.debug(f"[get_resources][account_id: {self.account_id}] START: DocumentDB")
         resources = []
         start_time = time.time()
 
@@ -59,11 +61,12 @@ class DocumentDBConnector(SchematicAWSConnector):
             for collect_resource in collect_resources:
                 resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
 
-        _LOGGER.debug(f'[get_resources] FINISHED: DocumentDB ({time.time() - start_time} sec)')
+        _LOGGER.debug(f'[get_resources][account_id: {self.account_id}] FINISHED: DocumentDB ({time.time() - start_time} sec)')
         return resources
 
     def request_cluster_data(self, region_name, **kwargs) -> List[Cluster]:
         self.cloud_service_type = 'Cluster'
+        cloudtrail_resource_type = 'AWS::RDS::DBCluster'
 
         raw_instances = kwargs.get('raw_instances', [])
         raw_snapshots = kwargs.get('raw_snapshots', [])
@@ -86,7 +89,8 @@ class DocumentDBConnector(SchematicAWSConnector):
                         'snapshots': self._match_snapshots(raw_snapshots, raw.get('DBClusterIdentifier')),
                         'subnet_group': self._match_subnet_group(raw.get('DBSubnetGroup')),
                         'parameter_group': self._match_parameter_group(raw.get('DBClusterParameterGroup')),
-                        'account_id': self.account_id,
+                        'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type,
+                                                          raw['DBClusterIdentifier']),
                         'tags': self.request_tags(raw['DBClusterArn'])
                     })
 
@@ -112,6 +116,7 @@ class DocumentDBConnector(SchematicAWSConnector):
 
     def request_subnet_group_data(self, region_name) -> List[SubnetGroup]:
         self.cloud_service_type = 'SubnetGroup'
+        cloudtrail_resource_type = 'AWS::RDS::DBSubnetGroup'
 
         paginator = self.client.get_paginator('describe_db_subnet_groups')
         response_iterator = paginator.paginate(
@@ -124,7 +129,8 @@ class DocumentDBConnector(SchematicAWSConnector):
             for raw in data.get('DBSubnetGroups', []):
                 try:
                     raw.update({
-                        'account_id': self.account_id,
+                        'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type,
+                                                          raw['DBSubnetGroupName']),
                         'tags': self.request_tags(raw['DBSubnetGroupArn'])
                     })
                     subnet_grp_vo = SubnetGroup(raw, strict=False)
@@ -141,13 +147,15 @@ class DocumentDBConnector(SchematicAWSConnector):
 
     def request_parameter_group_data(self, region_name) -> List[ParameterGroup]:
         self.cloud_service_type = 'ParameterGroup'
+        cloudtrail_resource_type = 'AWS::RDS::DBClusterParameterGroup'
 
         res_pgs = self.client.describe_db_cluster_parameter_groups()
 
         for pg_data in res_pgs.get('DBClusterParameterGroups', []):
             try:
                 pg_data.update({
-                    'account_id': self.account_id,
+                    'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type,
+                                                      pg_data['DBClusterParameterGroupName']),
                     'parameters': self.request_parameter_data(pg_data['DBClusterParameterGroupName']),
                     'tags': self.request_tags(pg_data['DBClusterParameterGroupArn'])
                 })
@@ -170,7 +178,7 @@ class DocumentDBConnector(SchematicAWSConnector):
 
     def request_tags(self, resource_arn):
         response = self.client.list_tags_for_resource(ResourceName=resource_arn)
-        return list(map(lambda tag: Tag(tag, strict=False), response.get('TagList', [])))
+        return list(map(lambda tag: AWSTags(tag, strict=False), response.get('TagList', [])))
 
     def _describe_instances(self):
         instances = []

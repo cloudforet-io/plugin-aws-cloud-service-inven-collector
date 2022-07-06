@@ -1,13 +1,13 @@
-import time
 import logging
 from typing import List
 
 from spaceone.core.utils import *
-from spaceone.inventory.connector.aws_api_gateway_connector.schema.data import RestAPI, Resource, HTTPWebsocket, Tags
+from spaceone.inventory.connector.aws_api_gateway_connector.schema.data import RestAPI, Resource, HTTPWebsocket
 from spaceone.inventory.connector.aws_api_gateway_connector.schema.resource import RestAPIResource, \
     HTTPWebsocketResource, RestAPIResponse, HTTPWebsocketResponse
 from spaceone.inventory.connector.aws_api_gateway_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
+from spaceone.inventory.libs.schema.resource import AWSTags
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -21,7 +21,7 @@ class APIGatewayConnector(SchematicAWSConnector):
     cloud_service_types = CLOUD_SERVICE_TYPES
 
     def get_resources(self):
-        _LOGGER.debug("[get_resources] START: API Gateway")
+        _LOGGER.debug(f"[get_resources][account_id: {self.account_id}] START: API Gateway")
         resources = []
         start_time = time.time()
 
@@ -50,12 +50,13 @@ class APIGatewayConnector(SchematicAWSConnector):
                                                              region_name,
                                                              collect_resource))
 
-        _LOGGER.debug(f'[get_resources] FINISHED: API Gateway ({time.time() - start_time} sec)')
+        _LOGGER.debug(f'[get_resources][account_id: {self.account_id}] FINISHED: API Gateway ({time.time() - start_time} sec)')
         return resources
 
     def request_rest_api_data(self, region_name) -> List[RestAPI]:
         # Get REST API
         rest_client = self.set_client(self.rest_service_name)
+        cloudtrail_resource_type = 'AWS::ApiGateway::RestApi'
 
         paginator = rest_client.get_paginator('get_rest_apis')
         response_iterator = paginator.paginate(
@@ -77,12 +78,12 @@ class APIGatewayConnector(SchematicAWSConnector):
                         'endpoint_type': self.get_endpoint_type(raw.get('endpointConfiguration', {}).get('types')),
                         'resources': list(map(lambda _resource_raw: self.set_rest_api_resource(_resource_raw),
                                               _res.get('items', []))),
-                        'account_id': self.account_id,
                         'arn': self.generate_arn(service=self.rest_service_name, region=region_name,
                                                  account_id="", resource_type='restapis',
                                                  resource_id=f"{raw.get('id')}/*"),
-                        'tags': list(map(lambda tag: Tags(tag, strict=False),
-                                         self.convert_tags(raw.get('tags', {}))))
+                        'tags': list(map(lambda tag: AWSTags(tag, strict=False),
+                                         self.convert_tags(raw.get('tags', {})))),
+                        'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type, raw['id'])
                     })
     
                     rest_api_vo = RestAPI(raw, strict=False)
@@ -102,6 +103,7 @@ class APIGatewayConnector(SchematicAWSConnector):
     def request_websocket_data(self, region_name) -> List[HTTPWebsocket]:
         # Get HTTP or WebSocket
         websocket_client = self.set_client(self.websocket_service_name)
+        cloudtrail_resource_type = 'AWS::ApiGateway::RestApi'
 
         paginator = websocket_client.get_paginator('get_apis')
         response_iterator = paginator.paginate(
@@ -117,11 +119,11 @@ class APIGatewayConnector(SchematicAWSConnector):
                     raw.update({
                         'protocol': raw.get('ProtocolType'),
                         'endpoint_type': 'Regional',
-                        'account_id': self.account_id,
                         'arn': self.generate_arn(service=self.websocket_service_name, region=region_name,
                                                  account_id="", resource_type='api',
                                                  resource_id=raw.get('ApiId')),
-                        'tags': self.convert_tags(raw.get('tags', {}))
+                        'tags': self.convert_tags(raw.get('tags', {})),
+                        'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type, raw['ApiId'])
                     })
     
                     http_websocket_vo = HTTPWebsocket(raw, strict=False)

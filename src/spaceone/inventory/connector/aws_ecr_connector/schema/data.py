@@ -1,18 +1,11 @@
 import logging
 
 from schematics import Model
-from schematics.types import ModelType, StringType, IntType, FloatType, DateTimeType, serializable, \
-    ListType, BooleanType, DictType
+from schematics.types import ModelType, StringType, IntType, DateTimeType, ListType, BooleanType, DictType
+from spaceone.inventory.libs.schema.resource import AWSCloudService
 
 _LOGGER = logging.getLogger(__name__)
 
-
-'''
-TAG
-'''
-class Tag(Model):
-    key = StringType(deserialize_from="Key")
-    value = StringType(deserialize_from="Value")
 
 '''
 IMAGE
@@ -48,7 +41,7 @@ class imageScanningConfiguration(Model):
     scan_on_push = BooleanType(deserialize_from="scanOnPush")
 
 
-class Repository(Model):
+class Repository(AWSCloudService):
     repository_arn = StringType(deserialize_from="repositoryArn")
     registry_id = StringType(deserialize_from="registryId")
     repository_name = StringType(deserialize_from="repositoryName")
@@ -57,8 +50,6 @@ class Repository(Model):
     image_tag_mutability = StringType(deserialize_from="imageTagMutability", choices=("MUTABLE", "IMMUTABLE"))
     image_scanning_configuration = ModelType(imageScanningConfiguration, deserialize_from="imageScanningConfiguration")
     images = ListType(ModelType(Image))
-    account_id = StringType(default="")
-    tags = ListType(ModelType(Tag), default=[])
 
     def reference(self, region_code):
         return {

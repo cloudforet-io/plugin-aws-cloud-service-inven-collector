@@ -1,4 +1,3 @@
-import time
 import logging
 from typing import List
 
@@ -69,7 +68,7 @@ class VPCConnector(SchematicAWSConnector):
     include_default = False
 
     def get_resources(self):
-        _LOGGER.debug("[get_resources] START: VPC")
+        _LOGGER.debug(f"[get_resources][account_id: {self.account_id}] START: VPC")
 
         resources = []
         start_time = time.time()
@@ -169,11 +168,12 @@ class VPCConnector(SchematicAWSConnector):
             for collect_resource in collect_resources:
                 resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
 
-        _LOGGER.debug(f'[get_resources] FINISHED: VPC ({time.time() - start_time} sec)')
+        _LOGGER.debug(f'[get_resources][account_id: {self.account_id}] FINISHED: VPC ({time.time() - start_time} sec)')
         return resources
 
     def request_vpc_data(self, region_name) -> List[VPC]:
         self.cloud_service_type = 'VPC'
+        cloudtrail_resource_type = 'AWS::EC2::VPC'
 
         if len(self.dhcp_options) > 0:
             self.dhcp_options = self.describe_dhcp_options()
@@ -197,11 +197,11 @@ class VPCConnector(SchematicAWSConnector):
                     'transit_gateway': self._match_transit_gateway(vpc.get('VpcId')),
                     'vpn_gateway': self._match_vpn_gateway(vpc.get('VpcId')),
                     'region_name': region_name,
-                    'account_id': self.account_id,
                     'internet_gateway': self._match_internet_gateway(vpc.get('VpcId')),
                     'enable_dns_support': self.describe_vpc_attribute(vpc.get('VpcId'), 'enableDnsSupport'),
                     'enable_dns_hostnames': self.describe_vpc_attribute(vpc.get('VpcId'), 'enableDnsHostnames'),
-                    'name': self._get_name_from_tags(vpc.get('Tags', []))
+                    'name': self._get_name_from_tags(vpc.get('Tags', [])),
+                    'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type, vpc['VpcId']),
                 })
 
                 match_eoigw = self._match_egress_only_internet_gateway(vpc.get('VpcId'))
@@ -238,6 +238,7 @@ class VPCConnector(SchematicAWSConnector):
 
     def request_peering_connection_data(self, region_name):
         self.cloud_service_type = 'PeeringConnection'
+        cloudtrail_resource_type = 'AWS::EC2::VPCPeeringConnection'
 
         response = {}
         if self.include_default:
@@ -254,7 +255,8 @@ class VPCConnector(SchematicAWSConnector):
                                              resource_type="vpc-peering-connection",
                                              resource_id=peerx.get('VpcPeeringConnectionId')),
                     'region_name': region_name,
-                    'account_id': self.account_id,
+                    'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type,
+                                                      peerx['VpcPeeringConnectionId']),
                     'name': self._get_name_from_tags(peerx.get('Tags', []))
                 })
 
@@ -273,6 +275,7 @@ class VPCConnector(SchematicAWSConnector):
 
     def request_nat_gateway_data(self, region_name):
         self.cloud_service_type = 'NATGateway'
+        cloudtrail_resource_type = 'AWS::EC2::NatGateway'
 
         response = {}
         if self.include_default:
@@ -287,7 +290,7 @@ class VPCConnector(SchematicAWSConnector):
                     'arn': self.generate_arn(service=self.service_name, region=region_name, account_id=self.account_id,
                                              resource_type="nat-gateway", resource_id=ngw.get('NatGatewayId')),
                     'region_name': region_name,
-                    'account_id': self.account_id,
+                    'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type, ngw['NatGatewayId']),
                     'name': self._get_name_from_tags(ngw.get('Tags', []))
                 })
 
@@ -307,6 +310,7 @@ class VPCConnector(SchematicAWSConnector):
 
     def request_network_acl_data(self, region_name):
         self.cloud_service_type = 'NetworkACL'
+        cloudtrail_resource_type = 'AWS::EC2::NetworkAcl'
 
         response = {}
         if self.include_default:
@@ -326,7 +330,7 @@ class VPCConnector(SchematicAWSConnector):
                     'outbound_entries': outbound_rules,
                     'entries': total_rules,
                     'region_name': region_name,
-                    'account_id': self.account_id,
+                    'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type, nacl['NetworkAclId']),
                     'name': self._get_name_from_tags(nacl.get('Tags', []))
                 })
 
@@ -345,6 +349,7 @@ class VPCConnector(SchematicAWSConnector):
 
     def request_endpoint_data(self, region_name):
         self.cloud_service_type = 'Endpoint'
+        cloudtrail_resource_type = 'AWS::EC2::VPCEndpoint'
 
         response = {}
         if self.include_default:
@@ -359,7 +364,7 @@ class VPCConnector(SchematicAWSConnector):
                     'arn': self.generate_arn(service=self.service_name, region=region_name, account_id=self.account_id,
                                              resource_type="vpc-endpoint", resource_id=endp.get('VpcEndpointId')),
                     'region_name': region_name,
-                    'account_id': self.account_id,
+                    'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type, endp['VpcEndpointId']),
                     'name': self._get_name_from_tags(endp.get('Tags', []))
                 })
 
@@ -380,6 +385,7 @@ class VPCConnector(SchematicAWSConnector):
 
     def request_egress_only_internet_gateway_data(self, region_name):
         self.cloud_service_type = 'EgressOnlyInternetGateway'
+        cloudtrail_resource_type = 'AWS::EC2::EgressOnlyInternetGateway'
 
         response = {}
         if self.include_default:
@@ -395,7 +401,8 @@ class VPCConnector(SchematicAWSConnector):
                                              resource_type="egress-only-internet-gateway",
                                              resource_id=eoigw.get('EgressOnlyInternetGatewayId')),
                     'region_name': region_name,
-                    'account_id': self.account_id,
+                    'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type,
+                                                      eoigw['EgressOnlyInternetGatewayId']),
                     'name': self._get_name_from_tags(eoigw.get('Tags', []))
                 })
 
@@ -414,6 +421,7 @@ class VPCConnector(SchematicAWSConnector):
 
     def request_internet_gateway_data(self, region_name):
         self.cloud_service_type = 'InternetGateway'
+        cloudtrail_resource_type = 'AWS::EC2::InternetGateway'
 
         response = {}
         if self.include_default:
@@ -434,7 +442,8 @@ class VPCConnector(SchematicAWSConnector):
                                              resource_type="internet-gateway",
                                              resource_id=igw.get('InternetGatewayId')),
                     'region_name': region_name,
-                    'account_id': self.account_id,
+                    'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type,
+                                                      igw['InternetGatewayId']),
                     'name': self._get_name_from_tags(igw.get('Tags', []))
                 })
 
@@ -458,6 +467,7 @@ class VPCConnector(SchematicAWSConnector):
 
     def request_route_table_data(self, region_name):
         self.cloud_service_type = 'RouteTable'
+        cloudtrail_resource_type = 'AWS::EC2::RouteTable'
 
         response = {}
         if self.include_default:
@@ -479,7 +489,7 @@ class VPCConnector(SchematicAWSConnector):
                     'edge_associations': edge_associations,
                     'main': main,
                     'region_name': region_name,
-                    'account_id': self.account_id,
+                    'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type, rt['RouteTableId']),
                     'name': self._get_name_from_tags(rt.get('Tags', []))
                 })
 
@@ -498,6 +508,7 @@ class VPCConnector(SchematicAWSConnector):
 
     def request_subnet_data(self, region_name):
         self.cloud_service_type = 'Subnet'
+        cloudtrail_resource_type = 'AWS::EC2::Subnet'
 
         response = {}
         if self.include_default:
@@ -510,7 +521,7 @@ class VPCConnector(SchematicAWSConnector):
             try:
                 subnet.update({
                     'region_name': region_name,
-                    'account_id': self.account_id,
+                    'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type, subnet['SubnetId']),
                     'name': self._get_name_from_tags(subnet.get('Tags', []))
                 })
 
@@ -544,6 +555,7 @@ class VPCConnector(SchematicAWSConnector):
 
     def request_transit_gateway_data(self, region_name):
         self.cloud_service_type = 'TransitGateway'
+        cloudtrail_resource_type = None
 
         response = self.client.describe_transit_gateways()
 
@@ -551,7 +563,8 @@ class VPCConnector(SchematicAWSConnector):
             try:
                 transit_gateway.update({
                     'region_name': region_name,
-                    'account_id': self.account_id,
+                    'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type,
+                                                      transit_gateway['TransitGatewayId']),
                     'name': self._get_name_from_tags(transit_gateway.get('Tags', [])),
                     'vpn_connections': self._match_vpn_connection('transit_gateway', transit_gateway.get('TransitGatewayId'))
                 })
@@ -572,6 +585,7 @@ class VPCConnector(SchematicAWSConnector):
 
     def request_customer_gateway_data(self, region_name):
         self.cloud_service_type = 'CustomerGateway'
+        cloudtrail_resource_type = 'AWS::EC2::CustomerGateway'
 
         response = self.client.describe_customer_gateways()
 
@@ -579,7 +593,8 @@ class VPCConnector(SchematicAWSConnector):
             try:
                 customer_gateway.update({
                     'region_name': region_name,
-                    'account_id': self.account_id,
+                    'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type,
+                                                      customer_gateway['CustomerGatewayId']),
                     'name': self._get_name_from_tags(customer_gateway.get('Tags', [])),
                 })
 
@@ -606,6 +621,7 @@ class VPCConnector(SchematicAWSConnector):
 
     def request_vpn_gateway_data(self, region_name):
         self.cloud_service_type = 'VPNGateway'
+        cloudtrail_resource_type = 'AWS::EC2::VPNGateway'
 
         response = self.client.describe_vpn_gateways()
 
@@ -613,7 +629,8 @@ class VPCConnector(SchematicAWSConnector):
             try:
                 vpn_gateway.update({
                     'region_name': region_name,
-                    'account_id': self.account_id,
+                    'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type,
+                                                      vpn_gateway['VpnGatewayId']),
                     'name': self._get_name_from_tags(vpn_gateway.get('Tags', []))
                 })
 
@@ -640,6 +657,7 @@ class VPCConnector(SchematicAWSConnector):
 
     def request_vpn_connection_data(self, region_name):
         self.cloud_service_type = 'VPNConnection'
+        cloudtrail_resource_type = 'AWS::EC2::VPNConnection'
 
         response = self.client.describe_vpn_connections()
 
@@ -647,8 +665,9 @@ class VPCConnector(SchematicAWSConnector):
             try:
                 vpn_connection.update({
                     'region_name': region_name,
-                    'account_id': self.account_id,
-                    'name': self._get_name_from_tags(vpn_connection.get('Tags', []))
+                    'name': self._get_name_from_tags(vpn_connection.get('Tags', [])),
+                    'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type,
+                                                      vpn_connection['VpnConnectionId'])
                 })
 
                 vpn_conn_vo = VPNConnection(vpn_connection, strict=False)

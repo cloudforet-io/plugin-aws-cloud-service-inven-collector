@@ -1,8 +1,8 @@
 import logging
 
 from schematics import Model
-from schematics.types import ModelType, StringType, IntType, DateTimeType, serializable, ListType, BooleanType
-from spaceone.inventory.libs.schema.resource import CloudWatchModel, CloudWatchDimensionModel
+from schematics.types import ModelType, StringType, IntType, ListType, BooleanType
+from spaceone.inventory.libs.schema.resource import CloudWatchDimensionModel, AWSCloudService
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -62,7 +62,7 @@ class LinkedService(Model):
     description = StringType(deserialize_from="Description")
 
 
-class HostedZone(Model):
+class HostedZone(AWSCloudService):
     arn = StringType()
     id = StringType(deserialize_from="Id")
     hosted_zone_id = StringType()
@@ -73,8 +73,6 @@ class HostedZone(Model):
     linked_service = ModelType(LinkedService,deserialize_from="LinkedService")
     type = StringType(default="")
     record_sets = ListType(ModelType(RecordSet))
-    account_id = StringType(default="")
-    cloudwatch = ModelType(CloudWatchModel, serialize_when_none=False)
 
     def reference(self):
         return {

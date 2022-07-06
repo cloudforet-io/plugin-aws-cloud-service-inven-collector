@@ -1,10 +1,10 @@
-from schematics.types import ModelType, StringType, PolyModelType, DictType, ListType
+from schematics.types import ModelType, StringType, PolyModelType
 
 from spaceone.inventory.connector.aws_direct_connect_connector.schema.data import Connection, LAG, \
     DirectConnectGateway, VirtualPrivateGateway
 from spaceone.inventory.libs.schema.resource import CloudServiceResource, CloudServiceResponse, CloudServiceMeta
-from spaceone.inventory.libs.schema.dynamic_field import TextDyField, BadgeDyField, EnumDyField, BadgeItemDyField
-from spaceone.inventory.libs.schema.dynamic_layout import ItemDynamicLayout, TableDynamicLayout, SimpleTableDynamicLayout
+from spaceone.inventory.libs.schema.dynamic_field import TextDyField, EnumDyField
+from spaceone.inventory.libs.schema.dynamic_layout import ItemDynamicLayout, SimpleTableDynamicLayout
 
 connection = ItemDynamicLayout.set_fields('Connections', fields=[
     TextDyField.data_source('ID', 'data.connection_id'),

@@ -1,15 +1,10 @@
 import logging
 
 from schematics import Model
-from schematics.types import ModelType, StringType, IntType, DateTimeType, serializable, ListType, BooleanType
-from spaceone.inventory.libs.schema.resource import CloudWatchModel, CloudWatchDimensionModel
+from schematics.types import ModelType, StringType, IntType, DateTimeType, ListType, BooleanType
+from spaceone.inventory.libs.schema.resource import CloudWatchDimensionModel, AWSCloudService
 
 _LOGGER = logging.getLogger(__name__)
-
-
-class Tags(Model):
-    key = StringType()
-    value = StringType()
 
 
 class UpdateParams(Model):
@@ -91,7 +86,7 @@ class health(Model):
     issues = ListType(ModelType(healthIssues), deserialize_from="issues")
 
 
-class NodeGroup(Model):
+class NodeGroup(AWSCloudService):
     nodegroup_name = StringType(deserialize_from="nodegroupName")
     nodegroup_arn = StringType(deserialize_from="nodegroupArn")
     cluster_name = StringType(deserialize_from="clusterName")
@@ -112,8 +107,6 @@ class NodeGroup(Model):
     resources = ModelType(resources, deserialize_from="resources")
     disk_size = IntType(deserialize_from="diskSize")
     health = ModelType(health, deserialize_from="health")
-    account_id = StringType(default="")
-    tags = ListType(ModelType(Tags), deserialize_from="tags", default=[])
 
     def reference(self, region_code):
         return {
@@ -134,13 +127,13 @@ class resourcesVpcConfig(Model):
     public_access_cidrs = ListType(StringType, deserialize_from="publicAccessCidrs")
 
 
-class loggingclusterLogging(Model):
+class loggingClusterLogging(Model):
     types = ListType(StringType, deserialize_from="types")
     enabled = BooleanType(deserialize_from="enabled")
 
 
 class logging(Model):
-    cluster_logging = ListType(ModelType(loggingclusterLogging), deserialize_from="clusterLogging")
+    cluster_logging = ListType(ModelType(loggingClusterLogging), deserialize_from="clusterLogging")
 
 
 class oidc(Model):
@@ -164,7 +157,7 @@ class ClusterencryptionConfig(Model):
     provider = ModelType(provider, deserialize_from="provider")
 
 
-class Cluster(Model):
+class Cluster(AWSCloudService):
     name = StringType(deserialize_from="name")
     arn = StringType(deserialize_from="arn")
     created_at = DateTimeType(deserialize_from="createdAt")
@@ -178,12 +171,9 @@ class Cluster(Model):
     certificate_authority = ModelType(certificateAuthority, deserialize_from="certificateAuthority")
     client_request_token = StringType(deserialize_from="clientRequestToken")
     platform_version = StringType(deserialize_from="platformVersion")
-    tags = ListType(ModelType(Tags), deserialize_from="tags", default=[])
     encryption_config = ListType(ModelType(ClusterencryptionConfig), deserialize_from="encryptionConfig")
     node_groups = ListType(ModelType(NodeGroup))
-    account_id = StringType(default="")
     updates = ListType(ModelType(Update))
-    cloudwatch = ModelType(CloudWatchModel, serialize_when_none=False)
 
     def reference(self, region_code):
         return {

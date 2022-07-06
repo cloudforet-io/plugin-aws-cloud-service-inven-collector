@@ -1,17 +1,13 @@
 import logging
 
 from schematics import Model
-from schematics.types import ModelType, StringType, IntType, DateTimeType, serializable, ListType, BooleanType
+from schematics.types import StringType
+from spaceone.inventory.libs.schema.resource import AWSCloudService
 
 _LOGGER = logging.getLogger(__name__)
 
 
-class ElasticIPAddressTags(Model):
-    key = StringType(deserialize_from="Key")
-    value = StringType(deserialize_from="Value")
-
-
-class ElasticIPAddress(Model):
+class ElasticIPAddress(AWSCloudService):
     name = StringType(default="")
     instance_id = StringType(deserialize_from="InstanceId")
     public_ip = StringType(deserialize_from="PublicIp")
@@ -24,7 +20,6 @@ class ElasticIPAddress(Model):
     network_interface_id = StringType(deserialize_from="NetworkInterfaceId")
     network_interface_owner_id = StringType(deserialize_from="NetworkInterfaceOwnerId")
     private_ip_address = StringType(deserialize_from="PrivateIpAddress")
-    tags = ListType(ModelType(ElasticIPAddressTags), deserialize_from="Tags", default=[])
     public_ipv4_pool = StringType(deserialize_from="PublicIpv4Pool")
     network_border_group = StringType(deserialize_from="NetworkBorderGroup")
     customer_owned_ip = StringType(deserialize_from="CustomerOwnedIp")

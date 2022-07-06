@@ -2,7 +2,7 @@ import logging
 
 from schematics import Model
 from schematics.types import IntType, ModelType, StringType, BooleanType, serializable, DateTimeType
-from spaceone.inventory.libs.schema.resource import CloudWatchModel, CloudWatchDimensionModel
+from spaceone.inventory.libs.schema.resource import CloudWatchDimensionModel, AWSCloudService
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -12,7 +12,7 @@ class RedrivePolicy(Model):
     max_receive_count = StringType(deserialize_from="maxReceiveCount")
 
 
-class QueData(Model):
+class QueData(AWSCloudService):
     class Option:
         serialize_when_none = False
 
@@ -37,7 +37,6 @@ class QueData(Model):
     deduplication_scope = StringType(deserialize_from="DeduplicationScope", serialize_when_none=False)
     fifo_throughput_limit = StringType(deserialize_from="FifoThroughputLimit", serialize_when_none=False)
     policy = StringType(deserialize_from="Policy")
-    cloudwatch = ModelType(CloudWatchModel, serialize_when_none=False)
 
     @serializable
     def name(self):

@@ -19,7 +19,7 @@ class KMSConnector(SchematicAWSConnector):
     cloud_service_types = CLOUD_SERVICE_TYPES
 
     def get_resources(self) -> List[KeyResource]:
-        _LOGGER.debug("[get_resources] START: KMS")
+        _LOGGER.debug(f"[get_resources][account_id: {self.account_id}] START: KMS")
         resources = []
         start_time = time.time()
 
@@ -35,12 +35,13 @@ class KMSConnector(SchematicAWSConnector):
             self.reset_region(region_name)
             resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
 
-        _LOGGER.debug(f'[get_resources] FINISHED: KMS ({time.time() - start_time} sec)')
+        _LOGGER.debug(f'[get_resources][account_id: {self.account_id}] FINISHED: KMS ({time.time() - start_time} sec)')
         return resources
 
     def request_data(self, region_name) -> List[Key]:
         kms_keys = self.list_keys()
         alias_list = self.list_aliases()
+        cloudtrail_resource_type = 'AWS::KMS::Key'
 
         for raw in kms_keys:
             try:
@@ -51,7 +52,7 @@ class KMSConnector(SchematicAWSConnector):
                 key.update({
                     'key_type_path': self._set_key_type_path(key.get('KeyManager')),
                     'region_name': region_name,
-                    'account_id': self.account_id,
+                    'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type, key['KeyId']),
                     'key_rotated': self._set_key_rotated(key.get('KeyId'), key.get('KeyManager'))
                 })
 

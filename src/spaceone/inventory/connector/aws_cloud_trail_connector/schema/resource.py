@@ -1,9 +1,9 @@
-from schematics.types import ModelType, StringType, PolyModelType, DictType, ListType
+from schematics.types import ModelType, StringType, PolyModelType
 
 from spaceone.inventory.connector.aws_cloud_trail_connector.schema.data import Trail
 from spaceone.inventory.libs.schema.resource import CloudServiceResource, CloudServiceResponse, CloudServiceMeta
-from spaceone.inventory.libs.schema.dynamic_field import TextDyField, ListDyField, EnumDyField, BadgeDyField
-from spaceone.inventory.libs.schema.dynamic_layout import ItemDynamicLayout, TableDynamicLayout, SimpleTableDynamicLayout
+from spaceone.inventory.libs.schema.dynamic_field import TextDyField, EnumDyField
+from spaceone.inventory.libs.schema.dynamic_layout import ItemDynamicLayout, SimpleTableDynamicLayout
 
 # TAB - BASE
 meta_base = ItemDynamicLayout.set_fields('Trails', fields=[

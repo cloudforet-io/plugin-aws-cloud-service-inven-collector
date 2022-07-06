@@ -1,7 +1,4 @@
-import logging
-
-from schematics.types import ModelType, StringType, PolyModelType, DictType, ListType
-
+from schematics.types import ModelType, StringType, PolyModelType
 from spaceone.inventory.connector.aws_lambda_connector.schema.data import LambdaFunctionData, Layer
 from spaceone.inventory.libs.schema.resource import CloudServiceResource, CloudServiceResponse, CloudServiceMeta
 from spaceone.inventory.libs.schema.dynamic_field import TextDyField, ListDyField, EnumDyField, DateTimeDyField, \

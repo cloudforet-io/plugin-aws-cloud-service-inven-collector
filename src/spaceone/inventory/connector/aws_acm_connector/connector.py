@@ -1,10 +1,9 @@
-import time
 import logging
 from typing import List
 
 from spaceone.core.utils import *
-from spaceone.inventory.connector.aws_acm_connector.schema.data import Certificate, Tags
-from spaceone.inventory.connector.aws_acm_connector.schema.resource import ACMResource, CertificateResource, ACMResponse
+from spaceone.inventory.connector.aws_acm_connector.schema.data import Certificate
+from spaceone.inventory.connector.aws_acm_connector.schema.resource import CertificateResource, ACMResponse
 from spaceone.inventory.connector.aws_acm_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
 
@@ -19,7 +18,7 @@ class ACMConnector(SchematicAWSConnector):
     cloud_service_types = CLOUD_SERVICE_TYPES
 
     def get_resources(self):
-        _LOGGER.debug("[get_resources] START: Certificate Manager")
+        _LOGGER.debug(f"[get_resources][account_id: {self.account_id}] START: Certificate Manager")
         resources = []
         start_time = time.time()
 
@@ -39,10 +38,11 @@ class ACMConnector(SchematicAWSConnector):
             for collect_resource in collect_resources:
                 resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
 
-        _LOGGER.debug(f'[get_resources] FINISHED: Certificate Manager ({time.time() - start_time} sec)')
+        _LOGGER.debug(f'[get_resources][account_id: {self.account_id}] FINISHED: Certificate Manager ({time.time() - start_time} sec)')
         return resources
 
     def request_data(self, region_name) -> List[Certificate]:
+        cloudtrail_resource_type = 'AWS::ACM::Certificate'
         paginator = self.client.get_paginator('list_certificates')
         response_iterator = paginator.paginate(
             PaginationConfig={
@@ -64,10 +64,11 @@ class ACMConnector(SchematicAWSConnector):
                         'additional_names_display': self.get_additional_names_display(certificate_info.get('SubjectAlternativeNames')),
                         'in_use_display': self.get_in_use_display(certificate_info.get('InUseBy')),
                         'tags': self.get_tags(certificate_info.get('CertificateArn')),
-                        'account_id': self.account_id
+                        'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type, raw['CertificateArn'])
                     })
     
                     certificate_vo = Certificate(certificate_info, strict=False)
+
                     yield {
                         'data': certificate_vo,
                         'name': certificate_vo.domain_name,

@@ -1,14 +1,10 @@
 import logging
 
 from schematics import Model
-from schematics.types import ModelType, StringType, IntType, DateTimeType, serializable, ListType, BooleanType, FloatType
+from schematics.types import ModelType, StringType, IntType, DateTimeType, ListType, BooleanType, FloatType
+from spaceone.inventory.libs.schema.resource import AWSCloudService
 
 _LOGGER = logging.getLogger(__name__)
-
-
-class Tags(Model):
-    key = StringType()
-    value = StringType()
 
 
 class Endpoint(Model):
@@ -122,7 +118,7 @@ class RedisNode(Model):
     created_on = DateTimeType()
 
 
-class Redis(Model):
+class Redis(AWSCloudService):
     arn = StringType(deserialize_from='ARN', serialize_when_none=False)
     replication_group_id = StringType(deserialize_from="ReplicationGroupId", serialize_when_none=False)
     mode = StringType(choices=('Clustered Redis', 'Redis'))
@@ -163,7 +159,6 @@ class Redis(Model):
     user_group_ids = ListType(StringType, deserialize_from='UserGroupIds', default=[])
     shards = ListType(ModelType(RedisShard), default=[])
     nodes = ListType(ModelType(RedisNode), default=[])
-    account_id = StringType(default="")
 
     def reference(self, region_code):
         return {
@@ -172,7 +167,7 @@ class Redis(Model):
         }
 
 
-class Memcached(Model):
+class Memcached(AWSCloudService):
     arn = StringType(deserialize_from='ARN')
     cache_cluster_id = StringType(deserialize_from="CacheClusterId", serialize_when_none=False)
     configuration_endpoint = ModelType(Endpoint, deserialize_from="ConfigurationEndpoint", serialize_when_none=False)
@@ -210,8 +205,6 @@ class Memcached(Model):
     at_rest_encryption_enabled = BooleanType(deserialize_from="AtRestEncryptionEnabled",
                                              serialize_when_none=False)
     nodes = ListType(ModelType(MemcachedNode), default=[])
-    account_id = StringType(default="")
-    tags = ListType(ModelType(Tags), deserialize_from="tags", default=[])
 
     def reference(self, region_code):
         return {

@@ -2,15 +2,11 @@ import logging
 
 from schematics import Model
 from schematics.types import ModelType, StringType, IntType, DateTimeType, ListType, BooleanType, PolyModelType
+from spaceone.inventory.libs.schema.resource import AWSCloudService
 
 DEFAULT_REGION = 'us-east-1'
 
 _LOGGER = logging.getLogger(__name__)
-
-
-class Tags(Model):
-    key = StringType(deserialize_from="Key")
-    value = StringType(deserialize_from="Value")
 
 
 class Condition(Model):
@@ -54,7 +50,7 @@ class PolicyUsage(Model):
     type = StringType()
 
 
-class Policy(Model):
+class Policy(AWSCloudService):
     arn = StringType(deserialize_from="Arn")
     attachment_count = IntType(deserialize_from="AttachmentCount")
     is_attachable = BooleanType(deserialize_from="IsAttachable")
@@ -103,10 +99,12 @@ class ServiceSpecificCredentialInfo(Model):
     status = StringType(deserialize_from="Status")
     create_date = DateTimeType(deserialize_from="CreateDate")
 
+
 class GroupForUser(Model):
     group_name = StringType()
     attached_policy_name = ListType(StringType())
     create_date = DateTimeType(deserialize_from="CreateDate")
+
 
 class AccessKeyInfo(Model):
     key_id = StringType()
@@ -115,7 +113,8 @@ class AccessKeyInfo(Model):
     last_update_date_display = StringType(default='N/A')
     create_date = DateTimeType(deserialize_from='CreateDate')
 
-class User(Model):
+
+class User(AWSCloudService):
     path = StringType(deserialize_from="Path")
     user_name = StringType(deserialize_from="UserName")
     user_id = StringType(deserialize_from="UserId")
@@ -135,7 +134,6 @@ class User(Model):
     last_activity = StringType(default="")
     mfa_device = StringType(default="Not enabled")
     policies = ListType(ModelType(Policy))
-    tags = ListType(ModelType(Tags), deserialize_from="Tags", default=[])
 
     def reference(self):
         return {
@@ -144,7 +142,7 @@ class User(Model):
         }
 
 
-class Group(Model):
+class Group(AWSCloudService):
     path = StringType(deserialize_from="Path")
     group_name = StringType(deserialize_from="GroupName")
     group_id = StringType(deserialize_from="GroupId")
@@ -191,7 +189,7 @@ class RoleLastUsed(Model):
     region = StringType(deserialize_from="Region")
 
 
-class Role(Model):
+class Role(AWSCloudService):
     arn = StringType(deserialize_from="Arn")
     assume_role_policy_document = ModelType(AssumeRolePolicyDocument, deserialize_from="AssumeRolePolicyDocument",
                                             default={})
@@ -206,7 +204,6 @@ class Role(Model):
     trusted_entities = ListType(StringType())
     trust_relationship = ListType(ModelType(TrustRelationShip))
     policies = ListType(ModelType(Policy))
-    tags = ListType(ModelType(Tags), deserialize_from="Tags", default=[])
 
     def reference(self):
         return {
@@ -215,7 +212,7 @@ class Role(Model):
         }
 
 
-class IdentityProvider(Model):
+class IdentityProvider(AWSCloudService):
     arn = StringType(deserialize_from="Arn")
     url = StringType(deserialize_from="Url")
     provider_type = StringType()

@@ -1,4 +1,3 @@
-import time
 import logging
 from typing import List
 
@@ -11,6 +10,8 @@ from spaceone.inventory.connector.aws_auto_scaling_connector.schema.resource imp
     LaunchTemplateResponse
 from spaceone.inventory.connector.aws_auto_scaling_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
+from spaceone.inventory.libs.schema.resource import AWSTags
+
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -24,7 +25,7 @@ class AutoScalingConnector(SchematicAWSConnector):
     cloud_service_types = CLOUD_SERVICE_TYPES
 
     def get_resources(self):
-        _LOGGER.debug("[get_resources] START: Auto Scaling")
+        _LOGGER.debug(f"[get_resources][account_id: {self.account_id}] START: Auto Scaling")
         resources = []
         start_time = time.time()
 
@@ -56,11 +57,13 @@ class AutoScalingConnector(SchematicAWSConnector):
             for collect_resource in collect_resources:
                 resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
 
-        _LOGGER.debug(f'[get_resources] FINISHED: Auto Scaling ({time.time() - start_time} sec)')
+        _LOGGER.debug(
+            f'[get_resources][account_id: {self.account_id}] FINISHED: Auto Scaling ({time.time() - start_time} sec)')
         return resources
 
     def request_auto_scaling_group_data(self, region_name) -> List[AutoScalingGroup]:
         self.cloud_service_type = 'AutoScalingGroup'
+        cloudtrail_resource_type = 'AWS::AutoScaling::AutoScalingGroup'
 
         paginator = self.client.get_paginator('describe_auto_scaling_groups')
         response_iterator = paginator.paginate(
@@ -105,24 +108,28 @@ class AutoScalingConnector(SchematicAWSConnector):
                         'autoscaling_tags': list(map(lambda tag: AutoScalingGroupTags(tag, strict=False),
                                                      raw.get('Tags', []))),
                         'instances': self.get_asg_instances(raw.get('Instances', [])),
-                        'tags': list(map(lambda tag: Tags(tag, strict=False),
+                        'tags': list(map(lambda tag: AWSTags(tag, strict=False),
                                          self.get_general_tags(raw.get('Tags', [])))),
-                        'account_id': self.account_id
+                        'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type,
+                                                          raw['AutoScalingGroupName'])
                     })
 
                     if raw.get('LaunchConfigurationName'):
                         raw.update({
                             'display_launch_configuration_template': raw.get('LaunchConfigurationName')
                         })
-                    elif raw.get('MixedInstancesPolicy', {}).get('LaunchTemplate', {}).get('LaunchTemplateSpecification'):
-                        _lt_info = raw.get('MixedInstancesPolicy', {}).get('LaunchTemplate', {}).get('LaunchTemplateSpecification')
+                    elif raw.get('MixedInstancesPolicy', {}).get('LaunchTemplate', {}).get(
+                            'LaunchTemplateSpecification'):
+                        _lt_info = raw.get('MixedInstancesPolicy', {}).get('LaunchTemplate', {}).get(
+                            'LaunchTemplateSpecification')
                         raw.update({
                             'display_launch_configuration_template': _lt_info.get('LaunchTemplateName'),
                             'launch_template': match_lt
                         })
                     elif raw.get('LaunchTemplate'):
                         raw.update({
-                            'display_launch_configuration_template': raw.get('LaunchTemplate').get('LaunchTemplateName'),
+                            'display_launch_configuration_template': raw.get('LaunchTemplate').get(
+                                'LaunchTemplateName'),
                             'launch_template': match_lt
                         })
 
@@ -161,6 +168,7 @@ class AutoScalingConnector(SchematicAWSConnector):
 
     def request_launch_configuration_data(self, region_name) -> List[LaunchConfiguration]:
         self.cloud_service_type = 'LaunchConfiguration'
+        cloudtrail_resource_type = 'AWS::AutoScaling::LaunchConfiguration'
 
         paginator = self.client.get_paginator('describe_launch_configurations')
         response_iterator = paginator.paginate(
@@ -173,9 +181,9 @@ class AutoScalingConnector(SchematicAWSConnector):
         for data in response_iterator:
             for raw in data.get('LaunchConfigurations', []):
                 try:
-                    raw.update({
-                        'account_id': self.account_id
-                    })
+                    raw.update({'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type,
+                                                                  raw['LaunchConfigurationName'])})
+
                     launch_configuration_vo = LaunchConfiguration(raw, strict=False)
                     self._launch_configurations.append(launch_configuration_vo)
 
@@ -193,6 +201,7 @@ class AutoScalingConnector(SchematicAWSConnector):
 
     def request_launch_template_data(self, region_name) -> List[LaunchTemplateDetail]:
         self.cloud_service_type = 'LaunchTemplate'
+        cloudtrail_resource_type = 'AWS::EC2::LaunchTemplate'
 
         ec2_client = self.session.client('ec2')
         paginator = ec2_client.get_paginator('describe_launch_templates')
@@ -205,7 +214,7 @@ class AutoScalingConnector(SchematicAWSConnector):
 
         for data in response_iterator:
             for raw in data.get('LaunchTemplates', []):
-               try:
+                try:
                     match_lt_version = self._match_launch_template_version(raw.get('LaunchTemplateId'))
                     match_lt_data = self._match_launch_template_data(match_lt_version)
 
@@ -213,12 +222,13 @@ class AutoScalingConnector(SchematicAWSConnector):
                         'version': match_lt_version.get('VersionNumber'),
                         'version_description': match_lt_version.get('VersionDescription'),
                         'default_version': match_lt_version.get('DefaultVersion'),
-                        'account_id': self.account_id,
                         'launch_template_data': match_lt_data,
                         'arn': self.generate_arn(service="ec2", region="", account_id="",
                                                  resource_type="launch_template",
                                                  resource_id=raw['LaunchTemplateId'] + '/v' + str(
-                                                     match_lt_version.get('VersionNumber')))
+                                                     match_lt_version.get('VersionNumber'))),
+                        'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type,
+                                                          raw['LaunchTemplateName'])
                     })
 
                     launch_template_vo = LaunchTemplateDetail(raw, strict=False)
@@ -231,7 +241,7 @@ class AutoScalingConnector(SchematicAWSConnector):
                         'launched_at': self.datetime_to_iso8601(launch_template_vo.create_time)
                     }
 
-               except Exception as e:
+                except Exception as e:
                     resource_id = raw.get('LaunchTemplateId', '')
                     error_resource_response = self.generate_error(region_name, resource_id, e)
                     yield {'data': error_resource_response}
