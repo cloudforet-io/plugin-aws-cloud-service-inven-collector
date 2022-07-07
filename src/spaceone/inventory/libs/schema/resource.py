@@ -55,8 +55,8 @@ class CloudWatchModel(Model):
 
 
 class CloudTrailLookupResource(Model):
-    AttributeKey = StringType(default='')
-    AttributeValue = StringType(default='ResourceName')
+    AttributeKey = StringType(default='ResourceName')
+    AttributeValue = StringType(default='')
 
 
 class CloudTrailModel(Model):
