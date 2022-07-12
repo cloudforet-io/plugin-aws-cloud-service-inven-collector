@@ -8,13 +8,13 @@
 
 각 프로바이더별 서비스 계정 등록 방법은 여기(링크)를 참고 하십시오.
 
-## AWS Cloud Services collector 등록
+## AWS Cloud Services collector 생성
 
 (1) [에셋 인벤토리 > 컬렉터] 페이지로 이동합니다.
 
 <img src="./GUIDE-img/create-plugin-aws-collector(h2)-1.png" width="65%">
 
-(2) [생성] 버튼을 클릭 합니다.
+(2) [생성] 버튼을 클릭합니다.
 
 <img src="./GUIDE-img/create-plugin-aws-collector(h2)-2.png" width="65%">
 
@@ -28,7 +28,7 @@
 
 (4) [컬렉터 설정] 탭에서 컬렉터 설정 폼을 작성합니다.
 
-(4-1) [확인] 버튼을 클릭합니다.
+(4-1) [다음] 버튼을 클릭합니다.
 
 <img src="./GUIDE-img/create-plugin-aws-collector(h2)-4.png"  width="65%">
 
@@ -37,16 +37,17 @@
 <img src="./GUIDE-img/create-plugin-aws-collector(h2)-5.png"  width="65%">
 
 (6) 필요한 경우, [태그 추가] 탭에서 컬렉터에 대한 추가 정보를 입력합니다.
+(6-1) [확인] 버튼을 클릭합니다.
 
 <img src="./GUIDE-img/create-plugin-aws-collector(h2)-6.png"  width="65%">
 
-## 컬렉터로 데이터 수집하기
+## 컬렉터로 데이터 수집
 
 (1) [에셋 인벤토리 > 컬렉터] 페이지로 이동합니다.
 
 <img src="./GUIDE-img/collect-aws-service-data(h2)-1.png" width="65%">
 
-(2)[위 과정](#aws-cloud-services-collector-등록하기)에서 생성한 **AWS Cloud Services collector**를 클릭합니다.
+(2)[위 과정](#aws-cloud-services-collector-생성)에서 생성한 **AWS Cloud Services collector**를 클릭합니다.
 
 <img src="./GUIDE-img/collect-aws-service-data(h2)-2.png" width="65%">
 
