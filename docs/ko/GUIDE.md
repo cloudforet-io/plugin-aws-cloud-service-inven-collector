@@ -39,10 +39,10 @@ ARN에 대한 자세한 설명은 [AWS Documentation](https://docs.aws.amazon.co
 
  위 정보를 획득하기 위해 아래와 같은 순서로 설정을 진행해야 합니다.
 
-1. [정책(Policy) 생성](#1-정책(Policy)-생성)
+1. [정책(Policy) 생성](#1-정책Policy-생성)
 2. [IAM 사용자 생성](#2-IAM-사용자-생성)
-3. [그룹(Group) 생성](#3-그룹(Group)-생성)
-4. [역할(Role) 생성(선택)](#4-역할(Role)-생성(선택))
+3. [그룹(Group) 생성](#3-그룹Group-생성)
+4. [역할(Role) 생성(선택)](#4-역할Role-생성선택)
 5. [서비스 계정 등록](#5-서비스-계정-등록)
 
 ## 1. 정책(Policy) 생성
@@ -164,7 +164,7 @@ ARN에 대한 자세한 설명은 [AWS Documentation](https://docs.aws.amazon.co
 
 <img src="./GUIDE-img/create-group(h2)-3.png" width="65%">
 
-## 4. 역할 생성(선택)
+## 4. 역할(Role) 생성(선택)
 
 [역할](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles.html)은 계정에 생성할 수 있는, 특정 권한을 지닌 IAM 자격 증명을 의미하며 [**[Assume Role]**](https://docs.aws.amazon.com/ko_kr/STS/latest/APIReference/API_AssumeRole.html)은 자신의 계정 혹은 다른 계정에 클라우드 리소스 액세스 권한을 부여하기 위해 사용 됩니다.
  
