@@ -32,7 +32,6 @@ ARN에 대한 자세한 설명은 [AWS Documentation](https://docs.aws.amazon.co
 이제, 실제로 **설정 정보를 획득하는 방법에 대해** 다음 과정에서 자세히 알아보도록 하겠습니다.
 
 ## ****전체 Flow****
-
 클라우드포레에서는 AWS 연동에 대해 **[aws_access_key]** 방식과 **[aws_assume_role]** 총 두가지 방식을 지원합니다.
 
 **[aws_access_key]** 를 이용한 방식은 **[Account ID]**, **[AWS Access Key ID]** 그리고 **[AWS Secret Key]** 에 대한 설정 정보가 필요 하며, 
@@ -40,11 +39,11 @@ ARN에 대한 자세한 설명은 [AWS Documentation](https://docs.aws.amazon.co
 
  위 정보를 획득하기 위해 아래와 같은 순서로 설정을 진행해야 합니다.
 
-1. 정책(Policy) 생성
-2. IAM 사용자 생성
-3. 그룹(Group) 생성
-4. 역할(Role) 생성(선택)
-5. 서비스 계정 등록
+1. [정책(Policy) 생성](#1-정책(Policy)-생성)
+2. [IAM 사용자 생성](#2-IAM-사용자-생성)
+3. [그룹(Group) 생성](#3-그룹(Group)-생성)
+4. [역할(Role) 생성(선택)](#4-역할(Role)-생성(선택))
+5. [서비스 계정 등록](#5-서비스-계정-등록)
 
 ## 1. 정책(Policy) 생성
 
@@ -68,7 +67,7 @@ ARN에 대한 자세한 설명은 [AWS Documentation](https://docs.aws.amazon.co
 
 (1) [AWS 콘솔](https://signin.aws.amazon.com/signin?redirect_uri=https%3A%2F%2Fconsole.aws.amazon.com%2Fconsole%2Fhome%3FhashArgs%3D%2523%26isauthcode%3Dtrue%26nc2%3Dh_ct%26src%3Dheader-signin%26state%3DhashArgsFromTB_us-west-1_170054870035abe3&client_id=arn%3Aaws%3Asignin%3A%3A%3Aconsole%2Fcanvas&forceMobileApp=0&code_challenge=50EZtidRQYVM_RvQ0yHgj2KQjR311eLzH3684mE0Tlk&code_challenge_method=SHA-256) 로그인 > [IAM 대시보드](https://us-east-1.console.aws.amazon.com/iamv2/home#/home) 이동 
 
-(2) 대시보드의 [액세스관리 > 정책] 메뉴에서 정책을 생성 할 수 있습니다.
+(1-2) 대시보드의 [액세스관리 > 정책] 메뉴에서 정책을 생성 할 수 있습니다.
 
 <img src="./GUIDE-img/create-policy(h2)-1.png" width="65%">
 
@@ -108,7 +107,6 @@ ARN에 대한 자세한 설명은 [AWS Documentation](https://docs.aws.amazon.co
 (1) [IAM 대시보드](https://us-east-1.console.aws.amazon.com/iamv2/home#/home)로 이동
 
 (1-1) 대시보드에서 [액세스 관리 > 사용자] 메뉴에서 사용자를 생성 할 수 있습니다.
-
 <img src="./GUIDE-img/create-iam-user(h2)-1.png" width="65%">
 
 (2)[사용자 추가] 버튼을 클릭 합니다.
