@@ -1,8 +1,4 @@
-# AWS 서비스 계정 등록
-
 ## 개요
-
----
 
 클라우드포레에서 AWS [서비스 계정](https://spaceone.org/ko/docs/guides/getting-started/#%EC%84%9C%EB%B9%84%EC%8A%A4-%EA%B3%84%EC%A0%95-%EC%84%A4%EC%A0%95)을 등록하기 위해서 아래와 같은 설정 정보가 필요합니다.
 - **[Account ID]**
@@ -37,9 +33,6 @@ ARN에 대한 자세한 설명은 [AWS Documentation](https://docs.aws.amazon.co
 
 ## ****전체 Flow****
 
----
-
-
 클라우드포레에서는 AWS 연동에 대해 **[aws_access_key]** 방식과 **[aws_assume_role]** 총 두가지 방식을 지원합니다.
 
 **[aws_access_key]** 를 이용한 방식은 **[Account ID]**, **[AWS Access Key ID]** 그리고 **[AWS Secret Key]** 에 대한 설정 정보가 필요 하며, 
@@ -55,8 +48,6 @@ ARN에 대한 자세한 설명은 [AWS Documentation](https://docs.aws.amazon.co
 
 ## 1. 정책(Policy) 생성
 
----
-
 [정책](https://docs.aws.amazon.com/ko_kr/mediaconvert/latest/ug/auth_access_what-are-policies.html)은 자격증명이나 AWS리소스에 대한 접근 권한을 정의합니다. 
 생성된 정책은 IAM 사용자, 그룹, 역할에 적용될 수 있습니다. 
 
@@ -65,11 +56,12 @@ ARN에 대한 자세한 설명은 [AWS Documentation](https://docs.aws.amazon.co
 
 각 Plugin 에서 필요로 하는 권한에 대한 정보는 아래와 같습니다.
 
-| AWS EC2 Compute collector               | https://github.com/spaceone-dev/plugin-aws-cloud-service-inven-collector#authentication-overview |
-|-----------------------------------------| --- |
-| AWS EC2 Compute collector               | https://github.com/spaceone-dev/plugin-aws-ec2-inven-collector#authentication-overview |
-| AWS Personal Health Dashboard collector | https://github.com/spaceone-dev/plugin-aws-phd-inven-collector#authen|                                         |  |tication-overview |
-| AWS Trusted Advisor collector           | https://github.com/spaceone-dev/plugin-aws-phd-inven-collector#authentication-overview |
+| 	   Plugin                              | URL                                                                                              |
+|-----------------------------------------|--------------------------------------------------------------------------------------------------|
+| AWS Cloud Services collector            | https://github.com/spaceone-dev/plugin-aws-cloud-service-inven-collector#authentication-overview |
+| AWS EC2 Compute collector               | https://github.com/spaceone-dev/plugin-aws-ec2-inven-collector#authentication-overview           |
+| AWS Personal Health Dashboard collector | https://github.com/spaceone-dev/plugin-aws-phd-inven-collector#authen                            |
+| AWS Trusted Advisor collector           | https://github.com/spaceone-dev/plugin-aws-phd-inven-collector#authentication-overview           |
 
 
 인벤토리 컬렉터가 실행되는데 필요한 권한에 대한 정책 생성 방법은 아래와 같습니다.
@@ -108,8 +100,6 @@ ARN에 대한 자세한 설명은 [AWS Documentation](https://docs.aws.amazon.co
 <img src="./GUIDE-img/create-policy(h2)-5.png" width="65%">
 
 ## 2. IAM 사용자 생성
-
----
 
  [IAM](https://docs.aws.amazon.com/ko_kr/IAM/latest/UserGuide/introduction.html) 사용자는 AWS 리소스에 대한 액세스를 안전하게 제어하기 위해 생성합니다. 
 생성된 IAM사용자를 다음 단계에서 그룹에 추가합니다.
@@ -155,8 +145,6 @@ ARN에 대한 자세한 설명은 [AWS Documentation](https://docs.aws.amazon.co
 
 ## 3. 그룹(Group) 생성
 
----
-
 [그룹](https://docs.aws.amazon.com/ko_kr/IAM/latest/UserGuide/id_groups.html)은 IAM 사용자의 집합입니다. 
 그룹을 통해 사용자들에 대한 권한을 지정하여 해당 사용자들에 대한 권한을 더욱 쉽게 관리 할 수 있습니다.
 
@@ -180,8 +168,6 @@ ARN에 대한 자세한 설명은 [AWS Documentation](https://docs.aws.amazon.co
 
 ## 4. 역할 생성(선택)
 
----
-
 [역할](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles.html)은 계정에 생성할 수 있는, 특정 권한을 지닌 IAM 자격 증명을 의미하며 [**[Assume Role]**](https://docs.aws.amazon.com/ko_kr/STS/latest/APIReference/API_AssumeRole.html)은 자신의 계정 혹은 다른 계정에 클라우드 리소스 액세스 권한을 부여하기 위해 사용 됩니다.
  
 
@@ -189,7 +175,7 @@ ARN에 대한 자세한 설명은 [AWS Documentation](https://docs.aws.amazon.co
 
 
 AWS 서비스 계정 등록 시 **[aws_assume_role]** 방식에 필요한 **[Role ARN]** 설정 정보를 얻을 수 있습니다.
-**[aws_access_key]** 방식을 진행 중이라면 이 과정을 생략하시고 [서비스 계정 등록](#서비스-계정-등록)으로 이동 하십시오.  
+**[aws_access_key]** 방식을 진행 중이라면 이 과정을 생략하시고 [서비스 계정 등록](#5-서비스-계정-등록)으로 이동 하십시오.  
 
 (1) [IAM 대시보드](https://us-east-1.console.aws.amazon.com/iamv2/home#/home)로 이동
 
@@ -227,8 +213,6 @@ AWS 서비스 계정 등록 시 **[aws_assume_role]** 방식에 필요한 **[Rol
 
 ## 5. 서비스 계정 등록
 
----
-
 이제 서비스계정 추가를 위한 준비가 끝났습니다.  
 지금까지 설정 가이드를 진행 하면서 얻은 설정 정보 활용해 서비스 계정을 등록 할 수 있습니다.   
 서비스 계정 등록의 자세한 방법은 [클라우드포레 사용자 가이드](https://spaceone.org/ko/docs/guides/asset-inventory/service-account/#%EC%84%9C%EB%B9%84%EC%8A%A4-%EA%B3%84%EC%A0%95-%EC%B6%94%EA%B0%80%ED%95%98%EA%B8%B0)를 참고 하십시오.
@@ -242,7 +226,7 @@ AWS 서비스 계정 등록 시 **[aws_assume_role]** 방식에 필요한 **[Rol
 
 <img src="./GUIDE-img/create-service-account(h2)-1.png" width="40%">
 
-(1-2) 서비스 계정 추가 시 Account ID 필드에 AWS의 Account ID 정보를 입력해 주십시오.
+(1-1) 서비스 계정 추가 시 Account ID 필드에 AWS의 Account ID 정보를 입력해 주십시오.
 
 <img src="./GUIDE-img/create-service-account(h2)-2.png" width="65%">
 
