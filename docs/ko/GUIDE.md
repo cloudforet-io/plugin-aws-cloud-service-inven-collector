@@ -189,11 +189,15 @@ ARN에 대한 자세한 설명은 [AWS Documentation](https://docs.aws.amazon.co
 [역할](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles.html)은 계정에 생성할 수 있는, 특정 권한을 지닌 IAM 자격 증명을 의미하며 [**[Assume Role]**](https://docs.aws.amazon.com/ko_kr/STS/latest/APIReference/API_AssumeRole.html)은 자신의 계정 혹은 다른 계정에 클라우드 리소스 액세스 권한을 부여하기 위해 사용 됩니다.
  
 
-> 다음은 [Assume Role] 활용 예시입니다.   
-_각각의 AWS계정에 IAM 사용자 [A], [B], [C]가 있고 역할을 위임받을 IAM사용자 [D]가 있다고 가정하겠습니다.  
-[A], [B], [C] 각각의 IAM 사용자 별로 클라우드 리소스 수집을 위한 권한이 있는 역할을 [D] 계정으로 위임하여 생성합니다.
+```markdown
+다음은 [Assume Role] 활용 예시입니다.
+
+각각의 AWS계정에 IAM 사용자 A, B, C가 있고 역할을 위임받을 IAM 사용자 D가 있다고 가정하겠습니다.  
+A, B, C 각각의 IAM 사용자 별로 클라우드 리소스 수집을 위한 권한이 있는 역할을 D 계정으로 위임하여 생성합니다.  
 총 3개의 [Role ARN]이 생성되게 됩니다.  
-최종적으로 정책을 위임받은 [D] IAM 사용자의  [AWS Access Key ID], [AWS Secret Key] 와 [A], [B], [C] IAM사용자의 [Role ARN] 을 통해 사용중인 클라우드 리소스를 수집 할 수 있게 됩니다._
+최종적으로 정책을 위임받은 IAM 사용자 D의 [AWS Access Key ID], [AWS Secret Key]와  
+IAM 사용자 A, B, C의 [Role ARN]을 통해 사용중인 클라우드 리소스를 수집 할 수 있게 됩니다.
+```
   
 
 AWS 서비스 계정 등록 시 **[aws_assume_role]** 방식에 필요한 **[Role ARN]** 설정 정보를 얻을 수 있습니다.  
