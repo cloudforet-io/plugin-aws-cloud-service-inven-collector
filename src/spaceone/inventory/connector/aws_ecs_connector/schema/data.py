@@ -2,7 +2,7 @@ import logging
 
 from schematics import Model
 from schematics.types import ModelType, StringType, IntType, DateTimeType, ListType, BooleanType, FloatType
-from spaceone.inventory.libs.schema.resource import CloudWatchDimensionModel, AWSCloudService
+from spaceone.inventory.libs.schema.resource import AWSCloudService
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -372,11 +372,4 @@ class Cluster(AWSCloudService):
         return {
             "resource_id": self.cluster_arn,
             "external_link": f"https://console.aws.amazon.com/ecs/home?region={region_code}#/clusters/{self.cluster_name}/services"
-        }
-
-    def set_cloudwatch(self, region_code):
-        return {
-            "namespace": "AWS/ECS",
-            "dimensions": [CloudWatchDimensionModel({'Name': 'ClusterName', 'Value': self.cluster_name})],
-            "region_name": region_code
         }

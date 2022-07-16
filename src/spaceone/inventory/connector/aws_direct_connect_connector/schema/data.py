@@ -3,7 +3,7 @@ import logging
 from schematics import Model
 from schematics.types import ModelType, StringType, IntType, FloatType, DateTimeType, ListType, \
     BooleanType
-from spaceone.inventory.libs.schema.resource import CloudWatchModel, CloudWatchDimensionModel, AWSCloudService
+from spaceone.inventory.libs.schema.resource import AWSCloudService
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -160,13 +160,6 @@ class VirtualInterface(AWSCloudService):
             "external_link": f"https://console.aws.amazon.com/directconnect/v2/home?region={region_code}#/virtual-interfaces/arn:aws:directconnect:{region_code}:{self.owner_account}:{self.virtual_interface_id}"
         }
 
-    def set_cloudwatch(self, region_code):
-        return {
-            "namespace": "AWS/DX",
-            "dimensions": [CloudWatchDimensionModel({'Name': 'VirtualInterfaceId', 'Value': self.virtual_interface_id})],
-            "region_name": region_code
-        }
-
 
 '''
 CONNECTION
@@ -197,11 +190,4 @@ class Connection(AWSCloudService):
         return {
             "resource_id": self.connection_id,
             "external_link": f"https://console.aws.amazon.com/directconnect/v2/home?region={region_code}#/connections/arn:aws:directconnect:{region_code}:{self.owner_account}:{self.connection_id}"
-        }
-
-    def set_cloudwatch(self, region_code):
-        return {
-            "namespace": "AWS/DX",
-            "dimensions": [CloudWatchDimensionModel({'Name': 'ConnectionId', 'Value': self.connection_id})],
-            "region_name": region_code
         }

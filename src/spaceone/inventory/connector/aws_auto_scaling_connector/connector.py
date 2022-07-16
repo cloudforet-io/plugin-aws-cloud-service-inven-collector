@@ -63,6 +63,8 @@ class AutoScalingConnector(SchematicAWSConnector):
 
     def request_auto_scaling_group_data(self, region_name) -> List[AutoScalingGroup]:
         self.cloud_service_type = 'AutoScalingGroup'
+        cloudwatch_namespace = 'AWS/AutoScaling'
+        cloudwatch_dimension_name = 'AutoScalingGroupName'
         cloudtrail_resource_type = 'AWS::AutoScaling::AutoScalingGroup'
 
         paginator = self.client.get_paginator('describe_auto_scaling_groups')
@@ -110,6 +112,8 @@ class AutoScalingConnector(SchematicAWSConnector):
                         'instances': self.get_asg_instances(raw.get('Instances', [])),
                         'tags': list(map(lambda tag: AWSTags(tag, strict=False),
                                          self.get_general_tags(raw.get('Tags', [])))),
+                        'cloudwatch': self.set_cloudwatch(cloudwatch_namespace, cloudwatch_dimension_name,
+                                                          raw['AutoScalingGroupName'], region_name),
                         'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type,
                                                           raw['AutoScalingGroupName'])
                     })

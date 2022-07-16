@@ -41,6 +41,8 @@ class KMSConnector(SchematicAWSConnector):
     def request_data(self, region_name) -> List[Key]:
         kms_keys = self.list_keys()
         alias_list = self.list_aliases()
+        cloudwatch_namespace = 'AWS/KMS'
+        cloudwatch_dimension_name = 'KeyId'
         cloudtrail_resource_type = 'AWS::KMS::Key'
 
         for raw in kms_keys:
@@ -52,6 +54,8 @@ class KMSConnector(SchematicAWSConnector):
                 key.update({
                     'key_type_path': self._set_key_type_path(key.get('KeyManager')),
                     'region_name': region_name,
+                    'cloudwatch': self.set_cloudwatch(cloudwatch_namespace, cloudwatch_dimension_name,
+                                                      key['KeyId'], region_name),
                     'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type, key['KeyId']),
                     'key_rotated': self._set_key_rotated(key.get('KeyId'), key.get('KeyManager'))
                 })

@@ -56,6 +56,8 @@ class APIGatewayConnector(SchematicAWSConnector):
     def request_rest_api_data(self, region_name) -> List[RestAPI]:
         # Get REST API
         rest_client = self.set_client(self.rest_service_name)
+        cloudwatch_namespace = 'AWS/ApiGateway'
+        cloudwatch_dimension_name = 'ApiName'
         cloudtrail_resource_type = 'AWS::ApiGateway::RestApi'
 
         paginator = rest_client.get_paginator('get_rest_apis')
@@ -83,6 +85,8 @@ class APIGatewayConnector(SchematicAWSConnector):
                                                  resource_id=f"{raw.get('id')}/*"),
                         'tags': list(map(lambda tag: AWSTags(tag, strict=False),
                                          self.convert_tags(raw.get('tags', {})))),
+                        'cloudwatch': self.set_cloudwatch(cloudwatch_namespace, cloudwatch_dimension_name,
+                                                          raw.get('id'), region_name),
                         'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type, raw['id'])
                     })
     

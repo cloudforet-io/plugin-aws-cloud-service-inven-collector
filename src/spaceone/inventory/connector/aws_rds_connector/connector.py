@@ -68,9 +68,6 @@ class RDSConnector(SchematicAWSConnector):
                         # Error Resource
                         resources.append(database_vo)
                     else:
-                        if getattr(database_vo, 'set_cloudwatch', None):
-                            database_vo.cloudwatch = CloudWatchModel(database_vo.set_cloudwatch(region_name))
-
                         resources.append(DatabaseResponse(
                             {'resource': resource({
                                 'name': identifier,
@@ -94,6 +91,8 @@ class RDSConnector(SchematicAWSConnector):
 
     def db_cluster_data(self, region_name) -> List[Database]:
         self.cloud_service_type = 'Database'
+        cloudwatch_namespace = 'AWS/RDS'
+        cloudwatch_dimension_name = 'DBClusterIdentifier'
         cloudtrail_resource_type = 'AWS::RDS::DBCluster'
 
         # Cluster
@@ -109,6 +108,8 @@ class RDSConnector(SchematicAWSConnector):
                     'size': f'{len(cluster.db_cluster_members)} instances',
                     'multi_az': cluster.multi_az,
                     'cluster': cluster,
+                    'cloudwatch': self.set_cloudwatch(cloudwatch_namespace, cloudwatch_dimension_name,
+                                                      cluster.db_cluster_identifier, region_name),
                     'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type, cluster.database_name),
                     'tags': cluster.tags
                 }

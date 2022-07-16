@@ -6,7 +6,8 @@ from spaceone.inventory.connector.aws_elb_connector.schema.resource import LoadB
     LoadBalancerResponse, TargetGroupResponse
 from spaceone.inventory.connector.aws_elb_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
-from spaceone.inventory.libs.schema.resource import AWSTags
+from spaceone.inventory.libs.schema.resource import AWSTags, CloudWatchModel
+
 
 _LOGGER = logging.getLogger(__name__)
 MAX_TAG_RESOURCES = 20
@@ -109,6 +110,7 @@ class ELBConnector(SchematicAWSConnector):
                     'region_name': region_name,
                     'listeners': list(map(lambda _listener: Listener(_listener, strict=False), raw_listeners)),
                     'tags': list(map(lambda match_tag: AWSTags(match_tag, strict=False), match_tags)),
+                    'cloudwatch': self.elb_cloudwatch(raw_lb, region_name),
                     'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type, raw_lb['LoadBalancerArn']),
                     'target_groups': match_target_groups,
                     'instances': match_instances
@@ -323,6 +325,30 @@ class ELBConnector(SchematicAWSConnector):
 
         return TargetGroupAttributes(attribute_info, strict=False)
 
+    def elb_cloudwatch(self, raw_lb, region_name):
+        cloudwatch_elb = self.set_cloudwatch('AWS/ELB', 'LoadBalancerName', raw_lb['LoadBalancerName'], region_name)
+
+        cloudwatch_elb_type = None
+        if raw_lb.get('Type') == 'application':
+            elb_id = self.get_elb_id_from_arn(raw_lb['LoadBalancerArn'])
+            if elb_id:
+                cloudwatch_elb_type = self.set_cloudwatch('ApplicationELB', 'LoadBalancer', elb_id, region_name)
+        elif raw_lb.get('Type') == 'network':
+            elb_id = self.get_elb_id_from_arn(raw_lb['LoadBalancerArn'])
+            if elb_id:
+                cloudwatch_elb_type = self.set_cloudwatch('NetworkELB', 'LoadBalancer', elb_id, region_name)
+
+        metrics_info = cloudwatch_elb.metrics_info
+        if cloudwatch_elb_type:
+            metrics_info = metrics_info + cloudwatch_elb_type.metrics_info
+
+        cloudwatch_vo = CloudWatchModel({
+            'region_name': region_name,
+            'metrics_info': metrics_info
+        }, strict=False)
+
+        return cloudwatch_vo
+
     @staticmethod
     def search_tags(all_tags, resource_arn):
         for tag in all_tags:
@@ -338,3 +364,11 @@ class ELBConnector(SchematicAWSConnector):
                 return tag.get('Value')
 
         return None
+
+    @staticmethod
+    def get_elb_id_from_arn(arn):
+        try:
+            split_id = arn.split('/')[1:]
+            return '/'.join(split_id)
+        except Exception as e:
+            return None

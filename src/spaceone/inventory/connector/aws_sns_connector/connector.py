@@ -41,6 +41,8 @@ class SNSConnector(SchematicAWSConnector):
         return resources
 
     def request_data(self, region_name) -> List[Topic]:
+        cloudwatch_namespace = 'AWS/SNS'
+        cloudwatch_dimension_name = 'TopicName'
         cloudtrail_resource_type = 'AWS::SNS::Topic'
         paginator = self.client.get_paginator('list_topics')
         response_iterator = paginator.paginate(
@@ -53,6 +55,7 @@ class SNSConnector(SchematicAWSConnector):
             for raw in data.get('Topics', []):
                 try:
                     topic_arn = raw.get('TopicArn')
+                    name = self._get_name_from_arn(topic_arn)
                     topic_response = self.client.get_topic_attributes(TopicArn=topic_arn)
                     topic = topic_response.get('Attributes')
 
@@ -63,8 +66,10 @@ class SNSConnector(SchematicAWSConnector):
                         'subscriptions': list(map(lambda subscription: Subscription(subscription, strict=False),
                                                   subscription_response.get('Subscriptions', []))),
                         'tags': list(map(lambda tag: AWSTags(tag, strict=False), tags_response.get('Tags', []))),
-                        'name': self._get_name_from_arn(topic_arn),
+                        'name': name,
                         'region_name': region_name,
+                        'cloudwatch': self.set_cloudwatch(cloudwatch_namespace, cloudwatch_dimension_name,
+                                                          name, region_name),
                         'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type, raw['TopicArn'])
                     })
 

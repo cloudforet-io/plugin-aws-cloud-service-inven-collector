@@ -2,7 +2,7 @@ import logging
 
 from schematics import Model
 from schematics.types import ModelType, StringType, IntType, DateTimeType, ListType, BooleanType
-from spaceone.inventory.libs.schema.resource import CloudWatchDimensionModel, AWSCloudService
+from spaceone.inventory.libs.schema.resource import AWSCloudService
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -351,12 +351,6 @@ class Instance(AWSCloudService):
             "external_link": f"https://console.aws.amazon.com/rds/home?region={region_code}#database:id={self.db_instance_identifier};is-cluster=false"
         }
 
-    def set_cloudwatch(self, region_code):
-        return {
-            "namespace": "AWS/RDS",
-            "dimensions": [CloudWatchDimensionModel({"Name": "DBInstanceIdentifier", "Value": self.db_instance_identifier})],
-            "region_name": region_code
-        }
 
 '''
 CLUSTER
@@ -490,18 +484,4 @@ class Database(AWSCloudService):
         return {
             "resource_id": self.arn,
             "external_link": f"https://console.aws.amazon.com/rds/home?region={region_code}#database:id={self.db_identifier};is-cluster={is_cluster}"
-        }
-
-    def set_cloudwatch(self, region_code):
-        dimensions = []
-
-        if self.role == 'cluster':
-            dimensions.append(CloudWatchDimensionModel({"Name": "DBClusterIdentifier", "Value": self.db_identifier}))
-        elif self.role == 'instance':
-            dimensions.append(CloudWatchDimensionModel({"Name": "DBInstanceIdentifier", "Value": self.db_identifier}))
-
-        return {
-            "namespace": "AWS/RDS",
-            "dimensions": dimensions,
-            "region_name": region_code
         }

@@ -53,6 +53,8 @@ class LambdaConnector(SchematicAWSConnector):
     def request_functions_data(self, region_name) -> List[LambdaFunctionData]:
         cloud_service_group = 'Lambda'
         cloud_service_type = 'Function'
+        cloudwatch_namespace = 'AWS/Lambda'
+        cloudwatch_dimension_name = 'FunctionName'
         cloudtrail_resource_type = 'AWS::Lambda::Function'
 
         self.cloud_service_type = cloud_service_type
@@ -69,6 +71,8 @@ class LambdaConnector(SchematicAWSConnector):
                 try:
                     func = LambdaFunctionData(raw, strict=False)
                     func.region_name = region_name
+                    func.cloudwatch = self.set_cloudwatch(cloudwatch_namespace, cloudwatch_dimension_name,
+                                                          raw['FunctionName'], region_name),
                     func.cloudtrail = self.set_cloudtrail(region_name, cloudtrail_resource_type, func.name)
 
                     if raw.get('State'):

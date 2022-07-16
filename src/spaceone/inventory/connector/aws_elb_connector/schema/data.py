@@ -1,7 +1,6 @@
 import logging
-from arnparse import arnparse
 from schematics import Model
-from spaceone.inventory.libs.schema.resource import CloudWatchDimensionModel, AWSCloudService
+from spaceone.inventory.libs.schema.resource import AWSCloudService
 from schematics.types import ModelType, StringType, IntType, DateTimeType, ListType, BooleanType
 
 _LOGGER = logging.getLogger(__name__)
@@ -29,10 +28,6 @@ class AuthenticateOidcConfig(Model):
     on_unauthenticated_request = StringType(deserialize_from="OnUnauthenticatedRequest",
                                             choices=("deny", "allow", "authenticate"))
     use_existing_client_secret = BooleanType(deserialize_from="UseExistingClientSecret")
-
-
-class AuthenticationRequestExtraParams(Model):
-    string = StringType(deserialize_from="string")
 
 
 class AuthenticateCognitoConfig(Model):
@@ -237,20 +232,4 @@ class LoadBalancer(AWSCloudService):
         return {
             "resource_id": self.load_balancer_arn,
             "external_link": f"https://console.aws.amazon.com/ec2/v2/home?region={region_code}#LoadBalancers:search={self.load_balancer_arn};sort=loadBalancerName"
-        }
-
-    def set_cloudwatch(self, region_code):
-        namespace = ''
-        _arn = arnparse(self.load_balancer_arn)
-        dimensions = [CloudWatchDimensionModel({'Name': 'LoadBalancer', 'Value': _arn.resource})]
-
-        if self.type == 'application':
-            namespace = 'AWS/ApplicationELB'
-        elif self.type == 'network':
-            namespace = 'AWS/NetworkELB'
-
-        return {
-            "namespace": namespace,
-            "dimensions": dimensions,
-            "region_name": region_code
         }

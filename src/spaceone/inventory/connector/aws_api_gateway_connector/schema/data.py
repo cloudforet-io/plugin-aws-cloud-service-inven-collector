@@ -2,7 +2,6 @@ import logging
 
 from schematics import Model
 from schematics.types import ModelType, StringType, IntType, DateTimeType, ListType, BooleanType, DictType
-from spaceone.inventory.libs.schema.resource import CloudWatchDimensionModel
 from spaceone.inventory.libs.schema.resource import AWSCloudService
 
 
@@ -43,14 +42,6 @@ class HTTPWebsocket(AWSCloudService):
             "resource_id": self.arn,
             "external_link": f"https://console.aws.amazon.com/apigateway/home?region={region_code}#/apis/{self.id}/routes"
         }
-
-    def set_cloudwatch(self, region_code):
-        return {
-            "namespace": "AWS/ApiGateway",
-            "dimensions": [CloudWatchDimensionModel({'Name': 'ApiId', 'Value': self.id})],
-            "region_name": region_code
-        }
-
 
 '''
 REST API
@@ -147,9 +138,3 @@ class RestAPI(AWSCloudService):
             "external_link": f"https://console.aws.amazon.com/apigateway/home?region={region_code}#/apis/{self.id}/resources/"
         }
 
-    def set_cloudwatch(self, region_code):
-        return {
-            "namespace": "AWS/ApiGateway",
-            "dimensions": [CloudWatchDimensionModel({'Name': 'ApiName', 'Value': self.name})],
-            "region_name": region_code
-        }

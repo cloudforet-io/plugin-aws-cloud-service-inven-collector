@@ -2,7 +2,7 @@ import logging
 
 from schematics import Model
 from schematics.types import ModelType, StringType, IntType, DateTimeType, ListType, BooleanType, FloatType
-from spaceone.inventory.libs.schema.resource import CloudWatchModel, CloudWatchDimensionModel, AWSCloudService
+from spaceone.inventory.libs.schema.resource import AWSCloudService
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -32,13 +32,6 @@ class Snapshot(Model):
         return {
             "resource_id": self.arn,
             "external_link": f"https://console.aws.amazon.com/ec2/v2/home?region={region_code}#Snapshots:visibility=owned-by-me;snapshotId={self.snapshot_id};sort=snapshotId"
-        }
-
-    def set_cloudwatch(self, region_code):
-        return {
-            "namespace": "AWS/EBS",
-            "dimensions": [CloudWatchDimensionModel({'Name': 'SnapshotId', 'Value': self.snapshot_id})],
-            "region_name": region_code
         }
 
 
@@ -98,11 +91,4 @@ class Volume(AWSCloudService):
         return {
             "resource_id": self.arn,
             "external_link": f"https://console.aws.amazon.com/ec2/v2/home?region={region_code}#Volumes:search={self.volume_id};sort=state"
-        }
-
-    def set_cloudwatch(self, region_code):
-        return {
-            "namespace": "AWS/EBS",
-            "dimensions": [CloudWatchDimensionModel({'Name': 'VolumeId', 'Value': self.volume_id})],
-            "region_name": region_code
         }

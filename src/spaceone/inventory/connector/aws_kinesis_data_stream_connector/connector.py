@@ -45,6 +45,8 @@ class KinesisDataStreamConnector(SchematicAWSConnector):
         return resources
 
     def request_data(self, region_name) -> List[StreamDescription]:
+        cloudwatch_namespace = 'AWS/Kinesis'
+        cloudwatch_dimension_name = 'StreamName'
         cloudtrail_resource_type = 'AWS::Kinesis::Stream'
 
         paginator = self.client.get_paginator("list_streams")
@@ -89,6 +91,8 @@ class KinesisDataStreamConnector(SchematicAWSConnector):
                                 "num_of_consumers": num_of_con,
                                 "consumers": consumers,
                             },
+                            'cloudwatch': self.set_cloudwatch(cloudwatch_namespace, cloudwatch_dimension_name,
+                                                              stream_info['StreamName'], region_name),
                             'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type,
                                                               stream_info['StreamARN']),
                             "tags": self.get_tags(stream_info.get("StreamName")),

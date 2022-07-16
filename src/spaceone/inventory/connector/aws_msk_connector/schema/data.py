@@ -2,7 +2,7 @@ import logging
 
 from schematics import Model
 from schematics.types import ModelType, StringType, IntType, FloatType, DateTimeType, ListType, BooleanType
-from spaceone.inventory.libs.schema.resource import CloudWatchModel, CloudWatchDimensionModel, AWSCloudService
+from spaceone.inventory.libs.schema.resource import AWSCloudService
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -16,7 +16,7 @@ class EbsStorageInfo(Model):
     volume_size = IntType(deserialize_from="VolumeSize")
 
 
-class StateInfo(Model):
+class BrokerNodeGroupStateInfo(Model):
     ebs_storage_info = ModelType(EbsStorageInfo, deserialize_from="EbsStorageInfo")
 
 
@@ -25,7 +25,7 @@ class BrokerNodeGroupInfo(Model):
     client_subnets = ListType(StringType, deserialize_from="ClientSubnets")
     instance_type = StringType(deserialize_from="InstanceType")
     security_group = ListType(StringType, deserialize_from="SecurityGroups")
-    storage_info = ModelType(StateInfo, deserialize_from="StorageInfo")
+    storage_info = ModelType(BrokerNodeGroupStateInfo, deserialize_from="StorageInfo")
 
 
 class Scram(Model):
@@ -95,17 +95,20 @@ class Firehose(Model):
     delivery_stream = StringType(deserialize_from="DeliveryStream")
     enabled = BooleanType(deserialize_from="Enabled")
 
+
 class S3(Model):
     bucket = StringType(deserialize_from="Bucket")
     enabled = BooleanType(deserialize_from="Enabled")
     prefix = StringType(deserialize_from="Prefix")
+
 
 class LoggingInfo(Model):
     broker_logs = ModelType(BrokerLogs, deserialize_from="BrokerLogs")
     firehose = ModelType(Firehose, deserialize_from="Firehose")
     s3 = ModelType(S3, deserialize_from="S3")
 
-class StateInfo(Model):
+
+class ClusterStateInfo(Model):
     code = StringType(deserialize_from="Code")
     message = StringType(deserialize_from="Message")
 
@@ -126,9 +129,9 @@ class MskCluster(Model):
     logging_info = ModelType(LoggingInfo, deserialize_from='LoggingInfo')
     number_of_broker_nodes = IntType(deserialize_from='NumberOfBrokerNodes')
     state = StringType(deserialize_from='State',
-                       choices=('ACTIVE','CREATING','DELETING','FAILED',
-                                'HEALING','MAINTENANCE','REBOOTING_BROKER','UPDATING'))
-    state_info = ModelType(StateInfo, deserialize_from='StateInfo')
+                       choices=('ACTIVE', 'CREATING', 'DELETING', 'FAILED',
+                                'HEALING', 'MAINTENANCE', 'REBOOTING_BROKER', 'UPDATING'))
+    state_info = ModelType(ClusterStateInfo, deserialize_from='StateInfo')
     tags = ListType(ModelType(Tags), deserialize_from='Tags', default=[])
     zookeeper_connect_string = StringType(deserialize_from='ZookeeperConnectString')
     zookeeper_connect_string_tls = StringType(deserialize_from='ZookeeperConnectStringTls')
@@ -228,20 +231,18 @@ class Cluster(AWSCloudService):
     encryption_info = ModelType(EncryptionInfo, deserialize_from='EncryptionInfo')
     enhanced_monitoring = StringType(deserialize_from='EnhancedMonitoring',
                                      choices=(
-                                     'DEFAULT', 'PER_BROKER', 'PER_TOPIC_PER_BROKER', 'PER_TOPIC_PER_PARTITION'))
+                                         'DEFAULT', 'PER_BROKER', 'PER_TOPIC_PER_BROKER', 'PER_TOPIC_PER_PARTITION'))
     open_monitoring = ModelType(OpenMonitoring, deserialize_from='OpenMonitoring')
     logging_info = ModelType(LoggingInfo, deserialize_from='LoggingInfo')
     number_of_broker_nodes = IntType(deserialize_from='NumberOfBrokerNodes')
     state = StringType(deserialize_from='State',
                        choices=('ACTIVE', 'CREATING', 'DELETING', 'FAILED',
                                 'HEALING', 'MAINTENANCE', 'REBOOTING_BROKER', 'UPDATING'))
-    state_info = ModelType(StateInfo, deserialize_from='StateInfo')
+    state_info = ModelType(ClusterStateInfo, deserialize_from='StateInfo')
     tags = ListType(ModelType(Tags), deserialize_from='Tags', default=[])
     zookeeper_connect_string = StringType(deserialize_from='ZookeeperConnectString')
     zookeeper_connect_string_tls = StringType(deserialize_from='ZookeeperConnectStringTls')
-    # Broker Node Infomation
     node_info_list = ListType(ModelType(NodeInfo), default=[])
-    # Cluster Operation Info List
     cluster_operation_info = ListType(ModelType(ClusterOperation), default=[])
 
     def reference(self, region_code):

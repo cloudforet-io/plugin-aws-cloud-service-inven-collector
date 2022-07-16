@@ -61,6 +61,8 @@ class S3Connector(SchematicAWSConnector):
         return resources
 
     def request_data(self) -> List[Bucket]:
+        cloudwatch_namespace = 'AWS/S3'
+        cloudwatch_dimension_name = 'BucketName'
         cloudtrail_resource_type = 'AWS::S3::Bucket'
         response = self.client.list_buckets()
 
@@ -77,6 +79,8 @@ class S3Connector(SchematicAWSConnector):
                                              resource_type=bucket_name,
                                              resource_id="*"),
                     'region_name': region_name,
+                    'cloudwatch': self.set_cloudwatch(cloudwatch_namespace, cloudwatch_dimension_name,
+                                                      raw['Name'], region_name),
                     'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type, raw['Name']),
                 })
 

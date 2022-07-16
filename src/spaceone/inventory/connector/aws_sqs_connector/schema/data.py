@@ -2,7 +2,7 @@ import logging
 
 from schematics import Model
 from schematics.types import IntType, ModelType, StringType, BooleanType, serializable, DateTimeType
-from spaceone.inventory.libs.schema.resource import CloudWatchDimensionModel, AWSCloudService
+from spaceone.inventory.libs.schema.resource import AWSCloudService
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -46,11 +46,4 @@ class QueData(AWSCloudService):
         return {
             "resource_id": self.arn,
             "external_link": f"https://{region_code}.console.aws.amazon.com/sqs/home?{region_code}#queue-browser:selected={self.url};prefix={self.name}"
-        }
-
-    def set_cloudwatch(self, region_code):
-        return {
-            "namespace": "AWS/SQS",
-            "dimensions": [CloudWatchDimensionModel({"Name": "QueueName", "Value": self.name})],
-            "region_name": region_code
         }

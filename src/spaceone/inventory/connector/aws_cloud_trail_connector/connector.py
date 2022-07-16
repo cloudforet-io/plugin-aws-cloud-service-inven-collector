@@ -40,6 +40,7 @@ class CloudTrailConnector(SchematicAWSConnector):
         return resources
 
     def request_data(self, region_name) -> List[Trail]:
+        cloudwatch_namespace = 'CloudTrailMetrics'
         cloudtrail_resource_type = 'AWS::CloudTrail::Trail'
         response = self.client.describe_trails()
 
@@ -59,6 +60,7 @@ class CloudTrailConnector(SchematicAWSConnector):
 
                     raw.update({
                         'tags': self._match_tags(raw.get('TrailARN'), tags),
+                        'cloudwatch': self.set_cloudwatch(cloudwatch_namespace, None, None, region_name),
                         'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type, raw['TrailARN'])
                     })
 

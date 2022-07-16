@@ -1,7 +1,7 @@
 import logging
 from schematics import Model
 from schematics.types import ModelType, StringType, IntType, DateTimeType, ListType, BooleanType
-from spaceone.inventory.libs.schema.resource import CloudWatchModel, CloudWatchDimensionModel, AWSCloudService
+from spaceone.inventory.libs.schema.resource import AWSCloudService
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -229,13 +229,6 @@ class TransitGateway(AWSCloudService):
             "external_link": f"https://console.aws.amazon.com/vpc/home?region={region_code}#TransitGateways:transitGatewayId={self.transit_gateway_id};sort=ownerId"
         }
 
-    def set_cloudwatch(self, region_code):
-        return {
-            "namespace": "AWS/TransitGateway",
-            "dimensions": [CloudWatchDimensionModel({'Name': 'TransitGateway', 'Value': self.transit_gateway_id})],
-            "region_name": region_code
-        }
-
 
 '''
 NETWORK ACL
@@ -377,13 +370,6 @@ class NATGateway(AWSCloudService):
         return {
             "resource_id": self.arn,
             "external_link": f"https://console.aws.amazon.com/vpc/home?region={region_code}#NatGateways:natGatewayId={self.nat_gateway_id}"
-        }
-
-    def set_cloudwatch(self, region_code):
-        return {
-            "namespace": "AWS/NATGateway",
-            "dimensions": [CloudWatchDimensionModel({'Name': 'NatGatewayId', 'Value': self.nat_gateway_id})],
-            "region_name": region_code
         }
 
 

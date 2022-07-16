@@ -41,6 +41,8 @@ class DynamoDBConnector(SchematicAWSConnector):
 
     def request_data(self, region_name) -> List[Table]:
         _auto_scaling_policies = None
+        cloudwatch_namespace = 'AWS/DynamoDB'
+        cloudwatch_dimension_name = 'TableName'
         cloudtrail_resource_type = 'AWS::DynamoDB::Table'
 
         paginator = self.client.get_paginator('list_tables')
@@ -78,6 +80,8 @@ class DynamoDBConnector(SchematicAWSConnector):
                         'continuous_backup': self._get_continuous_backup(table_name),
                         'contributor_insight': self._get_contributor_insights(table_name),
                         'tags': self.request_tags(table.get('TableArn')),
+                        'cloudwatch': self.set_cloudwatch(cloudwatch_namespace, cloudwatch_dimension_name,
+                                                          table['TableName'], region_name),
                         'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type, table['TableName']),
                     })
                     table_vo = Table(table, strict=False)

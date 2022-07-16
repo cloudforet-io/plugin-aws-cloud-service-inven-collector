@@ -48,6 +48,8 @@ class KinesisFirehoseConnector(SchematicAWSConnector):
         return response.get("DeliveryStreamNames", [])
 
     def request_data(self, region_name):
+        cloudwatch_namespace = 'AWS/Firehose'
+        cloudwatch_dimension_name = 'DeliveryStreamName'
         cloudtrail_resource_type = 'AWS::KinesisFirehose::DeliveryStream'
 
         for stream_name in self.list_delivery_streams():
@@ -58,6 +60,8 @@ class KinesisFirehoseConnector(SchematicAWSConnector):
                 delivery_stream_info.update(
                     {
                         "Source": self.get_source(delivery_stream_info.get("Source", {})),
+                        'cloudwatch': self.set_cloudwatch(cloudwatch_namespace, cloudwatch_dimension_name,
+                                                          delivery_stream_info['DeliveryStreamName'], region_name),
                         'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type,
                                                           delivery_stream_info['DeliveryStreamARN']),
                         # "destinations_ref": destinations_ref,

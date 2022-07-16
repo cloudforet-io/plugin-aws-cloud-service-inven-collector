@@ -42,6 +42,8 @@ class ACMConnector(SchematicAWSConnector):
         return resources
 
     def request_data(self, region_name) -> List[Certificate]:
+        cloudwatch_namespace = 'AWS/CertificateManager'
+        cloudwatch_dimension_name = 'CertificateArn'
         cloudtrail_resource_type = 'AWS::ACM::Certificate'
         paginator = self.client.get_paginator('list_certificates')
         response_iterator = paginator.paginate(
@@ -61,9 +63,12 @@ class ACMConnector(SchematicAWSConnector):
                         'type_display': self.get_string_title(certificate_info.get('Type')),
                         'renewal_eligibility_display': self.get_string_title(certificate_info.get('RenewalEligibility')),
                         'identifier': self.get_identifier(certificate_info.get('CertificateArn')),
-                        'additional_names_display': self.get_additional_names_display(certificate_info.get('SubjectAlternativeNames')),
+                        'additional_names_display': self.get_additional_names_display(
+                            certificate_info.get('SubjectAlternativeNames')),
                         'in_use_display': self.get_in_use_display(certificate_info.get('InUseBy')),
                         'tags': self.get_tags(certificate_info.get('CertificateArn')),
+                        'cloudwatch': self.set_cloudwatch(cloudwatch_namespace, cloudwatch_dimension_name,
+                                                          certificate_info.get('CertificateArn'), region_name),
                         'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type, raw['CertificateArn'])
                     })
     
