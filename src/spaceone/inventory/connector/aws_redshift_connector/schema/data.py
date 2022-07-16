@@ -1,5 +1,5 @@
 from schematics import Model
-from spaceone.inventory.libs.schema.resource import CloudWatchModel, CloudWatchDimensionModel, AWSCloudService
+from spaceone.inventory.libs.schema.resource import AWSCloudService
 from schematics.types import ModelType, StringType, IntType, DateTimeType, ListType, BooleanType, \
     FloatType
 
@@ -272,11 +272,4 @@ class Cluster(AWSCloudService):
         return {
             "resource_id": self.arn,
             "external_link": f"https://console.aws.amazon.com/redshiftv2/home?region={region_code}#cluster-details?cluster={self.cluster_identifier}"
-        }
-
-    def set_cloudwatch(self, region_code):
-        return {
-            "namespace": "AWS/Redshift",
-            "dimensions": [CloudWatchDimensionModel({"Name": "ClusterIdentifier", "Value": self.cluster_identifier})],
-            "region_name": region_code
         }

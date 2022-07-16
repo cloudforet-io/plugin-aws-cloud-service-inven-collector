@@ -2,7 +2,7 @@ import logging
 
 from schematics import Model
 from schematics.types import ModelType, StringType, IntType, DateTimeType, ListType, BooleanType
-from spaceone.inventory.libs.schema.resource import CloudWatchDimensionModel, AWSCloudService
+from spaceone.inventory.libs.schema.resource import AWSCloudService
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -282,12 +282,3 @@ class DistributionData(AWSCloudService):
             "external_link": f"https://console.aws.amazon.com/cloudfront/home?#distribution-settings:{self.id}"
         }
 
-    def set_cloudwatch(self, region_code='us-east-1'):
-        return {
-            "namespace": "AWS/CloudFront",
-            "dimensions": [
-                CloudWatchDimensionModel({'Name': 'DistributionId', 'Value': self.id}),
-                CloudWatchDimensionModel({'Name': 'Region', 'Value': 'Global'})
-            ],
-            "region_name": region_code
-        }

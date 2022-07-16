@@ -32,9 +32,6 @@ class Route53Connector(SchematicAWSConnector):
                     # Error Resource
                     resources.append(data)
                 else:
-                    if getattr(data, 'set_cloudwatch', None):
-                        data.cloudwatch = CloudWatchModel(data.set_cloudwatch())
-
                     resources.append(self.response_schema(
                         {'resource': HostedZoneResource({
                             'name': data.name,
@@ -53,6 +50,8 @@ class Route53Connector(SchematicAWSConnector):
         return resources
 
     def request_data(self) -> List[HostedZone]:
+        cloudwatch_namespace = 'AWS/Route53'
+        cloudwatch_dimension_name = 'HostedZoneId'
         cloudtrail_resource_type = 'AWS::Route53::HostedZone'
         paginator = self.client.get_paginator('list_hosted_zones')
         response_iterator = paginator.paginate(
@@ -73,7 +72,11 @@ class Route53Connector(SchematicAWSConnector):
                                                  resource_type="hostedzone", resource_id=raw['Id'])
                     })
 
-                    raw.update({'cloudtrail': self.set_cloudtrail('us-east-1', cloudtrail_resource_type, raw['hosted_zone_id'])})
+                    raw.update({
+                        'cloudwatch': self.set_cloudwatch(cloudwatch_namespace, cloudwatch_dimension_name,
+                                                          raw['Id'], 'us-east-1'),
+                        'cloudtrail': self.set_cloudtrail('us-east-1', cloudtrail_resource_type, raw['hosted_zone_id'])
+                    })
 
                     yield HostedZone(raw, strict=False)
                 except Exception as e:

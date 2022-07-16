@@ -1,6 +1,4 @@
 import logging
-
-from schematics import Model
 from schematics.types import StringType
 from spaceone.inventory.libs.schema.resource import AWSCloudService
 

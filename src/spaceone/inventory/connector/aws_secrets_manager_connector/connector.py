@@ -39,6 +39,7 @@ class SecretsManagerConnector(SchematicAWSConnector):
         return resources
 
     def request_data(self, region_name) -> List[Secret]:
+        cloudwatch_namespace = 'AWS/SecretsManager'
         cloudtrail_resource_type = 'AWS::SecretsManager::Secret'
         paginator = self.client.get_paginator('list_secrets')
         response_iterator = paginator.paginate(
@@ -53,6 +54,7 @@ class SecretsManagerConnector(SchematicAWSConnector):
                 try:
                     raw.update({
                         'region_name': region_name,
+                        'cloudwatch': self.set_cloudwatch(cloudwatch_namespace, None, None, region_name),
                         'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type, raw['ARN']),
                     })
 

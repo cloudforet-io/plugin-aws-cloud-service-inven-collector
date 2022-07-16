@@ -1,5 +1,4 @@
 import logging
-
 from schematics import Model
 from schematics.types import ModelType, StringType, IntType, DateTimeType, ListType, BooleanType, PolyModelType
 from spaceone.inventory.libs.schema.resource import AWSCloudService

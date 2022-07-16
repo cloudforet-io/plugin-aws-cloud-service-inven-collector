@@ -2,7 +2,7 @@ import logging
 
 from schematics import Model
 from schematics.types import ModelType, StringType, IntType, FloatType, DateTimeType, ListType, BooleanType
-from spaceone.inventory.libs.schema.resource import AWSCloudService, CloudWatchDimensionModel
+from spaceone.inventory.libs.schema.resource import AWSCloudService
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -447,12 +447,4 @@ class AutoScalingGroup(AWSCloudService):
         return {
             "resource_id": self.auto_scaling_group_arn,
             "external_link": f"https://console.aws.amazon.com/ec2/autoscaling/home?region={region_code}#AutoScalingGroups:id={self.auto_scaling_group_name}"
-        }
-
-    def set_cloudwatch(self, region_code):
-        return {
-            "namespace": "AWS/AutoScaling",
-            "dimensions": [
-                CloudWatchDimensionModel({'Name': 'AutoScalingGroupName', 'Value': self.auto_scaling_group_name})],
-            "region_name": region_code
         }

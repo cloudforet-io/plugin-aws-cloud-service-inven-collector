@@ -37,6 +37,8 @@ class SQSConnector(SchematicAWSConnector):
         return resources
 
     def request_data(self, region_name) -> List[QueData]:
+        cloudwatch_namespace = 'AWS/SQS'
+        cloudwatch_dimension_name = 'QueueName'
         cloudtrail_resource_type = 'AWS::SQS::Queue'
         resource = self.session.resource('sqs')
 
@@ -49,6 +51,8 @@ class SQSConnector(SchematicAWSConnector):
                 result = QueData(attr)
                 result.region_name = region_name
                 result.url = que.url
+                result.cloudwatch = self.set_cloudwatch(cloudwatch_namespace, cloudwatch_dimension_name,
+                                                        result.name, region_name),
                 result.cloudtrail = self.set_cloudtrail(region_name, cloudtrail_resource_type, result.url)
 
                 yield {

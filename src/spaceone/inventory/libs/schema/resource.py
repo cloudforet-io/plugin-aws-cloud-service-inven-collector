@@ -1,5 +1,5 @@
 from schematics import Model
-from schematics.types import ListType, StringType, PolyModelType, DictType, ModelType, BooleanType, DateTimeType, FloatType
+from schematics.types import ListType, StringType, PolyModelType, DictType, ModelType, BooleanType, FloatType
 from .dynamic_layout import BaseLayoutField, QuerySearchTableDynamicLayout
 from .dynamic_search import BaseDynamicSearch
 from .dynamic_widget import BaseDynamicWidget
@@ -40,18 +40,19 @@ class ReferenceModel(Model):
     external_link = StringType(required=False, serialize_when_none=False)
 
 
-class CloudWatchDimensionModel(Model):
-    name = StringType(serialized_name='Name')
-    value = StringType(serialized_name='Value')
+class CloudWatchDimension(Model):
+    Name = StringType(serialize_when_none=False)
+    Value = StringType(serialize_when_none=False)
+
+
+class CloudWatchMetricInfo(Model):
+    Namespace = StringType(serialize_when_none=False)
+    Dimensions = ListType(ModelType(CloudWatchDimension), serialize_when_none=False)
 
 
 class CloudWatchModel(Model):
-    class Option:
-        serialize_when_none = False
-
-    namespace = StringType()
-    region_name = StringType()
-    dimensions = ListType(ModelType(CloudWatchDimensionModel))
+    region_name = StringType(default='us-east-1')
+    metrics_info = ListType(ModelType(CloudWatchMetricInfo), default=[])
 
 
 class CloudTrailLookupResource(Model):

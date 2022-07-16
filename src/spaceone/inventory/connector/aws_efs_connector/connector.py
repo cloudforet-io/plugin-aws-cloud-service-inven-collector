@@ -39,6 +39,8 @@ class EFSConnector(SchematicAWSConnector):
         return resources
 
     def request_data(self, region_name) -> List[FileSystem]:
+        cloudwatch_namespace = 'AWS/EFS'
+        cloudwatch_dimension_name = 'FileSystemId'
         cloudtrail_resource_type = 'AWS::EFS::FileSystem'
         paginator = self.client.get_paginator('describe_file_systems')
         response_iterator = paginator.paginate(
@@ -56,6 +58,8 @@ class EFSConnector(SchematicAWSConnector):
                         'size': float(size.get('Value', 0.0)),
                         'life_cycle_policies': self.describe_lifecycle_configuration(raw['FileSystemId']),
                         'mount_targets': list(self.describe_mount_targets(raw['FileSystemId'])),
+                        'cloudwatch': self.set_cloudwatch(cloudwatch_namespace, cloudwatch_dimension_name,
+                                                          raw['FileSystemId'], region_name),
                         'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type, raw['FileSystemId']),
                         'arn': self.generate_arn(service="elasticfilesystem", region=region_name,
                                                  account_id=self.account_id, resource_type='file-system',

@@ -275,6 +275,8 @@ class VPCConnector(SchematicAWSConnector):
 
     def request_nat_gateway_data(self, region_name):
         self.cloud_service_type = 'NATGateway'
+        cloudwatch_namespace = 'AWS/NATGateway'
+        cloudwatch_dimension_name = 'NatGatewayId'
         cloudtrail_resource_type = 'AWS::EC2::NatGateway'
 
         response = {}
@@ -290,6 +292,8 @@ class VPCConnector(SchematicAWSConnector):
                     'arn': self.generate_arn(service=self.service_name, region=region_name, account_id=self.account_id,
                                              resource_type="nat-gateway", resource_id=ngw.get('NatGatewayId')),
                     'region_name': region_name,
+                    'cloudwatch': self.set_cloudwatch(cloudwatch_namespace, cloudwatch_dimension_name,
+                                                      ngw['NatGatewayId'], region_name),
                     'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type, ngw['NatGatewayId']),
                     'name': self._get_name_from_tags(ngw.get('Tags', []))
                 })
@@ -556,6 +560,8 @@ class VPCConnector(SchematicAWSConnector):
     def request_transit_gateway_data(self, region_name):
         self.cloud_service_type = 'TransitGateway'
         cloudtrail_resource_type = None
+        cloudwatch_namespace = 'AWS/TransitGateway'
+        cloudwatch_dimension_name = 'TransitGateway'
 
         response = self.client.describe_transit_gateways()
 
@@ -563,6 +569,8 @@ class VPCConnector(SchematicAWSConnector):
             try:
                 transit_gateway.update({
                     'region_name': region_name,
+                    'cloudwatch': self.set_cloudwatch(cloudwatch_namespace, cloudwatch_dimension_name,
+                                                      transit_gateway['TransitGatewayId'], region_name),
                     'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type,
                                                       transit_gateway['TransitGatewayId']),
                     'name': self._get_name_from_tags(transit_gateway.get('Tags', [])),
@@ -657,6 +665,8 @@ class VPCConnector(SchematicAWSConnector):
 
     def request_vpn_connection_data(self, region_name):
         self.cloud_service_type = 'VPNConnection'
+        cloudwatch_namespace = 'AWS/VPN'
+        cloudwatch_dimension_name = 'VpnId'
         cloudtrail_resource_type = 'AWS::EC2::VPNConnection'
 
         response = self.client.describe_vpn_connections()
@@ -666,6 +676,8 @@ class VPCConnector(SchematicAWSConnector):
                 vpn_connection.update({
                     'region_name': region_name,
                     'name': self._get_name_from_tags(vpn_connection.get('Tags', [])),
+                    'cloudwatch': self.set_cloudwatch(cloudwatch_namespace, cloudwatch_dimension_name,
+                                                      vpn_connection['VpnConnectionId'], region_name),
                     'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type,
                                                       vpn_connection['VpnConnectionId'])
                 })

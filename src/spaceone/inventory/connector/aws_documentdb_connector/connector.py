@@ -66,6 +66,8 @@ class DocumentDBConnector(SchematicAWSConnector):
 
     def request_cluster_data(self, region_name, **kwargs) -> List[Cluster]:
         self.cloud_service_type = 'Cluster'
+        cloudwatch_namespace = 'AWS/DocDB'
+        cloudwatch_dimension_name = 'DBClusterIdentifier'
         cloudtrail_resource_type = 'AWS::RDS::DBCluster'
 
         raw_instances = kwargs.get('raw_instances', [])
@@ -89,6 +91,8 @@ class DocumentDBConnector(SchematicAWSConnector):
                         'snapshots': self._match_snapshots(raw_snapshots, raw.get('DBClusterIdentifier')),
                         'subnet_group': self._match_subnet_group(raw.get('DBSubnetGroup')),
                         'parameter_group': self._match_parameter_group(raw.get('DBClusterParameterGroup')),
+                        'cloudwatch': self.set_cloudwatch(cloudwatch_namespace, cloudwatch_dimension_name,
+                                                          raw['DBClusterIdentifier'], region_name),
                         'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type,
                                                           raw['DBClusterIdentifier']),
                         'tags': self.request_tags(raw['DBClusterArn'])

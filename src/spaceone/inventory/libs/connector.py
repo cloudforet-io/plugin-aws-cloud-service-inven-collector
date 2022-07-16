@@ -7,7 +7,7 @@ from boto3.session import Session
 from spaceone.core import utils
 from spaceone.core.connector import BaseConnector
 from spaceone.inventory.libs.schema.resource import CloudServiceResponse, ReferenceModel, CloudWatchModel, \
-    CloudServiceResourceTags, ErrorResourceResponse, CloudTrailModel
+    CloudServiceResourceTags, ErrorResourceResponse, CloudTrailModel, CloudWatchDimension, CloudWatchMetricInfo
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -231,3 +231,45 @@ class SchematicAWSConnector(AWSConnector):
             'resource_type': resource_type
         }
         return CloudTrailModel(cloudtrail, strict=False)
+
+    def set_cloudwatch(self, namespace, dimension_name, resource_id, region_name):
+        '''
+        data.cloudwatch: {
+            "metrics_info": [
+                {
+                    "Namespace": "AWS/XXXX",
+                    "Dimensions": [
+                        {
+                            "Name": "XXXXX",
+                            "Value": "i-xxxxxx"
+                        }
+                    ]
+                }
+            ]
+            "region_name": region_name
+        }
+        '''
+
+        cloudwatch_data = {
+            'region_name': region_name,
+            'metrics_info': self.set_metrics_info(namespace, dimension_name, resource_id)
+        }
+
+        return CloudWatchModel(cloudwatch_data, strict=False)
+
+    def set_metrics_info(self, namespace, dimension_name, resource_id):
+        metric_info = {'Namespace': namespace}
+
+        if dimension_name:
+            metric_info.update({'Dimensions': self.set_dimensions(dimension_name, resource_id)})
+
+        return [CloudWatchMetricInfo(metric_info, strict=False)]
+
+    @staticmethod
+    def set_dimensions(dimension_name, resource_id):
+        dimension = {
+            'Name': dimension_name,
+            'Value': resource_id
+        }
+
+        return [CloudWatchDimension(dimension, strict=False)]

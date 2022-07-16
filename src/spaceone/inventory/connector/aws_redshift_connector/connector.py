@@ -38,6 +38,8 @@ class RedshiftConnector(SchematicAWSConnector):
         return resources
 
     def request_data(self, region_name) -> List[Cluster]:
+        cloudwatch_namespace = 'AWS/Redshift'
+        cloudwatch_dimension_name = 'ClusterIdentifier'
         cloudtrail_resource_type = 'AWS::Redshift::Cluster'
         paginator = self.client.get_paginator('describe_clusters')
         response_iterator = paginator.paginate(
@@ -54,6 +56,8 @@ class RedshiftConnector(SchematicAWSConnector):
                         'arn': self.generate_arn(service=self.service_name, region=region_name,
                                                  account_id=self.account_id, resource_type='cluster',
                                                  resource_id=raw.get('ClusterIdentifier')),
+                        'cloudwatch': self.set_cloudwatch(cloudwatch_namespace, cloudwatch_dimension_name,
+                                                          raw['ClusterIdentifier'], region_name),
                         'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type,
                                                           raw['ClusterIdentifier']),
                         'tags': list(self.describe_tags({"service": self.service_name,

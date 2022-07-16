@@ -60,6 +60,8 @@ class DirectConnectConnector(SchematicAWSConnector):
 
     def connection_request_data(self, region_name) -> List[Connection]:
         self.cloudservice_type = 'Connection'
+        cloudwatch_namespace = 'AWS/DX'
+        cloudwatch_dimension_name = 'ConnectionId'
 
         response = self.client.describe_connections()
 
@@ -70,7 +72,11 @@ class DirectConnectConnector(SchematicAWSConnector):
                 if bandwidth_size:
                     raw.update({'bandwidth_gbps': bandwidth_size})
 
-                raw.update({'cloudtrail': self.set_cloudtrail(region_name, None, raw['connectionId'])})
+                raw.update({
+                    'cloudtrail': self.set_cloudtrail(region_name, None, raw['connectionId']),
+                    'cloudwatch': self.set_cloudwatch(cloudwatch_namespace, cloudwatch_dimension_name,
+                                                      raw['connectionId'], region_name),
+                })
                 connection_vo = Connection(raw, strict=False)
                 yield {
                     'data': connection_vo,

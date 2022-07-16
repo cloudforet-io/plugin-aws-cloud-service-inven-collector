@@ -48,6 +48,8 @@ class EBSConnector(SchematicAWSConnector):
 
     def request_volume_data(self, region_name) -> List[Volume]:
         self.cloud_service_type = 'Volume'
+        cloudwatch_namespace = 'AWS/EBS'
+        cloudwatch_dimension_name = 'VolumeId'
         cloudtrail_resource_type = 'AWS::EC2::Volume'
 
         paginator = self.client.get_paginator('describe_volumes')
@@ -67,6 +69,8 @@ class EBSConnector(SchematicAWSConnector):
                     attr = self.client.describe_volume_attribute(Attribute='productCodes', VolumeId=raw['VolumeId'])
                     raw.update({
                         'attribute': Attribute(attr, strict=False),
+                        'cloudwatch': self.set_cloudwatch(cloudwatch_namespace, cloudwatch_dimension_name,
+                                                          raw['VolumeId'], region_name),
                         'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type, raw['VolumeId']),
                         'size': self.get_size_gb_to_bytes(raw.get('Size', 0)),
                         'arn': self.generate_arn(service=self.service_name, region=region_name,

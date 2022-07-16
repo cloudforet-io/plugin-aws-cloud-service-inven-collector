@@ -2,7 +2,7 @@ import logging
 
 from schematics import Model
 from schematics.types import ModelType, StringType, IntType, ListType
-from spaceone.inventory.libs.schema.resource import CloudWatchModel, CloudWatchDimensionModel, AWSCloudService
+from spaceone.inventory.libs.schema.resource import AWSCloudService
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -42,11 +42,4 @@ class Topic(AWSCloudService):
         return {
             "resource_id": self.topic_arn,
             "external_link": f"https://console.aws.amazon.com/sns/v3/home?region={region_code}#/topic/{self.topic_arn}"
-        }
-
-    def set_cloudwatch(self, region_code):
-        return {
-            "namespace": "AWS/SNS",
-            "dimensions": [CloudWatchDimensionModel({'Name': 'TopicName', 'Value': self.name})],
-            "region_name": region_code
         }

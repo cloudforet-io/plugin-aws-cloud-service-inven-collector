@@ -2,7 +2,7 @@ import logging
 
 from schematics import Model
 from schematics.types import ModelType, StringType, IntType, ListType, FloatType
-from spaceone.inventory.libs.schema.resource import CloudWatchModel, CloudWatchDimensionModel, AWSCloudService
+from spaceone.inventory.libs.schema.resource import AWSCloudService
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -178,7 +178,6 @@ class Bucket(AWSCloudService):
     request_payment = ModelType(RequestPayment, serialize_when_none=False)
     notification_configurations = ListType(ModelType(NotificationConfiguration), default=[])
     region_name = StringType(default="")
-    cloudwatch = ModelType(CloudWatchModel, serialize_when_none=False)
     object_count = IntType(default=0)
     object_total_size = FloatType(default=0.0)
     size = FloatType(default=0.0)
@@ -187,16 +186,4 @@ class Bucket(AWSCloudService):
         return {
             "resource_id": self.arn,
             "external_link": f"https://console.aws.amazon.com/s3/buckets/{self.name}/?region={self.region_name}"
-        }
-
-    def set_cloudwatch(self):
-        return {
-            "namespace": "AWS/S3",
-            "dimensions": [CloudWatchDimensionModel(
-                {
-                    "Name": "BucketName",
-                    "Value": self.name
-                })
-            ],
-            "region_name": self.region_name
         }

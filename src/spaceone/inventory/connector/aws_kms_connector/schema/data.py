@@ -1,6 +1,6 @@
 import logging
 from schematics.types import ModelType, StringType, DateTimeType, ListType, BooleanType
-from spaceone.inventory.libs.schema.resource import CloudWatchModel, CloudWatchDimensionModel, AWSCloudService
+from spaceone.inventory.libs.schema.resource import AWSCloudService
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -48,11 +48,4 @@ class Key(AWSCloudService):
         return {
             "resource_id": self.arn,
             "external_link": f"https://console.aws.amazon.com/kms/home?region={region_code}#/kms/{self.key_type_path}/{self.key_id}/"
-        }
-
-    def set_cloudwatch(self, region_code):
-        return {
-            "namespace": "AWS/KMS",
-            "dimensions": [CloudWatchDimensionModel({'Name': 'KeyId', 'Value': self.key_id})],
-            "region_name": region_code
         }

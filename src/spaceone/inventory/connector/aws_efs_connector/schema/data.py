@@ -3,7 +3,7 @@ import logging
 from schematics import Model
 from schematics.types import ModelType, StringType, IntType, DateTimeType, ListType, BooleanType, \
     FloatType
-from spaceone.inventory.libs.schema.resource import CloudWatchDimensionModel, AWSCloudService
+from spaceone.inventory.libs.schema.resource import AWSCloudService
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -71,11 +71,4 @@ class FileSystem(AWSCloudService):
         return {
             "resource_id": self.arn,
             "external_link": f"https://console.aws.amazon.com/efs/home?region={region_code}#/filesystems/{self.file_system_id}"
-        }
-
-    def set_cloudwatch(self, region_code):
-        return {
-            "namespace": "AWS/EFS",
-            "dimensions": [CloudWatchDimensionModel({'Name': 'FileSystemId', 'Value': self.file_system_id})],
-            "region_name": region_code
         }

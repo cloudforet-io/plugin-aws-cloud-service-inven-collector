@@ -2,7 +2,7 @@ import logging
 
 from schematics import Model
 from schematics.types import ModelType, StringType, IntType, ListType, BooleanType
-from spaceone.inventory.libs.schema.resource import CloudWatchDimensionModel, AWSCloudService
+from spaceone.inventory.libs.schema.resource import AWSCloudService
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -78,11 +78,4 @@ class HostedZone(AWSCloudService):
         return {
             "resource_id": self.arn,
             "external_link": f"https://console.aws.amazon.com/route53/home#resource-record-sets:{self.hosted_zone_id}"
-        }
-
-    def set_cloudwatch(self, region_name='us-east-1'):
-        return {
-            "namespace": "AWS/Route53",
-            "dimensions": [CloudWatchDimensionModel({'Name': 'HostedZoneId', 'Value': self.hosted_zone_id})],
-            "region_name": region_name
         }

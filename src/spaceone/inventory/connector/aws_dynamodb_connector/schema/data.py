@@ -2,7 +2,7 @@ import logging
 
 from schematics import Model
 from schematics.types import ModelType, StringType, IntType, DateTimeType, ListType, BooleanType
-from spaceone.inventory.libs.schema.resource import CloudWatchDimensionModel, AWSCloudService
+from spaceone.inventory.libs.schema.resource import AWSCloudService
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -198,11 +198,4 @@ class Table(AWSCloudService):
         return {
             "resource_id": self.table_arn,
             "external_link": f"https://console.aws.amazon.com/dynamodb/home?region={region_code}#tables:selected={self.table_name};tab=overview"
-        }
-
-    def set_cloudwatch(self, region_code):
-        return {
-            "namespace": "AWS/DynamoDB",
-            "dimensions": [CloudWatchDimensionModel({'Name': 'TableName', 'Value': self.table_name})],
-            "region_name": region_code
         }

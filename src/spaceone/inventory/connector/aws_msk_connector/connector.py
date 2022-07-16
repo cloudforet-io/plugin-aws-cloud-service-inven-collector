@@ -55,6 +55,8 @@ class MSKConnector(SchematicAWSConnector):
     def request_cluster_data(self, region_name) -> List[Cluster]:
         cloud_service_group = 'MSK'
         cloud_service_type = 'Cluster'
+        cloudwatch_namespace = 'AWS/Kafka'
+        cloudwatch_dimension_name = 'ClusterName'
         cloudtrail_resource_type = 'AWS::MSK::Cluster'
         self.cloud_service_type = cloud_service_type
 
@@ -73,6 +75,8 @@ class MSKConnector(SchematicAWSConnector):
                         'tags': self.convert_tags(raw.get('Tags', {})),
                         'node_info_list': self.get_nodes(raw.get('ClusterArn')),
                         'cluster_operation_info': self.get_operation_cluster(raw.get('ClusterArn')),
+                        'cloudwatch': self.set_cloudwatch(cloudwatch_namespace, cloudwatch_dimension_name,
+                                                          raw['ClusterName'], region_name),
                         'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type, raw['ClusterArn']),
                     })
 

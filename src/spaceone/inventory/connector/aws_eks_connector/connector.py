@@ -7,7 +7,7 @@ from spaceone.inventory.connector.aws_eks_connector.schema.resource import Clust
     NodeGroupResource, NodeGroupResponse
 from spaceone.inventory.connector.aws_eks_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
-from spaceone.inventory.libs.schema.resource import ReferenceModel, AWSTags
+from spaceone.inventory.libs.schema.resource import ReferenceModel, AWSTags, CloudWatchModel
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -75,6 +75,7 @@ class EKSConnector(SchematicAWSConnector):
                     if cluster := raw.get('cluster'):
                         cluster.update({
                             'updates': list(self.list_updates(_cluster_name)),
+                            'cloudwatch': self.eks_cluster_cloudwatch(cluster, region_name),
                             'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type, cluster['name']),
                             'tags': list(map(lambda tag: AWSTags(tag, strict=False),
                                              self.convert_tags(cluster.get('tags', {}))))
@@ -161,6 +162,19 @@ class EKSConnector(SchematicAWSConnector):
             for update_id in data.get('updateIds', []):
                 response = self.client.describe_update(name=cluster_name, updateId=update_id)
                 yield Update(response.get('update', {}), strict=False)
+
+    def eks_cluster_cloudwatch(self, cluster, region_name):
+        cloudwatch_kubernetes = self.set_cloudwatch('Kubernetes', 'CLUSTER_ID', cluster['name'], region_name)
+        cloudwatch_container_insights = self.set_cloudwatch('ContainerInsights', 'ClusterName',
+                                                            cluster['name'], region_name)
+
+        cloudwatch_vo = CloudWatchModel({
+            'region_name': region_name,
+            'metrics_info': cloudwatch_kubernetes.metrics_info +
+                            cloudwatch_container_insights.metrics_info
+        }, strict=False)
+
+        return cloudwatch_vo
 
     @staticmethod
     def _convert_tag_format(tags):

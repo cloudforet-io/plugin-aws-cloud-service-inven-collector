@@ -2,7 +2,7 @@ import logging
 
 from schematics import Model
 from schematics.types import ModelType, StringType, IntType, DateTimeType, ListType, BooleanType
-from spaceone.inventory.libs.schema.resource import CloudWatchDimensionModel, AWSCloudService
+from spaceone.inventory.libs.schema.resource import AWSCloudService
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -187,13 +187,6 @@ class Instance(AWSCloudService):
             "external_link": f"https://console.aws.amazon.com/docdb/home?region={region_code}#instance-details/{self.db_instance_identifier}"
         }
 
-    def set_cloudwatch(self, region_code):
-        return {
-            "namespace": "AWS/DocDB",
-            "dimensions": [CloudWatchDimensionModel({'Name': 'DBInstanceIdentifier', 'Value': self.db_instance_identifier})],
-            "region_name": region_code
-        }
-
 
 '''
 DB CLUSTER
@@ -255,11 +248,4 @@ class Cluster(AWSCloudService):
         return {
             "resource_id": self.db_cluster_arn,
             "external_link": f"https://console.aws.amazon.com/docdb/home?region={region_code}#cluster-details/{self.db_cluster_identifier}"
-        }
-
-    def set_cloudwatch(self, region_code):
-        return {
-            "namespace": "AWS/DocDB",
-            "dimensions": [CloudWatchDimensionModel({'Name': 'DBClusterIdentifier', 'Value': self.db_cluster_identifier})],
-            "region_name": region_code
         }
