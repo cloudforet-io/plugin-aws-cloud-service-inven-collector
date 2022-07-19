@@ -466,9 +466,6 @@ cst_natgw._metadata = CloudServiceTypeMeta.set_meta(
         }),
         TextDyField.data_source('VPC ID', 'data.vpc_id'),
         TextDyField.data_source('Subnet', 'data.subnet_id'),
-        DateTimeDyField.data_source('Created', 'launched_at', options={
-            'is_optional': True
-        }),
         TextDyField.data_source('ARN', 'data.arn', options={
             'is_optional': True
         }),
@@ -660,9 +657,6 @@ cst_endpoint._metadata = CloudServiceTypeMeta.set_meta(
         TextDyField.data_source('VPC ID', 'data.vpc_id'),
         TextDyField.data_source('Service Name', 'data.service_name'),
         TextDyField.data_source('Endpoint Type', 'instance_type'),
-        DateTimeDyField.data_source('Creation Time', 'launched_at', options={
-            'is_optional': True
-        }),
         TextDyField.data_source('ARN', 'data.arn', options={
             'is_optional': True
         }),

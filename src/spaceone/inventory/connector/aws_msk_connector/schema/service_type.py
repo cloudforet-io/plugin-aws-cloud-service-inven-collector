@@ -38,7 +38,6 @@ cst_cluster._metadata = CloudServiceTypeMeta.set_meta(
         TextDyField.data_source('Kafka Version', 'data.current_broker_software_info.kafka_version'),
         TextDyField.data_source('Broker Type', 'data.broker_node_group_info.instance_type'),
         TextDyField.data_source('Number Of  Broker Nodes', 'data.number_of_broker_nodes'),
-        DateTimeDyField.data_source('Creation time', 'launched_at'),
         TextDyField.data_source('ARN', 'data.cluster_arn', options={
             'is_optional': True
         }),
@@ -124,7 +123,6 @@ cst_config._metadata = CloudServiceTypeMeta.set_meta(
             'alert': ['DELETE_FAILED']
         }),
         TextDyField.data_source('Latest Revision', 'data.latest_revision.revision'),
-        DateTimeDyField.data_source('Creation time', 'launched_at'),
         TextDyField.data_source('ARN', 'data.arn', options={
             'is_optional': True
         }),

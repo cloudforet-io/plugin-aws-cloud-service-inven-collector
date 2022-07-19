@@ -29,7 +29,6 @@ cst_api._metadata = CloudServiceTypeMeta.set_meta(
         TextDyField.data_source('ID', 'data.id'),
         TextDyField.data_source('Protocol', 'instance_type', default_outline_badge=['REST', 'WEBSOCKET', 'HTTP']),
         TextDyField.data_source('Endpoint Type', 'data.endpoint_type'),
-        DateTimeDyField.data_source('Creation Time', 'launched_at'),
         # For Dynamic Table
         TextDyField.data_source('ARN', 'data.arn', options={
             'is_optional': True
