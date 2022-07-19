@@ -134,7 +134,6 @@ launch_configuration._metadata = CloudServiceTypeMeta.set_meta(
         TextDyField.data_source('AMI ID', 'data.image_id'),
         TextDyField.data_source('Instance Type', 'data.instance_type'),
         TextDyField.data_source('Spot Price', 'data.spot_price'),
-        DateTimeDyField.data_source('Creation Time', 'launched_at'),
         # For Dynamic Table
         TextDyField.data_source('ARN', 'data.arn', options={
             'is_optional': True
