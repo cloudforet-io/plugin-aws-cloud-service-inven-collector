@@ -64,9 +64,10 @@ class Route53Connector(SchematicAWSConnector):
         for data in response_iterator:
             for raw in data.get('HostedZones', []):
                 try:
+                    hosted_zone_id = self.get_hosted_zone_id(raw['Id'])
                     raw.update({
                         'type': self.set_hosted_zone_type(raw['Config']['PrivateZone']),
-                        'hosted_zone_id': self.get_hosted_zone_id(raw['Id']),
+                        'hosted_zone_id': hosted_zone_id,
                         'record_sets': list(self.describe_record_sets(raw['Id'])),
                         'arn': self.generate_arn(service=self.service_name, region="", account_id="",
                                                  resource_type="hostedzone", resource_id=raw['Id'])
@@ -74,7 +75,7 @@ class Route53Connector(SchematicAWSConnector):
 
                     raw.update({
                         'cloudwatch': self.set_cloudwatch(cloudwatch_namespace, cloudwatch_dimension_name,
-                                                          raw['Id'], 'us-east-1'),
+                                                          hosted_zone_id, 'us-east-1'),
                         'cloudtrail': self.set_cloudtrail('us-east-1', cloudtrail_resource_type, raw['hosted_zone_id'])
                     })
 
