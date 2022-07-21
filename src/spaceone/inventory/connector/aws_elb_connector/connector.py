@@ -332,11 +332,11 @@ class ELBConnector(SchematicAWSConnector):
         if raw_lb.get('Type') == 'application':
             elb_id = self.get_elb_id_from_arn(raw_lb['LoadBalancerArn'])
             if elb_id:
-                cloudwatch_elb_type = self.set_cloudwatch('ApplicationELB', 'LoadBalancer', elb_id, region_name)
+                cloudwatch_elb_type = self.set_cloudwatch('AWS/ApplicationELB', 'LoadBalancer', elb_id, region_name)
         elif raw_lb.get('Type') == 'network':
             elb_id = self.get_elb_id_from_arn(raw_lb['LoadBalancerArn'])
             if elb_id:
-                cloudwatch_elb_type = self.set_cloudwatch('NetworkELB', 'LoadBalancer', elb_id, region_name)
+                cloudwatch_elb_type = self.set_cloudwatch('AWS/NetworkELB', 'LoadBalancer', elb_id, region_name)
 
         metrics_info = cloudwatch_elb.metrics_info
         if cloudwatch_elb_type:
