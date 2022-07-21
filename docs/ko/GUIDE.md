@@ -140,7 +140,7 @@ ARN에 대한 자세한 설명은 [AWS Documentation](https://docs.aws.amazon.co
 <img src="./GUIDE-img/create-iam-user(h2)-4.png" width="80%" height="80%">
 
 (6) 현재 단계에서 IAM 사용자에게 권한 설정을 하지 않습니다.  
-[[3. 그룹 생성](3-그룹(Group)-생성)] 단계에서 그룹에 정책을 추가하여 사용자에게 권한을 부여하게 됩니다.   
+[[3. 그룹 생성](#3-그룹Group-생성)] 단계에서 그룹에 정책을 추가하여 사용자에게 권한을 부여하게 됩니다.   
 [사용자 만들기] 버튼을 클릭합니다.
 
 <img src="./GUIDE-img/create-iam-user(h2)-4.png" width="80%" height="80%">
@@ -254,7 +254,7 @@ AWS 서비스 계정 등록 시 **[aws_assume_role]** 방식에 필요한 **[Rol
 
 
 (2-2) **[aws_asuume_role]** 방식 예시입니다. 
-추가적으로 [**[Role ARN]**](#4-역할(Role)-생성(선택))설정 정보가 필요합니다.
+추가적으로 [**[Role ARN]**](#4-역할Role-생성선택)설정 정보가 필요합니다.
 
 <img src="./GUIDE-img/create-service-account(h2)-4.png" width="80%" height="80%">
 
