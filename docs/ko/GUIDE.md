@@ -59,13 +59,13 @@ ARN에 대한 자세한 설명은 [AWS Documentation](https://docs.aws.amazon.co
 
 ## 1. 정책(Policy) 생성
 
-[정책](https://docs.aws.amazon.com/ko_kr/mediaconvert/latest/ug/auth_access_what-are-policies.html)은 자격증명이나 AWS리소스에 대한 접근 권한을 정의합니다. 
+[정책](https://docs.aws.amazon.com/mediaconvert/latest/ug/auth_access_what-are-policies.html)은 자격증명이나 AWS리소스에 대한 접근 권한을 정의합니다. 
 생성된 정책은 IAM 사용자, 그룹, 역할에 적용될 수 있습니다. 
 
 클라우드포레는 AWS의 리소스 정보를 수집하기 위해 적절한 권한을 설정하여 정책(Policy)으로 만들어 사용하는 것을 권장합니다.  
 컬렉터 플러그인은 읽기 권한 이외의 어떠한 권한도 필요하지 않습니다.
 
-각 Plugin에서 필요로 하는 권한에 대한 정보는 아래와 같습니다.
+각 플러그인에서 필요로 하는 권한에 대한 정보는 아래와 같습니다.
 
 |Plugin                            | URL                                                                                              |
 |----------------------------------|--------------------------------------------------------------------------------------------------|
@@ -79,8 +79,7 @@ ARN에 대한 자세한 설명은 [AWS Documentation](https://docs.aws.amazon.co
 
 인벤토리 컬렉터가 실행되는데 필요한 권한에 대한 정책 생성 방법은 아래와 같습니다.
 
-(1) [AWS 콘솔](https://signin.aws.amazon.com/signin?redirect_uri=https%3A%2F%2Fconsole.aws.amazon.com%2Fconsole%2Fhome%3FhashArgs%3D%2523%26isauthcode%3Dtrue%26nc2%3Dh_ct%26src%3Dheader-signin%26state%3DhashArgsFromTB_us-west-1_170054870035abe3&client_id=arn%3Aaws%3Asignin%3A%3A%3Aconsole%2Fcanvas&forceMobileApp=0&code_challenge=50EZtidRQYVM_RvQ0yHgj2KQjR311eLzH3684mE0Tlk&code_challenge_method=SHA-256) 로그인 > [IAM 대시보드](https://us-east-1.console.aws.amazon.com/iamv2/home#/home) 이동 
-
+(1) [AWS 콘솔](https://signin.aws.amazon.com/signin?redirect_uri=https%3A%2F%2Fconsole.aws.amazon.com%2Fconsole%2Fhome%3FhashArgs%3D%2523%26isauthcode%3Dtrue%26nc2%3Dh_ct%26src%3Dheader-signin%26state%3DhashArgsFromTB_us-west-1_170054870035abe3&client_id=arn%3Aaws%3Asignin%3A%3A%3Aconsole%2Fcanvas&forceMobileApp=0&code_challenge=50EZtidRQYVM_RvQ0yHgj2KQjR311eLzH3684mE0Tlk&code_challenge_method=SHA-256) 로그인 > [IAM 대시보드](https://us-east-1.console.aws.amazon.com/iamv2/home#/home) 이동   
 (1-2) 대시보드의 [액세스 관리 > 정책] 메뉴에서 정책을 생성할 수 있습니다.
 
 <img src="./GUIDE-img/create-policy(h2)-1.png" width="80%" height="80%">
@@ -90,8 +89,8 @@ ARN에 대한 자세한 설명은 [AWS Documentation](https://docs.aws.amazon.co
 <img src="./GUIDE-img/create-policy(h2)-2.png" width="80%" height="80%">
 
 (2-1) 해당 정책에 대한 권한을 부여하기 위해 [JSON] 탭을 클릭합니다.  
-
-(2-2) 컬렉터 플러그인은 서비스 데이터를 수집하기 위한 특정 권한이 있어야 합니다. [권한 목록](https://github.com/spaceone-dev/plugin-aws-cloud-service-inven-collector#authentication-overview)을 복사 후 [다음:태그] 버튼을 클릭합니다.
+(2-2) 컬렉터 플러그인은 서비스 데이터를 수집하기 위한 특정 권한이 있어야 합니다.  
+위 테이블에서 원하는 플러그인에 맞는 권한 목록을 복사 후 [다음:태그] 버튼을 클릭합니다.
 
 
 > 💡 **권한 정의 오류 발생 시**  
@@ -114,21 +113,19 @@ ARN에 대한 자세한 설명은 [AWS Documentation](https://docs.aws.amazon.co
 
 ## 2. IAM 사용자 생성
 
- [IAM](https://docs.aws.amazon.com/ko_kr/IAM/latest/UserGuide/introduction.html) 사용자는 AWS 리소스에 대한 액세스를 안전하게 제어하기 위해 생성합니다. 
-생성된 IAM 사용자를 다음 단계에서 그룹에 추가합니다.
+ [IAM](https://docs.aws.amazon.com/IAM/latest/UserGuide/introduction.html) 사용자는 AWS 리소스에 대한 액세스를 안전하게 제어하기 위해 생성합니다. 
+생성된 IAM 사용자를 다음 단계에서 그룹에 추가합니다.  
 이 과정을 통해 **[AWS Access Key ID]** 와 **[AWS Secret Key]** 값을 얻을 수 있습니다.
 
-(1) [IAM 대시보드](https://us-east-1.console.aws.amazon.com/iamv2/home#/home)로 이동
-
+(1) [IAM 대시보드](https://us-east-1.console.aws.amazon.com/iamv2/home#/home)로 이동  
 (1-1) 대시보드에서 [액세스 관리 > 사용자] 메뉴에서 사용자를 생성할 수 있습니다.
 <img src="./GUIDE-img/create-iam-user(h2)-1.png" width="80%" height="80%">
 
-(2)[사용자 추가] 버튼을 클릭합니다.
+(2) [사용자 추가] 버튼을 클릭합니다.
 
 <img src="./GUIDE-img/create-iam-user(h2)-2.png" width="80%" height="80%">
 
-(3) 사용자 이름을 입력한 후 AWS 액세스 유형 선택에서 [액세스키 - 프로그래밍 방식 액세스]를 선택합니다.
-
+(3) 사용자 이름을 입력한 후 AWS 액세스 유형 선택에서 [액세스키 - 프로그래밍 방식 액세스]를 선택합니다.  
 (3-1) [다음: 권한] 버튼을 클릭합니다.
 
 <img src="./GUIDE-img/create-iam-user(h2)-3.png"  width="80%" height="80%">
@@ -138,19 +135,18 @@ ARN에 대한 자세한 설명은 [AWS Documentation](https://docs.aws.amazon.co
 <img src="./GUIDE-img/create-iam-user(h2)-4.png" width="80%" height="80%">
 
 (5) 별도 Tag 기반 관리 방침이 없는 경우 생략 후 [다음: 태그] 버튼을 클릭합니다.  
-      클라우드포레 컬렉터 플러그인은 태그 정보를 사용하지 않습니다.
+클라우드포레 컬렉터 플러그인은 태그 정보를 사용하지 않습니다.
 
 <img src="./GUIDE-img/create-iam-user(h2)-4.png" width="80%" height="80%">
 
 (6) 현재 단계에서 IAM 사용자에게 권한 설정을 하지 않습니다.  
-     [그룹 생성](https://www.notion.so/AWS-00c4b41daeb4478890495527b56069af) 단계에서 그룹에 정책을 추가하여 사용자에게 권한을 부여하게 됩니다.   
-     [사용자 만들기] 버튼을 클릭합니다.
+[[3. 그룹 생성](#3-그룹Group-생성)] 단계에서 그룹에 정책을 추가하여 사용자에게 권한을 부여하게 됩니다.   
+[사용자 만들기] 버튼을 클릭합니다.
 
 <img src="./GUIDE-img/create-iam-user(h2)-4.png" width="80%" height="80%">
 
 (7) 서비스 계정 등록 시 필요한 **[AWS Access Key ID]** 와 **[AWS Secret Key]** 의 해당하는 설정 정보인 [액세스 키 ID] 와 [비밀 액세스 키]가 생성됩니다.  
-이후 페이지 이동 시 해당 정보들을 확인할 수 없으니 **메모**해주십시오.
-
+이후 페이지 이동 시 해당 정보들을 확인할 수 없으니 **메모**해주십시오.  
 (7-1) [닫기] 버튼을 눌러 사용자 추가를 완료합니다.
 
 <img src="./GUIDE-img/create-iam-user(h2)-7.png" width="80%" height="80%">
@@ -160,11 +156,10 @@ ARN에 대한 자세한 설명은 [AWS Documentation](https://docs.aws.amazon.co
 
 ## 3. 그룹(Group) 생성
 
-[그룹](https://docs.aws.amazon.com/ko_kr/IAM/latest/UserGuide/id_groups.html)은 IAM 사용자의 집합입니다. 
+[그룹](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_groups.html)은 IAM 사용자의 집합입니다. 
 그룹을 통해 사용자들에 대한 권한을 지정하여 해당 사용자들에 대한 권한을 더욱 쉽게 관리할 수 있습니다.
 
-(1) [IAM 대시보드](https://us-east-1.console.aws.amazon.com/iamv2/home#/home)로 이동
-
+(1) [IAM 대시보드](https://us-east-1.console.aws.amazon.com/iamv2/home#/home)로 이동  
 (1-1) 대시보드에서 [액세스 관리 > 사용자 그룹] 메뉴에서 사용자 그룹을 생성할 수 있습니다.
 
 <img src="./GUIDE-img/create-group(h2)-1.png" width="80%" height="80%">
@@ -173,10 +168,8 @@ ARN에 대한 자세한 설명은 [AWS Documentation](https://docs.aws.amazon.co
 
 <img src="./GUIDE-img/create-group(h2)-2.png" width="80%" height="80%">
 
-(3) 그룹에 사용자 추가에 추가할 사용자를 선택합니다.
-
-(3-1) 권한 정책 연결에서 그룹에 추가할 정책을 선택합니다.
-
+(3) 그룹에 사용자 추가에 추가할 사용자를 선택합니다.  
+(3-1) 권한 정책 연결에서 그룹에 추가할 정책을 선택합니다.  
 (3-2) [그룹 생성] 버튼을 클릭합니다.
 
 <img src="./GUIDE-img/create-group(h2)-3.png"  width="80%" height="80%">
@@ -199,8 +192,7 @@ _각각의 AWS 계정에 IAM 사용자 [A], [B], [C] 가 있고 역할을 위임
 AWS 서비스 계정 등록 시 **[aws_assume_role]** 방식에 필요한 **[Role ARN]** 설정 정보를 얻을 수 있습니다.  
 **[aws_access_key]** 방식을 진행 중이라면 이 과정을 생략하시고 [서비스 계정 등록](#5-서비스-계정-등록)으로 이동하십시오.  
 
-(1) [IAM 대시보드](https://us-east-1.console.aws.amazon.com/iamv2/home#/home)로 이동
-
+(1) [IAM 대시보드](https://us-east-1.console.aws.amazon.com/iamv2/home#/home)로 이동  
 (1-1) 대시보드에서 [액세스 관리 > 역할] 메뉴에서 역할을 생성할 수 있습니다.
 
 <img src="./GUIDE-img/create-role(h2)-1.png" width="80%" height="80%">
@@ -209,10 +201,8 @@ AWS 서비스 계정 등록 시 **[aws_assume_role]** 방식에 필요한 **[Rol
 
 <img src="./GUIDE-img/create-role(h2)-2.png" width="80%" height="80%">
 
-(3) 신뢰할 수 있는 엔터티 유형으로 [AWS 계정]을 클릭합니다.
-
-(3-1) [다음] 버튼을 클릭합니다.
-
+(3) 신뢰할 수 있는 엔터티 유형으로 [AWS 계정]을 클릭합니다.  
+(3-1) [다음] 버튼을 클릭합니다.  
 (3-2) 역할을 부여할 AWS계정을 선택할 수 있습니다.
 
 [이 계정]을 선택할 경우 자신의 계정이 사용하고 있는 클라우드 리소스에 대한 권한을 부여하게 됩니다.
@@ -264,7 +254,7 @@ AWS 서비스 계정 등록 시 **[aws_assume_role]** 방식에 필요한 **[Rol
 
 
 (2-2) **[aws_asuume_role]** 방식 예시입니다. 
-추가적으로 **[Role ARN]** [](https://www.notion.so/AWS-00c4b41daeb4478890495527b56069af)설정 정보가 필요합니다.
+추가적으로 [**[Role ARN]**](#4-역할Role-생성선택)설정 정보가 필요합니다.
 
 <img src="./GUIDE-img/create-service-account(h2)-4.png" width="80%" height="80%">
 
