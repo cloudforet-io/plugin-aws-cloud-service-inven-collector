@@ -72,7 +72,7 @@ class LambdaConnector(SchematicAWSConnector):
                     func = LambdaFunctionData(raw, strict=False)
                     func.region_name = region_name
                     func.cloudwatch = self.set_cloudwatch(cloudwatch_namespace, cloudwatch_dimension_name,
-                                                          raw['FunctionName'], region_name),
+                                                          raw['FunctionName'], region_name)
                     func.cloudtrail = self.set_cloudtrail(region_name, cloudtrail_resource_type, func.name)
 
                     if raw.get('State'):
