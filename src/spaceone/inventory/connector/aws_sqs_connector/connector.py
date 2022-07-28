@@ -52,7 +52,7 @@ class SQSConnector(SchematicAWSConnector):
                 result.region_name = region_name
                 result.url = que.url
                 result.cloudwatch = self.set_cloudwatch(cloudwatch_namespace, cloudwatch_dimension_name,
-                                                        result.name, region_name),
+                                                        result.name, region_name)
                 result.cloudtrail = self.set_cloudtrail(region_name, cloudtrail_resource_type, result.url)
 
                 yield {
