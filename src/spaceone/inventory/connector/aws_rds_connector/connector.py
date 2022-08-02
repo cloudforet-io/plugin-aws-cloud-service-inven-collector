@@ -4,13 +4,13 @@ from typing import List
 
 from spaceone.inventory.connector.aws_rds_connector.schema.data import Database, Snapshot, SubnetGroup, \
     ParameterGroup, Parameter, Cluster, Instance, OptionGroup
-from spaceone.inventory.connector.aws_rds_connector.schema.resource import DatabaseResource, DatabaseResponse, \
+from spaceone.inventory.connector.aws_rds_connector.schema.resource import DatabaseResponse, \
     SnapshotResource, SnapshotResponse, SubnetGroupResource, SubnetGroupResponse, ParameterGroupResource, \
     ParameterGroupResponse, OptionGroupResource, OptionGroupResponse, InstanceResource, InstanceResponse, \
     DBClusterResource, DBInstanceResource
 from spaceone.inventory.connector.aws_rds_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
-from spaceone.inventory.libs.schema.resource import ReferenceModel, CloudWatchModel
+from spaceone.inventory.libs.schema.resource import ReferenceModel, AWSTags
 
 _LOGGER = logging.getLogger(__name__)
 DEFAULT_RDS_FILTER = ['aurora', 'aurora-mysql', 'mysql', 'mariadb', 'postgres', 'aurora-postgresql',
@@ -111,7 +111,7 @@ class RDSConnector(SchematicAWSConnector):
                     'cloudwatch': self.set_cloudwatch(cloudwatch_namespace, cloudwatch_dimension_name,
                                                       cluster.db_cluster_identifier, region_name),
                     'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type, cluster.database_name),
-                    'tags': cluster.tags
+                    'tags': list(map(lambda tag: AWSTags(tag, strict=False), cluster.tags)),
                 }
                 yield Database(db, strict=False), DBClusterResource, cluster_identifier
             except Exception as e:
@@ -159,7 +159,7 @@ class RDSConnector(SchematicAWSConnector):
                 if raw.get('Engine') in DEFAULT_RDS_FILTER:
                     raw.update({
                         'db_cluster_role': 'Master',
-                        'tags': self.list_tags_for_resource(raw['DBClusterArn'])
+                        'tags': raw.get('TagList', [])
                     })
                     res = Cluster(raw, strict=False)
                     yield res, res.db_cluster_identifier
