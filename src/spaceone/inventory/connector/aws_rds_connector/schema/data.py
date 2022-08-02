@@ -7,6 +7,11 @@ from spaceone.inventory.libs.schema.resource import AWSCloudService
 _LOGGER = logging.getLogger(__name__)
 
 
+class Tags(Model):
+    key = StringType(deserialize_from="Key")
+    value = StringType(deserialize_from="Value")
+
+
 class SubnetAvailabilityZone(Model):
     name = StringType(deserialize_from="Name")
 
@@ -465,6 +470,7 @@ class Cluster(Model):
                                   deserialize_from="DomainMemberships",
                                   serialize_when_none=False)
     db_cluster_role = StringType()
+    tags = ListType(ModelType(Tags), deserialize_from="Tags", serialize_when_none=False)
 
 
 class Database(AWSCloudService):
