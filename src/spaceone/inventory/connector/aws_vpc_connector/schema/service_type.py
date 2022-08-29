@@ -125,6 +125,9 @@ cst_vpc._metadata = CloudServiceTypeMeta.set_meta(
                                 options={'is_optional': True}),
         TextDyField.data_source('VPN Connection Name', 'data.vpn_gateway.vpn_connection.name',
                                 options={'is_optional': True}),
+        TextDyField.data_source('AWS Account ID', 'account', options={
+            'is_optional': True
+        })
     ],
     search=[
         SearchField.set(name='VPC ID', key='data.vpc_id'),
@@ -149,6 +152,7 @@ cst_vpc._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='VPN Gateway Name', key='data.vpn_gateway.name'),
         SearchField.set(name='Transit Gateway ID', key='data.transit_gateway.transit_gateway_id'),
         SearchField.set(name='Transit Gateway Name', key='data.transit_gateway.name'),
+        SearchField.set(name='AWS Account ID', key='account')
     ],
     widget=[
         CardWidget.set(**get_data_from_yaml(vpc_total_count_conf)),
@@ -231,6 +235,9 @@ cst_subnet._metadata = CloudServiceTypeMeta.set_meta(
         }),
         TextDyField.data_source('Public IP on Launch', 'data.map_public_ip_on_launch', options={
             'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'account', options={
+            'is_optional': True
         })
     ],
     search=[
@@ -253,6 +260,7 @@ cst_subnet._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Network ACL ID', key='data.network_acl.network_acl_id'),
         SearchField.set(name='Default', key='data.default_for_az', data_type='boolean'),
         SearchField.set(name='Auto-assign Public IP', key='data.map_public_ip_on_launch', data_type='boolean'),
+        SearchField.set(name='AWS Account ID', key='account')
     ],
     widget=[
         CardWidget.set(**get_data_from_yaml(subnet_total_count_conf)),
@@ -307,6 +315,9 @@ cst_rt._metadata = CloudServiceTypeMeta.set_meta(
             'sub_key': 'destination_cidr_block',
             'delimiter': '<br>',
             'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'account', options={
+            'is_optional': True
         })
     ],
     search=[
@@ -317,7 +328,8 @@ cst_rt._metadata = CloudServiceTypeMeta.set_meta(
                             'Yes': {'label': 'Yes'},
                             'No': {'label': 'No'},
                         }),
-        SearchField.set(name='VPC ID', key='data.vpc_id')
+        SearchField.set(name='VPC ID', key='data.vpc_id'),
+        SearchField.set(name='AWS Account ID', key='account')
     ]
 )
 
@@ -354,6 +366,9 @@ cst_igw._metadata = CloudServiceTypeMeta.set_meta(
         }),
         TextDyField.data_source('ARN', 'data.arn', options={
             'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'account', options={
+            'is_optional': True
         })
     ],
     search=[
@@ -366,7 +381,8 @@ cst_igw._metadata = CloudServiceTypeMeta.set_meta(
                             'detaching': {'label': 'Detaching', 'icon': {'color': 'yellow.500'}},
                             'detached': {'label': 'Detached', 'icon': {'color': 'grey.500'}},
                         }),
-        SearchField.set(name='VPC ID', key='data.vpc_id')
+        SearchField.set(name='VPC ID', key='data.vpc_id'),
+        SearchField.set(name='AWS Account ID', key='account')
     ],
     widget=[
         CardWidget.set(**get_data_from_yaml(igw_total_count_conf)),
@@ -405,6 +421,9 @@ cst_eoigw._metadata = CloudServiceTypeMeta.set_meta(
         }),
         TextDyField.data_source('ARN', 'data.arn', options={
             'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'account', options={
+            'is_optional': True
         })
     ],
     search=[
@@ -417,7 +436,8 @@ cst_eoigw._metadata = CloudServiceTypeMeta.set_meta(
                             'detaching': {'label': 'Detaching', 'icon': {'color': 'yellow.500'}},
                             'detached': {'label': 'Detached', 'icon': {'color': 'grey.500'}},
                         }),
-        SearchField.set(name='VPC ID', key='data.attachments.vpc_id')
+        SearchField.set(name='VPC ID', key='data.attachments.vpc_id'),
+        SearchField.set(name='AWS Account ID', key='account')
     ],
     widget=[
         CardWidget.set(**get_data_from_yaml(eoigw_total_count_conf)),
@@ -483,6 +503,9 @@ cst_natgw._metadata = CloudServiceTypeMeta.set_meta(
             'sub_key': 'network_interface_id',
             'delimiter': '<br>',
             'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'account', options={
+            'is_optional': True
         })
     ],
     search=[
@@ -499,7 +522,8 @@ cst_natgw._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Private IP', key='data.nat_gateway_addresses.private_ip'),
         SearchField.set(name='Network Interface ID', key='data.nat_gateway_addresses.network_interface_id'),
         SearchField.set(name='Subnet ID', key='data.subnet_id'),
-        SearchField.set(name='VPC ID', key='data.vpc_id')
+        SearchField.set(name='VPC ID', key='data.vpc_id'),
+        SearchField.set(name='AWS Account ID', key='account')
     ],
     widget=[
         CardWidget.set(**get_data_from_yaml(natgw_total_count_conf)),
@@ -542,6 +566,9 @@ cst_peerconn._metadata = CloudServiceTypeMeta.set_meta(
         TextDyField.data_source('Accepter Owner', 'data.accepter_vpc_info.owner_id'),
         TextDyField.data_source('ARN', 'data.arn', options={
             'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'account', options={
+            'is_optional': True
         })
     ],
     search=[
@@ -561,8 +588,8 @@ cst_peerconn._metadata = CloudServiceTypeMeta.set_meta(
                         }),
         SearchField.set(name='Requester VPC ID', key='data.requester_vpc_info.vpc_id'),
         SearchField.set(name='Accepter VPC Id', key='data.accepter_vpc_info.vpc_id'),
-
-        SearchField.set(name='Expiration Time', key='data.expiration_time', data_type='datetime')
+        SearchField.set(name='Expiration Time', key='data.expiration_time', data_type='datetime'),
+        SearchField.set(name='AWS Account ID', key='account')
     ],
     widget=[
         CardWidget.set(**get_data_from_yaml(peerconn_total_count_conf)),
@@ -601,6 +628,9 @@ cst_nacl._metadata = CloudServiceTypeMeta.set_meta(
             'sub_key': 'subnet_id',
             'delimiter': '<br>',
             'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'account', options={
+            'is_optional': True
         })
     ],
     search=[
@@ -624,7 +654,8 @@ cst_nacl._metadata = CloudServiceTypeMeta.set_meta(
                         enums={
                             'allow': {'label': 'Allow'},
                             'deny': {'label': 'Deny'},
-                        })
+                        }),
+        SearchField.set(name='AWS Account ID', key='account')
     ]
 )
 
@@ -684,6 +715,9 @@ cst_endpoint._metadata = CloudServiceTypeMeta.set_meta(
             'sub_key': 'hosted_zone_id',
             'delimiter': '<br>',
             'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'account', options={
+            'is_optional': True
         })
     ],
     search=[
@@ -707,7 +741,8 @@ cst_endpoint._metadata = CloudServiceTypeMeta.set_meta(
                             'Gateway': {'label': 'Gateway'}
                         }),
         SearchField.set(name='DNS Name', key='data.dns_entries.dns_name'),
-        SearchField.set(name='Private DNS Names enabled', key='data.private_dns_enabled', data_type='boolean')
+        SearchField.set(name='Private DNS Names enabled', key='data.private_dns_enabled', data_type='boolean'),
+        SearchField.set(name='AWS Account ID', key='account')
     ],
     widget=[
         CardWidget.set(**get_data_from_yaml(ep_total_count_conf)),
@@ -783,6 +818,9 @@ cst_transitgw._metadata = CloudServiceTypeMeta.set_meta(
             'sub_key': 'customer_gateway_id',
             'delimiter': '<br>',
             'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'account', options={
+            'is_optional': True
         })
     ],
     search=[
@@ -801,6 +839,7 @@ cst_transitgw._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='VPN Connection Name', key='data.vpn_connections.name'),
         SearchField.set(name='Customer Gateway ID', key='data.vpn_connections.customer_gateway_id'),
         SearchField.set(name='VPN Gateway ID', key='data.vpn_connections.vpn_gateway_id'),
+        SearchField.set(name='AWS Account ID', key='account')
     ],
     widget=[
         CardWidget.set(**get_data_from_yaml(transitgw_total_count_conf)),
@@ -861,7 +900,10 @@ cst_customgw._metadata = CloudServiceTypeMeta.set_meta(
         TextDyField.data_source('VPN Connection Transit Gateway ID', 'data.vpn_connection.transit_gateway_id',
                                 options={
                                     'is_optional': True
-                                })
+                                }),
+        TextDyField.data_source('AWS Account ID', 'account', options={
+            'is_optional': True
+        })
     ],
     search=[
         SearchField.set(name='Customer Gateway ID', key='data.customer_gateway_id'),
@@ -884,7 +926,8 @@ cst_customgw._metadata = CloudServiceTypeMeta.set_meta(
                             'pending': {'label': 'Pending', 'icon': {'color': 'yellow.500'}},
                             'deleting': {'label': 'Deleting', 'icon': {'color': 'yellow.500'}},
                             'deleted': {'label': 'Deleted', 'icon': {'color': 'grey.500'}},
-                        })
+                        }),
+        SearchField.set(name='AWS Account ID', key='account')
     ],
     widget=[
         CardWidget.set(**get_data_from_yaml(customergw_total_count_conf)),
@@ -942,6 +985,9 @@ cst_vpnconn._metadata = CloudServiceTypeMeta.set_meta(
             'sub_key': 'destination_cidr_block',
             'delimiter': '<br>',
             'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'account', options={
+            'is_optional': True
         })
     ],
     search=[
@@ -967,7 +1013,8 @@ cst_vpnconn._metadata = CloudServiceTypeMeta.set_meta(
                         enums={
                             'UP': {'label': 'UP'},
                             'DOWN': {'label': 'DOWN'},
-                        })
+                        }),
+        SearchField.set(name='AWS Account ID', key='account')
     ],
     widget=[
         CardWidget.set(**get_data_from_yaml(vpnconn_total_count_conf)),
@@ -1010,6 +1057,9 @@ cst_vpngw._metadata = CloudServiceTypeMeta.set_meta(
         }),
         TextDyField.data_source('VPN Connection Name', 'data.vpn_connection.name', options={
             'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'account', options={
+            'is_optional': True
         })
     ],
     search=[
@@ -1032,7 +1082,8 @@ cst_vpngw._metadata = CloudServiceTypeMeta.set_meta(
                             'pending': {'label': 'Pending', 'icon': {'color': 'yellow.500'}},
                             'deleting': {'label': 'Deleting', 'icon': {'color': 'yellow.500'}},
                             'deleted': {'label': 'Deleted', 'icon': {'color': 'grey.500'}},
-                        })
+                        }),
+        SearchField.set(name='AWS Account ID', key='account')
     ],
     widget=[
         CardWidget.set(**get_data_from_yaml(vpngw_total_count_conf)),

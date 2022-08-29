@@ -55,12 +55,16 @@ cst_firehose._metadata = CloudServiceTypeMeta.set_meta(
                                 options={'is_optional': True}),
         TextDyField.data_source('Failure Description', 'data.failure_description', options={
             'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'account', options={
+            'is_optional': True
         })
     ],
     search=[
         SearchField.set(name="Stream ARN", key="data.delivery_stream_arn"),
         SearchField.set(name="Stream Status", key="data.delivery_stream_status"),
         SearchField.set(name="Source Name", key="data.source.source_name"),
+        SearchField.set(name='AWS Account ID', key='account')
     ],
     widget=[
         CardWidget.set(**get_data_from_yaml(total_count_conf)),

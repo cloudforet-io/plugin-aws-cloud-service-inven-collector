@@ -57,13 +57,17 @@ cst_secret._metadata = CloudServiceTypeMeta.set_meta(
         }),
         TextDyField.data_source('Owning Service', 'data.owning_service', options={
             'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'account', options={
+            'is_optional': True
         })
     ],
     search=[
         SearchField.set(name='ARN', key='data.arn'),
         SearchField.set(name='Last Changed Time', key='data.last_changed_date', data_type='datetime'),
         SearchField.set(name='Last Accessed Time', key='data.last_accessed_date', data_type='datetime'),
-        SearchField.set(name='Rotation Enabled', key='data.rotation_enabled', data_type='boolean')
+        SearchField.set(name='Rotation Enabled', key='data.rotation_enabled', data_type='boolean'),
+        SearchField.set(name='AWS Account ID', key='account')
     ],
     widget=[
         CardWidget.set(**get_data_from_yaml(total_count_conf)),

@@ -63,7 +63,7 @@ cst_group._metadata = CloudServiceTypeMeta.set_meta(
         TextDyField.data_source('Path', 'data.path', options={
             'is_optional': True
         }),
-        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+        TextDyField.data_source('AWS Account ID', 'account', options={
             'is_optional': True
         })
     ],
@@ -72,6 +72,7 @@ cst_group._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='User Name', key='data.users.user_name'),
         SearchField.set(name='Policy Name', key='data.attached_permission.policy_name'),
         SearchField.set(name='Creation Time', key='data.create_date', data_type='datetime'),
+        SearchField.set(name='AWS Account ID', key='account')
     ]
 )
 
@@ -160,7 +161,7 @@ cst_user._metadata = CloudServiceTypeMeta.set_meta(
             'delimiter': '<br>',
             'is_optional': True
         }),
-        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+        TextDyField.data_source('AWS Account ID', 'account', options={
             'is_optional': True
         })
     ],
@@ -200,6 +201,7 @@ cst_user._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Keyspaces Created Time ', key='data.cassandra_credential.create_date',
                         data_type='datetime'),
         SearchField.set(name='Creation Time', key='data.create_date', data_type='datetime'),
+        SearchField.set(name='AWS Account ID', key='account')
     ],
     widget=[
         CardWidget.set(**get_data_from_yaml(total_count_conf)),
@@ -271,7 +273,7 @@ cst_role._metadata = CloudServiceTypeMeta.set_meta(
         TextDyField.data_source('Description', 'data.description', options={
             'is_optional': True
         }),
-        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+        TextDyField.data_source('AWS Account ID', 'account', options={
             'is_optional': True
         })
     ],
@@ -281,7 +283,7 @@ cst_role._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Policy Name', key='data.policies.policy_name'),
         SearchField.set(name='Last Used Time', key='data.role_last_used.last_used_data', data_type='datetime'),
         SearchField.set(name='Creation Time', key='data.create_date', data_type='datetime'),
-
+        SearchField.set(name='AWS Account ID', key='account')
     ]
 )
 
@@ -323,7 +325,7 @@ cst_policy._metadata = CloudServiceTypeMeta.set_meta(
             'sub_key': 'name',
             'is_optional': True
         }),
-        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+        TextDyField.data_source('AWS Account ID', 'account', options={
             'is_optional': True
         })
     ],
@@ -338,6 +340,7 @@ cst_policy._metadata = CloudServiceTypeMeta.set_meta(
                     'true': {'label': 'true'},
                     'false': {'label': 'false'},
                 }),
+        SearchField.set(name='AWS Account ID', key='account')
     ]
 )
 
@@ -368,14 +371,15 @@ cst_identity_provider._metadata = CloudServiceTypeMeta.set_meta(
             'delimiter': '<br>',
             'is_optional': True
         }),
-        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+        TextDyField.data_source('AWS Account ID', 'account', options={
             'is_optional': True
         })
     ],
     search=[
         SearchField.set(name='Identity Provider ARN', key='data.arn'),
         SearchField.set(name='Provider Type', key='data.provider_type'),
-        SearchField.set(name='Creation Time', key='data.create_date', data_type='datetime')
+        SearchField.set(name='Creation Time', key='data.create_date', data_type='datetime'),
+        SearchField.set(name='AWS Account ID', key='account')
     ]
 )
 

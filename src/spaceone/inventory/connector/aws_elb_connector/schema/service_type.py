@@ -114,6 +114,9 @@ cst_elb._metadata = CloudServiceTypeMeta.set_meta(
         TextDyField.data_source('Load Balancing Cross Zone Enabled',
                                 'data.attributes.load_balancing_cross_zone_enabled', options={
                 'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'account', options={
+            'is_optional': True
         })
     ],
     search=[
@@ -154,7 +157,8 @@ cst_elb._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Target Group Name', key='data.target_groups.target_group_name'),
         SearchField.set(name='Instance ID', key='data.instances.instance_id'),
         SearchField.set(name='Instance Name', key='data.instances.instance_name'),
-        SearchField.set(name='Instance State', key='data.instances.state')
+        SearchField.set(name='Instance State', key='data.instances.state'),
+        SearchField.set(name='AWS Account ID', key='account')
     ],
     widget=[
         CardWidget.set(**get_data_from_yaml(total_count_conf)),
@@ -225,7 +229,10 @@ cst_tg._metadata = CloudServiceTypeMeta.set_meta(
             'is_optional': True
         }),
         TextDyField.data_source('Stickiness LB Cookie Duration Seconds', 'data.stickiness_lb_cookie_duration_seconds',
-                                options={'is_optional': True})
+                                options={'is_optional': True}),
+        TextDyField.data_source('AWS Account ID', 'account', options={
+            'is_optional': True
+        })
     ],
     search=[
         SearchField.set(name='ARN', key='data.'),
@@ -255,7 +262,8 @@ cst_tg._metadata = CloudServiceTypeMeta.set_meta(
                         enums={
                             'lb_cookie': {'label': 'LB Cookie'},
                             'source_ip': {'label': 'Source IP'}
-                        })
+                        }),
+        SearchField.set(name='AWS Account ID', key='account')
     ]
 )
 

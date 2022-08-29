@@ -71,6 +71,9 @@ cst_filesystem._metadata = CloudServiceTypeMeta.set_meta(
         ListDyField.data_source('Mount Target AZ', 'data.mount_targets', options={
             'sub_key': 'availability_zone_name',
             'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'account', options={
+            'is_optional': True
         })
     ],
     search=[
@@ -100,7 +103,8 @@ cst_filesystem._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='IP Address', key='data.mount_targets.ip_address'),
         SearchField.set(name='Availability Zone', key='data.mount_targets.availability_zone_name'),
         SearchField.set(name='Subnet ID', key='data.mount_targets.subnet_id'),
-        SearchField.set(name='Security Group ID', key='data.mount_targets.security_groups')
+        SearchField.set(name='Security Group ID', key='data.mount_targets.security_groups'),
+        SearchField.set(name='AWS Account ID', key='account')
     ],
     widget=[
         CardWidget.set(**get_data_from_yaml(total_count_conf)),

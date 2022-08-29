@@ -63,6 +63,9 @@ cst_connection_meta = CloudServiceTypeMeta.set_meta(
         }),
         TextDyField.data_source('AWS Device V2', 'data.aws_device_v2', options={
             'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'account', options={
+            'is_optional': True
         })
     ],
     search=[
@@ -83,7 +86,8 @@ cst_connection_meta = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Partner Name', key='data.partner_name'),
         SearchField.set(name='Lag ID', key='data.lag_id'),
         SearchField.set(name='AWS Device', key='data.aws_device'),
-        SearchField.set(name='Provider Name', key='data.provider_name')
+        SearchField.set(name='Provider Name', key='data.provider_name'),
+        SearchField.set(name='AWS Account ID', key='account')
     ],
     widget=[
         CardWidget.set(**get_data_from_yaml(connection_total_count_conf)),
@@ -138,7 +142,8 @@ cst_dc_gw_meta = CloudServiceTypeMeta.set_meta(
                             'pending': {'label': 'Pending', 'icon': {'color': 'yellow.500'}},
                             'deleting': {'label': 'Deleting', 'icon': {'color': 'yellow.500'}}
                         }),
-        SearchField.set(name='Amazon Side ASN', key='data.amazon_side_asn')
+        SearchField.set(name='Amazon Side ASN', key='data.amazon_side_asn'),
+        SearchField.set(name='AWS Account ID', key='account')
     ],
     widget=[
         CardWidget.set(**get_data_from_yaml(dcgw_total_count_widget_conf)),
@@ -174,7 +179,7 @@ cst_vp_gw_meta = CloudServiceTypeMeta.set_meta(
             'disable': ['deleted']
         }),
         # For Dynamic Table
-        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+        TextDyField.data_source('AWS Account ID', 'account', options={
             'is_optional': True
         }),
     ],
@@ -186,7 +191,8 @@ cst_vp_gw_meta = CloudServiceTypeMeta.set_meta(
                             'deleted': {'label': 'Deleted', 'icon': {'color': 'gray.400'}},
                             'pending': {'label': 'Pending', 'icon': {'color': 'yellow.500'}},
                             'deleting': {'label': 'Deleting', 'icon': {'color': 'yellow.500'}}
-                        })
+                        }),
+        SearchField.set(name='AWS Account ID', key='account')
     ],
     widget=[
         CardWidget.set(**get_data_from_yaml(vpgw_total_count_widget_conf)),
@@ -276,7 +282,7 @@ cst_lags_meta = CloudServiceTypeMeta.set_meta(
             'delimiter': '<br>',
             'is_optional': True
         }),
-        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+        TextDyField.data_source('AWS Account ID', 'account', options={
             'is_optional': True
         }),
     ],
@@ -294,7 +300,8 @@ cst_lags_meta = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Connection Count', key='data.number_of_connections', data_type='integer'),
         SearchField.set(name='Bandwidth', key='data.connections_bandwidth'),
         SearchField.set(name='Minimum Links', key='data.minimum_links', data_type='integer'),
-        SearchField.set(name='AWS Device', key='data.aws_device')
+        SearchField.set(name='AWS Device', key='data.aws_device'),
+        SearchField.set(name='AWS Account ID', key='account')
     ],
     widget=[
         CardWidget.set(**get_data_from_yaml(lag_total_count_widget_conf)),

@@ -92,6 +92,9 @@ cst_function._metadata = CloudServiceTypeMeta.set_meta(
         }),
         TextDyField.data_source('Master ARN', 'data.master_arn', options={
             'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'account', options={
+            'is_optional': True
         })
     ],
     search=[
@@ -111,6 +114,7 @@ cst_function._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='VPC Name', key='data.vpc_config.vpc.name'),
         SearchField.set(name='Subnet Id', key='data.vpc_config.subnets.id'),
         SearchField.set(name='Last Modified Time', key='data.last_modified', data_type='datetime'),
+        SearchField.set(name='AWS Account ID', key='account')
     ],
     widget=[
         CardWidget.set(**get_data_from_yaml(total_count_conf)),
@@ -140,12 +144,16 @@ cst_layer._metadata = CloudServiceTypeMeta.set_meta(
         TextDyField.data_source('Description', 'data.latest_matching_version.description'),
         ListDyField.data_source('Compatible Runtimes', 'data.latest_matching_version.compatible_runtimes', options={
             'delimiter': '<br>'
+        }),
+        TextDyField.data_source('AWS Account ID', 'account', options={
+            'is_optional': True
         })
     ],
     search=[
         SearchField.set(name='ARN', key='data.layer_arn'),
         SearchField.set(name='Compatible Runtimes', key='data.latest_matching_version.compatible_runtimes'),
-        SearchField.set(name='Version', key='data.version', data_type='integer')
+        SearchField.set(name='Version', key='data.version', data_type='integer'),
+        SearchField.set(name='AWS Account ID', key='account')
     ]
 )
 

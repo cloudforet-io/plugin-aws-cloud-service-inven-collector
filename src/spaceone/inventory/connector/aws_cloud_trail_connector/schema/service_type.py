@@ -45,13 +45,14 @@ cst_trail._metadata = CloudServiceTypeMeta.set_meta(
         }),
         TextDyField.data_source('AWS Account ID', 'account', options={
             'is_optional': True
-        }),
+        })
     ],
     search=[
         SearchField.set(name='ARN', key='data.trail_arn'),
         SearchField.set(name='Home Region', key='data.home_region'),
         SearchField.set(name='Multi-Region Trail', key='data.is_multi_region_trail', data_type='boolean'),
         SearchField.set(name='S3 Bucket', key='data.s3_bucket_name'),
+        SearchField.set(name='AWS Account ID', key='account')
     ]
 )
 

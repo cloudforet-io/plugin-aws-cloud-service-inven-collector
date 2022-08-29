@@ -59,6 +59,9 @@ cst_table._metadata = CloudServiceTypeMeta.set_meta(
         }),
         TextDyField.data_source('Billing Mode', 'data.billing_mode_summary.billing_mode', options={
             'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'account', options={
+            'is_optional': True
         })
     ],
     search=[
@@ -76,6 +79,7 @@ cst_table._metadata = CloudServiceTypeMeta.set_meta(
                         }),
         SearchField.set(name='Storage Size (Bytes)', key='instance_size', data_type='integer'),
         SearchField.set(name='Item Count', key='data.item_count', data_type='integer'),
+        SearchField.set(name='AWS Account ID', key='account')
     ],
     widget=[
         CardWidget.set(**get_data_from_yaml(total_count_conf)),

@@ -61,13 +61,13 @@ class TestCloudServiceAPIs(TestCase):
 
     def test_collect(self):
 
-        options = {
-            'cloud_service_types': [
-                'Lightsail'
-            ]
-        }
+        # options = {
+        #     'cloud_service_types': [
+        #         'RDS'
+        #     ]
+        # }
 
-        # options = {}
+        options = {}
         filter = {}
 
         res_stream = self.inventory.Collector.collect(

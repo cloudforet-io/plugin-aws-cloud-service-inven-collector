@@ -86,13 +86,17 @@ cst_cluster._metadata = CloudServiceTypeMeta.set_meta(
         }),
         TextDyField.data_source('Logging (Cloudwatch)', 'data.logging_info.broker_logs.cloud_watch_logs', options={
             'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'account', options={
+            'is_optional': True
         })
     ],
     search=[
         SearchField.set(name='Cluster ARN', key='data.cluster_arn'),
         SearchField.set(name='Kafka Version', key='data.current_broker_software_info.kafka_version'),
         SearchField.set(name='Broker Type', key='data.broker_node_group_info.instance_type'),
-        SearchField.set(name='Status', key='data.state')
+        SearchField.set(name='Status', key='data.state'),
+        SearchField.set(name='AWS Account ID', key='account')
     ],
     widget=[
         CardWidget.set(**get_data_from_yaml(total_count_conf)),
@@ -131,11 +135,15 @@ cst_config._metadata = CloudServiceTypeMeta.set_meta(
         }),
         TextDyField.data_source('Kafka Version', 'data.kafka_versions', options={
             'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'account', options={
+            'is_optional': True
         })
     ],
     search=[
         SearchField.set(name='Status', key='data.state'),
         SearchField.set(name='Configuration ARN', key='data.arn'),
+        SearchField.set(name='AWS Account ID', key='account')
     ]
 )
 

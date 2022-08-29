@@ -44,6 +44,9 @@ cst_eip._metadata = CloudServiceTypeMeta.set_meta(
         }),
         TextDyField.data_source('Allocation ID', 'data.allocation_id', options={
             'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'account', options={
+            'is_optional': True
         })
     ],
     search=[
@@ -56,7 +59,8 @@ cst_eip._metadata = CloudServiceTypeMeta.set_meta(
                         enums={
                             'vpc': {'label': 'VPC'},
                             'standard': {'label': 'Standard'},
-                        })
+                        }),
+        SearchField.set(name='AWS Account ID', key='account')
     ],
     widget=[
         CardWidget.set(**get_data_from_yaml(total_count_conf)),
