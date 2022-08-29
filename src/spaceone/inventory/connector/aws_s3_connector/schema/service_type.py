@@ -81,12 +81,16 @@ cst_bucket._metadata = CloudServiceTypeMeta.set_meta(
             'sub_key': 'arn',
             'delimiter': '<br>',
             'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'account', options={
+            'is_optional': True
         })
     ],
     search=[
         SearchField.set(name='ARN', key='data.arn'),
         SearchField.set(name='Object Counts', key='data.object_count', data_type='integer'),
-        SearchField.set(name='Object Total Size (Bytes)', key='instance_size', data_type='integer')
+        SearchField.set(name='Object Total Size (Bytes)', key='instance_size', data_type='integer'),
+        SearchField.set(name='AWS Account ID', key='account')
     ],
     widget=[
         CardWidget.set(**get_data_from_yaml(bucket_total_count_conf)),

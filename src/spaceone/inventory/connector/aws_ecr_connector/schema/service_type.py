@@ -36,13 +36,17 @@ cst_ecr_repo._metadata = CloudServiceTypeMeta.set_meta(
         }),
         TextDyField.data_source('Image Scanning on Push ', 'data.image_scanning_configuration.scan_on_push', options={
             'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'account', options={
+            'is_optional': True
         })
     ],
     search=[
         SearchField.set(name='Repository ID', key='data.registry_id'),
         SearchField.set(name='ARN', key='data.repository_arn'),
         SearchField.set(name='URI', key='data.repository_uri'),
-        SearchField.set(name='Image URI', key='data.images.image_uri')
+        SearchField.set(name='Image URI', key='data.images.image_uri'),
+        SearchField.set(name='AWS Account ID', key='account')
     ],
     widget=[
         CardWidget.set(**get_data_from_yaml(total_count_conf)),

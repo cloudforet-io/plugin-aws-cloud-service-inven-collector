@@ -95,6 +95,9 @@ cst_ecs_cluster._metadata = CloudServiceTypeMeta.set_meta(
             'sub_key': 'memory',
             'delimiter': '<br>',
             'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'account', options={
+            'is_optional': True
         })
     ],
     search=[
@@ -114,6 +117,7 @@ cst_ecs_cluster._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Task Definition', key='data.tasks.task_definition'),
         SearchField.set(name='Task Definition ARN', key='data.tasks.task_definition_arn'),
         SearchField.set(name='Container Instance ID', key='data.container_instances.ec2_instance_id'),
+        SearchField.set(name='AWS Account ID', key='account')
     ],
     widget=[
         CardWidget.set(**get_data_from_yaml(total_count_conf)),

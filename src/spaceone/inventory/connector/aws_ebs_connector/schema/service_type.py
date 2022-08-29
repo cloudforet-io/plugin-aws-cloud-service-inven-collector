@@ -65,7 +65,7 @@ cst_ebs._metadata = CloudServiceTypeMeta.set_meta(
             'delimiter': '<br>',
             'is_optional': True
         }),
-        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+        TextDyField.data_source('AWS Account ID', 'account', options={
             'is_optional': True
         })
     ],
@@ -95,6 +95,7 @@ cst_ebs._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Availability Zone', key='data.availability_zone'),
         SearchField.set(name='IOPS', key='data.iops', data_type='integer'),
         SearchField.set(name='Attached Instance ID', key='data.attachments.instance_id'),
+        SearchField.set(name='AWS Account ID', key='account')
     ],
     widget=[
         CardWidget.set(**get_data_from_yaml(vol_total_count_conf)),
@@ -150,6 +151,9 @@ cst_snapshot._metadata = CloudServiceTypeMeta.set_meta(
         }),
         TextDyField.data_source('KMS Key ID', 'data.kms_key_id', options={
             'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'account', options={
+            'is_optional': True
         })
     ],
     search=[
@@ -162,6 +166,7 @@ cst_snapshot._metadata = CloudServiceTypeMeta.set_meta(
                             'error': {'label': 'error', 'icon': {'color': 'red.500'}},
                         }),
         SearchField.set(name='Size (GB)', key='instance_size', data_type='integer'),
+        SearchField.set(name='AWS Account ID', key='account')
     ],
     widget=[
         CardWidget.set(**get_data_from_yaml(snapshot_total_count_conf)),

@@ -48,13 +48,17 @@ cst_topic._metadata = CloudServiceTypeMeta.set_meta(
         }),
         TextDyField.data_source('KMS Alias', 'data.kms.alias', options={
             'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'account', options={
+            'is_optional': True
         })
     ],
     search=[
         SearchField.set(name='Topic ARN', key='data.topic_arn'),
         SearchField.set(name='Subscription ARN', key='data.subscriptions.subscription_arn'),
         SearchField.set(name='Endpoint', key='data.subscriptions.endpoint'),
-        SearchField.set(name='Protocol', key='data.subscriptions.protocol')
+        SearchField.set(name='Protocol', key='data.subscriptions.protocol'),
+        SearchField.set(name='AWS Account ID', key='account')
     ],
     widget=[
         CardWidget.set(**get_data_from_yaml(topic_total_count_conf)),

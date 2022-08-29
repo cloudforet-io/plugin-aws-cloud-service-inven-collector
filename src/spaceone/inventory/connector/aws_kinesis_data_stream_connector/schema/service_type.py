@@ -66,6 +66,9 @@ cst_kds._metadata = CloudServiceTypeMeta.set_meta(
             'delimiter': '<br>',
             'sub_key': 'shard_id',
             'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'account', options={
+            'is_optional': True
         })
     ],
     search=[
@@ -93,6 +96,7 @@ cst_kds._metadata = CloudServiceTypeMeta.set_meta(
             key="data.closed_shards_num",
             data_type="Integer",
         ),
+        SearchField.set(name='AWS Account ID', key='account')
     ],
     widget=[
         CardWidget.set(**get_data_from_yaml(total_count_conf)),

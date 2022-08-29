@@ -70,6 +70,9 @@ cst_kms_cluster._metadata = CloudServiceTypeMeta.set_meta(
         }),
         TextDyField.data_source('Description', 'data.description', options={
             'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'account', options={
+            'is_optional': True
         })
     ],
     search=[
@@ -95,7 +98,8 @@ cst_kms_cluster._metadata = CloudServiceTypeMeta.set_meta(
                         enums={
                             'AWS': {'label': 'AWS'},
                             'CUSTOMER': {'label': 'CUSTOMER'},
-                        })
+                        }),
+        SearchField.set(name='AWS Account ID', key='account')
     ],
     widget=[
         CardWidget.set(**get_data_from_yaml(total_count_conf)),

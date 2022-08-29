@@ -51,6 +51,9 @@ cst_distribution._metadata = CloudServiceTypeMeta.set_meta(
         }),
         TextDyField.data_source('HTTP Version', 'data.http_version', options={
             'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'account', options={
+            'is_optional': True
         })
     ],
     search=[
@@ -59,6 +62,7 @@ cst_distribution._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Status', key='data.status',
                         enums={'Deployed': {'label': 'Deployed', 'icon': {'color': 'green.500'}}}),
         SearchField.set(name='CNAME', key='data.alias_icp_recordals.cname'),
+        SearchField.set(name='AWS Account ID', key='account')
     ],
     widget=[
         CardWidget.set(**get_data_from_yaml(total_count_widget_conf)),

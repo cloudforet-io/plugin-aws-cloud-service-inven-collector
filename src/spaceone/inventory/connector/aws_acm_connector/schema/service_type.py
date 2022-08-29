@@ -57,6 +57,9 @@ cst_certi._metadata = CloudServiceTypeMeta.set_meta(
         TextDyField.data_source('Key Algorithm', 'data.key_algorithm', options={
             'is_optional': True
         }),
+        TextDyField.data_source('AWS Account ID', 'account', options={
+            'is_optional': True
+        })
     ],
     search=[
         SearchField.set(name='ARN', key='data.certificate_arn'),
@@ -64,6 +67,7 @@ cst_certi._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='In use?', key='data.in_use_display'),
         SearchField.set(name='Renewal Eligibility', key='data.renewal_eligibility'),
         SearchField.set(name='Associated Resources', key='data.in_use_by'),
+        SearchField.set(name='AWS Account ID', key='account')
     ],
     widget=[
         CardWidget.set(**get_data_from_yaml(total_count_conf)),

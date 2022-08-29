@@ -42,6 +42,9 @@ cst_api._metadata = CloudServiceTypeMeta.set_meta(
         ListDyField.data_source('Resource Paths', 'data.resources.path', options={
             'is_optional': True,
             'delimiter': '<br>'
+        }),
+        TextDyField.data_source('AWS Account ID', 'account', options={
+            'is_optional': True
         })
     ],
     search=[
@@ -49,6 +52,7 @@ cst_api._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='ARN', key='data.arn'),
         SearchField.set(name='Protocol', key='instance_type'),
         SearchField.set(name='Endpoint Type', key='data.endpoint_type'),
+        SearchField.set(name='AWS Account ID', key='account')
     ],
     widget=[
         CardWidget.set(**get_data_from_yaml(total_count_conf)),

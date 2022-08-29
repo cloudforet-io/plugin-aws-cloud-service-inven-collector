@@ -71,6 +71,9 @@ cst_que._metadata = CloudServiceTypeMeta.set_meta(
         }),
         TextDyField.data_source('Max Recieve Count', 'data.redrive_policy.max_receive_count', options={
             'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'account', options={
+            'is_optional': True
         })
     ],
     search=[
@@ -80,6 +83,7 @@ cst_que._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Approximate Number of Messages', key='data.approximate_number_of_messages',
                         data_type='integer'),
         SearchField.set(name='Last Modified Time', key='data.last_modified_timestamp', data_type='datetime'),
+        SearchField.set(name='AWS Account ID', key='account')
     ],
     widget=[
         CardWidget.set(**get_data_from_yaml(total_count_conf)),

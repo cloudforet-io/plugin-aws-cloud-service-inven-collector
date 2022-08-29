@@ -94,6 +94,9 @@ cst_asg._metadata = CloudServiceTypeMeta.set_meta(
         ListDyField.data_source('Policy Names', 'data.policies.policy_name', options={
             'delimiter': '<br>',
             'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'account', options={
+            'is_optional': True
         })
     ],
     search=[
@@ -103,7 +106,8 @@ cst_asg._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Launch Template Name', key='data.launch_template.launch_template_name'),
         SearchField.set(name='Launch Template ID', key='data.launch_template.launch_template_id'),
         SearchField.set(name='Availability Zone', key='data.availability_zones'),
-        SearchField.set(name='Instance ID', key='data.instances.instance_id')
+        SearchField.set(name='Instance ID', key='data.instances.instance_id'),
+        SearchField.set(name='AWS Account ID', key='account')
     ],
     widget=[
         CardWidget.set(**get_data_from_yaml(total_count_conf)),
@@ -153,6 +157,9 @@ launch_configuration._metadata = CloudServiceTypeMeta.set_meta(
         }),
         TextDyField.data_source('Image ID', 'data.image_id', options={
             'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'account', options={
+            'is_optional': True
         })
     ],
     search=[
@@ -160,7 +167,8 @@ launch_configuration._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='AMI ID', key='data.image_id'),
         SearchField.set(name='Instance Type', key='data.instance_type'),
         SearchField.set(name='Monitoring', key='data.instance_monitoring.enabled', data_type='boolean'),
-        SearchField.set(name='Security Group ID', key='data.security_groups')
+        SearchField.set(name='Security Group ID', key='data.security_groups'),
+        SearchField.set(name='AWS Account ID', key='account')
     ]
 )
 
@@ -205,6 +213,9 @@ launch_template._metadata = CloudServiceTypeMeta.set_meta(
         ListDyField.data_source('Security Groups', 'data.launch_template_data.security_group_ids', options={
             'delimiter': '<br>',
             'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'account', options={
+            'is_optional': True
         })
     ],
     search=[
@@ -216,6 +227,7 @@ launch_template._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Instance Type', key='data.launch_template_data.instance_type'),
         SearchField.set(name='Monitoring', key='data.launch_template_data.monitoring.enabled', data_type='boolean'),
         SearchField.set(name='Security Group ID', key='data.launch_template_data.security_group_ids'),
+        SearchField.set(name='AWS Account ID', key='account')
     ]
 )
 

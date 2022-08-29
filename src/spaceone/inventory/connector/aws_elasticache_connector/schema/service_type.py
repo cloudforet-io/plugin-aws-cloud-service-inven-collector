@@ -59,6 +59,9 @@ cst_memcached._metadata = CloudServiceTypeMeta.set_meta(
         TextDyField.data_source('Auth Token Enabled', 'data.auth_token_enabled', options={
             'is_optional': True
         }),
+        TextDyField.data_source('AWS Account ID', 'account', options={
+            'is_optional': True
+        })
     ],
     search=[
         SearchField.set(name='ARN', key='data.arn'),
@@ -68,6 +71,7 @@ cst_memcached._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Zone', key='data.preferred_availability_zone'),
         SearchField.set(name='Configuration Endpoint Address', key='data.configuration_endpoint.address'),
         SearchField.set(name='Configuration Endpoint Port', key='data.configuration_endpoint.port'),
+        SearchField.set(name='AWS Account ID', key='account')
     ]
 )
 
@@ -142,6 +146,9 @@ cst_redis._metadata = CloudServiceTypeMeta.set_meta(
         }),
         TextDyField.data_source('Auth Token Enabled', 'data.auth_token_enabled', options={
             'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'account', options={
+            'is_optional': True
         })
     ],
     search=[
@@ -154,6 +161,7 @@ cst_redis._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Multi AZ', key='data.multi_az'),
         SearchField.set(name='Configuration Endpoint Address', key='data.configuration_endpoint.address'),
         SearchField.set(name='Configuration Endpoint Port', key='data.configuration_endpoint.port'),
+        SearchField.set(name='AWS Account ID', key='account')
     ]
 )
 

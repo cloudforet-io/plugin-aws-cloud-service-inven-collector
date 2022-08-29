@@ -103,6 +103,9 @@ cst_redshift_cluster._metadata = CloudServiceTypeMeta.set_meta(
         }),
         TextDyField.data_source('Manual Snapshot Retention Period', 'data.manual_snapshot_retention_period', options={
             'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'account', options={
+            'is_optional': True
         })
     ],
     search=[
@@ -141,6 +144,7 @@ cst_redshift_cluster._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='VPC ID', key='data.vpc_id'),
         SearchField.set(name='Availability Zone', key='data.availability_zone'),
         SearchField.set(name='Node Counts', key='data.number_of_nodes', data_type='integer'),
+        SearchField.set(name='AWS Account ID', key='account')
     ],
     widget=[
         CardWidget.set(**get_data_from_yaml(cluster_total_count_conf)),

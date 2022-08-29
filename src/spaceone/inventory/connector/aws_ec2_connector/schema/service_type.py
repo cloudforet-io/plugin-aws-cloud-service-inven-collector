@@ -32,7 +32,7 @@ cst_sg._metadata = CloudServiceTypeMeta.set_meta(
         TextDyField.data_source('ID', 'data.group_id'),
         TextDyField.data_source('VPC ID', 'data.vpc_id'),
         TextDyField.data_source('Description', 'data.description'),
-        TextDyField.data_source('Account ID', 'account')
+        TextDyField.data_source('AWS Account ID', 'account')
     ],
     search=[
         SearchField.set(name='Security Group ID', key='data.group_id'),
@@ -43,6 +43,7 @@ cst_sg._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Outbound Protocol', key='data.ip_permissions_egress.protocol_display'),
         SearchField.set(name='Outbound Port Rage', key='data.ip_permissions_egress.port_display'),
         SearchField.set(name='Outbound Source', key='data.ip_permissions_egress.source_display'),
+        SearchField.set(name='AWS Account ID', key='account')
     ],
     widget=[
         CardWidget.set(**get_data_from_yaml(sg_total_count_conf)),
@@ -110,6 +111,9 @@ cst_ami._metadata = CloudServiceTypeMeta.set_meta(
         }),
         TextDyField.data_source('Platform Details ', 'data.platform_details', options={
             'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'account', options={
+            'is_optional': True
         })
     ],
     search=[
@@ -123,6 +127,7 @@ cst_ami._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Instance ID', key='data.instances.instance_id'),
         SearchField.set(name='Instance Name', key='data.instances.instance_name'),
         SearchField.set(name='Instance State', key='data.instances.state'),
+        SearchField.set(name='AWS Account ID', key='account')
     ],
     widget=[
         CardWidget.set(**get_data_from_yaml(ami_total_count_conf)),

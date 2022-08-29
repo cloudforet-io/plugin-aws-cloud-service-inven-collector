@@ -43,7 +43,7 @@ cst_rds_database._metadata = CloudServiceTypeMeta.set_meta(
         TextDyField.data_source('ARN', 'data.arn', options={
             'is_optional': True
         }),
-        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+        TextDyField.data_source('AWS Account ID', 'account', options={
             'is_optional': True
         })
     ],
@@ -84,7 +84,7 @@ cst_rds_database._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Cluster Port', key='data.cluster.port', data_type='integer'),
         SearchField.set(name='Instance Endpoint', key='data.instance.endpoint.address'),
         SearchField.set(name='Instance Port', key='data.instance.endpoint.port', data_type='integer'),
-        SearchField.set(name='AWS Account ID', key='data.account_id'),
+        SearchField.set(name='AWS Account ID', key='account'),
     ],
     widget=[
         CardWidget.set(**get_data_from_yaml(database_total_count_conf)),
@@ -229,7 +229,7 @@ cst_rds_instance._metadata = CloudServiceTypeMeta.set_meta(
         TextDyField.data_source('Performance Insights Enabled', 'data.performance_insights_enabled', options={
             'is_optional': True
         }),
-        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+        TextDyField.data_source('AWS Account ID', 'account', options={
             'is_optional': True
         })
     ],
@@ -260,7 +260,7 @@ cst_rds_instance._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Multi AZ', key='data.multi_az', data_type='boolean'),
         SearchField.set(name='Endpoint Address', key='data.endpoint.address'),
         SearchField.set(name='Endpoint Port', key='data.endpoint.port', data_type='integer'),
-        SearchField.set(name='AWS Account ID', key='data.account_id'),
+        SearchField.set(name='AWS Account ID', key='account'),
     ],
     widget=[
         CardWidget.set(**get_data_from_yaml(instance_total_count_conf)),
@@ -337,7 +337,7 @@ cst_rds_snapshot._metadata = CloudServiceTypeMeta.set_meta(
         TextDyField.data_source('License Model', 'data.license_model', options={
             'is_optional': True
         }),
-        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+        TextDyField.data_source('AWS Account ID', 'account', options={
             'is_optional': True
         })
     ],
@@ -350,7 +350,7 @@ cst_rds_snapshot._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Availability Zone', key='data.availability_zone'),
         SearchField.set(name='VPC ID', key='data.vpc_id'),
         SearchField.set(name='Created Time', key='data.snapshot_create_time', data_type='datetime'),
-        SearchField.set(name='AWS Account ID', key='data.account_id'),
+        SearchField.set(name='AWS Account ID', key='account'),
     ],
     widget=[
         CardWidget.set(**get_data_from_yaml(snapshot_total_count_conf)),
@@ -395,7 +395,7 @@ cst_rds_subnetgrp._metadata = CloudServiceTypeMeta.set_meta(
             'delimiter': '<br>',
             'is_optional': True
         }),
-        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+        TextDyField.data_source('AWS Account ID', 'account', options={
             'is_optional': True
         })
     ],
@@ -404,7 +404,7 @@ cst_rds_subnetgrp._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='VPC ID', key='data.vpc_id'),
         SearchField.set(name='Subnet ID', key='data.subnets.subnet_identifier'),
         SearchField.set(name='Availability Zone', key='data.subnets.subnet_availability_zone'),
-        SearchField.set(name='AWS Account ID', key='data.account_id'),
+        SearchField.set(name='AWS Account ID', key='account'),
     ]
 )
 
@@ -430,14 +430,14 @@ cst_rds_paramgrp._metadata = CloudServiceTypeMeta.set_meta(
         TextDyField.data_source('Type', 'data.db_parameter_group_type', options={
             'is_optional': True
         }),
-        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+        TextDyField.data_source('AWS Account ID', 'account', options={
             'is_optional': True
         })
     ],
     search=[
         SearchField.set(name='ARN', key='data.db_parameter_group_arn'),
         SearchField.set(name='Family', key='data.db_parameter_group_family'),
-        SearchField.set(name='AWS Account ID', key='data.account_id'),
+        SearchField.set(name='AWS Account ID', key='account'),
     ]
 )
 
@@ -467,7 +467,7 @@ cst_rds_optgrp._metadata = CloudServiceTypeMeta.set_meta(
         TextDyField.data_source('Allows VPC and Non VPC Instance Memberships',
                                 'data.allows_vpc_and_non_vpc_instance_memberships',
                                 options={'is_optional': True}),
-        TextDyField.data_source('AWS Account ID', 'data.account_id', options={
+        TextDyField.data_source('AWS Account ID', 'account', options={
             'is_optional': True
         })
     ],
@@ -476,7 +476,7 @@ cst_rds_optgrp._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Engine', key='data.engine_name'),
         SearchField.set(name='Major Engine Version', key='data.major_engine_version'),
         SearchField.set(name='VPC ID', key='data.vpc_id'),
-        SearchField.set(name='AWS Account ID', key='data.account_id'),
+        SearchField.set(name='AWS Account ID', key='account'),
     ]
 )
 

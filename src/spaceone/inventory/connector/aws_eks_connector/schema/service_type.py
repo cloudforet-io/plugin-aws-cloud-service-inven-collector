@@ -84,6 +84,9 @@ cst_eks_cluster._metadata = CloudServiceTypeMeta.set_meta(
         }),
         TextDyField.data_source('Platform Version', 'data.platform_version', options={
             'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'account', options={
+            'is_optional': True
         })
     ],
     search=[
@@ -97,7 +100,8 @@ cst_eks_cluster._metadata = CloudServiceTypeMeta.set_meta(
                             'FAILED': {'label': 'FAILED', 'icon': {'color': 'red.500'}},
                         }),
         SearchField.set(name='Cluster Version', key='data.version'),
-        SearchField.set(name='Cluster Endpoint', key='data.endpoint')
+        SearchField.set(name='Cluster Endpoint', key='data.endpoint'),
+        SearchField.set(name='AWS Account ID', key='account')
     ],
     widget=[
         CardWidget.set(**get_data_from_yaml(total_count_conf)),
@@ -179,6 +183,9 @@ cst_eks_nodegrp._metadata = CloudServiceTypeMeta.set_meta(
         }),
         TextDyField.data_source('Release Version', 'data.release_version', options={
             'is_optional': True
+        }),
+        TextDyField.data_source('AWS Account ID', 'account', options={
+            'is_optional': True
         })
     ],
     search=[
@@ -192,6 +199,7 @@ cst_eks_nodegrp._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Node Role', key='data.node_role'),
         SearchField.set(name='Disk Size', key='data.disk_size', data_type='integer'),
         SearchField.set(name='Modification Time', key='data.modified_at', data_type='datetime'),
+        SearchField.set(name='AWS Account ID', key='account')
     ]
 )
 
