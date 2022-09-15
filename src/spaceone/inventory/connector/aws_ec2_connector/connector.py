@@ -69,8 +69,10 @@ class EC2Connector(SchematicAWSConnector):
                 except Exception as e:
                     _LOGGER.debug(f"[ami][request_ami_data] SKIP: {e}")
 
-                image.update({'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type,
-                                                                image['ImageId'])})
+                image.update({
+                    'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type, image['ImageId']),
+                    'tags': image.get('Tags', [])
+                })
 
                 image_vo = Image(image, strict=False)
                 yield {
