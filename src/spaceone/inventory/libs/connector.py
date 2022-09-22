@@ -30,7 +30,16 @@ def get_session(secret_data, region_name):
     # ASSUME ROLE
     if role_arn := secret_data.get('role_arn'):
         sts = session.client('sts')
-        assume_role_object = sts.assume_role(RoleArn=role_arn, RoleSessionName=utils.generate_id('AssumeRoleSession'))
+
+        _assume_role_request = {
+            'RoleArn': role_arn,
+            'RoleSessionName': utils.generate_id('AssumeRoleSession'),
+        }
+
+        if external_id := secret_data.get('external_id'):
+            _assume_role_request.update({'ExternalId': external_id})
+
+        assume_role_object = sts.assume_role(**_assume_role_request)
         credentials = assume_role_object['Credentials']
 
         assume_role_params = {
