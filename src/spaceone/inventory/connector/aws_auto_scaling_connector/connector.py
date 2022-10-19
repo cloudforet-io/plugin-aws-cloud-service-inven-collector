@@ -10,7 +10,6 @@ from spaceone.inventory.connector.aws_auto_scaling_connector.schema.resource imp
     LaunchTemplateResponse
 from spaceone.inventory.connector.aws_auto_scaling_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
-from spaceone.inventory.libs.schema.resource import AWSTags
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -110,8 +109,6 @@ class AutoScalingConnector(SchematicAWSConnector):
                         'autoscaling_tags': list(map(lambda tag: AutoScalingGroupTags(tag, strict=False),
                                                      raw.get('Tags', []))),
                         'instances': self.get_asg_instances(raw.get('Instances', [])),
-                        'tags': list(map(lambda tag: AWSTags(tag, strict=False),
-                                         self.get_general_tags(raw.get('Tags', [])))),
                         'cloudwatch': self.set_cloudwatch(cloudwatch_namespace, cloudwatch_dimension_name,
                                                           raw['AutoScalingGroupName'], region_name),
                         'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type,
@@ -162,6 +159,7 @@ class AutoScalingConnector(SchematicAWSConnector):
                         'data': auto_scaling_group_vo,
                         'name': auto_scaling_group_vo.auto_scaling_group_name,
                         'account': self.account_id,
+                        'tags': self.convert_tags_to_dict_type(raw.get('Tags', [])),
                         'launched_at': self.datetime_to_iso8601(auto_scaling_group_vo.created_time)
                     }
 
@@ -242,6 +240,7 @@ class AutoScalingConnector(SchematicAWSConnector):
                         'data': launch_template_vo,
                         'name': launch_template_vo.launch_template_name,
                         'account': self.account_id,
+                        'tags': self.convert_tags_to_dict_type(raw.get('Tags', [])),
                         'launched_at': self.datetime_to_iso8601(launch_template_vo.create_time)
                     }
 

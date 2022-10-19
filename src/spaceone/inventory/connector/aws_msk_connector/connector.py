@@ -72,7 +72,6 @@ class MSKConnector(SchematicAWSConnector):
             for raw in data.get('ClusterInfoList', []):
                 try:
                     raw.update({
-                        'tags': self.convert_tags(raw.get('Tags', {})),
                         'node_info_list': self.get_nodes(raw.get('ClusterArn')),
                         'cluster_operation_info': self.get_operation_cluster(raw.get('ClusterArn')),
                         'cloudwatch': self.set_cloudwatch(cloudwatch_namespace, cloudwatch_dimension_name,
@@ -85,7 +84,8 @@ class MSKConnector(SchematicAWSConnector):
                         'data': cluster_vo,
                         'name': cluster_vo.cluster_name,
                         'launched_at': self.datetime_to_iso8601(cluster_vo.creation_time),
-                        'account': self.account_id
+                        'account': self.account_id,
+                        'tags': raw.get('Tags', {})
                     }
                     
                 except Exception as e:

@@ -239,7 +239,6 @@ class Cluster(AWSCloudService):
                        choices=('ACTIVE', 'CREATING', 'DELETING', 'FAILED',
                                 'HEALING', 'MAINTENANCE', 'REBOOTING_BROKER', 'UPDATING'))
     state_info = ModelType(ClusterStateInfo, deserialize_from='StateInfo')
-    tags = ListType(ModelType(Tags), deserialize_from='Tags', default=[])
     zookeeper_connect_string = StringType(deserialize_from='ZookeeperConnectString')
     zookeeper_connect_string_tls = StringType(deserialize_from='ZookeeperConnectStringTls')
     node_info_list = ListType(ModelType(NodeInfo), default=[])

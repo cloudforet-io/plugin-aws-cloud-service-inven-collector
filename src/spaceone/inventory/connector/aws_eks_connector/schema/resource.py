@@ -122,9 +122,8 @@ node_group_health = TableDynamicLayout.set_fields('Health', 'data.health.issues'
     }),
 ])
 
-node_group_tags = SimpleTableDynamicLayout.set_tags()
 node_group_metadata = CloudServiceMeta.set_layouts(layouts=[node_group_base, node_group_scaling_config,
-                                                            node_group_resource, node_group_health, node_group_tags])
+                                                            node_group_resource, node_group_health])
 
 
 class EKSResource(CloudServiceResource):

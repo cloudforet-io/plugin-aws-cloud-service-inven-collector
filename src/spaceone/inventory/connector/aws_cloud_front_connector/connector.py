@@ -7,7 +7,7 @@ from spaceone.inventory.connector.aws_cloud_front_connector.schema.resource impo
     DistributionResource
 from spaceone.inventory.connector.aws_cloud_front_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
-from spaceone.inventory.libs.schema.resource import ReferenceModel, CloudWatchModel, AWSTags
+from spaceone.inventory.libs.schema.resource import ReferenceModel, CloudWatchModel
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -40,6 +40,7 @@ class CFConnector(SchematicAWSConnector):
                             'name': data.domain_name,
                             'data': data,
                             'account': self.account_id,
+                            'tags': self.list_tags_for_resource(data.arn),
                             'reference': ReferenceModel(data.reference()),
                             'region_code': 'global'})
                         }))
@@ -66,7 +67,6 @@ class CFConnector(SchematicAWSConnector):
                 try:
                     raw.update({
                         'state_display': self.get_state_display(raw.get('Enabled')),
-                        'tags': list(self.list_tags_for_resource(raw.get('ARN'))),
                         'cloudwatch': self.set_cloudwatch(cloudwatch_namespace, cloudwatch_dimension_name,
                                                           raw['Id'], 'us-east-1'),
                         'cloudtrail': self.set_cloudtrail('us-east-1', cloudtrail_resource_type, raw['Id'])
@@ -81,9 +81,7 @@ class CFConnector(SchematicAWSConnector):
 
     def list_tags_for_resource(self, arn):
         response = self.client.list_tags_for_resource(Resource=arn)
-        tags = response.get('Tags', {})
-        for _tag in tags.get('Items', []):
-            yield AWSTags(_tag, strict=False)
+        return self.convert_tags_to_dict_type(response.get('Tags', {}).get('Items', []))
 
     @staticmethod
     def get_state_display(enabled):

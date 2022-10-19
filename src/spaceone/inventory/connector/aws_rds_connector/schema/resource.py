@@ -69,9 +69,8 @@ cluster_backup = ItemDynamicLayout.set_fields('Backup', fields=[
     TextDyField.data_source('Backup Window', 'data.cluster.preferred_backup_window'),
 ])
 
-cluster_tags = SimpleTableDynamicLayout.set_tags()
 db_cluster_metadata = CloudServiceMeta.set_layouts(layouts=[cluster_summary, cluster_endpoint, cluster_conf,
-                                                            cluster_maintenance, cluster_backup, cluster_tags])
+                                                            cluster_maintenance, cluster_backup])
 
 '''
 Database (Role: Instance)
@@ -172,11 +171,10 @@ cluster_instance_backup = ItemDynamicLayout.set_fields('Backup', fields=[
     TextDyField.data_source('Backup Window', 'data.instance.preferred_backup_window'),
 ])
 
-cluster_instance_tag = SimpleTableDynamicLayout.set_tags()
 cluster_instance_metadata = \
     CloudServiceMeta.set_layouts(layouts=[cluster_instance_summary, cluster_instance_conn, cluster_instance_sec,
                                           cluster_instance_conf, cluster_instance_storage, cluster_instance_maintenance,
-                                          cluster_instance_backup, cluster_instance_tag])
+                                          cluster_instance_backup])
 
 '''
 Instance
@@ -277,10 +275,8 @@ instance_backup = ItemDynamicLayout.set_fields('Backup', fields=[
     TextDyField.data_source('Backup Window', 'data.preferred_backup_window'),
 ])
 
-instance_tags = SimpleTableDynamicLayout.set_tags()
 instance_metadata = CloudServiceMeta.set_layouts(layouts=[instance_summary, instance_conn, instance_sec, instance_conf,
-                                                          instance_storage, instance_maintenance, instance_backup,
-                                                          instance_tags])
+                                                          instance_storage, instance_maintenance, instance_backup])
 
 
 '''
@@ -315,8 +311,8 @@ snapshot = ItemDynamicLayout.set_fields('Snapshot', fields=[
     TextDyField.data_source('Port', 'data.port'),
     DateTimeDyField.data_source('Snapshot Creation Time', 'data.snapshot_create_time'),
 ])
-snapshot_tags = SimpleTableDynamicLayout.set_tags()
-snapshot_metadata = CloudServiceMeta.set_layouts(layouts=[snapshot, snapshot_tags])
+
+snapshot_metadata = CloudServiceMeta.set_layouts(layouts=[snapshot])
 
 
 '''
@@ -336,8 +332,8 @@ subnets = TableDynamicLayout.set_fields('Subnets', 'data.subnets', fields=[
         'safe': ['Active']
     }),
 ])
-subnetgrp_tags = SimpleTableDynamicLayout.set_tags()
-subnetgrp_metadata = CloudServiceMeta.set_layouts(layouts=[subnetgrp, subnets, subnetgrp_tags])
+
+subnetgrp_metadata = CloudServiceMeta.set_layouts(layouts=[subnetgrp, subnets])
 
 '''
 Parameter Group
@@ -362,8 +358,8 @@ params = TableDynamicLayout.set_fields('Parameters', 'data.parameters', fields=[
     EnumDyField.data_source('Data Type', 'data_type', default_outline_badge=['string', 'boolean', 'integer', 'list']),
     TextDyField.data_source('Description', 'description'),
 ])
-paramgrp_tags = SimpleTableDynamicLayout.set_tags()
-paramgrp_metadata = CloudServiceMeta.set_layouts(layouts=[paramgrp, params, paramgrp_tags])
+
+paramgrp_metadata = CloudServiceMeta.set_layouts(layouts=[paramgrp, params])
 
 '''
 Option Group
@@ -403,8 +399,8 @@ optgrp_opt = TableDynamicLayout.set_fields('Options', 'data.options', fields=[
         'sub_key': 'value'
     }),
 ])
-optgrp_tags = SimpleTableDynamicLayout.set_tags()
-optgrp_metadata = CloudServiceMeta.set_layouts(layouts=[optgrp, optgrp_opt, optgrp_tags])
+
+optgrp_metadata = CloudServiceMeta.set_layouts(layouts=[optgrp, optgrp_opt])
 
 
 class RDSResource(CloudServiceResource):

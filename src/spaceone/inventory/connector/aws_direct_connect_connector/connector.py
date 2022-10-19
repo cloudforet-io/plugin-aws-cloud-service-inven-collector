@@ -83,7 +83,8 @@ class DirectConnectConnector(SchematicAWSConnector):
                     'instance_size': bandwidth_size,
                     'name': connection_vo.connection_name,
                     'instance_type': connection_vo.location,
-                    'account': self.account_id
+                    'account': self.account_id,
+                    'tags': self.convert_tags_to_dict_type(raw.get('tags', []), key='key', value='value')
                 }
 
             except Exception as e:
@@ -150,7 +151,8 @@ class DirectConnectConnector(SchematicAWSConnector):
                 yield {
                     'data': lag_vo,
                     'name': lag_vo.lag_name,
-                    'account': self.account_id
+                    'account': self.account_id,
+                    'tags': self.convert_tags_to_dict_type(raw.get('tags', []), key='key', value='value')
                 }
 
             except Exception as e:

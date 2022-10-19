@@ -123,7 +123,8 @@ class LightsailConnector(SchematicAWSConnector):
                         'data': instance,
                         'name': instance.name,
                         'instance_type': instance.bundle_id,
-                        'account': self.account_id
+                        'account': self.account_id,
+                        'tags': self.convert_tags_to_dict_type(raw.get('tags', []), key='key', value='value')
                     }
 
                 except Exception as e:
@@ -151,7 +152,8 @@ class LightsailConnector(SchematicAWSConnector):
                         'data': disk,
                         'name': disk.name,
                         'instance_size': float(disk.size_in_gb),
-                        'account': self.account_id
+                        'account': self.account_id,
+                        'tags': self.convert_tags_to_dict_type(raw.get('tags', []), key='key', value='value')
                     }
 
                 except Exception as e:
@@ -179,7 +181,8 @@ class LightsailConnector(SchematicAWSConnector):
                         'data': disk_snapshot,
                         'name': disk_snapshot.name,
                         'instance_size': float(disk_snapshot.size_in_gb),
-                        'account': self.account_id
+                        'account': self.account_id,
+                        'tags': self.convert_tags_to_dict_type(raw.get('tags', []), key='key', value='value')
                     }
 
                 except Exception as e:
@@ -205,7 +208,8 @@ class LightsailConnector(SchematicAWSConnector):
                     'data': bucket,
                     'name': bucket.name,
                     'instance_size': size,
-                    'account': self.account_id
+                    'account': self.account_id,
+                    'tags': self.convert_tags_to_dict_type(data.get('tags', []), key='key', value='value')
                 }
 
             except Exception as e:
@@ -259,7 +263,8 @@ class LightsailConnector(SchematicAWSConnector):
                     yield {
                         'data': rdb,
                         'name': rdb.name,
-                        'account': self.account_id
+                        'account': self.account_id,
+                        'tags': self.convert_tags_to_dict_type(raw.get('tags', []), key='key', value='value')
                     }
 
                 except Exception as e:
@@ -280,7 +285,8 @@ class LightsailConnector(SchematicAWSConnector):
                 yield {
                     'data': container_service,
                     'name': container_service.container_service_name,
-                    'account': self.account_id
+                    'account': self.account_id,
+                    'tags': self.convert_tags_to_dict_type(raw.get('tags', []), key='key', value='value')
                 }
 
             except Exception as e:
@@ -307,7 +313,8 @@ class LightsailConnector(SchematicAWSConnector):
                     yield {
                         'data': lb,
                         'name': lb.name,
-                        'account': self.account_id
+                        'account': self.account_id,
+                        'tags': self.convert_tags_to_dict_type(raw.get('tags', []), key='key', value='value')
                     }
 
                 except Exception as e:
@@ -334,7 +341,8 @@ class LightsailConnector(SchematicAWSConnector):
                     yield {
                         'data': domain,
                         'name': domain.name,
-                        'account': self.account_id
+                        'account': self.account_id,
+                        'tags': self.convert_tags_to_dict_type(raw.get('tags', []), key='key', value='value')
                     }
 
                 except Exception as e:
@@ -355,7 +363,8 @@ class LightsailConnector(SchematicAWSConnector):
                 yield {
                     'data': distribution,
                     'name': distribution.name,
-                    'account': self.account_id
+                    'account': self.account_id,
+                    'tags': self.convert_tags_to_dict_type(data.get('tags', []), key='key', value='value')
                 }
 
             except Exception as e:

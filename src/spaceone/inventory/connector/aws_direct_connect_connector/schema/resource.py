@@ -75,8 +75,8 @@ lag = ItemDynamicLayout.set_fields('LAGs', fields=[
     }),
 
 ])
-lag_tags = SimpleTableDynamicLayout.set_tags()
-lag_metadata = CloudServiceMeta.set_layouts(layouts=[lag, lag_tags])
+
+lag_metadata = CloudServiceMeta.set_layouts(layouts=[lag])
 
 
 class DirectConnectResource(CloudServiceResource):

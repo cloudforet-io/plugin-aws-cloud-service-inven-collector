@@ -62,7 +62,8 @@ class ECSConnector(SchematicAWSConnector):
                     yield {
                         'data': cluster_vo,
                         'name': cluster_vo.cluster_name,
-                        'account': self.account_id
+                        'account': self.account_id,
+                        'tags': self.convert_tags_to_dict_type(raw.get('tags', []))
                     }
 
                 except Exception as e:

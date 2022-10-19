@@ -50,8 +50,7 @@ memcached_node = TableDynamicLayout.set_fields('Nodes', 'data.nodes', fields=[
     DateTimeDyField.data_source('Created On', 'created_on')
 ])
 
-memcached_tags = SimpleTableDynamicLayout.set_tags()
-memcached_metadata = CloudServiceMeta.set_layouts(layouts=[memcached_base, memcached_node, memcached_tags])
+memcached_metadata = CloudServiceMeta.set_layouts(layouts=[memcached_base, memcached_node])
 
 
 
@@ -122,8 +121,7 @@ redis_nodes = TableDynamicLayout.set_fields('Nodes', 'data.nodes', fields=[
     DateTimeDyField.data_source('Created On', 'created_on')
 ])
 
-redis_tags = SimpleTableDynamicLayout.set_tags()
-redis_metadata = CloudServiceMeta.set_layouts(layouts=[redis_base, redis_shards, redis_nodes, redis_tags])
+redis_metadata = CloudServiceMeta.set_layouts(layouts=[redis_base, redis_shards, redis_nodes])
 
 
 # Memcached

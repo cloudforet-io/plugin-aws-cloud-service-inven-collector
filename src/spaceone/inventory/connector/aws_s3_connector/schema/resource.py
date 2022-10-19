@@ -84,8 +84,6 @@ requester_pays = ItemDynamicLayout.set_fields('Requester Pays', fields=[
     }),
 ])
 
-tags = SimpleTableDynamicLayout.set_tags()
-
 topic_conf = TableDynamicLayout.set_fields('Events', 'data.notification_configurations', fields=[
     TextDyField.data_source('ID', 'id'),
     TextDyField.data_source('Type', 'notification_type'),
@@ -94,8 +92,7 @@ topic_conf = TableDynamicLayout.set_fields('Events', 'data.notification_configur
 ])
 
 metadata = CloudServiceMeta.set_layouts(layouts=[bucket, object_info, versioning, website_hosting, server_access_log,
-                                                 encryption, object_lock, transfer_acc, requester_pays, topic_conf,
-                                                 tags])
+                                                 encryption, object_lock, transfer_acc, requester_pays, topic_conf])
 
 
 class S3Resource(CloudServiceResource):

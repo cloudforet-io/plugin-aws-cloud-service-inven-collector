@@ -21,8 +21,7 @@ base = ItemDynamicLayout.set_fields('Elastic IPs', fields=[
     TextDyField.data_source('Customer owned IP Address Pool', 'data.customer_owned_ipv4_pool'),
 ])
 
-eip_tags = SimpleTableDynamicLayout.set_tags()
-metadata = CloudServiceMeta.set_layouts(layouts=[base, eip_tags])
+metadata = CloudServiceMeta.set_layouts(layouts=[base])
 
 
 class EC2Resource(CloudServiceResource):

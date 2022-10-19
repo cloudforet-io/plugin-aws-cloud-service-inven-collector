@@ -60,10 +60,9 @@ class TestCloudServiceAPIs(TestCase):
         print_json(v_info)
 
     def test_collect(self):
-
         # options = {
         #     'cloud_service_types': [
-        #         'RDS'
+        #         'ACM'
         #     ]
         # }
 
@@ -77,4 +76,3 @@ class TestCloudServiceAPIs(TestCase):
         for res in res_stream:
             self.assertIsNotNone(res)
             print_json(res)
-            # self.assertEqual('CLOUD_SERVICE', res.resource_type)

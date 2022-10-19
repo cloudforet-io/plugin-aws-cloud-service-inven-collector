@@ -62,8 +62,7 @@ class ElastiCacheConnector(SchematicAWSConnector):
                         'configuration_endpoint_display': self.set_configuration_endpoint_display(cluster.get('ConfigurationEndpoint')),
                         'nodes': self.get_memcached_nodes(cluster),
                         'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type,
-                                                          cluster['CacheClusterId']),
-                        'tags': self.list_tags(cluster['ARN']),
+                                                          cluster['CacheClusterId'])
                     })
 
                     memcached_vo = Memcached(cluster, strict=False)
@@ -74,7 +73,7 @@ class ElastiCacheConnector(SchematicAWSConnector):
                         'instance_type': memcached_vo.cache_node_type,
                         'launched_at': self.datetime_to_iso8601(memcached_vo.cache_cluster_create_time),
                         'account': self.account_id,
-                        'tags': [{'key': tag.key, 'value': tag.value} for tag in memcached_vo.tags],
+                        'tags': self.list_tags(memcached_vo.arn),
                         'region_code': region_name,
                         'reference': ReferenceModel(memcached_vo.reference(region_name))
                     })
@@ -122,6 +121,7 @@ class ElastiCacheConnector(SchematicAWSConnector):
                     'instance_type': redis_vo.cache_node_type,
                     'account': self.account_id,
                     'region_code': region_name,
+                    'tags': self.list_tags(redis_vo.arn),
                     'reference': ReferenceModel(redis_vo.reference(region_name))
                 })
 
@@ -157,7 +157,7 @@ class ElastiCacheConnector(SchematicAWSConnector):
 
     def list_tags(self, arn):
         response = self.client.list_tags_for_resource(ResourceName=arn)
-        return [{'key': tag.get('Key'), 'value': tag.get('Value')}for tag in response.get('TagList', [])]
+        return self.convert_tags_to_dict_type(response.get('TagList', []))
 
     @staticmethod
     def get_memcached_nodes(cluster):

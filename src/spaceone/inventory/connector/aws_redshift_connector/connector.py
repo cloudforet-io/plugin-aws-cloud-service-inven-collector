@@ -2,7 +2,7 @@ import logging
 from typing import List
 
 from spaceone.core.utils import *
-from spaceone.inventory.connector.aws_redshift_connector.schema.data import Cluster, Tags
+from spaceone.inventory.connector.aws_redshift_connector.schema.data import Cluster
 from spaceone.inventory.connector.aws_redshift_connector.schema.resource import ClusterResource, ClusterResponse
 from spaceone.inventory.connector.aws_redshift_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
@@ -59,11 +59,7 @@ class RedshiftConnector(SchematicAWSConnector):
                         'cloudwatch': self.set_cloudwatch(cloudwatch_namespace, cloudwatch_dimension_name,
                                                           raw['ClusterIdentifier'], region_name),
                         'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type,
-                                                          raw['ClusterIdentifier']),
-                        'tags': list(self.describe_tags({"service": self.service_name,
-                                                         "region": region_name,
-                                                         "account_id": self.account_id,
-                                                         "resource_id": raw.get('ClusterIdentifier', '')}))
+                                                          raw['ClusterIdentifier'])
                     })
 
                     cluster_vo = Cluster(raw, strict=False)
@@ -72,27 +68,33 @@ class RedshiftConnector(SchematicAWSConnector):
                         'name': cluster_vo.cluster_identifier,
                         'instance_type': cluster_vo.node_type,
                         'launched_at': self.datetime_to_iso8601(cluster_vo.cluster_create_time),
-                        'account': self.account_id
+                        'account': self.account_id,
+                        'tags': self.describe_tags({
+                            "service": self.service_name,
+                            "region": region_name,
+                            "account_id": self.account_id,
+                            "resource_id": cluster_vo.cluster_identifier})
                     }
-                    
                 except Exception as e:
                     resource_id = raw.get('ClusterIdentifier', '')
                     error_resource_response = self.generate_error(region_name, resource_id, e)
                     yield {'data': error_resource_response}
 
-    def describe_tags(self, arn_vo):
-        response = {}
-        tag_arn = self._generate_redshift_arn(service=arn_vo.get('service', ''),
-                                              region=arn_vo.get('region', ''),
-                                              account_id=arn_vo.get('account_id', ''),
-                                              resource_id=arn_vo.get('resource_id', ''))
+    def describe_tags(self, arn_dict):
+        tag_dict = {}
+        tag_arn = self._generate_redshift_arn(service=arn_dict.get('service', ''),
+                                              region=arn_dict.get('region', ''),
+                                              account_id=arn_dict.get('account_id', ''),
+                                              resource_id=arn_dict.get('resource_id', ''))
         try:
             response = self.client.describe_tags(ResourceName=tag_arn)
-        except Exception as e:
-            pass
+            for _tag_resource in response.get('TaggedResources', []):
+                _tag = _tag_resource.get('Tag')
+                tag_dict[_tag.get('Key')] = _tag.get('Value')
 
-        for tag_resource in response.get('TaggedResources', []):
-            yield Tags(tag_resource.get('Tag', {}), strict=False)
+            return tag_dict
+        except Exception as e:
+            return tag_dict
 
     @staticmethod
     def _generate_redshift_arn(service="", region="", account_id="", resource_id=""):

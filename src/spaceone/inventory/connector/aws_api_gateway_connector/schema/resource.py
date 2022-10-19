@@ -50,7 +50,7 @@ websocket_meta_base = ItemDynamicLayout.set_fields('HTTP & Web Socket', fields=[
     DateTimeDyField.data_source('Creation Time', 'data.created_date')
 ])
 
-websocket_meta = CloudServiceMeta.set_layouts([websocket_meta_base, ])
+websocket_meta = CloudServiceMeta.set_layouts([websocket_meta_base])
 
 
 class APIGatewayResource(CloudServiceResource):

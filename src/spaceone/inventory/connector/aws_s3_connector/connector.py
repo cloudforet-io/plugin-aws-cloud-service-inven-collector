@@ -4,7 +4,7 @@ from typing import List
 from spaceone.core import utils
 from datetime import datetime, timedelta
 from spaceone.inventory.connector.aws_s3_connector.schema.data import Bucket, Versioning, ServerAccessLogging, \
-    WebsiteHosting, ObjectLock, Encryption, Tags, TransferAcceleration, NotificationConfiguration, RequestPayment
+    WebsiteHosting, ObjectLock, Encryption, TransferAcceleration, NotificationConfiguration, RequestPayment
 from spaceone.inventory.connector.aws_s3_connector.schema.resource import BucketResource, BucketResponse
 from spaceone.inventory.connector.aws_s3_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
@@ -43,6 +43,7 @@ class S3Connector(SchematicAWSConnector):
                         'name': data.name,
                         'data': data,
                         'account': self.account_id,
+                        'tags': self.get_tags(data.name),
                         'instance_size': float(data.size),
                         'reference': ReferenceModel(data.reference())
                     }
@@ -110,9 +111,6 @@ class S3Connector(SchematicAWSConnector):
 
                 if notification_configurations := self.get_notification_configurations(bucket_name):
                     raw.update({'notification_configurations': notification_configurations})
-
-                if tags := self.get_tags(bucket_name):
-                    raw.update({'tags': tags})
 
                 if region_name:
                     count, size = self.get_count_and_size(bucket_name, region_name)
@@ -236,10 +234,10 @@ class S3Connector(SchematicAWSConnector):
     def get_tags(self, bucket_name):
         try:
             response = self.client.get_bucket_tagging(Bucket=bucket_name)
-            return list(map(lambda tag: Tags(tag, strict=False), response.get('TagSet', [])))
+            return self.convert_tags_to_dict_type(response.get('TagSet', []))
         except Exception as e:
             _LOGGER.error(f'[S3 {bucket_name}: Get Tags] {e}')
-            return None
+            return {}
 
     def get_bucket_public_access(self, bucket_name):
         public_access = False

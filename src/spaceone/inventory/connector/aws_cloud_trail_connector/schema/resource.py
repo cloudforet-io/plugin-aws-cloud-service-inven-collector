@@ -49,8 +49,7 @@ event_selector_table = SimpleTableDynamicLayout.set_fields('Event Selectors', 'd
     })
 ])
 
-tags = SimpleTableDynamicLayout.set_tags()
-metadata = CloudServiceMeta.set_layouts([meta_base, insight_table, event_selector_table, tags])
+metadata = CloudServiceMeta.set_layouts([meta_base, insight_table, event_selector_table])
 
 
 class CloudTrailResource(CloudServiceResource):

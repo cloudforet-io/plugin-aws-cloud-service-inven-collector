@@ -28,8 +28,7 @@ encryption = ItemDynamicLayout.set_fields('Encryptions', 'data.kms', fields=[
     TextDyField.data_source('CMK ARN', 'arn'),
 ])
 
-tags = SimpleTableDynamicLayout.set_tags()
-metadata = CloudServiceMeta.set_layouts(layouts=[sns, subscription, encryption, tags])
+metadata = CloudServiceMeta.set_layouts(layouts=[sns, subscription, encryption])
 
 
 class SNSResource(CloudServiceResource):

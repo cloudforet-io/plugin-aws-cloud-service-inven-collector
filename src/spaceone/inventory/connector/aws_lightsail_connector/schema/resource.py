@@ -62,9 +62,7 @@ instance_networking = TableDynamicLayout.set_fields('Networking', root_path='dat
     })
 ])
 
-instance_tags = SimpleTableDynamicLayout.set_tags()
-
-instance_metadata = CloudServiceMeta.set_layouts(layouts=[instance, instance_addon, instance_hardware, instance_networking, instance_tags])
+instance_metadata = CloudServiceMeta.set_layouts(layouts=[instance, instance_addon, instance_hardware, instance_networking])
 
 
 class InstanceResource(LightsailResource):
@@ -116,9 +114,7 @@ disk_addons = TableDynamicLayout.set_fields('Snapshot Time', root_path='data.add
     TextDyField.data_source('Next Snapshot Time Of Day', 'next_snapshot_time_of_day')
 ])
 
-disk_tags = SimpleTableDynamicLayout.set_tags()
-
-disk_metadata = CloudServiceMeta.set_layouts(layouts=[disk, disk_addons, disk_tags])
+disk_metadata = CloudServiceMeta.set_layouts(layouts=[disk, disk_addons])
 
 
 class DiskResource(LightsailResource):
@@ -156,9 +152,7 @@ disk_snapshot = ItemDynamicLayout.set_fields('DiskSnapshot', fields=[
     }),
 ])
 
-disk_snapshot_tags = SimpleTableDynamicLayout.set_tags()
-
-disk_snapshot_metadata = CloudServiceMeta.set_layouts(layouts=[disk_snapshot, disk_snapshot_tags])
+disk_snapshot_metadata = CloudServiceMeta.set_layouts(layouts=[disk_snapshot])
 
 
 class DiskSnapshotResource(LightsailResource):
@@ -218,10 +212,8 @@ bucket_access_log_config = ItemDynamicLayout.set_fields('Access Log Config', roo
     TextDyField.data_source('Prefix', 'prefix')
 ])
 
-bucket_tags = SimpleTableDynamicLayout.set_tags()
-
 bucket_metadata = CloudServiceMeta.set_layouts(layouts=[bucket, bucket_access_rule, bucket_resource_receiving_access,
-                                                        bucket_state, bucket_access_log_config, bucket_tags])
+                                                        bucket_state, bucket_access_log_config])
 
 
 class BucketResource(LightsailResource):
@@ -327,10 +319,8 @@ rds_pending_maintenance_actions = TableDynamicLayout.set_fields('Pending Mainten
     DateTimeDyField.data_source('Current Apply Date', 'current_apply_date')
 ])
 
-rds_tags = SimpleTableDynamicLayout.set_tags()
-
 rds_metadata = CloudServiceMeta.set_layouts(layouts=[rds, rds_hardware, rds_master_endpoint, rds_pending_modified_values,
-                                                     rds_pending_maintenance_actions, rds_tags])
+                                                     rds_pending_maintenance_actions])
 
 
 class RelationDatabaseResource(LightsailResource):
@@ -364,9 +354,7 @@ domain_entry = TableDynamicLayout.set_fields('Entry', root_path='data.domain_ent
     })
 ])
 
-domain_tags = SimpleTableDynamicLayout.set_tags()
-
-domain_metadata = CloudServiceMeta.set_layouts(layouts=[domain, domain_entry, domain_tags])
+domain_metadata = CloudServiceMeta.set_layouts(layouts=[domain, domain_entry])
 
 
 class DomainResource(LightsailResource):
@@ -425,10 +413,8 @@ container_next_deployment = ItemDynamicLayout.set_fields('Next Deployment', root
     TextDyField.data_source('Health Status', 'public_endpoint.health_check.success_code')
 ])
 
-container_tags = SimpleTableDynamicLayout.set_tags()
-
 container_metadata = CloudServiceMeta.set_layouts(layouts=[container, container_state_detail, container_current_deployment,
-                                                           container_next_deployment, container_tags])
+                                                           container_next_deployment])
 
 
 class ContainerServiceResource(LightsailResource):

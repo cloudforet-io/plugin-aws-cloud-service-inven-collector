@@ -44,8 +44,7 @@ mount_target = TableDynamicLayout.set_fields('Mount Targets', 'data.mount_target
     ListDyField.data_source('Security Groups', 'security_groups', default_badge={'type': 'outline'}),
 ])
 
-tags = SimpleTableDynamicLayout.set_tags()
-metadata = CloudServiceMeta.set_layouts(layouts=[base, mount_target, tags])
+metadata = CloudServiceMeta.set_layouts(layouts=[base, mount_target])
 
 
 class EFSResource(CloudServiceResource):

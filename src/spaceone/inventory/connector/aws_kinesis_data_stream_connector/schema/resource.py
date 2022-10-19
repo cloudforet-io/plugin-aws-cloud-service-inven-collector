@@ -72,19 +72,9 @@ kds_meta_enhanced_fan_out = ListDynamicLayout.set_layouts(
     "Enhanced fan-out", layouts=[kds_meta_consumers_using_enhanced_fan_out]
 )
 
-# TAB - Tags
-kds_meta_tags = TableDynamicLayout.set_fields(
-    "Tags",
-    "data.tags",
-    fields=[
-        TextDyField.data_source("Key", "key"),
-        TextDyField.data_source("Value", "value"),
-    ],
-)
-
 # Overall
 kds_meta = CloudServiceMeta.set_layouts(
-    [kds_meta_detail, kds_meta_configuration, kds_meta_enhanced_fan_out, kds_meta_tags]
+    [kds_meta_detail, kds_meta_configuration, kds_meta_enhanced_fan_out]
 )
 
 

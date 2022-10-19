@@ -62,7 +62,8 @@ class SecretsManagerConnector(SchematicAWSConnector):
                     yield {
                         'data': secret_vo,
                         'name': secret_vo.name,
-                        'account': self.account_id
+                        'account': self.account_id,
+                        'tags': self.convert_tags_to_dict_type(raw.get('Tags', []))
                     }
                     
                 except Exception as e:

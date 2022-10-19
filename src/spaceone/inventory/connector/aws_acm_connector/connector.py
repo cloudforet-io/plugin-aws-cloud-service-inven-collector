@@ -66,7 +66,6 @@ class ACMConnector(SchematicAWSConnector):
                         'additional_names_display': self.get_additional_names_display(
                             certificate_info.get('SubjectAlternativeNames')),
                         'in_use_display': self.get_in_use_display(certificate_info.get('InUseBy')),
-                        'tags': self.get_tags(certificate_info.get('CertificateArn')),
                         'cloudwatch': self.set_cloudwatch(cloudwatch_namespace, cloudwatch_dimension_name,
                                                           certificate_info.get('CertificateArn'), region_name),
                         'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type, raw['CertificateArn'])
@@ -79,6 +78,7 @@ class ACMConnector(SchematicAWSConnector):
                         'name': certificate_vo.domain_name,
                         'instance_type': certificate_vo.type_display,
                         'account': self.account_id,
+                        'tags': self.get_tags(certificate_vo.certificate_arn),
                         'launched_at': self.datetime_to_iso8601(certificate_vo.created_at)
                     }
                     
@@ -89,7 +89,7 @@ class ACMConnector(SchematicAWSConnector):
                     
     def get_tags(self, arn):
         tag_response = self.client.list_tags_for_certificate(CertificateArn=arn)
-        return tag_response.get('Tags', [])
+        return self.convert_tags_to_dict_type(tag_response.get('Tags', []))
 
     @staticmethod
     def get_identifier(certificate_arn):

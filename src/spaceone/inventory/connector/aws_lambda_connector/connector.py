@@ -99,7 +99,8 @@ class LambdaConnector(SchematicAWSConnector):
                         'data': func,
                         'name': func.name,
                         'instance_size': float(func.code_size),
-                        'account': self.account_id
+                        'account': self.account_id,
+                        'tags': self.list_tags(func.arn)
                     }
                     
                 except Exception as e:
@@ -147,3 +148,7 @@ class LambdaConnector(SchematicAWSConnector):
                     resource_id = raw.get('LayerArn', '')
                     error_resource_response = self.generate_error(region_name, resource_id, e)
                     yield {'data': error_resource_response}
+
+    def list_tags(self, arn):
+        response = self.client.list_tags(Resource=arn)
+        return response.get('Tags', {})

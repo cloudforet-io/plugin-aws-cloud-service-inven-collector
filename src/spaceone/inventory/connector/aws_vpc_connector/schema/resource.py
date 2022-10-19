@@ -156,9 +156,8 @@ vpc_transit_gw = ItemDynamicLayout.set_fields('Transit Gateway', fields=[
                             'data.transit_gateway.options.propagation_default_route_table_id'),
 ])
 
-vpc_tags = SimpleTableDynamicLayout.set_tags()
 vpc_metadata = CloudServiceMeta.set_layouts(layouts=[vpc, vpc_subnet, vpc_route, vpc_igw, vpc_natgw, vpc_endpoints,
-                                                     vpc_peercon, vpc_egress_gw, vpn_gw, vpc_transit_gw, vpc_tags])
+                                                     vpc_peercon, vpc_egress_gw, vpn_gw, vpc_transit_gw])
 
 
 # SUBNET
@@ -212,8 +211,7 @@ subnet_nacl = TableDynamicLayout.set_fields('Network ACL', 'data.network_acl.ent
     }),
 ])
 
-subnet_tags = SimpleTableDynamicLayout.set_tags()
-subnet_metadata = CloudServiceMeta.set_layouts(layouts=[subnet, subnet_rt, subnet_nacl, subnet_tags])
+subnet_metadata = CloudServiceMeta.set_layouts(layouts=[subnet, subnet_rt, subnet_nacl])
 
 
 # ROUTE
@@ -262,8 +260,7 @@ rt_edge_assoc = TableDynamicLayout.set_fields('Edge Assocations', 'data.edge_ass
     TextDyField.data_source('Route Table Association ID', 'route_table_association_id'),
 ])
 
-rt_tags = SimpleTableDynamicLayout.set_tags()
-rt_metadata = CloudServiceMeta.set_layouts(layouts=[rt, rt_routes, rt_subnet_assoc, rt_edge_assoc, rt_tags])
+rt_metadata = CloudServiceMeta.set_layouts(layouts=[rt, rt_routes, rt_subnet_assoc, rt_edge_assoc])
 
 
 # Internet Gateway
@@ -279,8 +276,7 @@ igw = ItemDynamicLayout.set_fields('Internet Gateway', fields=[
     }),
 ])
 
-igw_tags = SimpleTableDynamicLayout.set_tags()
-igw_metadata = CloudServiceMeta.set_layouts(layouts=[igw, igw_tags])
+igw_metadata = CloudServiceMeta.set_layouts(layouts=[igw])
 
 
 # Egress Only Internet Gateway
@@ -294,8 +290,8 @@ eoigw = ItemDynamicLayout.set_fields('Egress Only Internet Gateway', fields=[
         'sub_key': 'vpc_id'
     })
 ])
-eoigw_tags = SimpleTableDynamicLayout.set_tags()
-eoigw_metadata = CloudServiceMeta.set_layouts(layouts=[eoigw, eoigw_tags])
+
+eoigw_metadata = CloudServiceMeta.set_layouts(layouts=[eoigw])
 
 # ENDPOINT
 ep = ItemDynamicLayout.set_fields('Endpoints', fields=[
@@ -318,8 +314,7 @@ ep = ItemDynamicLayout.set_fields('Endpoints', fields=[
     }),
 ])
 
-ep_tags = SimpleTableDynamicLayout.set_tags()
-ep_metadata = CloudServiceMeta.set_layouts(layouts=[ep, ep_tags])
+ep_metadata = CloudServiceMeta.set_layouts(layouts=[ep])
 
 # NAT GATEWAY
 natgw = ItemDynamicLayout.set_fields('NAT Gateway', fields=[
@@ -348,8 +343,7 @@ natgw = ItemDynamicLayout.set_fields('NAT Gateway', fields=[
     DateTimeDyField.data_source('Created', 'data.create_time'),
 ])
 
-natgw_tags = SimpleTableDynamicLayout.set_tags()
-natgw_metadata = CloudServiceMeta.set_layouts(layouts=[natgw, natgw_tags])
+natgw_metadata = CloudServiceMeta.set_layouts(layouts=[natgw])
 
 # PEERING CONNECTION
 peercon = ItemDynamicLayout.set_fields('Peering Connection', fields=[
@@ -377,8 +371,7 @@ peercon_accepter = ItemDynamicLayout.set_fields('Accepter', fields=[
     TextDyField.data_source('Accepter VPC Region', 'data.accepter_vpc_info.region'),
 ])
 
-peercon_tags = SimpleTableDynamicLayout.set_tags()
-pc_metadata = CloudServiceMeta.set_layouts(layouts=[peercon, peercon_requester, peercon_accepter, peercon_tags])
+pc_metadata = CloudServiceMeta.set_layouts(layouts=[peercon, peercon_requester, peercon_accepter])
 
 # NETWORK ACL
 nacl = ItemDynamicLayout.set_fields('Network ACL', fields=[
@@ -416,8 +409,7 @@ nacl_subnet_assoc = TableDynamicLayout.set_fields('Subnet Associations', 'data.a
     TextDyField.data_source('Subnet ID', 'subnet_id')
 ])
 
-nacl_tag = SimpleTableDynamicLayout.set_tags()
-nacl_metadata = CloudServiceMeta.set_layouts(layouts=[nacl, nacl_inbound, nacl_outbound, nacl_subnet_assoc, nacl_tag])
+nacl_metadata = CloudServiceMeta.set_layouts(layouts=[nacl, nacl_inbound, nacl_outbound, nacl_subnet_assoc])
 
 
 # TRANSIT GATEWAY
@@ -465,8 +457,7 @@ transitgw_vpn_conn = TableDynamicLayout.set_fields('VPN Connections', 'data.vpn_
     }),
 ])
 
-transitgw_tag = SimpleTableDynamicLayout.set_tags()
-transitgw_metadata = CloudServiceMeta.set_layouts(layouts=[transitgw, transitgw_vpn_conn, transitgw_tag])
+transitgw_metadata = CloudServiceMeta.set_layouts(layouts=[transitgw, transitgw_vpn_conn])
 
 
 # CUSTOMER GATEWAY
@@ -502,8 +493,7 @@ customergw_vpn_conn = ItemDynamicLayout.set_fields('VPN Connection', fields=[
     }),
 ])
 
-customergw_tag = SimpleTableDynamicLayout.set_tags()
-customergw_metadata = CloudServiceMeta.set_layouts(layouts=[customergw, customergw_vpn_conn, customergw_tag])
+customergw_metadata = CloudServiceMeta.set_layouts(layouts=[customergw, customergw_vpn_conn])
 
 
 # VPN GATEWAY
@@ -540,8 +530,8 @@ vpngw_vpn_conn = ItemDynamicLayout.set_fields('VPN Connection', fields=[
         'indigo.500': ['VPN'], 'coral.500': ['VPN-Classic']
     }),
 ])
-vpngw_tag = SimpleTableDynamicLayout.set_tags()
-vpngw_metadata = CloudServiceMeta.set_layouts(layouts=[vpngw, vpngw_vpn_conn, vpngw_tag])
+
+vpngw_metadata = CloudServiceMeta.set_layouts(layouts=[vpngw, vpngw_vpn_conn])
 
 
 # VPN CONNECTION
@@ -576,92 +566,90 @@ vpnconn_tunnel = TableDynamicLayout.set_fields('VPN Tunnel', 'data.vgw_telemetry
     TextDyField.data_source('Certificate ARN', 'certificate_arn'),
 ])
 
-vpnconn_tag = SimpleTableDynamicLayout.set_tags()
-vpnconn_metadata = CloudServiceMeta.set_layouts(layouts=[vpnconn, vpnconn_tunnel, vpnconn_tag])
+vpnconn_metadata = CloudServiceMeta.set_layouts(layouts=[vpnconn, vpnconn_tunnel])
 
 
-class VPCResource(CloudServiceResource):
+class _VPCResource(CloudServiceResource):
     cloud_service_group = StringType(default='VPC')
 
 
 # Resource
-class VPCResource(VPCResource):
+class VPCResource(_VPCResource):
     cloud_service_type = StringType(default='VPC')
     data = ModelType(VPC)
     _metadata = ModelType(CloudServiceMeta, default=vpc_metadata, serialized_name='metadata')
 
 
-class SubnetResource(VPCResource):
+class SubnetResource(_VPCResource):
     cloud_service_type = StringType(default='Subnet')
     data = ModelType(Subnet)
     _metadata = ModelType(CloudServiceMeta, default=subnet_metadata, serialized_name='metadata')
 
 
-class RouteTableResource(VPCResource):
+class RouteTableResource(_VPCResource):
     cloud_service_type = StringType(default='RouteTable')
     data = ModelType(RouteTable)
     _metadata = ModelType(CloudServiceMeta, default=rt_metadata, serialized_name='metadata')
 
 
-class InternetGatewayResource(VPCResource):
+class InternetGatewayResource(_VPCResource):
     cloud_service_type = StringType(default='InternetGateway')
     data = ModelType(InternetGateway)
     _metadata = ModelType(CloudServiceMeta, default=igw_metadata, serialized_name='metadata')
 
 
-class EgressOnlyInternetGatewayResource(VPCResource):
+class EgressOnlyInternetGatewayResource(_VPCResource):
     cloud_service_type = StringType(default='EgressOnlyInternetGateway')
     data = ModelType(EgressOnlyInternetGateway)
     _metadata = ModelType(CloudServiceMeta, default=eoigw_metadata, serialized_name='metadata')
 
 
-class EndpointResource(VPCResource):
+class EndpointResource(_VPCResource):
     cloud_service_type = StringType(default='Endpoint')
     data = ModelType(Endpoint)
     _metadata = ModelType(CloudServiceMeta, default=ep_metadata, serialized_name='metadata')
 
 
-class NATGatewayResource(VPCResource):
+class NATGatewayResource(_VPCResource):
     cloud_service_type = StringType(default='NATGateway')
     data = ModelType(NATGateway)
     _metadata = ModelType(CloudServiceMeta, default=natgw_metadata, serialized_name='metadata')
 
 
-class PeeringConnectionResource(VPCResource):
+class PeeringConnectionResource(_VPCResource):
     cloud_service_type = StringType(default='PeeringConnection')
     data = ModelType(PeeringConnection)
     _metadata = ModelType(CloudServiceMeta, default=pc_metadata, serialized_name='metadata')
 
 
-class NetworkACLResource(VPCResource):
+class NetworkACLResource(_VPCResource):
     cloud_service_type = StringType(default='NetworkACL')
     data = ModelType(NetworkACL)
     _metadata = ModelType(CloudServiceMeta, default=nacl_metadata, serialized_name='metadata')
 
 
-class TransitGatewayResource(VPCResource):
+class TransitGatewayResource(_VPCResource):
     cloud_service_type = StringType(default='TransitGateway')
     data = ModelType(TransitGateway)
     _metadata = ModelType(CloudServiceMeta, default=transitgw_metadata, serialized_name='metadata')
 
 
-class CustomerGatewayResource(VPCResource):
+class CustomerGatewayResource(_VPCResource):
     cloud_service_type = StringType(default='CustomerGateway')
     data = ModelType(CustomerGateway)
     _metadata = ModelType(CloudServiceMeta, default=customergw_metadata, serialized_name='metadata')
 
 
-class VPNGatewayResource(VPCResource):
+class VPNGatewayResource(_VPCResource):
     cloud_service_type = StringType(default='VPNGateway')
     data = ModelType(VPNGateway)
     _metadata = ModelType(CloudServiceMeta, default=vpngw_metadata, serialized_name='metadata')
 
 
-class VPNConnectionResource(VPCResource):
+class VPNConnectionResource(_VPCResource):
     cloud_service_type = StringType(default='VPNConnection')
     data = ModelType(VPNConnection)
     _metadata = ModelType(CloudServiceMeta, default=vpnconn_metadata, serialized_name='metadata')
-
 
 
 # Response

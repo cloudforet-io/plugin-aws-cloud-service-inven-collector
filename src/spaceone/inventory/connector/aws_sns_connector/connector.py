@@ -6,7 +6,6 @@ from spaceone.inventory.connector.aws_sns_connector.schema.data import Topic, Su
 from spaceone.inventory.connector.aws_sns_connector.schema.resource import TopicResource, TopicResponse
 from spaceone.inventory.connector.aws_sns_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
-from spaceone.inventory.libs.schema.resource import AWSTags
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -60,12 +59,10 @@ class SNSConnector(SchematicAWSConnector):
                     topic = topic_response.get('Attributes')
 
                     subscription_response = self.client.list_subscriptions_by_topic(TopicArn=topic_arn)
-                    tags_response = self.client.list_tags_for_resource(ResourceArn=topic_arn)
 
                     topic.update({
                         'subscriptions': list(map(lambda subscription: Subscription(subscription, strict=False),
                                                   subscription_response.get('Subscriptions', []))),
-                        'tags': list(map(lambda tag: AWSTags(tag, strict=False), tags_response.get('Tags', []))),
                         'name': name,
                         'region_name': region_name,
                         'cloudwatch': self.set_cloudwatch(cloudwatch_namespace, cloudwatch_dimension_name,
@@ -82,7 +79,8 @@ class SNSConnector(SchematicAWSConnector):
                     yield {
                         'data': topic_vo,
                         'name': topic_vo.name,
-                        'account': self.account_id
+                        'account': self.account_id,
+                        'tags': self.list_tags(topic_vo.topic_arn)
                     }
                     
                 except Exception as e:
@@ -113,7 +111,7 @@ class SNSConnector(SchematicAWSConnector):
                 'arn': key_meta.get('Arn', ''),
                 'account_id': key_meta.get('AWSAccountId', ''),
                 'encryption': 'Configured',
-                'alias' : _kms.get('AliasName', '')
+                'alias': _kms.get('AliasName', '')
             }
 
             return TopicKMS(kms_dict, strict=False)
@@ -142,6 +140,10 @@ class SNSConnector(SchematicAWSConnector):
             return match_kms[0]
 
         return None
+
+    def list_tags(self, arn):
+        response = self.client.list_tags_for_resource(ResourceArn=arn)
+        return self.convert_tags_to_dict_type(response.get('Tags', []))
 
     @staticmethod
     def _get_name_from_arn(arn):

@@ -64,8 +64,7 @@ origin_group = TableDynamicLayout.set_fields('Origin Groups', 'data.origin_group
     })
 ])
 
-tags = SimpleTableDynamicLayout.set_tags()
-metadata = CloudServiceMeta.set_layouts([meta_base, alias_icp_recordals, origin, origin_group, tags])
+metadata = CloudServiceMeta.set_layouts([meta_base, alias_icp_recordals, origin, origin_group])
 
 
 class CloudFrontResource(CloudServiceResource):

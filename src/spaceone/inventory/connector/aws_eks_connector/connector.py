@@ -7,7 +7,7 @@ from spaceone.inventory.connector.aws_eks_connector.schema.resource import Clust
     NodeGroupResource, NodeGroupResponse
 from spaceone.inventory.connector.aws_eks_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
-from spaceone.inventory.libs.schema.resource import ReferenceModel, AWSTags, CloudWatchModel
+from spaceone.inventory.libs.schema.resource import ReferenceModel, CloudWatchModel
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -43,7 +43,7 @@ class EKSConnector(SchematicAWSConnector):
                         'name': node_group_vo.nodegroup_name,
                         'launched_at': self.datetime_to_iso8601(node_group_vo.created_at),
                         'data': node_group_vo,
-                        'tags': [{'key': tag.key, 'value': tag.value} for tag in node_group_vo.tags],
+                        'tags': node_group_vo.tags,
                         'region_code': region_name,
                         'reference': ReferenceModel(node_group_vo.reference(region_name))})}
                 ))
@@ -76,9 +76,7 @@ class EKSConnector(SchematicAWSConnector):
                         cluster.update({
                             'updates': list(self.list_updates(_cluster_name)),
                             'cloudwatch': self.eks_cluster_cloudwatch(cluster, region_name),
-                            'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type, cluster['name']),
-                            'tags': list(map(lambda tag: AWSTags(tag, strict=False),
-                                             self.convert_tags(cluster.get('tags', {}))))
+                            'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type, cluster['name'])
                         })
 
                         node_groups, node_group_errors = self.list_node_groups(_cluster_name, cluster.get('arn'),
@@ -97,7 +95,8 @@ class EKSConnector(SchematicAWSConnector):
                             'data': cluster_vo,
                             'name': cluster_vo.name,
                             'launched_at': self.datetime_to_iso8601(cluster_vo.created_at),
-                            'account': self.account_id
+                            'account': self.account_id,
+                            'tags': cluster.get('tags',)
                         }
 
                 except Exception as e:
@@ -132,9 +131,7 @@ class EKSConnector(SchematicAWSConnector):
                     node_group.update({
                         'cluster_arn': cluster_arn,
                         'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type,
-                                                          node_group['nodegroupName']),
-                        'tags': list(map(lambda tag: AWSTags(tag, strict=False),
-                                         self.convert_tags(node_group.get('tags', {}))))
+                                                          node_group['nodegroupName'])
                     })
                     asg_names = [asg.get("name", "") for asg in
                                  node_group.get("resources", "").get("autoScalingGroups", [])]

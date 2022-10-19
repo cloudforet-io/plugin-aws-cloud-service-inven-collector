@@ -96,8 +96,7 @@ lb_attr = ItemDynamicLayout.set_fields('Attributes', fields=[
     TextDyField.data_source('Access logs S3 Bucket', 'data.attributes.access_logs_s3_bucket'),
 ])
 
-lb_tags = SimpleTableDynamicLayout.set_tags()
-lb_metadata = CloudServiceMeta.set_layouts(layouts=[lb_base, lb_attr, lb_listener, lb_tg, lb_instance, lb_tags])
+lb_metadata = CloudServiceMeta.set_layouts(layouts=[lb_base, lb_attr, lb_listener, lb_tg, lb_instance])
 
 '''
 TARGET GROUP
@@ -140,8 +139,7 @@ health_check = ItemDynamicLayout.set_fields('Health Check', fields=[
     TextDyField.data_source('Health Check Path', 'data.health_check_path'),
 ])
 
-tg_tags = SimpleTableDynamicLayout.set_tags()
-tg_metadata = CloudServiceMeta.set_layouts(layouts=[tg_base, tg_attr, health_check, tg_tags])
+tg_metadata = CloudServiceMeta.set_layouts(layouts=[tg_base, tg_attr, health_check])
 
 
 class ELBResource(CloudServiceResource):

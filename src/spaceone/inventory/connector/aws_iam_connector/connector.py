@@ -43,7 +43,7 @@ class IAMConnector(SchematicAWSConnector):
             policies, policy_errors = self.list_local_managed_policies()
             users, user_errors = self.request_user_data(policies)
 
-            for role in self.request_role_data(policies):
+            for role, tags in self.request_role_data(policies):
                 if getattr(role, 'resource_type', None) and role.resource_type == 'inventory.ErrorResource':
                     # Error Resource
                     resources.append(role)
@@ -53,6 +53,7 @@ class IAMConnector(SchematicAWSConnector):
                             'name': role.role_name,
                             'data': role,
                             'account': self.account_id,
+                            'tags': self.convert_tags_to_dict_type(tags),
                             'reference': ReferenceModel(role.reference()),
                             'region_code': 'global'})}))
 
@@ -242,15 +243,14 @@ class IAMConnector(SchematicAWSConnector):
                         'policies': matched_policies,
                         'role_last_used': role_last_used,
                         'last_activity': last_activity,
-                        'cloudtrail': self.set_cloudtrail('us-east-1', cloudtrail_resource_type, role['RoleName']),
-                        'tags': role_info.get('Tags', [])
+                        'cloudtrail': self.set_cloudtrail('us-east-1', cloudtrail_resource_type, role['RoleName'])
                     })
 
-                    yield Role(role, strict=False)
+                    yield Role(role, strict=False), role.get('Tags', [])
                 except Exception as e:
                     resource_id = role.get('Arn', '')
                     error_resource_response = self.generate_error('global', resource_id, e)
-                    yield error_resource_response
+                    yield error_resource_response, []
 
     def request_identity_provider_data(self) -> List[IdentityProvider]:
         self.cloud_service_type = 'IdentityProvider'

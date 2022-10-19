@@ -75,7 +75,8 @@ class EIPConnector(SchematicAWSConnector):
                 yield {
                     'data': eip_vo,
                     'name': eip_vo.name,
-                    'account': self.account_id
+                    'account': self.account_id,
+                    'tags': self.convert_tags_to_dict_type(_ip.get('Tags', []))
                 }
 
             except Exception as e:

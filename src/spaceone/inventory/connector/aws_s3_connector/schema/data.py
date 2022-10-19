@@ -51,14 +51,6 @@ class TransferAcceleration(Model):
 
 
 '''
-TAG
-'''
-class Tags(Model):
-    key = StringType(deserialize_from="Key")
-    value = StringType(deserialize_from="Value")
-
-
-'''
 OBJECT LOCK
 '''
 class DefaultRetention(Model):
@@ -173,7 +165,6 @@ class Bucket(AWSCloudService):
     website_hosting = ModelType(WebsiteHosting, serialize_when_none=False)
     encryption = ModelType(Encryption, serialize_when_none=False)
     object_lock = ModelType(ObjectLock, serialize_when_none=False)
-    tags = ListType(ModelType(Tags), default=[])
     transfer_acceleration = ModelType(TransferAcceleration, serialize_when_none=False)
     request_payment = ModelType(RequestPayment, serialize_when_none=False)
     notification_configurations = ListType(ModelType(NotificationConfiguration), default=[])

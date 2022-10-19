@@ -6,7 +6,6 @@ from spaceone.inventory.connector.aws_cloud_trail_connector.schema.data import T
 from spaceone.inventory.connector.aws_cloud_trail_connector.schema.resource import TrailResource, TrailResponse
 from spaceone.inventory.connector.aws_cloud_trail_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
-from spaceone.inventory.libs.schema.resource import AWSTags
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -59,7 +58,6 @@ class CloudTrailConnector(SchematicAWSConnector):
                             raw['insight_selectors'] = InsightSelector(insight_selectors, strict=False)
 
                     raw.update({
-                        'tags': self._match_tags(raw.get('TrailARN'), tags),
                         'cloudwatch': self.set_cloudwatch(cloudwatch_namespace, None, None, region_name),
                         'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type, raw['TrailARN'])
                     })
@@ -70,7 +68,8 @@ class CloudTrailConnector(SchematicAWSConnector):
                     yield {
                         'data': trail_vo,
                         'name': trail_vo.name,
-                        'account': self.account_id
+                        'account': self.account_id,
+                        'tags': self._match_tags(trail_vo.trail_arn, tags),
                     }
 
             except Exception as e:
@@ -89,8 +88,7 @@ class CloudTrailConnector(SchematicAWSConnector):
         for _region in trails_from_region:
             self.reset_region(_region)
             response = self.client.list_tags(ResourceIdList=trails_from_region[_region])
-            resource_tag_list = response.get('ResourceTagList', [])
-            tags = tags + resource_tag_list
+            tags.extend(response.get('ResourceTagList', []))
 
         return tags
 
@@ -103,18 +101,17 @@ class CloudTrailConnector(SchematicAWSConnector):
         else:
             return insight_selectors[0]
 
-    @staticmethod
-    def _match_tags(trail_arn, tags):
-        return_tags = []
+    def _match_tags(self, trail_arn, tags):
+        tag_dict = {}
+
         try:
             for tag in tags:
                 if tag['ResourceId'] == trail_arn:
-                    for _tag in tag['TagsList']:
-                        return_tags.append(AWSTags(_tag, strict=False))
+                    tag_dict.update(self.convert_tags_to_dict_type(tag['TagsList']))
         except Exception as e:
             _LOGGER.error(e)
 
-        return return_tags
+        return tag_dict
 
     @staticmethod
     def _sort_trail_from_region(trails):

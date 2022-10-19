@@ -8,7 +8,6 @@ from spaceone.inventory.connector.aws_documentdb_connector.schema.resource impor
     SubnetGroupResource, SubnetGroupResponse, ParameterGroupResource, ParameterGroupResponse
 from spaceone.inventory.connector.aws_documentdb_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
-from spaceone.inventory.libs.schema.resource import AWSTags
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -94,8 +93,7 @@ class DocumentDBConnector(SchematicAWSConnector):
                         'cloudwatch': self.set_cloudwatch(cloudwatch_namespace, cloudwatch_dimension_name,
                                                           raw['DBClusterIdentifier'], region_name),
                         'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type,
-                                                          raw['DBClusterIdentifier']),
-                        'tags': self.request_tags(raw['DBClusterArn'])
+                                                          raw['DBClusterIdentifier'])
                     })
 
                     if subnet_group := self._match_subnet_group(raw.get('DBSubnetGroup')):
@@ -110,7 +108,8 @@ class DocumentDBConnector(SchematicAWSConnector):
                         'name': cluster_vo.db_cluster_identifier,
                         'instance_type': cluster_vo.engine_version,
                         'instance_size': float(cluster_vo.instance_count),
-                        'account': self.account_id
+                        'account': self.account_id,
+                        'tags': self.request_tags(cluster_vo.db_cluster_arn)
                     }
 
                 except Exception as e:
@@ -134,14 +133,14 @@ class DocumentDBConnector(SchematicAWSConnector):
                 try:
                     raw.update({
                         'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type,
-                                                          raw['DBSubnetGroupName']),
-                        'tags': self.request_tags(raw['DBSubnetGroupArn'])
+                                                          raw['DBSubnetGroupName'])
                     })
                     subnet_grp_vo = SubnetGroup(raw, strict=False)
                     yield {
                         'data': subnet_grp_vo,
                         'name': subnet_grp_vo.db_subnet_group_name,
-                        'account': self.account_id
+                        'account': self.account_id,
+                        'tags': self.request_tags(subnet_grp_vo.db_subnet_group_arn)
                     }
 
                 except Exception as e:
@@ -161,14 +160,14 @@ class DocumentDBConnector(SchematicAWSConnector):
                     'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type,
                                                       pg_data['DBClusterParameterGroupName']),
                     'parameters': self.request_parameter_data(pg_data['DBClusterParameterGroupName']),
-                    'tags': self.request_tags(pg_data['DBClusterParameterGroupArn'])
                 })
                 param_group_vo = ParameterGroup(pg_data, strict=False)
                 yield {
                     'data': param_group_vo,
                     'name': param_group_vo.db_cluster_parameter_group_name,
                     'instance_type': param_group_vo.db_parameter_group_family,
-                    'account': self.account_id
+                    'account': self.account_id,
+                    'tags': self.request_tags(param_group_vo.db_cluster_parameter_group_arn)
                 }
 
             except Exception as e:
@@ -182,7 +181,7 @@ class DocumentDBConnector(SchematicAWSConnector):
 
     def request_tags(self, resource_arn):
         response = self.client.list_tags_for_resource(ResourceName=resource_arn)
-        return list(map(lambda tag: AWSTags(tag, strict=False), response.get('TagList', [])))
+        return self.convert_tags_to_dict_type(response.get('TagList', []))
 
     def _describe_instances(self):
         instances = []
@@ -204,10 +203,11 @@ class DocumentDBConnector(SchematicAWSConnector):
         response = self.client.describe_db_cluster_snapshots()
         return [snapshot for snapshot in response.get('DBClusterSnapshots', []) if snapshot.get('Engine') == 'docdb']
 
-        """
-        CAN NOT operate paginated: describe_db_cluster_snapshot
-        Need to check out why can't use it.
-        """
+        #
+        # CAN NOT operate paginated: describe_db_cluster_snapshot
+        # Need to check out why can't use it.
+        #
+
         # snapshots = []
         # paginator = self.client.get_paginator('describe_db_cluster_snapshots')
         # response_iterator = paginator.paginate(

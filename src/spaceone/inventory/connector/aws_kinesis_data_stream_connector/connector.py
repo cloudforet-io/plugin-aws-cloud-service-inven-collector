@@ -35,13 +35,10 @@ class KinesisDataStreamConnector(SchematicAWSConnector):
             self.reset_region(region_name)
 
             for collect_resource in collect_resources:
-                resources.extend(
-                    self.collect_data_by_region(
-                        self.service_name, region_name, collect_resource
-                    )
-                )
+                resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
 
-        _LOGGER.debug(f'[get_resources][account_id: {self.account_id}] FINISHED: Kinesis Data Stream ({time.time() - start_time} sec)')
+        _LOGGER.debug(f'[get_resources][account_id: '
+                      f'{self.account_id}] FINISHED: Kinesis Data Stream ({time.time() - start_time} sec)')
         return resources
 
     def request_data(self, region_name) -> List[StreamDescription]:
@@ -94,8 +91,7 @@ class KinesisDataStreamConnector(SchematicAWSConnector):
                             'cloudwatch': self.set_cloudwatch(cloudwatch_namespace, cloudwatch_dimension_name,
                                                               stream_info['StreamName'], region_name),
                             'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type,
-                                                              stream_info['StreamARN']),
-                            "tags": self.get_tags(stream_info.get("StreamName")),
+                                                              stream_info['StreamARN'])
                         }
                     )
                     stream_vo = StreamDescription(stream_info, strict=False)
@@ -104,7 +100,8 @@ class KinesisDataStreamConnector(SchematicAWSConnector):
                         'instance_size': float(stream_vo.open_shards_num),
                         'launched_at': self.datetime_to_iso8601(stream_vo.stream_creation_timestamp),
                         'name': stream_vo.stream_name,
-                        'account': self.account_id
+                        'account': self.account_id,
+                        'tags': self.get_tags(stream_vo.stream_name)
                     }
 
                 except Exception as e:
@@ -114,7 +111,7 @@ class KinesisDataStreamConnector(SchematicAWSConnector):
 
     def get_tags(self, name):
         tag_response = self.client.list_tags_for_stream(StreamName=name)
-        return tag_response.get("Tags", [])
+        return self.convert_tags_to_dict_type(tag_response.get('Tags', []))
 
     def get_consumers(self, arn):
         consumer_response = self.client.list_stream_consumers(StreamARN=arn)
