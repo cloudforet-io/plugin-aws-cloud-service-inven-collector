@@ -67,6 +67,7 @@ class KMSConnector(SchematicAWSConnector):
                     })
 
                 key_vo = Key(key, strict=False)
+
                 yield {
                     'data': key_vo,
                     'name': key_vo.alias_name,
@@ -102,6 +103,10 @@ class KMSConnector(SchematicAWSConnector):
         for data in response_iterator:
             for raw in data['Aliases']:
                 yield raw
+
+    def list_tags(self, key_id):
+        response = self.client.list_resource_tags(KeyId=key_id)
+        return self.convert_tags_to_dict_type(response.get('Tags'), key='TagKey', value='TagValue')
 
     @staticmethod
     def _set_key_type_path(key_manager):

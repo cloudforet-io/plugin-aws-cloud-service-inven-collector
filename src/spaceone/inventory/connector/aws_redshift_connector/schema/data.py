@@ -248,7 +248,6 @@ class Cluster(AWSCloudService):
     cluster_nodes = ListType(ModelType(ClusterNodes), deserialize_from="ClusterNodes", default=[])
     elastic_ip_status = ModelType(ElasticIpStatus, deserialize_from="ElasticIpStatus")
     cluster_revision_number = StringType(deserialize_from="ClusterRevisionNumber")
-    tags = ListType(ModelType(Tags), deserialize_from="Tags", default=[])
     kms_key_id = StringType(deserialize_from="KmsKeyId")
     enhanced_vpc_routing = BooleanType(deserialize_from="EnhancedVpcRouting")
     iam_roles = ListType(ModelType(ClusterIamRoles), deserialize_from="IamRoles")

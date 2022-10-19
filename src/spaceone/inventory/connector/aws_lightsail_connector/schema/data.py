@@ -5,11 +5,6 @@ from schematics.types import IntType, ModelType, StringType, BooleanType, FloatT
 _LOGGER = logging.getLogger(__name__)
 
 
-class Tag(Model):
-    key = StringType(serialize_when_none=False)
-    value = StringType(serialize_when_none=False)
-
-
 class AddOne(Model):
     name = StringType(serialize_when_none=False)
     status = StringType(serialize_when_none=False)
@@ -41,7 +36,6 @@ class ResourceBase(Model):
                                         'DiskSnapshot', 'RelationalDatabase', 'RelationalDatabaseSnapshot',
                                         'ExportSnapshotRecord', 'CloudFormationStackRecord', 'Alarm', 'ContactMethod',
                                         'Distribution', 'Certificate', 'Bucket'])
-    tags = ListType(ModelType(Tag), default=[])
 
 
 class Disk(ResourceBase):

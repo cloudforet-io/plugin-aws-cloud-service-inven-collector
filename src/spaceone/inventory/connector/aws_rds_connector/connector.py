@@ -10,7 +10,7 @@ from spaceone.inventory.connector.aws_rds_connector.schema.resource import Datab
     DBClusterResource, DBInstanceResource
 from spaceone.inventory.connector.aws_rds_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
-from spaceone.inventory.libs.schema.resource import ReferenceModel, AWSTags
+from spaceone.inventory.libs.schema.resource import ReferenceModel
 
 _LOGGER = logging.getLogger(__name__)
 DEFAULT_RDS_FILTER = ['aurora', 'aurora-mysql', 'mysql', 'mariadb', 'postgres', 'aurora-postgresql',
@@ -64,7 +64,8 @@ class RDSConnector(SchematicAWSConnector):
             try:
                 # For Database
                 for database_vo, resource, identifier in self.db_cluster_data(region_name):
-                    if getattr(database_vo, 'resource_type', None) and database_vo.resource_type == 'inventory.ErrorResource':
+                    if getattr(database_vo, 'resource_type', None) \
+                            and database_vo.resource_type == 'inventory.ErrorResource':
                         # Error Resource
                         resources.append(database_vo)
                     else:
@@ -73,7 +74,7 @@ class RDSConnector(SchematicAWSConnector):
                                 'name': identifier,
                                 'data': database_vo,
                                 'instance_type': database_vo.engine,
-                                'tags': [{'key':tag.key, 'value': tag.value} for tag in database_vo.tags],
+                                'tags': self.list_tags_for_resource(database_vo.arn),
                                 'region_code': region_name,
                                 'account': self.account_id,
                                 'reference': ReferenceModel(database_vo.reference(region_name))})}
@@ -110,8 +111,7 @@ class RDSConnector(SchematicAWSConnector):
                     'cluster': cluster,
                     'cloudwatch': self.set_cloudwatch(cloudwatch_namespace, cloudwatch_dimension_name,
                                                       cluster.db_cluster_identifier, region_name),
-                    'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type, cluster.database_name),
-                    'tags': list(map(lambda tag: AWSTags(tag, strict=False), cluster.tags)),
+                    'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type, cluster.database_name)
                 }
                 yield Database(db, strict=False), DBClusterResource, cluster_identifier
             except Exception as e:
@@ -136,8 +136,7 @@ class RDSConnector(SchematicAWSConnector):
                         'account_id': self.account_id,
                         'instance': instance,
                         'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type,
-                                                          instance.db_instance_identifier),
-                        'tags': instance.tags
+                                                          instance.db_instance_identifier)
                     }
                     yield Database(db, strict=False), DBInstanceResource, instance_identifier
             except Exception as e:
@@ -171,7 +170,8 @@ class RDSConnector(SchematicAWSConnector):
             yield {
                 'data': instance,
                 'name': instance_identifier,
-                'account': self.account_id
+                'account': self.account_id,
+                'tags': self.list_tags_for_resource(instance.db_instance_arn)
             }
 
     def describe_instances(self, region_name) -> List[Instance]:
@@ -187,7 +187,6 @@ class RDSConnector(SchematicAWSConnector):
             for raw in data.get('DBInstances', []):
                 if raw.get('Engine') in DEFAULT_RDS_FILTER:
                     raw.update({
-                        'tags': self.list_tags_for_resource(raw['DBInstanceArn']),
                         'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type,
                                                           raw['DBInstanceIdentifier']),
                     })
@@ -211,15 +210,15 @@ class RDSConnector(SchematicAWSConnector):
                         raw.update({
                             'region_name': region_name,
                             'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type,
-                                                              raw['DBSnapshotIdentifier']),
-                            'tags': self.list_tags_for_resource(raw['DBSnapshotArn'])
+                                                              raw['DBSnapshotIdentifier'])
                         })
                         snapshot_vo = Snapshot(raw, strict=False)
                         yield {
                             'data': snapshot_vo,
                             'name': snapshot_vo.db_snapshot_identifier,
                             'instance_type': snapshot_vo.engine,
-                            'account': self.account_id
+                            'account': self.account_id,
+                            'tags': self.list_tags_for_resource(snapshot_vo.db_snapshot_arn)
                         }
 
                 except Exception as e:
@@ -244,14 +243,14 @@ class RDSConnector(SchematicAWSConnector):
                     raw.update({
                         'region_name': region_name,
                         'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type,
-                                                          raw['DBSubnetGroupName']),
-                        'tags': self.list_tags_for_resource(raw['DBSubnetGroupArn'])
+                                                          raw['DBSubnetGroupName'])
                     })
                     subnet_group_vo = SubnetGroup(raw, strict=False)
                     yield {
                         'data': subnet_group_vo,
                         'name': subnet_group_vo.db_subnet_group_name,
-                        'account': self.account_id
+                        'account': self.account_id,
+                        'tags': self.list_tags_for_resource(subnet_group_vo.db_subnet_group_arn)
                     }
 
                 except Exception as e:
@@ -278,15 +277,15 @@ class RDSConnector(SchematicAWSConnector):
                         'db_parameter_group_type': 'DbParameterGroup',
                         'parameters': list(self.describe_db_parameters(raw.get('DBParameterGroupName'))),
                         'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type,
-                                                          raw['DBParameterGroupName']),
-                        'tags': self.list_tags_for_resource(raw['DBParameterGroupArn'])
+                                                          raw['DBParameterGroupName'])
                     })
                     param_group_vo = ParameterGroup(raw, strict=False)
                     yield {
                         'data': param_group_vo,
                         'name': param_group_vo.db_parameter_group_name,
                         'instance_type': param_group_vo.db_parameter_group_family,
-                        'account': self.account_id
+                        'account': self.account_id,
+                        'tags': self.list_tags_for_resource(param_group_vo.db_parameter_group_arn)
                     }
 
                 except Exception as e:
@@ -311,15 +310,15 @@ class RDSConnector(SchematicAWSConnector):
                     raw.update({
                         'region_name': region_name,
                         'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type,
-                                                          raw['OptionGroupName']),
-                        'tags': self.list_tags_for_resource(raw['OptionGroupArn'])
+                                                          raw['OptionGroupName'])
                     })
                     option_group_vo = OptionGroup(raw, strict=False)
                     yield {
                         'data': option_group_vo,
                         'name': option_group_vo.option_group_name,
                         'instance_type': option_group_vo.engine_name,
-                        'account': self.account_id
+                        'account': self.account_id,
+                        'tags': self.list_tags_for_resource(option_group_vo.option_group_arn)
                     }
                     
                 except Exception as e:
@@ -342,7 +341,7 @@ class RDSConnector(SchematicAWSConnector):
 
     def list_tags_for_resource(self, resource_name):
         response = self.client.list_tags_for_resource(ResourceName=resource_name)
-        return response.get('TagList', [])
+        self.convert_tags_to_dict_type(response.get('TagList', []))
 
     @staticmethod
     def get_region(azs):

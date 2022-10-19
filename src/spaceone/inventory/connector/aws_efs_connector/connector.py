@@ -72,7 +72,8 @@ class EFSConnector(SchematicAWSConnector):
                         'name': filesystem_vo.name,
                         'instance_size': float(filesystem_vo.size),
                         'launched_at': self.datetime_to_iso8601(filesystem_vo.creation_time),
-                        'account': self.account_id
+                        'account': self.account_id,
+                        'tags': self.convert_tags_to_dict_type(raw.get('Tags', []))
                     }
 
                 except Exception as e:

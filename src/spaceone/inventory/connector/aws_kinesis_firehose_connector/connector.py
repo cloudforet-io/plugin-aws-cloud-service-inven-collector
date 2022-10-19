@@ -74,7 +74,8 @@ class KinesisFirehoseConnector(SchematicAWSConnector):
                     'data': stream_vo,
                     'name': stream_vo.delivery_stream_name,
                     'launched_at': self.datetime_to_iso8601(stream_vo.create_timestamp),
-                    'account': self.account_id
+                    'account': self.account_id,
+                    'tags': self.get_tags(stream_vo.delivery_stream_name)
                 }
 
             except Exception as e:
@@ -84,7 +85,7 @@ class KinesisFirehoseConnector(SchematicAWSConnector):
 
     def get_tags(self, name):
         tag_response = self.client.list_tags_for_delivery_stream(DeliveryStreamName=name)
-        return tag_response.get("Tags", [])
+        return self.convert_tags_to_dict_type(tag_response.get('Tags', []))
 
     def get_destinations_ref(self, destinations):
         destn_types = ["RedshiftDestinationDescription", "HttpEndpointDestinationDescription",

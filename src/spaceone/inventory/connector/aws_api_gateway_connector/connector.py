@@ -7,7 +7,7 @@ from spaceone.inventory.connector.aws_api_gateway_connector.schema.resource impo
     HTTPWebsocketResource, RestAPIResponse, HTTPWebsocketResponse
 from spaceone.inventory.connector.aws_api_gateway_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
-from spaceone.inventory.libs.schema.resource import AWSTags
+
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -83,8 +83,6 @@ class APIGatewayConnector(SchematicAWSConnector):
                         'arn': self.generate_arn(service=self.rest_service_name, region=region_name,
                                                  account_id="", resource_type='restapis',
                                                  resource_id=f"{raw.get('id')}/*"),
-                        'tags': list(map(lambda tag: AWSTags(tag, strict=False),
-                                         self.convert_tags(raw.get('tags', {})))),
                         'cloudwatch': self.set_cloudwatch(cloudwatch_namespace, cloudwatch_dimension_name,
                                                           raw.get('id'), region_name),
                         'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type, raw['id'])
@@ -96,6 +94,7 @@ class APIGatewayConnector(SchematicAWSConnector):
                         'name': rest_api_vo.name,
                         'instance_type': rest_api_vo.protocol,
                         'account': self.account_id,
+                        'tags': raw.get('tags', {}),
                         'launched_at': self.datetime_to_iso8601(rest_api_vo.created_date)
                     }
 
@@ -126,7 +125,6 @@ class APIGatewayConnector(SchematicAWSConnector):
                         'arn': self.generate_arn(service=self.websocket_service_name, region=region_name,
                                                  account_id="", resource_type='api',
                                                  resource_id=raw.get('ApiId')),
-                        'tags': self.convert_tags(raw.get('tags', {})),
                         'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type, raw['ApiId'])
                     })
     
@@ -136,6 +134,7 @@ class APIGatewayConnector(SchematicAWSConnector):
                         'name': http_websocket_vo.name,
                         'instance_type': http_websocket_vo.protocol,
                         'account': self.account_id,
+                        'tags': raw.get('Tags', {}),
                         'launched_at': self.datetime_to_iso8601(http_websocket_vo.created_date)
                     }
 

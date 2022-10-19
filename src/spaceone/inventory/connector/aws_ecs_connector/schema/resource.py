@@ -62,8 +62,7 @@ container_instances = TableDynamicLayout.set_fields('Container Instances', 'data
     TextDyField.data_source('Docker Version', 'version_info.docker_version'),
 ])
 
-tags = SimpleTableDynamicLayout.set_tags()
-metadata = CloudServiceMeta.set_layouts(layouts=[base, services, tasks, container_instances, tags])
+metadata = CloudServiceMeta.set_layouts(layouts=[base, services, tasks, container_instances])
 
 
 class ECSResource(CloudServiceResource):

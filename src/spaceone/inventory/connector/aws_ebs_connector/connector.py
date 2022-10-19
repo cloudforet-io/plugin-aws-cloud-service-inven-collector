@@ -92,7 +92,8 @@ class EBSConnector(SchematicAWSConnector):
                         'instance_size': float(volume_vo.size),
                         'instance_type': volume_vo.volume_type,
                         'launched_at': self.datetime_to_iso8601(volume_vo.create_time),
-                        'account': self.account_id
+                        'account': self.account_id,
+                        'tags': self.convert_tags_to_dict_type(raw.get('Tags', []))
                     }
 
                 except Exception as e:
@@ -138,7 +139,8 @@ class EBSConnector(SchematicAWSConnector):
                         'name': snapshot_vo.name,
                         'instance_size': float(snapshot_vo.volume_size),
                         'launched_at': self.datetime_to_iso8601(snapshot_vo.start_time),
-                        'account': self.account_id
+                        'account': self.account_id,
+                        'tags': self.convert_tags_to_dict_type(raw.get('Tags', []))
                     }
 
                 except Exception as e:

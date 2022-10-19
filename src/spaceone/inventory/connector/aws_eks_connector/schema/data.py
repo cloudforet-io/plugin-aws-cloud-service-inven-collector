@@ -1,7 +1,7 @@
 import logging
 
 from schematics import Model
-from schematics.types import ModelType, StringType, IntType, DateTimeType, ListType, BooleanType
+from schematics.types import ModelType, StringType, IntType, DateTimeType, ListType, BooleanType, DictType
 from spaceone.inventory.libs.schema.resource import AWSCloudService
 
 _LOGGER = logging.getLogger(__name__)
@@ -107,6 +107,7 @@ class NodeGroup(AWSCloudService):
     resources = ModelType(resources, deserialize_from="resources")
     disk_size = IntType(deserialize_from="diskSize")
     health = ModelType(health, deserialize_from="health")
+    tags = DictType(StringType, default={})
 
     def reference(self, region_code):
         return {

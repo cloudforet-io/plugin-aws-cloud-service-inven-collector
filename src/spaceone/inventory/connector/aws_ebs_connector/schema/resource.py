@@ -67,8 +67,7 @@ ss_base = ItemDynamicLayout.set_fields('Snapshots', fields=[
     DateTimeDyField.data_source('Started', 'data.start_time'),
 ])
 
-ss_tags = SimpleTableDynamicLayout.set_tags()
-ss_metadata = CloudServiceMeta.set_layouts(layouts=[ss_base, ss_tags])
+ss_metadata = CloudServiceMeta.set_layouts(layouts=[ss_base])
 
 
 class EC2Resource(CloudServiceResource):

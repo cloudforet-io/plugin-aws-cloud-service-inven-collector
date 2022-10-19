@@ -132,11 +132,6 @@ cluster_logging_meta = ListDynamicLayout.set_layouts('Cluster Logging', [cluster
                                                      cluster_broker_firehose, cluster_broker_s3])
 
 
-cluster_tag = SimpleTableDynamicLayout.set_fields('Tags', root_path='data.tags', fields=[
-    TextDyField.data_source('Key', 'key'),
-    TextDyField.data_source('Value', 'value'),
-])
-
 cluster_operations = \
     TableDynamicLayout.set_fields('Operations', root_path='data.cluster_operation_info', fields=[
         TextDyField.data_source('Operation ARN', 'operation_arn'),
@@ -149,14 +144,12 @@ cluster_operations = \
     ])
 
 
-cluster_metadata = CloudServiceMeta.set_layouts([ cluster_base,
-                                                  broker_info,
-                                                  cluster_encryption_info,
-                                                  cluster_client_authentication,
-                                                  cluster_logging_meta,
-                                                  cluster_operations,
-                                                  cluster_tag
-                                                 ])
+cluster_metadata = CloudServiceMeta.set_layouts([cluster_base,
+                                                 broker_info,
+                                                 cluster_encryption_info,
+                                                 cluster_client_authentication,
+                                                 cluster_logging_meta,
+                                                 cluster_operations])
 
 '''
 CONFIGURATION

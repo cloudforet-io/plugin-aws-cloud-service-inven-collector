@@ -66,11 +66,6 @@ class CloudTrailModel(Model):
     LookupAttributes = ListType(ModelType(CloudTrailLookupResource), default=[])
 
 
-class CloudServiceResourceTags(Model):
-    key = StringType()
-    value = StringType()
-
-
 class CloudServiceTypeMeta(BaseMetaData):
     @classmethod
     def set_meta(cls, name='', fields=[], search=[], widget=[]):
@@ -119,19 +114,13 @@ class CloudServiceResource(Model):
     cloud_service_type = StringType()
     cloud_service_group = StringType()
     data = PolyModelType(Model, default=lambda: {})
-    tags = ListType(ModelType(CloudServiceResourceTags), default=[])
+    tags = DictType(StringType, default={})
     reference = ModelType(ReferenceModel)
     region_code = StringType(serialize_when_none=False)
     _metadata = PolyModelType(CloudServiceMeta, serialize_when_none=False, serialized_name='metadata')
 
 
-class AWSTags(Model):
-    key = StringType(deserialize_from='Key')
-    value = StringType(deserialize_from='Value')
-
-
 class AWSCloudService(Model):
-    tags = ListType(ModelType(AWSTags), default=[])
     cloudwatch = ModelType(CloudWatchModel, serialize_when_none=False)
     cloudtrail = ModelType(CloudTrailModel, serialize_when_none=False)
 

@@ -43,8 +43,7 @@ sg_instance = TableDynamicLayout.set_fields('Instances', 'data.instances', field
     TextDyField.data_source('Private IP', 'private_ip_address'),
 ])
 
-sg_tags = SimpleTableDynamicLayout.set_tags()
-sg_metadata = CloudServiceMeta.set_layouts(layouts=[sg, inbound_rules, outbound_rules, sg_instance, sg_tags])
+sg_metadata = CloudServiceMeta.set_layouts(layouts=[sg, inbound_rules, outbound_rules, sg_instance])
 
 
 ami = ItemDynamicLayout.set_fields('AMI', fields=[
@@ -78,9 +77,7 @@ ami_permission = TableDynamicLayout.set_fields('Permission', 'data.launch_permis
     TextDyField.data_source('AWS Account ID', 'user_id')
 ])
 
-ami_tags = SimpleTableDynamicLayout.set_tags()
-
-ami_metadata = CloudServiceMeta.set_layouts(layouts=[ami, ami_permission, ami_tags])
+ami_metadata = CloudServiceMeta.set_layouts(layouts=[ami, ami_permission])
 
 
 class EC2Resource(CloudServiceResource):

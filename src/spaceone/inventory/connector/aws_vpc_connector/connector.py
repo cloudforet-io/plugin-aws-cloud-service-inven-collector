@@ -220,7 +220,8 @@ class VPCConnector(SchematicAWSConnector):
                 yield {
                     'data': vpc_vo,
                     'name': vpc_vo.name,
-                    'account': self.account_id
+                    'account': self.account_id,
+                    'tags': self.convert_tags_to_dict_type(vpc.get('Tags', []))
                 }
                 
             except Exception as e:
@@ -265,7 +266,8 @@ class VPCConnector(SchematicAWSConnector):
                 yield {
                     'data': peer_connect_vo,
                     'name': peer_connect_vo.name,
-                    'account': self.account_id
+                    'account': self.account_id,
+                    'tags': self.convert_tags_to_dict_type(peerx.get('Tags', []))
                 }
                 
             except Exception as e:
@@ -304,7 +306,8 @@ class VPCConnector(SchematicAWSConnector):
                     'data': nat_gateway_vo,
                     'name': nat_gateway_vo.name,
                     'launched_at': self.datetime_to_iso8601(nat_gateway_vo.create_time),
-                    'account': self.account_id
+                    'account': self.account_id,
+                    'tags': self.convert_tags_to_dict_type(ngw.get('Tags', []))
                 }
                 
             except Exception as e:
@@ -343,7 +346,8 @@ class VPCConnector(SchematicAWSConnector):
                 yield {
                     'data': network_acl_vo,
                     'name': network_acl_vo.name,
-                    'account': self.account_id
+                    'account': self.account_id,
+                    'tags': self.convert_tags_to_dict_type(nacl.get('Tags', []))
                 }
                 
             except Exception as e:
@@ -379,7 +383,8 @@ class VPCConnector(SchematicAWSConnector):
                     'name': endpoint_vo.name,
                     'instance_type': endpoint_vo.vpc_endpoint_type,
                     'launched_at': self.datetime_to_iso8601(endpoint_vo.creation_timestamp),
-                    'account': self.account_id
+                    'account': self.account_id,
+                    'tags': self.convert_tags_to_dict_type(endp.get('Tags', []))
                 }
                 
             except Exception as e:
@@ -415,7 +420,8 @@ class VPCConnector(SchematicAWSConnector):
                 yield {
                     'data': egress_only_internet_gateway_vo,
                     'name': egress_only_internet_gateway_vo.name,
-                    'account': self.account_id
+                    'account': self.account_id,
+                    'tags': self.convert_tags_to_dict_type(eoigw.get('Tags', []))
                 }
                 
             except Exception as e:
@@ -461,7 +467,8 @@ class VPCConnector(SchematicAWSConnector):
                 yield {
                     'data': internet_gateway_vo,
                     'name': internet_gateway_vo.name,
-                    'account': self.account_id
+                    'account': self.account_id,
+                    'tags': self.convert_tags_to_dict_type(igw.get('Tags', []))
                 }
                 
             except Exception as e:
@@ -502,7 +509,8 @@ class VPCConnector(SchematicAWSConnector):
                 yield {
                     'data': route_table_vo,
                     'name': route_table_vo.name,
-                    'account': self.account_id
+                    'account': self.account_id,
+                    'tags': self.convert_tags_to_dict_type(rt.get('Tags', []))
                 }
                 
             except Exception as e:
@@ -549,7 +557,8 @@ class VPCConnector(SchematicAWSConnector):
                     'data': subnet_vo,
                     'name': subnet_vo.name,
                     'instance_type': subnet_vo.subnet_type,
-                    'account': self.account_id
+                    'account': self.account_id,
+                    'tags': self.convert_tags_to_dict_type(subnet.get('Tags', []))
                 }
                 
             except Exception as e:
@@ -583,7 +592,8 @@ class VPCConnector(SchematicAWSConnector):
                     'data': tgw_vo,
                     'name': tgw_vo.name,
                     'launched_at': self.datetime_to_iso8601(tgw_vo.creation_time),
-                    'account': self.account_id
+                    'account': self.account_id,
+                    'tags': self.convert_tags_to_dict_type(transit_gateway.get('Tags', []))
                 }
                 
             except Exception as e:
@@ -619,7 +629,8 @@ class VPCConnector(SchematicAWSConnector):
                     'data': customer_gw_vo,
                     'name': customer_gw_vo.name,
                     'instance_type': customer_gw_vo.type,
-                    'account': self.account_id
+                    'account': self.account_id,
+                    'tags': self.convert_tags_to_dict_type(customer_gateway.get('Tags', []))
                 }
                 
             except Exception as e:
@@ -655,7 +666,8 @@ class VPCConnector(SchematicAWSConnector):
                     'data': vpn_gw_vo,
                     'name': vpn_gw_vo.name,
                     'instance_type': vpn_gw_vo.type,
-                    'account': self.account_id
+                    'account': self.account_id,
+                    'tags': self.convert_tags_to_dict_type(vpn_gateway.get('Tags', []))
                 }
                 
             except Exception as e:
@@ -688,7 +700,8 @@ class VPCConnector(SchematicAWSConnector):
                     'data': vpn_conn_vo,
                     'name': vpn_conn_vo.name,
                     'instance_type': vpn_conn_vo.type,
-                    'account': self.account_id
+                    'account': self.account_id,
+                    'tags': self.convert_tags_to_dict_type(vpn_connection.get('Tags', []))
                 }
                 
             except Exception as e:

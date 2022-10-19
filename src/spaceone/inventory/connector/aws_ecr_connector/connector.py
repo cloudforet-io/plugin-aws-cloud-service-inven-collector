@@ -7,7 +7,6 @@ from spaceone.inventory.connector.aws_ecr_connector.schema.data import Repositor
 from spaceone.inventory.connector.aws_ecr_connector.schema.resource import ECRRepositoryResource, ECRResponse
 from spaceone.inventory.connector.aws_ecr_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
-from spaceone.inventory.libs.schema.resource import AWSTags
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -61,7 +60,6 @@ class ECRConnector(SchematicAWSConnector):
                 try:
                     raw.update({
                         'images': list(self._describe_images(raw)),
-                        'tags': self.request_tags(raw.get('repositoryArn')),
                         'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type, raw['repositoryName'])
                     })
                     repository_vo = Repository(raw, strict=False)
@@ -69,7 +67,8 @@ class ECRConnector(SchematicAWSConnector):
                         'data': repository_vo,
                         'name': repository_vo.repository_name,
                         'launched_at': self.datetime_to_iso8601(repository_vo.created_at),
-                        'account': self.account_id
+                        'account': self.account_id,
+                        'tags': self.request_tags(repository_vo.repository_arn)
                     }
 
                 except Exception as e:
@@ -100,7 +99,7 @@ class ECRConnector(SchematicAWSConnector):
 
     def request_tags(self, resource_arn):
         response = self.client.list_tags_for_resource(resourceArn=resource_arn)
-        return list(map(lambda tag: AWSTags(tag, strict=False), response.get('tags', [])))
+        return self.convert_tags_to_dict_type(response.get('tags', []))
 
     @staticmethod
     def _generate_image_uri(repo_uri, image_tags):

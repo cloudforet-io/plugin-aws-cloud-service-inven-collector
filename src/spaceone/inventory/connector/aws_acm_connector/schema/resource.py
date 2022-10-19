@@ -51,17 +51,10 @@ acm_meta_detail = ItemDynamicLayout.set_fields('Details', fields=[
     DateTimeDyField.data_source('Not After', 'data.not_after'),
     TextDyField.data_source('Public Key Info', 'data.key_algorithm'),
     TextDyField.data_source('Signature Algorithm', 'data.signature_algorithm'),
-    TextDyField.data_source('ARN', 'data.certificate_arn'),
-    # TextDyField.data_source('Validation State', 'data.'),
+    TextDyField.data_source('ARN', 'data.certificate_arn')
 ])
 
-# TAB - Tags
-acm_meta_tags = TableDynamicLayout.set_fields('Tags', 'data.tags', fields=[
-    TextDyField.data_source('Key', 'key'),
-    TextDyField.data_source('Value', 'value'),
-])
-
-acm_meta = CloudServiceMeta.set_layouts([certificate_status, acm_meta_detail, acm_meta_tags])
+acm_meta = CloudServiceMeta.set_layouts([certificate_status, acm_meta_detail])
 
 
 class ACMResource(CloudServiceResource):

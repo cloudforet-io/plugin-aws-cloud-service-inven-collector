@@ -129,13 +129,8 @@ user_security_credential = ListDynamicLayout.set_layouts('Security Credentials',
                                                                                           https_codecommit,
                                                                                           cred_aws_keyspaces])
 
-user_tags = SimpleTableDynamicLayout.set_fields('Tags', root_path='data.tags', fields=[
-    TextDyField.data_source('Key', 'key'),
-    TextDyField.data_source('Value', 'value'),
-])
-
 user_metadata = CloudServiceMeta.set_layouts(layouts=[user_base, user_policy_table, user_group_table,
-                                                      user_security_credential, user_tags])
+                                                      user_security_credential])
 
 # ROLE
 role_base = ItemDynamicLayout.set_fields('Roles', fields=[
@@ -180,12 +175,8 @@ role_trust_relationships = TableDynamicLayout.set_fields('Trust Relationships', 
                                                                                      default_badge={'delimiter': '<br>'})
                                                          ])
 
-role_tags = SimpleTableDynamicLayout.set_fields('Tags', root_path='data.tags', fields=[
-    TextDyField.data_source('Key', 'key'),
-    TextDyField.data_source('Value', 'value'),
-])
 
-role_metadata = CloudServiceMeta.set_layouts(layouts=[role_base, role_policy_table, role_trust_relationships, role_tags])
+role_metadata = CloudServiceMeta.set_layouts(layouts=[role_base, role_policy_table, role_trust_relationships])
 
 # POLICY
 policy_base = ItemDynamicLayout.set_fields('Policy', fields=[

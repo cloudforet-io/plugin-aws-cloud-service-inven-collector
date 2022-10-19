@@ -6,7 +6,7 @@ from spaceone.inventory.connector.aws_elb_connector.schema.resource import LoadB
     LoadBalancerResponse, TargetGroupResponse
 from spaceone.inventory.connector.aws_elb_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
-from spaceone.inventory.libs.schema.resource import AWSTags, CloudWatchModel
+from spaceone.inventory.libs.schema.resource import CloudWatchModel
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -52,8 +52,9 @@ class ELBConnector(SchematicAWSConnector):
 
         raw_tgs = self.request_target_group(region_name)
         tg_arns = [raw_tg.get('TargetGroupArn') for raw_tg in raw_tgs if raw_tg.get('TargetGroupArn')]
+        all_tags = []
 
-        if len(tg_arns) > 0:
+        if tg_arns:
             all_tags = self.request_tags(tg_arns)
 
         for raw_tg in raw_tgs:
@@ -61,8 +62,7 @@ class ELBConnector(SchematicAWSConnector):
                 match_tags = self.search_tags(all_tags, raw_tg.get('TargetGroupArn'))
                 raw_tg.update({
                     'region_name': region_name,
-                    'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type, raw_tg['TargetGroupArn']),
-                    'tags': list(map(lambda match_tag: AWSTags(match_tag, strict=False), match_tags))
+                    'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type, raw_tg['TargetGroupArn'])
                 })
 
                 target_group_vo = TargetGroup(raw_tg, strict=False)
@@ -72,7 +72,8 @@ class ELBConnector(SchematicAWSConnector):
                     'data': target_group_vo,
                     'instance_type': target_group_vo.target_type,
                     'name': target_group_vo.target_group_name,
-                    'account': self.account_id
+                    'account': self.account_id,
+                    'tags': self.convert_tags_to_dict_type(match_tags)
                 }
 
             except Exception as e:
@@ -92,7 +93,7 @@ class ELBConnector(SchematicAWSConnector):
 
         lb_arns = [raw_lb.get('LoadBalancerArn') for raw_lb in raw_lbs if raw_lb.get('LoadBalancerArn')]
 
-        if len(lb_arns) > 0:
+        if lb_arns:
             all_tags = self.request_tags(lb_arns)
 
         for raw_lb in raw_lbs:
@@ -109,7 +110,6 @@ class ELBConnector(SchematicAWSConnector):
                 raw_lb.update({
                     'region_name': region_name,
                     'listeners': list(map(lambda _listener: Listener(_listener, strict=False), raw_listeners)),
-                    'tags': list(map(lambda match_tag: AWSTags(match_tag, strict=False), match_tags)),
                     'cloudwatch': self.elb_cloudwatch(raw_lb, region_name),
                     'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type, raw_lb['LoadBalancerArn']),
                     'target_groups': match_target_groups,
@@ -124,7 +124,8 @@ class ELBConnector(SchematicAWSConnector):
                     'data': load_balancer_vo,
                     'instance_type': load_balancer_vo.type,
                     'launched_at': self.datetime_to_iso8601(load_balancer_vo.created_time),
-                    'account': self.account_id
+                    'account': self.account_id,
+                    'tags': self.convert_tags_to_dict_type(match_tags)
                 }
 
                 # for avoid to API Rate limitation.

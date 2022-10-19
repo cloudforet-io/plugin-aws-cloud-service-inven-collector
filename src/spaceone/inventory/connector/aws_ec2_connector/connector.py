@@ -70,8 +70,7 @@ class EC2Connector(SchematicAWSConnector):
                     _LOGGER.debug(f"[ami][request_ami_data] SKIP: {e}")
 
                 image.update({
-                    'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type, image['ImageId']),
-                    'tags': image.get('Tags', [])
+                    'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type, image['ImageId'])
                 })
 
                 image_vo = Image(image, strict=False)
@@ -79,7 +78,8 @@ class EC2Connector(SchematicAWSConnector):
                     'data': image_vo,
                     'name': image_vo.name,
                     'instance_type': image_vo.image_type,
-                    'account': self.account_id
+                    'account': self.account_id,
+                    'tags': self.convert_tags_to_dict_type(image.get('Tags', []))
                 }
 
             except Exception as e:
@@ -165,7 +165,8 @@ class EC2Connector(SchematicAWSConnector):
                     yield {
                         'data': sg_vo,
                         'name': sg_vo.group_name,
-                        'account': self.account_id
+                        'account': self.account_id,
+                        'tags': self.convert_tags_to_dict_type(raw.get('Tags', []))
                     }
 
                 except Exception as e:

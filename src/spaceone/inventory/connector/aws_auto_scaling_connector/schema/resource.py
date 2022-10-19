@@ -142,17 +142,9 @@ asg_meta_lifecycle_hooks = TableDynamicLayout.set_fields('Lifecycle Hooks', 'dat
     TextDyField.data_source('Role ARN', 'role_arn'),
 ])
 
-# TAB - Tags
-asg_meta_tags = TableDynamicLayout.set_fields('Tags', 'data.tags', fields=[
-    TextDyField.data_source('Key', 'key'),
-    TextDyField.data_source('Value', 'value'),
-    EnumDyField.data_source('Tag New Instances', 'propagate_at_launch', default_badge={
-        'indigo.500': ['true'], 'coral.600': ['false']
-    }),
-])
 asg_meta = CloudServiceMeta.set_layouts([asg_meta_autoscaling, asg_meta_lc, asg_meta_lt, asg_meta_instance, asg_meta_elb,
                                          asg_meta_policy, asg_meta_notification, asg_meta_scheduled_action,
-                                         asg_meta_lifecycle_hooks, asg_meta_tags])
+                                         asg_meta_lifecycle_hooks])
 
 
 '''
@@ -279,21 +271,7 @@ lt_meta_base_detail = ItemDynamicLayout.set_fields('Advanced Details', 'data.lau
     TextDyField.data_source('User Data', 'user_data')
 ])
 
-lt_meta_base_tag = SimpleTableDynamicLayout.set_fields('Tags', 'data.launch_template.tag_specifications', fields=[
-    TextDyField.data_source('Resource Type', 'resource_type'),
-    ListDyField.data_source('Tag Keys', 'tags', default_badge={
-        'type': 'outline',
-        'sub_key': 'key',
-        'delimiter': '<br>'
-    }),
-    ListDyField.data_source('Tag Values', 'tags', default_badge={
-        'type': 'outline',
-        'sub_key': 'value',
-        'delimiter': '<br>'
-    })
-])
-
-lt_meta = CloudServiceMeta.set_layouts([lt_meta_base_lt, lt_meta_base_storage, lt_meta_base_ni, lt_meta_base_detail, lt_meta_base_tag, ])
+lt_meta = CloudServiceMeta.set_layouts([lt_meta_base_lt, lt_meta_base_storage, lt_meta_base_ni, lt_meta_base_detail, ])
 
 
 class AutoScalingResource(CloudServiceResource):

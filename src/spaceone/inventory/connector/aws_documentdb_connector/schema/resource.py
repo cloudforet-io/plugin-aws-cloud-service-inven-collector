@@ -88,9 +88,8 @@ cluster_parameter = TableDynamicLayout.set_fields('Parameters', 'data.parameter_
     TextDyField.data_source('Description', 'description'),
 ])
 
-cluster_tags = SimpleTableDynamicLayout.set_tags()
 cluster_metadata = CloudServiceMeta.set_layouts(layouts=[meta_base, cluster_sg, instances, snapshots,
-                                                         cluster_subnet_groups, cluster_parameter, cluster_tags])
+                                                         cluster_subnet_groups, cluster_parameter])
 
 # SUBNET GROUP
 subnet_group_base = ItemDynamicLayout.set_fields('Subnet Groups', fields=[
@@ -110,8 +109,7 @@ subnet = TableDynamicLayout.set_fields('Subnets', 'data.subnets', fields=[
     }),
 ])
 
-subnet_group_tags = SimpleTableDynamicLayout.set_tags()
-subnet_group_metadata = CloudServiceMeta.set_layouts(layouts=[subnet_group_base, subnet, subnet_group_tags])
+subnet_group_metadata = CloudServiceMeta.set_layouts(layouts=[subnet_group_base, subnet])
 
 parameter_group_base = ItemDynamicLayout.set_fields('Parameter Groups', fields=[
     TextDyField.data_source('Name', 'data.db_cluster_parameter_group_name'),
@@ -132,8 +130,7 @@ parameter = TableDynamicLayout.set_fields('Parameters', 'data.parameters', field
     TextDyField.data_source('Description', 'description'),
 ])
 
-parameter_tags = SimpleTableDynamicLayout.set_tags()
-parameter_group_metadata = CloudServiceMeta.set_layouts(layouts=[parameter_group_base, parameter, parameter_tags])
+parameter_group_metadata = CloudServiceMeta.set_layouts(layouts=[parameter_group_base, parameter])
 
 
 class DocumentDBResource(CloudServiceResource):

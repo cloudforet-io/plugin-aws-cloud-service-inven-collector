@@ -164,16 +164,6 @@ firehose_meta_redshift_destination_details = TableDynamicLayout.set_fields(
     ]
 )
 
-# TAB - Tags
-firehose_meta_tags = TableDynamicLayout.set_fields(
-    "Tags",
-    "data.tags",
-    fields=[
-        TextDyField.data_source("Key", "key"),
-        TextDyField.data_source("Value", "value"),
-    ],
-)
-
 # Overall
 firehose_meta = CloudServiceMeta.set_layouts([
     firehose_meta_stream_details,
@@ -183,8 +173,7 @@ firehose_meta = CloudServiceMeta.set_layouts([
     firehose_meta_redshift_destination_details,
     firehose_meta_http_endpoint_destination_details,
     firehose_meta_elasticsearch_destination_description,
-    firehose_meta_elasticsearch_destination_description,
-    firehose_meta_tags
+    firehose_meta_elasticsearch_destination_description
 ])
 
 

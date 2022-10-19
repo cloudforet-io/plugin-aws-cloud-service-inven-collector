@@ -23,8 +23,7 @@ rotation = ItemDynamicLayout.set_fields('Rotation Configuration', fields=[
     DateTimeDyField.data_source('Last Rotated date', 'data.last_rotated_date'),
 ])
 
-tags = SimpleTableDynamicLayout.set_tags()
-metadata = CloudServiceMeta.set_layouts(layouts=[secrets, rotation, tags])
+metadata = CloudServiceMeta.set_layouts(layouts=[secrets, rotation])
 
 
 class SecretsManagerResource(CloudServiceResource):

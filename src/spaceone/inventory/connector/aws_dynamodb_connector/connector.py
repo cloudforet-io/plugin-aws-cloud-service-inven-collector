@@ -7,7 +7,6 @@ from spaceone.inventory.connector.aws_dynamodb_connector.schema.data import Tabl
 from spaceone.inventory.connector.aws_dynamodb_connector.schema.resource import TableResource, TableResponse
 from spaceone.inventory.connector.aws_dynamodb_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
-from spaceone.inventory.libs.schema.resource import AWSTags
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -79,7 +78,6 @@ class DynamoDBConnector(SchematicAWSConnector):
                         'time_to_live': self._get_time_to_live(table_name),
                         'continuous_backup': self._get_continuous_backup(table_name),
                         'contributor_insight': self._get_contributor_insights(table_name),
-                        'tags': self.request_tags(table.get('TableArn')),
                         'cloudwatch': self.set_cloudwatch(cloudwatch_namespace, cloudwatch_dimension_name,
                                                           table['TableName'], region_name),
                         'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type, table['TableName']),
@@ -90,7 +88,8 @@ class DynamoDBConnector(SchematicAWSConnector):
                         'data': table_vo,
                         'name': table_vo.table_name,
                         'instance_size': float(table_vo.table_size_bytes),
-                        'account': self.account_id
+                        'account': self.account_id,
+                        'tags': self.request_tags(table_vo.table_arn)
                     }
 
                 except Exception as e:
@@ -183,4 +182,5 @@ class DynamoDBConnector(SchematicAWSConnector):
 
     def request_tags(self, resource_arn):
         response = self.client.list_tags_of_resource(ResourceArn=resource_arn)
-        return list(map(lambda tag: AWSTags(tag, strict=False), response.get('Tags', [])))
+        return self.convert_tags_to_dict_type(response.get('Tags', []))
+

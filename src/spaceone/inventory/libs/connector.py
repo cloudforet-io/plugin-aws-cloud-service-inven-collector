@@ -7,7 +7,7 @@ from boto3.session import Session
 from spaceone.core import utils
 from spaceone.core.connector import BaseConnector
 from spaceone.inventory.libs.schema.resource import CloudServiceResponse, ReferenceModel, CloudWatchModel, \
-    CloudServiceResourceTags, ErrorResourceResponse, CloudTrailModel, CloudWatchDimension, CloudWatchMetricInfo
+    ErrorResourceResponse, CloudTrailModel, CloudWatchDimension, CloudWatchMetricInfo
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -163,7 +163,7 @@ class SchematicAWSConnector(AWSConnector):
                         'instance_size': float(collected_dict.get('instance_size', 0)),
                         'instance_type': collected_dict.get('instance_type', ''),
                         'launched_at': str(collected_dict.get('launched_at', '')),
-                        'tags': self.get_resource_tags(getattr(data, 'tags', [])),
+                        'tags': collected_dict.get('tags', {}),
                         'region_code': region_name,
                         'reference': ReferenceModel(data.reference(region_name))
                     }
@@ -220,14 +220,6 @@ class SchematicAWSConnector(AWSConnector):
         return None
 
     @staticmethod
-    def convert_tags(tags):
-        return [{'key': tag, 'value': tags[tag]} for tag in tags]
-
-    @staticmethod
-    def get_resource_tags(tags_obj):
-        return [CloudServiceResourceTags({'key': tag.key, 'value': tag.value}, strict=False) for tag in tags_obj]
-
-    @staticmethod
     def set_cloudtrail(region_name, resource_type, resource_name):
         cloudtrail = {
             'LookupAttributes': [
@@ -282,3 +274,12 @@ class SchematicAWSConnector(AWSConnector):
         }
 
         return [CloudWatchDimension(dimension, strict=False)]
+
+    @staticmethod
+    def convert_tags_to_dict_type(tags, key='Key', value='Value'):
+        dict_tags = {}
+
+        for _tag in tags:
+            dict_tags[_tag.get(key)] = _tag.get(value)
+
+        return dict_tags

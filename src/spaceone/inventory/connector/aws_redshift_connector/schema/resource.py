@@ -105,9 +105,8 @@ scheduled_action = TableDynamicLayout.set_fields('Scheduled Actions', 'data.sche
     TextDyField.data_source('IAM Role', 'iam_role'),
 ])
 
-tags = SimpleTableDynamicLayout.set_tags()
 metadata = CloudServiceMeta.set_layouts(layouts=[base, db_conf, net_sec, param_group, nodes, snapshots,
-                                                 snpashot_schedule, scheduled_action, tags])
+                                                 snpashot_schedule, scheduled_action])
 
 
 class RedshiftResource(CloudServiceResource):
