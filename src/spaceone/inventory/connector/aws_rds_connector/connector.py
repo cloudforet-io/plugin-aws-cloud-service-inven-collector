@@ -341,7 +341,7 @@ class RDSConnector(SchematicAWSConnector):
 
     def list_tags_for_resource(self, resource_name):
         response = self.client.list_tags_for_resource(ResourceName=resource_name)
-        self.convert_tags_to_dict_type(response.get('TagList', []))
+        return self.convert_tags_to_dict_type(response.get('TagList', []))
 
     @staticmethod
     def get_region(azs):
