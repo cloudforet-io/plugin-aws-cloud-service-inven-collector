@@ -38,8 +38,7 @@ vol_base = ItemDynamicLayout.set_fields('Volumes', fields=[
     DateTimeDyField.data_source('Created', 'data.create_time'),
 ])
 
-vol_tags = SimpleTableDynamicLayout.set_tags()
-vol_metadata = CloudServiceMeta.set_layouts(layouts=[vol_base, vol_tags])
+vol_metadata = CloudServiceMeta.set_layouts(layouts=[vol_base])
 
 
 # SNAPSHOT
