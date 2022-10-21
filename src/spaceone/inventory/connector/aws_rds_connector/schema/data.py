@@ -113,7 +113,7 @@ class SubnetGroupSubnets(Model):
     subnet_status = StringType(deserialize_from="SubnetStatus")
 
 
-class SubnetGroup(Model):
+class SubnetGroup(AWSCloudService):
     db_subnet_group_name = StringType(deserialize_from="DBSubnetGroupName")
     db_subnet_group_description = StringType(deserialize_from="DBSubnetGroupDescription")
     vpc_id = StringType(deserialize_from="VpcId")
@@ -135,7 +135,7 @@ class Features(Model):
     value = StringType(deserialize_from="Value")
 
 
-class Snapshot(Model):
+class Snapshot(AWSCloudService):
     db_snapshot_identifier = StringType(deserialize_from="DBSnapshotIdentifier")
     db_instance_identifier = StringType(deserialize_from="DBInstanceIdentifier")
     snapshot_create_time = DateTimeType(deserialize_from="SnapshotCreateTime")
