@@ -1,16 +1,17 @@
+import copy
 import time
 import logging
-from typing import List
+from typing import List, Tuple
 from datetime import datetime, timezone
 
 from spaceone.inventory.connector.aws_iam_connector.schema.data import Policy, AccessKeyLastUsed, User, Group, Role, \
-    IdentityProvider
+    IdentityProvider, AccessKey
 from spaceone.inventory.connector.aws_iam_connector.schema.resource import GroupResource, GroupResponse, \
     UserResource, UserResponse, RoleResource, RoleResponse, PolicyResource, PolicyResponse, IdentityProviderResource, \
-    IdentityProviderResponse
+    IdentityProviderResponse, AccessKeyResource, AccessKeyResponse
 from spaceone.inventory.connector.aws_iam_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
-from spaceone.inventory.libs.schema.resource import ReferenceModel
+from spaceone.inventory.libs.schema.resource import ReferenceModel, ErrorResourceResponse
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -24,6 +25,7 @@ class IAMConnector(SchematicAWSConnector):
     role_response_schema = RoleResponse
     policy_response_schema = PolicyResponse
     identity_provider_response_schema = IdentityProviderResponse
+    access_key_response_schema = AccessKeyResponse
 
     service_name = 'iam'
     cloud_service_group = 'IAM'
@@ -41,7 +43,7 @@ class IAMConnector(SchematicAWSConnector):
 
         try:
             policies, policy_errors = self.list_local_managed_policies()
-            users, user_errors = self.request_user_data(policies)
+            users, access_keys, user_errors = self.request_user_data(policies)
 
             for role, tags in self.request_role_data(policies):
                 if getattr(role, 'resource_type', None) and role.resource_type == 'inventory.ErrorResource':
@@ -109,6 +111,18 @@ class IAMConnector(SchematicAWSConnector):
                             'reference': ReferenceModel(identity_provider.reference()),
                             'region_code': 'global'})}))
 
+            for access_key in access_keys:
+                if getattr(access_key, 'resource_type', None) and access_key.resource_type == 'inventory.ErrorResource':
+                    # Error Resource
+                    resources.append(access_key)
+                else:
+                    resources.append(self.access_key_response_schema(
+                        {'resource': AccessKeyResource({
+                            'name': access_key.key_id,
+                            'data': access_key,
+                            'account': self.account_id,
+                            'reference': ReferenceModel(access_key.reference()),
+                            'region_code': 'global'})}))
         except Exception as e:
             resource_id = ''
             resources.append(self.generate_error('global', resource_id, e))
@@ -154,7 +168,7 @@ class IAMConnector(SchematicAWSConnector):
                     error_resource_response = self.generate_error('global', resource_id, e)
                     yield error_resource_response
 
-    def request_user_data(self, policies) -> List[User]:
+    def request_user_data(self, policies):
         self.cloud_service_type = 'User'
         cloudtrail_resource_type = 'AWS::IAM::User'
 
@@ -163,20 +177,22 @@ class IAMConnector(SchematicAWSConnector):
         response_iterator = paginator.paginate(**query)
 
         users = []
+        access_keys = []
         errors = []
 
         for data in response_iterator:
             for user in data.get('Users', []):
                 try:
                     user_name = user.get('UserName')
+                    user_arn = user.get('Arn')
                     user_info = self.get_user_info(user_name)
                     mfa_devices = self.list_mfa_devices(user_name)
-                    access_keys = self.list_access_keys(user_name)
+                    _access_keys = self.list_access_keys(user_name, user_arn)
                     login_profile = self.get_login_profile(user_name)
                     groups = self.list_groups_with_user_name(user_name)
 
                     self._conditional_update_for_password_last_used(user, user_info)
-                    self.conditional_update_for_access_key_age_and_access_key_age_display(user, access_keys)
+                    self.conditional_update_for_access_key_age_and_access_key_age_display(user, _access_keys)
                     code_commit_credential, cassandra_credential = self.list_service_specific_credentials(user_name)
                     last_active_age, last_activity = self._get_age_and_age_display(user_info.get('PasswordLastUsed', None))
                     sign_in_link = self._get_sign_in_link(user_info.get('Arn'))
@@ -185,7 +201,7 @@ class IAMConnector(SchematicAWSConnector):
                     matching_policies = self.get_matched_policies_with_attached_policy_info(policies, attached_policies)
 
                     user.update({
-                        'access_key': self.list_access_keys(user_name),
+                        'access_key': _access_keys,
                         'ssh_public_key': self.list_ssh_keys(user_name),
                         'code_commit_credential': code_commit_credential,
                         'cassandra_credential': cassandra_credential,
@@ -204,12 +220,13 @@ class IAMConnector(SchematicAWSConnector):
                         'tags': user_info.get('Tags', [])
                     })
                     users.append(User(user, strict=False))
+                    access_keys.extend([AccessKey(_key) for _key in _access_keys])
 
                 except Exception as e:
                     resource_id = user.get('Arn', '')
                     errors.append(self.generate_error('global', resource_id, e))
 
-        return users, errors
+        return users, access_keys, errors
 
     def request_role_data(self, policies) -> List[Role]:
         self.cloud_service_type = 'Role'
@@ -274,13 +291,11 @@ class IAMConnector(SchematicAWSConnector):
                 error_resource_response = self.generate_error('global', resource_id, e)
                 yield error_resource_response
 
-    # For Users list_service_specific_credentials
     def conditional_update_for_access_key_age_and_access_key_age_display(self, user, access_keys):
-        if len(access_keys) > 0:
+        if access_keys:
             access_key_date = access_keys[0].get('create_date')
             age, display = self._get_age_and_age_display(access_key_date)
-            user.update({'access_key_age': age,
-                         'access_key_age_display': display})
+            user.update({'access_key_age': age, 'access_key_age_display': display})
         else:
             user.update({'access_key_age': 0, 'access_key_age_display': 'None'})
 
@@ -336,9 +351,13 @@ class IAMConnector(SchematicAWSConnector):
 
         return policies, errors
 
-    def list_access_keys(self, user_name, **query):
+    def list_access_keys(self, user_name, user_arn):
+        self.cloud_service_type = 'AccessKey'
+
         access_keys = []
-        query = self._generate_key_query('UserName', user_name, '', is_paginate=True, **query)
+        _filter = {'UserName': user_name}
+        query = self._generate_query(filter_dict=_filter, is_paginate=True)
+
         paginator = self.client.get_paginator('list_access_keys')
         response_iterator = paginator.paginate(**query)
 
@@ -348,6 +367,8 @@ class IAMConnector(SchematicAWSConnector):
                 access_key_last_used_vo = AccessKeyLastUsed(self.get_access_key_last_used(key_id), strict=False)
                 access_key_vo = {
                     'key_id': key_id,
+                    'user_name': user_name,
+                    'user_arn': user_arn,
                     'create_date': access_key_meta.get('CreateDate'),
                     'access_key_last_used': access_key_last_used_vo,
                     'last_update_date_display': self.get_last_update_date_display(access_key_last_used_vo),
@@ -727,6 +748,20 @@ class IAMConnector(SchematicAWSConnector):
         return None
 
     @staticmethod
+    def _generate_query(filter_dict: dict = {}, is_paginate: bool = False) -> dict:
+        query = copy.deepcopy(filter_dict)
+
+        if is_paginate:
+            query.update({
+                'PaginationConfig': {
+                    'MaxItems': PAGINATOR_MAX_ITEMS,
+                    'PageSize': PAGINATOR_PAGE_SIZE,
+                }
+            })
+
+        return query
+
+    @staticmethod
     def _generate_key_query(key, value, delete, is_paginate=False, **query):
         if is_paginate:
             if delete != '':
@@ -758,15 +793,16 @@ class IAMConnector(SchematicAWSConnector):
     def _get_age_and_age_display(calculating_date):
         age = 0
         age_display = 'None'
-        if calculating_date is not None:
+
+        if calculating_date:
             utc = datetime.utcnow()
             utc_now = utc.replace(tzinfo=timezone.utc)
             exp = utc_now - calculating_date
-            age = exp.days
-            if exp.days == 0:
+            age = int(exp.days)
+            if age == 0:
                 age_display = 'Today'
             else:
-                age_display = f'{exp.days} days'
+                age_display = f'{age} days'
 
         return age, age_display
 

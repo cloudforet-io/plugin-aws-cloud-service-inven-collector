@@ -1,6 +1,7 @@
 from schematics.types import ModelType, StringType, PolyModelType
 
-from spaceone.inventory.connector.aws_iam_connector.schema.data import Group, User, Role, Policy, IdentityProvider
+from spaceone.inventory.connector.aws_iam_connector.schema.data import Group, User, Role, Policy, IdentityProvider, \
+    AccessKey
 from spaceone.inventory.libs.schema.resource import CloudServiceResource, CloudServiceResponse, CloudServiceMeta
 from spaceone.inventory.libs.schema.dynamic_field import TextDyField, DateTimeDyField, ListDyField, EnumDyField
 from spaceone.inventory.libs.schema.dynamic_layout import ItemDynamicLayout, TableDynamicLayout, \
@@ -228,6 +229,21 @@ identity_provider_base = ItemDynamicLayout.set_fields('Identity Provider', field
 
 identity_provider_metadata = CloudServiceMeta.set_layouts(layouts=[identity_provider_base])
 
+# Access Key
+access_key_base = ItemDynamicLayout.set_fields('Access Key', fields=[
+    TextDyField.data_source('Access Key ID', 'data.key_id'),
+    EnumDyField.data_source('Status', 'data.status',
+                            default_badge={'indigo.500': ['Active'], 'coral.600': ['Inactive']}),
+    TextDyField.data_source('User name', 'data.user_name'),
+    TextDyField.data_source('User ARN', 'data.user_arn'),
+    DateTimeDyField.data_source('Last Used At', 'data.access_key_last_used.last_update_date'),
+    TextDyField.data_source('Last Used Service', 'data.access_key_last_used.service_name'),
+    TextDyField.data_source('Last Used Service', 'data.access_key_last_used.region'),
+    DateTimeDyField.data_source('Created At', 'data.create_date'),
+])
+
+access_key_metadata = CloudServiceMeta.set_layouts(layouts=[access_key_base])
+
 
 class IAMResource(CloudServiceResource):
     cloud_service_group = StringType(default='IAM')
@@ -286,3 +302,14 @@ class IdentityProviderResource(IAMResource):
 
 class IdentityProviderResponse(CloudServiceResponse):
     resource = PolyModelType(IdentityProviderResource)
+
+
+# ACCESS KEY
+class AccessKeyResource(IAMResource):
+    cloud_service_type = StringType(default='AccessKey')
+    data = ModelType(AccessKey)
+    _metadata = ModelType(CloudServiceMeta, default=access_key_metadata, serialized_name='metadata')
+
+
+class AccessKeyResponse(CloudServiceResponse):
+    resource = PolyModelType(AccessKeyResource)
