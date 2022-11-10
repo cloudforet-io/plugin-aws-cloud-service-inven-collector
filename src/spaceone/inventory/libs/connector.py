@@ -220,7 +220,7 @@ class SchematicAWSConnector(AWSConnector):
         return None
 
     @staticmethod
-    def set_cloudtrail(region_name, resource_type, resource_name):
+    def set_cloudtrail(region_name, resource_type, resource_name, **custom_query):
         cloudtrail = {
             'LookupAttributes': [
                 {
@@ -231,6 +231,10 @@ class SchematicAWSConnector(AWSConnector):
             'region_name': region_name,
             'resource_type': resource_type
         }
+
+        if custom_query:
+            cloudtrail = custom_query
+
         return CloudTrailModel(cloudtrail, strict=False)
 
     def set_cloudwatch(self, namespace, dimension_name, resource_id, region_name):

@@ -383,10 +383,46 @@ cst_identity_provider._metadata = CloudServiceTypeMeta.set_meta(
     ]
 )
 
+
+"""
+ACCESS KEY
+"""
+
+cst_access_key = CloudServiceTypeResource()
+cst_access_key.name = 'AccessKey'
+cst_access_key.provider = 'aws'
+cst_access_key.group = 'IAM'
+cst_access_key.labels = ['Security']
+cst_access_key.tags = {
+    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/AWS-Identity-and-Access-Management_IAM.svg',
+}
+
+cst_access_key._metadata = CloudServiceTypeMeta.set_meta(
+    fields=[
+        TextDyField.data_source('Access Key ID', 'data.key_id'),
+        EnumDyField.data_source('Status', 'data.status',
+                                default_badge={'indigo.500': ['Active'], 'coral.600': ['Inactive']}),
+        TextDyField.data_source('User name', 'data.user_name'),
+        TextDyField.data_source('Last Used', 'last_update_date_display'),
+        DateTimeDyField.data_source('Created At', 'data.create_date'),
+    ],
+    search=[
+        SearchField.set(name='Access Key ID', key='data.key_id'),
+        SearchField.set(name='Status', key='data.status'),
+        SearchField.set(name='User name', key='data.user_name'),
+        SearchField.set(name='User ARN', key='data.user_arn'),
+        SearchField.set(name='Creation Time', key='data.create_date', data_type='datetime'),
+        SearchField.set(name='Last Used Time', key='data.access_key_last_used.last_update_date', data_type='datetime'),
+        SearchField.set(name='AWS Account ID', key='account')
+    ]
+)
+
+
 CLOUD_SERVICE_TYPES = [
     CloudServiceTypeResponse({'resource': cst_group}),
     CloudServiceTypeResponse({'resource': cst_user}),
     CloudServiceTypeResponse({'resource': cst_role}),
     CloudServiceTypeResponse({'resource': cst_policy}),
     CloudServiceTypeResponse({'resource': cst_identity_provider}),
+    CloudServiceTypeResponse({'resource': cst_access_key}),
 ]

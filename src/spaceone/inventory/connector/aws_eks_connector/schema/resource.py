@@ -63,9 +63,8 @@ cluster_update = TableDynamicLayout.set_fields('Updates', 'data.updates', fields
     })
 ])
 
-cluster_tags = SimpleTableDynamicLayout.set_tags()
 cluster_metadata = CloudServiceMeta.set_layouts(
-    layouts=[cluster_base, cluster_node_groups, cluster_logging, cluster_tags])
+    layouts=[cluster_base, cluster_node_groups, cluster_logging])
 
 node_group_base = ItemDynamicLayout.set_fields('Node Group', fields=[
     TextDyField.data_source('Node Group Name', 'data.nodegroup_name'),

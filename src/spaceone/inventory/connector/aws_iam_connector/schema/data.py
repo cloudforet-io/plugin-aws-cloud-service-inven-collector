@@ -225,3 +225,18 @@ class IdentityProvider(AWSCloudService):
             "external_link": f"https://console.aws.amazon.com/iam/home?region={DEFAULT_REGION}#/providers/{self.arn}"
         }
 
+
+class AccessKey(AWSCloudService):
+    key_id = StringType()
+    status = StringType(choices=("Active", "Inactive"))
+    access_key_last_used = ModelType(AccessKeyLastUsed, serialize_when_none=False)
+    last_update_date_display = StringType(default='N/A')
+    create_date = DateTimeType(deserialize_from='CreateDate')
+    user_arn = StringType(deserialize_from="Arn")
+    user_name = StringType(deserialize_from="UserName")
+
+    def reference(self):
+        return {
+            "resource_id": self.key_id,
+            "external_link": f"https://console.aws.amazon.com/iam/home?region={DEFAULT_REGION}#/users/{self.user_name}"
+        }
