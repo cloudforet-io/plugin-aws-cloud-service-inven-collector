@@ -399,7 +399,6 @@ cst_access_key.tags = {
 
 cst_access_key._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('Access Key ID', 'data.key_id'),
         EnumDyField.data_source('Status', 'data.status',
                                 default_badge={'indigo.500': ['Active'], 'coral.600': ['Inactive']}),
         TextDyField.data_source('User name', 'data.user_name'),
