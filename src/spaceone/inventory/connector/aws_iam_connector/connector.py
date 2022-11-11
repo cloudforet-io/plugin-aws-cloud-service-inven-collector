@@ -11,7 +11,7 @@ from spaceone.inventory.connector.aws_iam_connector.schema.resource import Group
     IdentityProviderResponse, AccessKeyResource, AccessKeyResponse
 from spaceone.inventory.connector.aws_iam_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
-from spaceone.inventory.libs.schema.resource import ReferenceModel, ErrorResourceResponse
+from spaceone.inventory.libs.schema.resource import ReferenceModel, ErrorResourceResponse, CloudTrailModel
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -353,6 +353,7 @@ class IAMConnector(SchematicAWSConnector):
 
     def list_access_keys(self, user_name, user_arn):
         self.cloud_service_type = 'AccessKey'
+        cloudtrail_resource_type = 'AWS::IAM::AccessKey'
 
         access_keys = []
         _filter = {'UserName': user_name}
@@ -372,7 +373,17 @@ class IAMConnector(SchematicAWSConnector):
                     'create_date': access_key_meta.get('CreateDate'),
                     'access_key_last_used': access_key_last_used_vo,
                     'last_update_date_display': self.get_last_update_date_display(access_key_last_used_vo),
-                    'status': str(access_key_meta.get('Status', ''))
+                    'status': str(access_key_meta.get('Status', '')),
+                    'cloudtrail': CloudTrailModel({
+                        'LookupAttributes': [
+                            {
+                                "AttributeKey": "AccessKeyId",
+                                "AttributeValue": key_id,
+                            }
+                        ],
+                        'region_name': 'us-east-1',
+                        'resource_type': cloudtrail_resource_type
+                    }, strict=False),
                 }
                 access_keys.append(access_key_vo)
 
