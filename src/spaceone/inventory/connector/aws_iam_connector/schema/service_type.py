@@ -403,7 +403,7 @@ cst_access_key._metadata = CloudServiceTypeMeta.set_meta(
         EnumDyField.data_source('Status', 'data.status',
                                 default_badge={'indigo.500': ['Active'], 'coral.600': ['Inactive']}),
         TextDyField.data_source('User name', 'data.user_name'),
-        TextDyField.data_source('Last Used', 'last_update_date_display'),
+        TextDyField.data_source('Last Used', 'data.last_update_date_display'),
         DateTimeDyField.data_source('Created At', 'data.create_date'),
     ],
     search=[
