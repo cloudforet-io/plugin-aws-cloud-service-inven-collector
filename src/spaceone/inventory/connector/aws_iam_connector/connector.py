@@ -353,6 +353,7 @@ class IAMConnector(SchematicAWSConnector):
 
     def list_access_keys(self, user_name, user_arn):
         self.cloud_service_type = 'AccessKey'
+        cloudtrail_resource_type = 'AWS::IAM::AccessKey'
 
         access_keys = []
         _filter = {'UserName': user_name}
@@ -380,6 +381,7 @@ class IAMConnector(SchematicAWSConnector):
                                 "AttributeValue": key_id,
                             }
                         ],
+                        'resource_type': cloudtrail_resource_type,
                         'region_name': 'us-east-1'
                     }, strict=False),
                 }
