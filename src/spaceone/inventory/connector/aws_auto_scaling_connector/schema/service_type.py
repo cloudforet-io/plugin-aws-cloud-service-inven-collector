@@ -4,6 +4,7 @@ from spaceone.inventory.libs.schema.dynamic_widget import ChartWidget, CardWidge
 from spaceone.inventory.libs.schema.dynamic_field import TextDyField, ListDyField, DateTimeDyField, SearchField, EnumDyField
 from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, \
     CloudServiceTypeMeta
+from spaceone.inventory.conf.cloud_service_conf import *
 
 current_dir = os.path.abspath(os.path.dirname(__file__))
 
@@ -25,7 +26,7 @@ cst_asg.group = 'EC2'
 cst_asg.labels = ['Compute']
 cst_asg.service_code = 'AmazonEC2'
 cst_asg.tags = {
-    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-EC2-Auto-Scaling.svg',
+    'spaceone:icon': f'{ASSET_URL}/Amazon-EC2-Auto-Scaling.svg',
 }
 
 cst_asg._metadata = CloudServiceTypeMeta.set_meta(
@@ -130,7 +131,7 @@ launch_configuration.group = 'EC2'
 launch_configuration.labels = ['Compute']
 launch_configuration.service_code = 'AmazonEC2'
 launch_configuration.tags = {
-    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-EC2-Auto-Scaling.svg',
+    'spaceone:icon': f'{ASSET_URL}/Amazon-EC2-Auto-Scaling.svg',
 }
 
 launch_configuration._metadata = CloudServiceTypeMeta.set_meta(
@@ -182,7 +183,7 @@ launch_template.group = 'EC2'
 launch_template.labels = ['Compute']
 launch_template.service_code = 'AmazonEC2'
 launch_template.tags = {
-    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-EC2-Auto-Scaling.svg',
+    'spaceone:icon': f'{ASSET_URL}/Amazon-EC2-Auto-Scaling.svg',
 }
 
 launch_template._metadata = CloudServiceTypeMeta.set_meta(

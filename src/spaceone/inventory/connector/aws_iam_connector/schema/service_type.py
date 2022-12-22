@@ -5,6 +5,7 @@ from spaceone.inventory.libs.schema.dynamic_field import TextDyField, SearchFiel
     EnumDyField
 from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, \
     CloudServiceTypeMeta
+from spaceone.inventory.conf.cloud_service_conf import *
 
 current_dir = os.path.abspath(os.path.dirname(__file__))
 
@@ -17,7 +18,7 @@ cst_group.provider = 'aws'
 cst_group.group = 'IAM'
 cst_group.labels = ['Security']
 cst_group.tags = {
-    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/AWS-Identity-and-Access-Management_IAM.svg',
+    'spaceone:icon': f'{ASSET_URL}/AWS-Identity-and-Access-Management_IAM.svg',
 }
 
 cst_group._metadata = CloudServiceTypeMeta.set_meta(
@@ -92,7 +93,7 @@ cst_user.group = 'IAM'
 cst_user.labels = ['Security']
 cst_user.is_primary = True
 cst_user.tags = {
-    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/AWS-Identity-and-Access-Management_IAM.svg',
+    'spaceone:icon': f'{ASSET_URL}/AWS-Identity-and-Access-Management_IAM.svg',
 }
 
 cst_user._metadata = CloudServiceTypeMeta.set_meta(
@@ -223,7 +224,7 @@ cst_role.provider = 'aws'
 cst_role.group = 'IAM'
 cst_role.labels = ['Security']
 cst_role.tags = {
-    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/AWS-Identity-and-Access-Management_IAM.svg',
+    'spaceone:icon': f'{ASSET_URL}/AWS-Identity-and-Access-Management_IAM.svg',
 }
 
 cst_role._metadata = CloudServiceTypeMeta.set_meta(
@@ -298,7 +299,7 @@ cst_policy.provider = 'aws'
 cst_policy.group = 'IAM'
 cst_policy.labels = ['Security']
 cst_policy.tags = {
-    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/AWS-Identity-and-Access-Management_IAM.svg',
+    'spaceone:icon': f'{ASSET_URL}/AWS-Identity-and-Access-Management_IAM.svg',
 }
 
 cst_policy._metadata = CloudServiceTypeMeta.set_meta(
@@ -354,7 +355,7 @@ cst_identity_provider.provider = 'aws'
 cst_identity_provider.group = 'IAM'
 cst_identity_provider.labels = ['Security']
 cst_identity_provider.tags = {
-    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/AWS-Identity-and-Access-Management_IAM.svg',
+    'spaceone:icon': f'{ASSET_URL}/AWS-Identity-and-Access-Management_IAM.svg',
 }
 
 cst_identity_provider._metadata = CloudServiceTypeMeta.set_meta(
@@ -394,7 +395,7 @@ cst_access_key.provider = 'aws'
 cst_access_key.group = 'IAM'
 cst_access_key.labels = ['Security']
 cst_access_key.tags = {
-    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/AWS-Identity-and-Access-Management_IAM.svg',
+    'spaceone:icon': f'{ASSET_URL}/AWS-Identity-and-Access-Management_IAM.svg',
 }
 
 cst_access_key._metadata = CloudServiceTypeMeta.set_meta(

@@ -25,7 +25,7 @@ class APIGatewayConnector(SchematicAWSConnector):
         resources = []
         start_time = time.time()
 
-        resources.extend(self.set_service_code_in_cloud_service_type())
+        resources.extend(self.set_cloud_service_types())
 
         collect_resources = [
             {

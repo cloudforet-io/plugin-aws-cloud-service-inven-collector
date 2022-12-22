@@ -27,7 +27,7 @@ class S3Connector(SchematicAWSConnector):
         start_time = time.time()
 
         try:
-            resources.extend(self.set_service_code_in_cloud_service_type())
+            resources.extend(self.set_cloud_service_types())
 
             # merge data
             for data in self.request_data():

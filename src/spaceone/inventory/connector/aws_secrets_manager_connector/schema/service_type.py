@@ -4,6 +4,7 @@ from spaceone.inventory.libs.schema.dynamic_widget import ChartWidget, CardWidge
 from spaceone.inventory.libs.schema.dynamic_field import TextDyField, DateTimeDyField, SearchField, ListDyField
 from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, \
     CloudServiceTypeMeta
+from spaceone.inventory.conf.cloud_service_conf import *
 
 current_dir = os.path.abspath(os.path.dirname(__file__))
 
@@ -19,7 +20,7 @@ cst_secret.labels = ['Security']
 cst_secret.is_primary = True
 cst_secret.service_code = 'AWSSecretsManager'
 cst_secret.tags = {
-    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/AWS-Secrets-Manager.svg',
+    'spaceone:icon': f'{ASSET_URL}/AWS-Secrets-Manager.svg',
 }
 
 cst_secret._metadata = CloudServiceTypeMeta.set_meta(

@@ -5,6 +5,7 @@ from spaceone.inventory.libs.schema.dynamic_field import TextDyField, EnumDyFiel
     DateTimeDyField
 from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, \
     CloudServiceTypeMeta
+from spaceone.inventory.conf.cloud_service_conf import *
 
 current_dir = os.path.abspath(os.path.dirname(__file__))
 
@@ -26,7 +27,7 @@ cst_redshift_cluster.is_primary = True
 cst_redshift_cluster.is_major = True
 cst_redshift_cluster.service_code = 'AmazonRedshift'
 cst_redshift_cluster.tags = {
-    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-Redshift.svg'
+    'spaceone:icon': f'{ASSET_URL}/Amazon-Redshift.svg',
 }
 
 cst_redshift_cluster._metadata = CloudServiceTypeMeta.set_meta(

@@ -4,6 +4,7 @@ from spaceone.inventory.libs.schema.dynamic_widget import ChartWidget, CardWidge
 from spaceone.inventory.libs.schema.dynamic_field import TextDyField, SearchField, DateTimeDyField, EnumDyField
 from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, \
     CloudServiceTypeMeta
+from spaceone.inventory.conf.cloud_service_conf import *
 
 current_dir = os.path.abspath(os.path.dirname(__file__))
 
@@ -24,7 +25,7 @@ cst_sg.group = 'EC2'
 cst_sg.labels = ['Compute', 'Security']
 cst_sg.service_code = 'AmazonEC2'
 cst_sg.tags = {
-    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-VPC_VPN-Gateway_dark-bg.svg',
+    'spaceone:icon': f'{ASSET_URL}/Amazon-VPC_VPN-Gateway_dark-bg.svg',
 }
 
 cst_sg._metadata = CloudServiceTypeMeta.set_meta(
@@ -69,7 +70,7 @@ cst_ami.group = 'EC2'
 cst_ami.labels = ['Compute']
 cst_ami.service_code = 'AmazonEC2'
 cst_ami.tags = {
-    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-AMI.svg',
+    'spaceone:icon': f'{ASSET_URL}/Amazon-AMI.svg',
 }
 
 cst_ami._metadata = CloudServiceTypeMeta.set_meta(

@@ -5,6 +5,7 @@ from spaceone.inventory.libs.schema.dynamic_field import TextDyField, EnumDyFiel
     SizeField, ListDyField
 from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, \
     CloudServiceTypeMeta
+from spaceone.inventory.conf.cloud_service_conf import *
 
 current_dir = os.path.abspath(os.path.dirname(__file__))
 
@@ -29,7 +30,7 @@ cst_ebs.is_primary = True
 cst_ebs.is_major = True
 cst_ebs.service_code = 'AmazonEC2'
 cst_ebs.tags = {
-    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-Elastic-Block-Store-EBS.svg',
+    'spaceone:icon': f'{ASSET_URL}/Amazon-Elastic-Block-Store-EBS.svg',
     'spaceone:display_name': 'EBS'
 }
 cst_ebs._metadata = CloudServiceTypeMeta.set_meta(
@@ -125,7 +126,7 @@ cst_snapshot.group = 'EC2'
 cst_snapshot.labels = ['Compute', 'Storage']
 cst_snapshot.service_code = 'AmazonEC2'
 cst_snapshot.tags = {
-    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-Elastic-Block-Store-EBS.svg',
+    'spaceone:icon': f'{ASSET_URL}/Amazon-Elastic-Block-Store-EBS.svg',
 }
 cst_snapshot._metadata = CloudServiceTypeMeta.set_meta(
     fields=[

@@ -4,6 +4,7 @@ from spaceone.inventory.libs.schema.dynamic_widget import ChartWidget, CardWidge
 from spaceone.inventory.libs.schema.dynamic_field import TextDyField, EnumDyField, SearchField, ListDyField
 from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, \
     CloudServiceTypeMeta
+from spaceone.inventory.conf.cloud_service_conf import *
 
 current_dir = os.path.abspath(os.path.dirname(__file__))
 
@@ -24,7 +25,7 @@ cst_connection.is_primary = True
 cst_connection.is_major = True
 cst_connection.service_code = 'AWSDirectConnect'
 cst_connection.tags = {
-    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/AWS-Direct-Connect.svg',
+    'spaceone:icon': f'{ASSET_URL}/AWS-Direct-Connect.svg',
 }
 
 cst_connection_meta = CloudServiceTypeMeta.set_meta(
@@ -112,7 +113,7 @@ cst_dc_gw.group = 'DirectConnect'
 cst_dc_gw.labels = ['Networking']
 cst_dc_gw.service_code = 'AWSDirectConnect'
 cst_dc_gw.tags = {
-    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/AWS-Direct-Connect.svg',
+    'spaceone:icon': f'{ASSET_URL}/AWS-Direct-Connect.svg'
 }
 cst_dc_gw_meta = CloudServiceTypeMeta.set_meta(
     fields=[
@@ -168,7 +169,7 @@ cst_vp_gw.group = 'DirectConnect'
 cst_vp_gw.labels = ['Networking']
 cst_vp_gw.service_code = 'AWSDirectConnect'
 cst_vp_gw.tags = {
-    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/AWS-Direct-Connect.svg',
+    'spaceone:icon': f'{ASSET_URL}/AWS-Direct-Connect.svg',
 }
 cst_vp_gw_meta = CloudServiceTypeMeta.set_meta(
     fields=[
@@ -218,7 +219,7 @@ cst_lags.group = 'DirectConnect'
 cst_lags.labels = ['Networking']
 cst_lags.service_code = 'AWSDirectConnect'
 cst_lags.tags = {
-    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/AWS-Direct-Connect.svg',
+    'spaceone:icon': f'{ASSET_URL}/AWS-Direct-Connect.svg',
 }
 cst_lags_meta = CloudServiceTypeMeta.set_meta(
     fields=[

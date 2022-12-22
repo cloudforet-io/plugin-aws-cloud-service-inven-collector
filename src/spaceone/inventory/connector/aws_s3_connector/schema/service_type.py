@@ -3,6 +3,7 @@ from spaceone.inventory.libs.common_parser import *
 from spaceone.inventory.libs.schema.dynamic_widget import ChartWidget, CardWidget
 from spaceone.inventory.libs.schema.dynamic_field import TextDyField, SearchField, EnumDyField, SizeField, ListDyField
 from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, CloudServiceTypeMeta
+from spaceone.inventory.conf.cloud_service_conf import *
 
 current_dir = os.path.abspath(os.path.dirname(__file__))
 
@@ -25,7 +26,7 @@ cst_bucket.is_primary = True
 cst_bucket.is_major = True
 cst_bucket.service_code = 'AmazonS3'
 cst_bucket.tags = {
-    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-S3.svg',
+    'spaceone:icon': f'{ASSET_URL}/Amazon-S3.svg',
 }
 
 cst_bucket._metadata = CloudServiceTypeMeta.set_meta(

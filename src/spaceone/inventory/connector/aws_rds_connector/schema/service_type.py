@@ -4,6 +4,7 @@ from spaceone.inventory.libs.schema.dynamic_widget import ChartWidget, CardWidge
 from spaceone.inventory.libs.schema.dynamic_field import TextDyField, DateTimeDyField, EnumDyField, \
     BadgeDyField, SearchField, ListDyField
 from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, CloudServiceTypeMeta
+from spaceone.inventory.conf.cloud_service_conf import *
 
 current_dir = os.path.abspath(os.path.dirname(__file__))
 
@@ -24,7 +25,7 @@ cst_rds_database.is_primary = True
 cst_rds_database.is_major = True
 cst_rds_database.service_code = 'AmazonRDS'
 cst_rds_database.tags = {
-    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-RDS.svg',
+    'spaceone:icon': f'{ASSET_URL}/Amazon-RDS.svg',
 }
 
 cst_rds_database._metadata = CloudServiceTypeMeta.set_meta(
@@ -111,7 +112,7 @@ cst_rds_instance.group = 'RDS'
 cst_rds_instance.labels = ['Database']
 cst_rds_instance.service_code = 'AmazonRDS'
 cst_rds_instance.tags = {
-    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-RDS.svg',
+    'spaceone:icon': f'{ASSET_URL}/Amazon-RDS.svg',
 }
 
 cst_rds_instance._metadata = CloudServiceTypeMeta.set_meta(
@@ -291,7 +292,7 @@ cst_rds_snapshot.group = 'RDS'
 cst_rds_snapshot.labels = ['Database']
 cst_rds_snapshot.service_code = 'AmazonRDS'
 cst_rds_snapshot.tags = {
-    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-RDS.svg',
+    'spaceone:icon': f'{ASSET_URL}/Amazon-RDS.svg',
 }
 cst_rds_snapshot._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
@@ -373,7 +374,7 @@ cst_rds_subnetgrp.group = 'RDS'
 cst_rds_subnetgrp.labels = ['Database']
 cst_rds_subnetgrp.service_code = 'AmazonRDS'
 cst_rds_subnetgrp.tags = {
-    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-RDS.svg',
+    'spaceone:icon': f'{ASSET_URL}/Amazon-RDS.svg',
 }
 cst_rds_subnetgrp._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
@@ -418,7 +419,7 @@ cst_rds_paramgrp.group = 'RDS'
 cst_rds_paramgrp.labels = ['Database']
 cst_rds_paramgrp.service_code = 'AmazonRDS'
 cst_rds_paramgrp.tags = {
-    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-RDS.svg',
+    'spaceone:icon': f'{ASSET_URL}/Amazon-RDS.svg',
 }
 cst_rds_paramgrp._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
@@ -451,7 +452,7 @@ cst_rds_optgrp.group = 'RDS'
 cst_rds_optgrp.labels = ['Database']
 cst_rds_optgrp.service_code = 'AmazonRDS'
 cst_rds_optgrp.tags = {
-    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-RDS.svg',
+    'spaceone:icon': f'{ASSET_URL}/Amazon-RDS.svg',
 }
 cst_rds_optgrp._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
