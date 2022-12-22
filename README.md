@@ -5,7 +5,7 @@
   <img width="245" src="https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/aws-cloudservice.svg">
   <p> 
     <br>
-    <img alt="Version"  src="https://img.shields.io/badge/version-1.14.2-blue.svg?cacheSeconds=2592000"  />    
+    <img alt="Version"  src="https://img.shields.io/badge/version-1.15.1-blue.svg?cacheSeconds=2592000"  />    
     <a href="https://www.apache.org/licenses/LICENSE-2.0"  target="_blank"><img alt="License: Apache 2.0"  src="https://img.shields.io/badge/License-Apache 2.0-yellow.svg" /></a> 
   </p> 
 </div>    
@@ -16,7 +16,7 @@
 
 
 Find us also at [Dockerhub](https://hub.docker.com/repository/docker/spaceone/plugin-aws-cloud-service-inven-collector)
-> Latest stable version : 1.15.0
+> Latest stable version : 1.15.1
 
 Please contact us if you need any further information. (<support@spaceone.dev>)
 
@@ -372,5 +372,18 @@ The `service_code_mappers` items that can be specified are as follows.
 </code>
 </pre>
 
+### Custom Asset URL : Possible to modify icon path of cloud service
+
+If `custom_asset_url` is added in options, You can replace the path of the icon each cloud service type instead of default path.
+
+The `custom_asset_url` items that can be specified are as follows.
+
+<pre>
+<code>
+{
+    "custom_asset_url": "https://CUSTOM_ASSET_URL/..."
+}
+</code>
+</pre>
 ---
 ## [Release note](RELEASE.md)
