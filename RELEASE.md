@@ -1,5 +1,8 @@
 # Plugin AWS Cloud Services Inventory Collector Release Notes
 
+## Ver 1.15.1
+* [Add custom_asset_url option](https://github.com/cloudforet-io/plugin-aws-cloud-service-inven-collector/pull/21)
+
 ## Ver 1.15.0
 * [Refactoring Tags](https://github.com/cloudforet-io/plugin-aws-cloud-service-inven-collector/issues/7)
 * [Separating Access Key Resource from IAM.User](https://github.com/cloudforet-io/plugin-aws-cloud-service-inven-collector/issues/12)
