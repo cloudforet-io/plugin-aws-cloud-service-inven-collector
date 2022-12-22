@@ -4,6 +4,7 @@ from spaceone.inventory.libs.schema.dynamic_widget import ChartWidget, CardWidge
 from spaceone.inventory.libs.schema.dynamic_field import TextDyField, SearchField, EnumDyField, ListDyField, SizeField
 from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, \
     CloudServiceTypeMeta
+from spaceone.inventory.conf.cloud_service_conf import *
 
 current_dir = os.path.abspath(os.path.dirname(__file__))
 
@@ -25,7 +26,7 @@ cst_instance.is_primary = True
 cst_instance.is_major = True
 cst_instance.service_code = 'AmazonLightsail'
 cst_instance.tags = {
-    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-Lightsail.svg',
+    'spaceone:icon': f'{ASSET_URL}/Amazon-Lightsail.svg',
 }
 
 cst_instance._metadata = CloudServiceTypeMeta.set_meta(
@@ -109,7 +110,7 @@ cst_disk.group = 'Lightsail'
 cst_disk.labels = ['Compute', 'Storage']
 cst_disk.service_code = 'AmazonLightsail'
 cst_disk.tags = {
-    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-Lightsail.svg',
+    'spaceone:icon': f'{ASSET_URL}/Amazon-Lightsail.svg',
 }
 
 cst_disk._metadata = CloudServiceTypeMeta.set_meta(
@@ -192,7 +193,7 @@ cst_snapshot.group = 'Lightsail'
 cst_snapshot.labels = ['Storage']
 cst_snapshot.service_code = 'AmazonLightsail'
 cst_snapshot.tags = {
-    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-Lightsail.svg',
+    'spaceone:icon': f'{ASSET_URL}/Amazon-Lightsail.svg',
 }
 
 cst_snapshot._metadata = CloudServiceTypeMeta.set_meta(
@@ -256,7 +257,7 @@ cst_bucket.group = 'Lightsail'
 cst_bucket.labels = ['Storage']
 cst_bucket.service_code = 'AmazonLightsail'
 cst_bucket.tags = {
-    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-Lightsail.svg',
+    'spaceone:icon': f'{ASSET_URL}/Amazon-Lightsail.svg',
 }
 
 cst_bucket._metadata = CloudServiceTypeMeta.set_meta(
@@ -328,7 +329,7 @@ cst_ip.group = 'Lightsail'
 cst_ip.labels = ['Networking']
 cst_ip.service_code = 'AmazonLightsail'
 cst_ip.tags = {
-    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-Lightsail.svg',
+    'spaceone:icon': f'{ASSET_URL}/Amazon-Lightsail.svg',
 }
 
 cst_ip._metadata = CloudServiceTypeMeta.set_meta(
@@ -385,7 +386,7 @@ cst_rdb.group = 'Lightsail'
 cst_rdb.labels = ['Database']
 cst_rdb.service_code = 'AmazonLightsail'
 cst_rdb.tags = {
-    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-Lightsail.svg',
+    'spaceone:icon': f'{ASSET_URL}/Amazon-Lightsail.svg',
 }
 
 cst_rdb._metadata = CloudServiceTypeMeta.set_meta(
@@ -487,7 +488,7 @@ cst_container.is_primary = True
 cst_container.is_major = True
 cst_container.service_code = 'AmazonLightsail'
 cst_container.tags = {
-    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-Lightsail.svg',
+    'spaceone:icon': f'{ASSET_URL}/Amazon-Lightsail.svg',
 }
 
 cst_container._metadata = CloudServiceTypeMeta.set_meta(
@@ -542,7 +543,7 @@ cst_loadbalancer.group = 'Lightsail'
 cst_loadbalancer.labels = ['Networking']
 cst_loadbalancer.service_code = 'AmazonLightsail'
 cst_loadbalancer.tags = {
-    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-Lightsail.svg',
+    'spaceone:icon': f'{ASSET_URL}/Amazon-Lightsail.svg',
 }
 
 cst_loadbalancer._metadata = CloudServiceTypeMeta.set_meta(
@@ -609,7 +610,7 @@ cst_distribution.group = 'Lightsail'
 cst_distribution.labels = ['Networking']
 cst_distribution.service_code = 'AmazonLightsail'
 cst_distribution.tags = {
-    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-Lightsail.svg',
+    'spaceone:icon': f'{ASSET_URL}/Amazon-Lightsail.svg',
 }
 
 cst_distribution._metadata = CloudServiceTypeMeta.set_meta(
@@ -668,7 +669,7 @@ cst_domain.group = 'Lightsail'
 cst_domain.labels = ['Networking']
 cst_domain.service_code = 'AmazonLightsail'
 cst_domain.tags = {
-    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-Lightsail.svg',
+    'spaceone:icon': f'{ASSET_URL}/Amazon-Lightsail.svg',
 }
 
 cst_domain._metadata = CloudServiceTypeMeta.set_meta(

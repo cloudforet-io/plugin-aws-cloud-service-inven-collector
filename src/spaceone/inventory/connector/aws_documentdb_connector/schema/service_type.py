@@ -5,6 +5,7 @@ from spaceone.inventory.libs.schema.dynamic_field import TextDyField, EnumDyFiel
     DateTimeDyField, ListDyField
 from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, \
     CloudServiceTypeMeta
+from spaceone.inventory.conf.cloud_service_conf import *
 
 current_dir = os.path.abspath(os.path.dirname(__file__))
 
@@ -28,7 +29,7 @@ cst_cluster.is_primary = True
 cst_cluster.is_major = True
 cst_cluster.service_code = 'AmazonDocDB'
 cst_cluster.tags = {
-    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-DocumentDB.svg',
+    'spaceone:icon': f'{ASSET_URL}/Amazon-DocumentDB.svg',
 }
 cst_cluster._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
@@ -169,7 +170,7 @@ cst_subnet_group.group = 'DocumentDB'
 cst_subnet_group.labels = ['Database']
 cst_subnet_group.service_code = 'AmazonDocDB'
 cst_subnet_group.tags = {
-    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-DocumentDB.svg',
+    'spaceone:icon': f'{ASSET_URL}/Amazon-DocumentDB.svg',
 }
 cst_subnet_group._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
@@ -207,7 +208,7 @@ cst_parameter_group.group = 'DocumentDB'
 cst_parameter_group.labels = ['Database']
 cst_parameter_group.service_code = 'AmazonDocDB'
 cst_parameter_group.tags = {
-    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-DocumentDB.svg',
+    'spaceone:icon': f'{ASSET_URL}/Amazon-DocumentDB.svg'
 }
 cst_parameter_group._metadata = CloudServiceTypeMeta.set_meta(
     fields=[

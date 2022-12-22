@@ -22,7 +22,7 @@ class ElastiCacheConnector(SchematicAWSConnector):
         resources = []
         start_time = time.time()
 
-        resources.extend(self.set_service_code_in_cloud_service_type())
+        resources.extend(self.set_cloud_service_types())
 
         for region_name in self.region_names:
             self.reset_region(region_name)

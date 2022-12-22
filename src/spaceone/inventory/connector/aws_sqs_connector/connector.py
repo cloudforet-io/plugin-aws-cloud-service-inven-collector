@@ -26,7 +26,7 @@ class SQSConnector(SchematicAWSConnector):
             'response_schema': SQSResponse
         }
 
-        resources.extend(self.set_service_code_in_cloud_service_type())
+        resources.extend(self.set_cloud_service_types())
 
         # merge data
         for region_name in self.region_names:

@@ -1,5 +1,6 @@
 import os
 from spaceone.inventory.libs.common_parser import *
+from spaceone.inventory.conf.cloud_service_conf import *
 from spaceone.inventory.libs.schema.dynamic_widget import ChartWidget, CardWidget
 from spaceone.inventory.libs.schema.dynamic_field import (
     SearchField,
@@ -29,7 +30,7 @@ cst_kds.is_primary = True
 cst_kds.is_major = True
 cst_kds.service_code = "AmazonKinesis"
 cst_kds.tags = {
-    "spaceone:icon": "https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-Kinesis-Firehose.svg",
+    'spaceone:icon': f'{ASSET_URL}/Amazon-Kinesis-Firehose.svg',
 }
 
 cst_kds._metadata = CloudServiceTypeMeta.set_meta(

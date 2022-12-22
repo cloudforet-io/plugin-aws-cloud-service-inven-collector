@@ -3,6 +3,7 @@ from spaceone.inventory.libs.common_parser import *
 from spaceone.inventory.libs.schema.dynamic_widget import ChartWidget, CardWidget
 from spaceone.inventory.libs.schema.dynamic_field import TextDyField, EnumDyField, SearchField, ListDyField
 from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, CloudServiceTypeMeta
+from spaceone.inventory.conf.cloud_service_conf import *
 
 current_dir = os.path.abspath(os.path.dirname(__file__))
 
@@ -20,7 +21,7 @@ cst_hostedzone.labels = ['Networking']
 cst_hostedzone.is_primary = True
 cst_hostedzone.service_code = 'AmazonRoute53'
 cst_hostedzone.tags = {
-    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-Route-53.svg',
+    'spaceone:icon': f'{ASSET_URL}/Amazon-Route-53.svg',
 }
 
 cst_hostedzone._metadata = CloudServiceTypeMeta.set_meta(

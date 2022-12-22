@@ -5,6 +5,7 @@ from spaceone.inventory.libs.schema.dynamic_field import TextDyField, EnumDyFiel
     SizeField, ListDyField
 from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, \
     CloudServiceTypeMeta
+from spaceone.inventory.conf.cloud_service_conf import *
 
 current_dir = os.path.abspath(os.path.dirname(__file__))
 
@@ -25,7 +26,7 @@ cst_filesystem.is_major = True
 cst_filesystem.labels = ['Storage']
 cst_filesystem.service_code = 'AmazonEFS'
 cst_filesystem.tags = {
-    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-Elastic-File-System_EFS.svg'
+    'spaceone:icon': f'{ASSET_URL}/Amazon-Elastic-File-System_EFS.svg',
 }
 
 cst_filesystem._metadata = CloudServiceTypeMeta.set_meta(

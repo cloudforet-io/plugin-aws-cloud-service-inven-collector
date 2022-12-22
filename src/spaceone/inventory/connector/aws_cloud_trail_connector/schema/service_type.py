@@ -1,6 +1,7 @@
 from spaceone.inventory.libs.schema.dynamic_field import TextDyField, SearchField
 from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, \
     CloudServiceTypeMeta
+from spaceone.inventory.conf.cloud_service_conf import *
 
 cst_trail = CloudServiceTypeResource()
 cst_trail.name = 'Trail'
@@ -10,7 +11,7 @@ cst_trail.labels = ['Management']
 cst_trail.is_primary = True
 cst_trail.service_code = 'AWSCloudTrail'
 cst_trail.tags = {
-    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/aws-cloudtrail.svg',
+    'spaceone:icon': f'{ASSET_URL}/aws-cloudtrail.svg',
 }
 
 cst_trail._metadata = CloudServiceTypeMeta.set_meta(

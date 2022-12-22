@@ -4,6 +4,7 @@ from spaceone.inventory.libs.schema.dynamic_widget import ChartWidget, CardWidge
 from spaceone.inventory.libs.schema.dynamic_field import TextDyField, ListDyField, SearchField, EnumDyField
 from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, \
     CloudServiceTypeMeta
+from spaceone.inventory.conf.cloud_service_conf import *
 
 current_dir = os.path.abspath(os.path.dirname(__file__))
 
@@ -19,7 +20,7 @@ cst_certi.labels = ['Security']
 cst_certi.is_primary = True
 cst_certi.service_code = 'AWSCertificateManager'
 cst_certi.tags = {
-    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/AWS-Certificate-Manager.svg',
+    'spaceone:icon': f'{ASSET_URL}/AWS-Certificate-Manager.svg',
 }
 
 cst_certi._metadata = CloudServiceTypeMeta.set_meta(

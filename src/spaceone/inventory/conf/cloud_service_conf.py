@@ -40,6 +40,8 @@ CLOUD_SERVICE_GROUP_MAP = {
     'Lightsail': 'LightsailConnectorManager'
 }
 
+ASSET_URL = 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws'
+
 REGION_INFO = {
     'us-east-1': {'name': 'US East (N. Virginia)',
                   'tags': {'latitude': '39.028760', 'longitude': '-77.458263', 'continent': 'north_america'}},

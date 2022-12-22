@@ -5,6 +5,7 @@ from spaceone.inventory.libs.schema.dynamic_field import TextDyField, ListDyFiel
     EnumDyField
 from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, \
     CloudServiceTypeMeta
+from spaceone.inventory.conf.cloud_service_conf import *
 
 current_dir = os.path.abspath(os.path.dirname(__file__))
 
@@ -25,7 +26,7 @@ cst_cluster.service_code = 'AmazonMSK'
 cst_cluster.is_primary = True
 cst_cluster.is_major = True
 cst_cluster.tags = {
-    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-MSK.svg',
+    'spaceone:icon': f'{ASSET_URL}/Amazon-MSK.svg',
 }
 
 cst_cluster._metadata = CloudServiceTypeMeta.set_meta(
@@ -116,7 +117,7 @@ cst_config.group = 'MSK'
 cst_config.labels = ['Analytics']
 cst_config.service_code = 'AmazonMSK'
 cst_config.tags = {
-    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-MSK.svg',
+    'spaceone:icon': f'{ASSET_URL}/Amazon-MSK.svg',
 }
 
 cst_config._metadata = CloudServiceTypeMeta.set_meta(

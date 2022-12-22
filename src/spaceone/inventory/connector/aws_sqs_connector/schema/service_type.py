@@ -3,6 +3,7 @@ from spaceone.inventory.libs.common_parser import *
 from spaceone.inventory.libs.schema.dynamic_widget import ChartWidget, CardWidget
 from spaceone.inventory.libs.schema.dynamic_field import TextDyField, SearchField
 from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, CloudServiceTypeMeta
+from spaceone.inventory.conf.cloud_service_conf import *
 
 current_dir = os.path.abspath(os.path.dirname(__file__))
 
@@ -21,7 +22,7 @@ cst_que.is_primary = True
 cst_que.is_major = True
 cst_que.service_code = 'AWSQueueService'
 cst_que.tags = {
-    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-SQS.svg',
+    'spaceone:icon': f'{ASSET_URL}/Amazon-SQS.svg',
 }
 
 cst_que._metadata = CloudServiceTypeMeta.set_meta(

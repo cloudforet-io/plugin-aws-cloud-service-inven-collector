@@ -4,6 +4,7 @@ from spaceone.inventory.libs.schema.dynamic_widget import ChartWidget, CardWidge
 from spaceone.inventory.libs.schema.dynamic_field import TextDyField, ListDyField, SearchField, SizeField
 from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, \
     CloudServiceTypeMeta
+from spaceone.inventory.conf.cloud_service_conf import *
 
 current_dir = os.path.abspath(os.path.dirname(__file__))
 
@@ -28,7 +29,7 @@ cst_function.is_primary = True
 cst_function.is_major = True
 cst_function.service_code = 'AWSLambda'
 cst_function.tags = {
-    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/AWS-Lambda.svg',
+    'spaceone:icon': f'{ASSET_URL}/AWS-Lambda.svg',
 }
 
 cst_function._metadata = CloudServiceTypeMeta.set_meta(
@@ -135,7 +136,7 @@ cst_layer.group = 'Lambda'
 cst_layer.labels = ['Compute']
 cst_layer.service_code = 'AWSLambda'
 cst_layer.tags = {
-    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/AWS-Lambda.svg',
+    'spaceone:icon': f'{ASSET_URL}/AWS-Lambda.svg',
 }
 
 cst_layer._metadata = CloudServiceTypeMeta.set_meta(

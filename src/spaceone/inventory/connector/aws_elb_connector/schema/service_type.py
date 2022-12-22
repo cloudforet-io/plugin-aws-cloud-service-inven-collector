@@ -4,6 +4,7 @@ from spaceone.inventory.libs.schema.dynamic_widget import ChartWidget, CardWidge
 from spaceone.inventory.libs.schema.dynamic_field import TextDyField, ListDyField, EnumDyField, SearchField
 from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, \
     CloudServiceTypeMeta
+from spaceone.inventory.conf.cloud_service_conf import *
 
 current_dir = os.path.abspath(os.path.dirname(__file__))
 
@@ -24,7 +25,7 @@ cst_elb.is_primary = True
 cst_elb.is_major = True
 cst_elb.service_code = 'AWSELB'
 cst_elb.tags = {
-    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Elastic-Load-Balancing.svg',
+    'spaceone:icon': f'{ASSET_URL}/Elastic-Load-Balancing.svg',
 }
 
 cst_elb._metadata = CloudServiceTypeMeta.set_meta(
@@ -179,7 +180,7 @@ cst_tg.group = 'ELB'
 cst_tg.labels = ['Networking']
 cst_tg.service_code = 'AWSELB'
 cst_tg.tags = {
-    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Elastic-Load-Balancing.svg',
+    'spaceone:icon': f'{ASSET_URL}/Elastic-Load-Balancing.svg',
 }
 
 cst_tg._metadata = CloudServiceTypeMeta.set_meta(

@@ -39,7 +39,7 @@ class IAMConnector(SchematicAWSConnector):
         policy_errors = []
         user_errors = []
 
-        resources.extend(self.set_service_code_in_cloud_service_type())
+        resources.extend(self.set_cloud_service_types())
 
         try:
             policies, policy_errors = self.list_local_managed_policies()

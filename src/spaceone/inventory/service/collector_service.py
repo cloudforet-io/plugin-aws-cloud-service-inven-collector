@@ -6,6 +6,7 @@ from spaceone.core.service import *
 from spaceone.inventory.conf.cloud_service_conf import *
 from spaceone.inventory.libs.connector import *
 from spaceone.inventory.libs.schema.resource import RegionResource, RegionResponse, ErrorResourceResponse
+from spaceone.inventory.conf.cloud_service_conf import *
 
 _LOGGER = logging.getLogger(__name__)
 

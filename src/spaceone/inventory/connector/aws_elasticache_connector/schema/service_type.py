@@ -1,6 +1,7 @@
 from spaceone.inventory.libs.schema.dynamic_field import TextDyField, SearchField, EnumDyField, ListDyField
 from spaceone.inventory.libs.schema.resource import CloudServiceTypeResource, CloudServiceTypeResponse, \
     CloudServiceTypeMeta
+from spaceone.inventory.conf.cloud_service_conf import *
 
 cst_memcached = CloudServiceTypeResource()
 cst_memcached.name = 'Memcached'
@@ -11,7 +12,7 @@ cst_memcached.is_primary = True
 cst_memcached.is_major = True
 cst_memcached.service_code = 'AmazonElastiCache'
 cst_memcached.tags = {
-    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-ElastiCache.svg'
+    'spaceone:icon': f'{ASSET_URL}/Amazon-ElastiCache.svg',
 }
 
 cst_memcached._metadata = CloudServiceTypeMeta.set_meta(
@@ -85,7 +86,7 @@ cst_redis.is_primary = True
 cst_redis.is_major = True
 cst_redis.service_code = 'AmazonElastiCache'
 cst_redis.tags = {
-    'spaceone:icon': 'https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws/Amazon-ElastiCache.svg'
+    'spaceone:icon': f'{ASSET_URL}/Amazon-ElastiCache.svg',
 }
 
 cst_redis._metadata = CloudServiceTypeMeta.set_meta(

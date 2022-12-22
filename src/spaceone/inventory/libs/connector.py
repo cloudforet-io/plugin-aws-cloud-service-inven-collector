@@ -199,7 +199,7 @@ class SchematicAWSConnector(AWSConnector):
 
         return error_resource_response
 
-    def set_service_code_in_cloud_service_type(self):
+    def set_cloud_service_types(self):
         if 'service_code_mappers' in self.options:
             svc_code_maps = self.options['service_code_mappers']
 
@@ -207,9 +207,15 @@ class SchematicAWSConnector(AWSConnector):
                 if getattr(cst.resource, 'service_code') and cst.resource.service_code in svc_code_maps:
                     cst.resource.service_code = svc_code_maps[cst.resource.service_code]
 
-            return self.cloud_service_types
-        else:
-            return self.cloud_service_types
+        if 'custom_asset_url' in self.options:
+            for cst in self.cloud_service_types:
+                _tags = cst.resource.tags
+
+                if 'spaceone:icon' in _tags:
+                    _icon = _tags['spaceone:icon']
+                    _tags['spaceone:icon'] = f'{self.options["custom_asset_url"]}/{_icon.split("/")[-1]}'
+
+        return self.cloud_service_types
 
     @staticmethod
     def datetime_to_iso8601(value: datetime.datetime):
