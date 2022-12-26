@@ -11,7 +11,7 @@ cst_trail.labels = ['Management']
 cst_trail.is_primary = True
 cst_trail.service_code = 'AWSCloudTrail'
 cst_trail.tags = {
-    'spaceone:icon': f'{ASSET_URL}/aws-cloudtrail.svg',
+    'spaceone:icon': f'{ASSET_URL}/AWS-Cloudtrail.svg',
 }
 
 cst_trail._metadata = CloudServiceTypeMeta.set_meta(
