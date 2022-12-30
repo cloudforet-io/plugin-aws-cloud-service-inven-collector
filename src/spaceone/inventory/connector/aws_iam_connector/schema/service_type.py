@@ -106,7 +106,7 @@ cst_user._metadata = CloudServiceTypeMeta.set_meta(
             'postfix': ' days'
         }),
         TextDyField.data_source('Last Activity', 'data.last_active_age', options={
-            'postfix': ' days ago'
+            'postfix': ' days'
         }),
         TextDyField.data_source('MFA', 'data.mfa_device'),
         TextDyField.data_source('ARN', 'data.arn', options={
