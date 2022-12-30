@@ -103,10 +103,10 @@ cst_user._metadata = CloudServiceTypeMeta.set_meta(
             'sub_key': 'group_name'
         }),
         TextDyField.data_source('Access Key Age', 'data.access_key_age', options={
-            'postfix': 'days'
+            'postfix': ' days'
         }),
         TextDyField.data_source('Last Activity', 'data.last_active_age', options={
-            'postfix': 'days'
+            'postfix': ' days'
         }),
         TextDyField.data_source('MFA', 'data.mfa_device'),
         TextDyField.data_source('ARN', 'data.arn', options={
