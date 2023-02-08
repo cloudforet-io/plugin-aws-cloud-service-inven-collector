@@ -41,26 +41,16 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: set up QEMU
-        uses: docker/setup-qemu-action@v2
-
-      - name: set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
       - name: get service name
         id: get_service
         run: |
           echo "SERVICE=$(echo ${{ github.repository }} | cut -d '/' -f2)" >> $GITHUB_OUTPUT
 
-      - name: Build docker for Scanning
-        uses: docker/build-push-action@v2
-        with:
-          path: .
-          repository: pyengine/${{ steps.get_service.outputs.SERVICE }}
-          push: false
-          tags: cache
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+      - name: Build with local output
+        run: docker build -t pyengine/${{ steps.get_service.outputs.SERVICE }}:cache --output type=tar,dest=./output.tar .
+
+      - name: Import compressed docker image
+        run: tar -c output.tar | docker import - pyengine/${{ steps.get_service.outputs.SERVICE }}:cache
 
       - name: Scan image
         uses: anchore/scan-action@v3
