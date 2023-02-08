@@ -50,7 +50,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           path: .
-          repository: pyengine/${{ env.SERVICE }}
+          repository: pyengine/${{ steps.get_service.outputs.SERVICE }}
           push: false
           tags: cache
           cache-from: type=gha
@@ -59,7 +59,7 @@ jobs:
       - name: Scan image
         uses: anchore/scan-action@v3
         with:
-          image: pyengine/${{ env.SERVICE }}:cache
+          image: pyengine/${{ steps.get_service.outputs.SERVICE }}:cache
           output-format: table
 
       - name: Notice when job fails
@@ -72,11 +72,11 @@ jobs:
 
   docker-push:
     if: github.repository_owner == 'cloudforet-io'
-    needs: image-scan
+    needs: [versioning, image-scan]
     runs-on: ubuntu-latest
     env:
-      VERSION: ${{ jobs.versioning.outputs.output_version }}
-      SERVICE: ${{ jobs.image-scan.outputs.output_service }}
+      VERSION: ${{ needs.versioning.outputs.output_version }}
+      SERVICE: ${{ needs.image-scan.outputs.output_service }}
     steps:
       - uses: actions/checkout@v2
 
