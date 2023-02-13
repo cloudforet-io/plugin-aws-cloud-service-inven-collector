@@ -1,10 +1,12 @@
-FROM python:3.8
+FROM python:3
 
 ENV PYTHONUNBUFFERED 1
 ENV CLOUDONE_PORT 50051
 ENV SERVER_TYPE grpc
 ENV PKG_DIR /tmp/pkg
 ENV SRC_DIR /tmp/src
+
+RUN apt update && apt upgrade
 
 COPY pkg/*.txt ${PKG_DIR}/
 RUN pip install --upgrade pip && \
