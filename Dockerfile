@@ -6,12 +6,9 @@ ENV SERVER_TYPE grpc
 ENV PKG_DIR /tmp/pkg
 ENV SRC_DIR /tmp/src
 
-RUN apt update && apt upgrade -y
-
 COPY pkg/*.txt ${PKG_DIR}/
 RUN pip install --upgrade pip && \
-    pip install --upgrade --use-deprecated=legacy-resolver -r ${PKG_DIR}/pip_requirements.txt && \
-    pip install --upgrade --pre spaceone-core spaceone-api
+    pip install --upgrade -r ${PKG_DIR}/pip_requirements.txt
 
 COPY src ${SRC_DIR}
 
