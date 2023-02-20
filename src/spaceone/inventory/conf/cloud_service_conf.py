@@ -4,6 +4,7 @@ SUPPORTED_SCHEDULES = ['hours']
 SUPPORTED_RESOURCE_TYPE = ['inventory.CloudService', 'inventory.CloudServiceType', 'inventory.Region']
 DEFAULT_REGION = 'ap-northeast-2'
 FILTER_FORMAT = []
+BOTO3_HTTPS_VERIFIED = True
 
 CLOUD_SERVICE_GROUP_MAP = {
     'IAM': 'IAMConnectorManager',

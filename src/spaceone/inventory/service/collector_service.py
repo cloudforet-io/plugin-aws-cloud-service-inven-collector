@@ -88,6 +88,7 @@ class CollectorService(BaseService):
             for future in concurrent.futures.as_completed(future_executors):
                 for result in future.result():
                     try:
+                        _LOGGER.debug(f"[collector_service] {result}")
                         if getattr(result, 'resource', None) and getattr(result.resource, 'region_code', None):
                             collected_region = self.get_region_from_result(result.resource.region_code)
 
@@ -135,13 +136,13 @@ class CollectorService(BaseService):
     @staticmethod
     def get_account_id(secret_data, region=DEFAULT_REGION):
         _session = get_session(secret_data, region)
-        sts_client = _session.client('sts')
+        sts_client = _session.client('sts', verify=BOTO3_HTTPS_VERIFIED)
         return sts_client.get_caller_identity()['Account']
 
     @staticmethod
     def get_regions(secret_data):
         _session = get_session(secret_data, DEFAULT_REGION)
-        ec2_client = _session.client('ec2')
+        ec2_client = _session.client('ec2', verify=BOTO3_HTTPS_VERIFIED)
         return list(map(lambda region_info: region_info.get('RegionName'),
                         ec2_client.describe_regions().get('Regions')))
 
