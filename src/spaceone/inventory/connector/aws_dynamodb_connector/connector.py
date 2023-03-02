@@ -7,6 +7,7 @@ from spaceone.inventory.connector.aws_dynamodb_connector.schema.data import Tabl
 from spaceone.inventory.connector.aws_dynamodb_connector.schema.resource import TableResource, TableResponse
 from spaceone.inventory.connector.aws_dynamodb_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
+from spaceone.inventory.conf.cloud_service_conf import *
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -112,7 +113,7 @@ class DynamoDBConnector(SchematicAWSConnector):
         return TimeToLive(response.get('TimeToLiveDescription'), strict=False)
 
     def describe_scaling_policies(self):
-        auto_scaling_client = self.session.client('application-autoscaling')
+        auto_scaling_client = self.session.client('application-autoscaling', verify=BOTO3_HTTPS_VERIFIED)
         response = auto_scaling_client.describe_scaling_policies(ServiceNamespace='dynamodb')
         return response.get('ScalingPolicies', [])
 

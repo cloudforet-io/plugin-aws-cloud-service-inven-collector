@@ -7,6 +7,7 @@ from spaceone.inventory.connector.aws_elb_connector.schema.resource import LoadB
 from spaceone.inventory.connector.aws_elb_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
 from spaceone.inventory.libs.schema.resource import CloudWatchModel
+from spaceone.inventory.conf.cloud_service_conf import *
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -229,7 +230,7 @@ class ELBConnector(SchematicAWSConnector):
         return match_target_groups
 
     def request_instances(self, region_name):
-        ec2_client = self.session.client('ec2', region_name=region_name)
+        ec2_client = self.session.client('ec2', region_name=region_name, verify=BOTO3_HTTPS_VERIFIED)
 
         instances = []
         paginator = ec2_client.get_paginator('describe_instances')

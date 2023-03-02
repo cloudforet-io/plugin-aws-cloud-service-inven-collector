@@ -10,6 +10,7 @@ from spaceone.inventory.connector.aws_auto_scaling_connector.schema.resource imp
     LaunchTemplateResponse
 from spaceone.inventory.connector.aws_auto_scaling_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
+from spaceone.inventory.conf.cloud_service_conf import *
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -205,7 +206,7 @@ class AutoScalingConnector(SchematicAWSConnector):
         self.cloud_service_type = 'LaunchTemplate'
         cloudtrail_resource_type = 'AWS::EC2::LaunchTemplate'
 
-        ec2_client = self.session.client('ec2')
+        ec2_client = self.session.client('ec2', verify=BOTO3_HTTPS_VERIFIED)
         paginator = ec2_client.get_paginator('describe_launch_templates')
         response_iterator = paginator.paginate(
             PaginationConfig={
@@ -250,7 +251,7 @@ class AutoScalingConnector(SchematicAWSConnector):
                     yield {'data': error_resource_response}
 
     def get_asg_instances(self, instances):
-        ec2_client = self.session.client('ec2')
+        ec2_client = self.session.client('ec2', verify=BOTO3_HTTPS_VERIFIED)
         max_count = 20
         instances_from_ec2 = []
         split_instances = [instances[i:i + max_count] for i in range(0, len(instances), max_count)]
@@ -276,7 +277,7 @@ class AutoScalingConnector(SchematicAWSConnector):
         return instances
 
     def get_load_balancer_arns(self, target_group_arns):
-        elb_client = self.session.client('elbv2')
+        elb_client = self.session.client('elbv2', verify=BOTO3_HTTPS_VERIFIED)
         lb_arns = []
         max_count = 20
 
@@ -294,7 +295,7 @@ class AutoScalingConnector(SchematicAWSConnector):
         return lb_arns
 
     def get_load_balancer_info(self, lb_arns):
-        elb_client = self.session.client('elbv2')
+        elb_client = self.session.client('elbv2', verify=BOTO3_HTTPS_VERIFIED)
         max_count = 20
 
         split_lb_arns = [lb_arns[i:i + max_count] for i in range(0, len(lb_arns), max_count)]
@@ -338,7 +339,7 @@ class AutoScalingConnector(SchematicAWSConnector):
         }
 
     def _match_launch_template_version(self, lt):
-        ec2_client = self.session.client('ec2')
+        ec2_client = self.session.client('ec2', verify=BOTO3_HTTPS_VERIFIED)
         lt_versions = ec2_client.describe_launch_template_versions(LaunchTemplateId=lt)
         res = lt_versions.get('LaunchTemplateVersions', [])[0]
         return res

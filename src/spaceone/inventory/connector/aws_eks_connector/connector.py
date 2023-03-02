@@ -8,6 +8,8 @@ from spaceone.inventory.connector.aws_eks_connector.schema.resource import Clust
 from spaceone.inventory.connector.aws_eks_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
 from spaceone.inventory.libs.schema.resource import ReferenceModel, CloudWatchModel
+from spaceone.inventory.conf.cloud_service_conf import *
+
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -183,7 +185,7 @@ class EKSConnector(SchematicAWSConnector):
         return list_tags
 
     def get_auto_scaling_groups(self):
-        auto_scaling_client = self.session.client('autoscaling')
+        auto_scaling_client = self.session.client('autoscaling', verify=BOTO3_HTTPS_VERIFIED)
         paginator = auto_scaling_client.get_paginator('describe_auto_scaling_groups')
         response_iterator = paginator.paginate(
             PaginationConfig={

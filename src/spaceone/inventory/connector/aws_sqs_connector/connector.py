@@ -5,6 +5,7 @@ from spaceone.inventory.connector.aws_sqs_connector.schema.data import QueData, 
 from spaceone.inventory.connector.aws_sqs_connector.schema.resource import SQSResponse, QueResource
 from spaceone.inventory.connector.aws_sqs_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
+from spaceone.inventory.conf.cloud_service_conf import *
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -40,7 +41,7 @@ class SQSConnector(SchematicAWSConnector):
         cloudwatch_namespace = 'AWS/SQS'
         cloudwatch_dimension_name = 'QueueName'
         cloudtrail_resource_type = 'AWS::SQS::Queue'
-        resource = self.session.resource('sqs')
+        resource = self.session.resource('sqs', verify=BOTO3_HTTPS_VERIFIED)
 
         for que in resource.queues.all():
             try:

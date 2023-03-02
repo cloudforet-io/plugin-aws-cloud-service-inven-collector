@@ -6,6 +6,8 @@ from spaceone.inventory.connector.aws_sns_connector.schema.data import Topic, Su
 from spaceone.inventory.connector.aws_sns_connector.schema.resource import TopicResource, TopicResponse
 from spaceone.inventory.connector.aws_sns_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
+from spaceone.inventory.conf.cloud_service_conf import *
+
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -91,7 +93,7 @@ class SNSConnector(SchematicAWSConnector):
     @property
     def kms_client(self):
         if self._kms_client is None:
-            self._kms_client = self.session.client('kms')
+            self._kms_client = self.session.client('kms', verify=BOTO3_HTTPS_VERIFIED)
 
         return self._kms_client
 
