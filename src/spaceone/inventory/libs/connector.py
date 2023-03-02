@@ -6,6 +6,7 @@ from typing import List
 from boto3.session import Session
 from spaceone.core import utils
 from spaceone.core.connector import BaseConnector
+from spaceone.inventory.conf.cloud_service_conf import *
 from spaceone.inventory.libs.schema.resource import CloudServiceResponse, ReferenceModel, CloudWatchModel, \
     ErrorResourceResponse, CloudTrailModel, CloudWatchDimension, CloudWatchMetricInfo
 
@@ -29,7 +30,7 @@ def get_session(secret_data, region_name):
 
     # ASSUME ROLE
     if role_arn := secret_data.get('role_arn'):
-        sts = session.client('sts')
+        sts = session.client('sts', verify=BOTO3_HTTPS_VERIFIED)
 
         _assume_role_request = {
             'RoleArn': role_arn,
@@ -86,7 +87,7 @@ class AWSConnector(BaseConnector):
 
     def set_client(self, service_name):
         self.service_name = service_name
-        self._client = self.session.client(self.service_name)
+        self._client = self.session.client(self.service_name, verify=BOTO3_HTTPS_VERIFIED)
         return self._client
 
     @property
@@ -96,13 +97,13 @@ class AWSConnector(BaseConnector):
     @property
     def init_client(self):
         if self._init_client is None:
-            self._init_client = self.session.client('ec2')
+            self._init_client = self.session.client('ec2', verify=BOTO3_HTTPS_VERIFIED)
         return self._init_client
 
     @property
     def client(self):
         if self._client is None:
-            self._client = self.session.client(self.service_name)
+            self._client = self.session.client(self.service_name, verify=BOTO3_HTTPS_VERIFIED)
         return self._client
 
     @staticmethod

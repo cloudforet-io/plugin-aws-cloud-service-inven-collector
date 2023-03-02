@@ -10,6 +10,7 @@ from spaceone.inventory.connector.aws_s3_connector.schema.service_type import CL
 from spaceone.inventory.libs.connector import SchematicAWSConnector
 from spaceone.inventory.libs.schema.resource import ReferenceModel
 from spaceone.inventory.libs.schema.resource import CloudWatchModel
+from spaceone.inventory.conf.cloud_service_conf import *
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -281,7 +282,7 @@ class S3Connector(SchematicAWSConnector):
 
     def get_count_and_size(self, bucket_name, region_name):
         try:
-            cloudwatch_client = self.session.client('cloudwatch', region_name=region_name)
+            cloudwatch_client = self.session.client('cloudwatch', region_name=region_name, verify=BOTO3_HTTPS_VERIFIED)
 
             count = self.get_object_count(cloudwatch_client, bucket_name)
             size = self.get_object_total_size(cloudwatch_client, bucket_name)
