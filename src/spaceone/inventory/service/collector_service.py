@@ -88,7 +88,6 @@ class CollectorService(BaseService):
             for future in concurrent.futures.as_completed(future_executors):
                 for result in future.result():
                     try:
-                        _LOGGER.debug(f"[collector_service] {result}")
                         if getattr(result, 'resource', None) and getattr(result.resource, 'region_code', None):
                             collected_region = self.get_region_from_result(result.resource.region_code)
 
