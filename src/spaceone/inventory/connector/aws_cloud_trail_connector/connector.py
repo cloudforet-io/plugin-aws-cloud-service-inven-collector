@@ -27,7 +27,7 @@ class CloudTrailConnector(SchematicAWSConnector):
             resources.extend(self.set_cloud_service_types())
 
             # merge data
-            for data, tags in self.request_data():
+            for data in self.request_data():
                 if getattr(data, 'resource_type', None) and data.resource_type == 'inventory.ErrorResource':
                     # Error Resource
                     resources.append(data)
@@ -39,14 +39,14 @@ class CloudTrailConnector(SchematicAWSConnector):
                             'account': self.account_id,
                             'reference': ReferenceModel(data.reference()),
                             'region_code': data.home_region,
-                            'tags': tags
+                            # 'tags': tags
                         })}))
 
         except Exception as e:
             resource_id = ''
             resources.append(self.generate_error('global', resource_id, e))
 
-        _LOGGER.debug(f'[get_resources][account_id: {self.account_id}] FINISHED: Route53 ({time.time() - start_time} sec)')
+        _LOGGER.debug(f'[get_resources][account_id: {self.account_id}] FINISHED: CloudTrail ({time.time() - start_time} sec)')
         return resources
 
     def request_data(self) -> List[Trail]:
@@ -55,7 +55,7 @@ class CloudTrailConnector(SchematicAWSConnector):
         response = self.client.describe_trails()
 
         trails = response.get('trailList', [])
-        tags = self._list_tags(trails)
+        # tags = self._list_tags(trails)
 
         for raw in trails:
             region_name = raw.get('HomeRegion', '')
@@ -73,7 +73,8 @@ class CloudTrailConnector(SchematicAWSConnector):
                     'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type, raw['TrailARN']),
                 })
 
-                yield Trail(raw, strict=False), self._match_tags(raw['TrailARN'], tags)
+                # yield Trail(raw, strict=False), self._match_tags(raw['TrailARN'], tags)
+                yield Trail(raw, strict=False)
 
             except Exception as e:
                 resource_id = raw.get('TrailARN', '')
@@ -83,6 +84,16 @@ class CloudTrailConnector(SchematicAWSConnector):
     def _get_event_selector(self, trail_arn):
         response = self.client.get_event_selectors(TrailName=trail_arn)
         return response.get('EventSelectors', [])
+
+    def _get_tags(self, trail, region_name):
+        # self.reset_region(region_name)
+        response = self.client.list_tags(ResourceIdList=[trail.get('TrailARN')])
+        for _resource_tag in response.get('ResourceTagList', []):
+            tags_list = _resource_tag.get('TagsList', [])
+            print(tags_list)
+            return self.convert_tags_to_dict_type(tags_list)
+
+        return {}
 
     def _list_tags(self, trails):
         tags = []
