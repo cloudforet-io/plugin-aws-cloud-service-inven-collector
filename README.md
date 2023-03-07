@@ -12,7 +12,7 @@
 
 **Plugin to collect AWS Cloud Services**
 
-> SpaceONE's [plugin-aws-cloud-service-inven-collector](https://github.com/spaceone-dev/plugin-aws-cloud-services) is a convenient tool to get cloud service data from AWS.
+> SpaceONE's [plugin-aws-cloud-service-inven-collector](https://github.com/cloudforet-io/plugin-aws-cloud-service-inven-collector) is a convenient tool to get cloud service data from AWS.
 
 
 Find us also at [Dockerhub](https://hub.docker.com/repository/docker/spaceone/plugin-aws-cloud-service-inven-collector)
