@@ -21,31 +21,31 @@
 * Fix bug: Typo (Lambda)
 
 ## Ver 1.14
-* Support CloudTrail for monitoring log [#453](https://github.com/spaceone-dev/plugin-aws-cloud-service-inven-collector/issues/453) 
+* Support CloudTrail for monitoring log [#453](https://github.com/cloudforet-io/plugin-aws-cloud-service-inven-collector/issues/453) 
 * Restructure CloudWatch metric info 
 
 ## Ver 1.13.13
-* Update exclude Region list for Collecting a Lightsail and DocumentDB [#446](https://github.com/spaceone-dev/plugin-aws-cloud-service-inven-collector/issues/446) [#447](https://github.com/spaceone-dev/plugin-aws-cloud-service-inven-collector/issues/447)
+* Update exclude Region list for Collecting a Lightsail and DocumentDB [#446](https://github.com/cloudforet-io/plugin-aws-cloud-service-inven-collector/issues/446) [#447](https://github.com/cloudforet-io/plugin-aws-cloud-service-inven-collector/issues/447)
 
 ## Ver 1.13.12
-* Add all storage type object size for S3  [#443](https://github.com/spaceone-dev/plugin-aws-cloud-service-inven-collector/issues/443)
+* Add all storage type object size for S3  [#443](https://github.com/cloudforet-io/plugin-aws-cloud-service-inven-collector/issues/443)
 
 ## Ver 1.13.11
-* Exclude Region for Collecting a Lightsail (ap-east-1) [#440](https://github.com/spaceone-dev/plugin-aws-cloud-service-inven-collector/issues/440)
-* Add sleep for avoid API Rate Limitation for collecting a API Gatway resource [#441](https://github.com/spaceone-dev/plugin-aws-cloud-service-inven-collector/issues/441)
+* Exclude Region for Collecting a Lightsail (ap-east-1) [#440](https://github.com/cloudforet-io/plugin-aws-cloud-service-inven-collector/issues/440)
+* Add sleep for avoid API Rate Limitation for collecting a API Gatway resource [#441](https://github.com/cloudforet-io/plugin-aws-cloud-service-inven-collector/issues/441)
 
 ## Ver 1.13.10
 * Update RDS Filter (add Postgresql Aurora)
 
 ## Ver 1.13.9
-* (Fix Bug) ECS collecting error when many services or tasks ([#431](https://github.com/spaceone-dev/plugin-aws-cloud-service-inven-collector/issues/431))
+* (Fix Bug) ECS collecting error when many services or tasks ([#431](https://github.com/cloudforet-io/plugin-aws-cloud-service-inven-collector/issues/431))
 
 ## Ver 1.13.8
-* Add Lightsail Service ([#414](https://github.com/spaceone-dev/plugin-aws-cloud-service-inven-collector/issues/414))
-* update Cloud Service Type (is_primary is True) in CertificateManager.Certificate ([#427](https://github.com/spaceone-dev/plugin-aws-cloud-service-inven-collector/issues/427))
+* Add Lightsail Service ([#414](https://github.com/cloudforet-io/plugin-aws-cloud-service-inven-collector/issues/414))
+* update Cloud Service Type (is_primary is True) in CertificateManager.Certificate ([#427](https://github.com/cloudforet-io/plugin-aws-cloud-service-inven-collector/issues/427))
 
 ## Ver 1.13.7
-* Add feature to convert service_code to what you want using options ([#417](https://github.com/spaceone-dev/plugin-aws-cloud-service-inven-collector/issues/417))
+* Add feature to convert service_code to what you want using options ([#417](https://github.com/cloudforet-io/plugin-aws-cloud-service-inven-collector/issues/417))
 
 ## Ver 1.13.1-6
 * Fix some bugs..!

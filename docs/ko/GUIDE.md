@@ -69,10 +69,10 @@ ARN에 대한 자세한 설명은 [AWS Documentation](https://docs.aws.amazon.co
 
 |Plugin                            | URL                                                                                              |
 |----------------------------------|--------------------------------------------------------------------------------------------------|
-| AWS Cloud Services collector     | https://github.com/spaceone-dev/plugin-aws-cloud-service-inven-collector#authentication-overview |
-| AWS EC2 Compute collector        | https://github.com/spaceone-dev/plugin-aws-ec2-inven-collector#authentication-overview           |
-| AWS Personal Health Dashboard collector | https://github.com/spaceone-dev/plugin-aws-phd-inven-collector#authen                            |
-| AWS Trusted Advisor collector    | https://github.com/spaceone-dev/plugin-aws-phd-inven-collector#authentication-overview           |
+| AWS Cloud Services collector     | https://github.com/cloudforet-io/plugin-aws-cloud-service-inven-collector#authentication-overview |
+| AWS EC2 Compute collector        | https://github.com/cloudforet-io/plugin-aws-ec2-inven-collector#authentication-overview           |
+| AWS Personal Health Dashboard collector | https://github.com/cloudforet-io/plugin-aws-phd-inven-collector#authen                            |
+| AWS Trusted Advisor collector    | https://github.com/cloudforet-io/plugin-aws-phd-inven-collector#authentication-overview           |
 
 <br>
 <br>
