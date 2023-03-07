@@ -1,7 +1,7 @@
 # Plugin AWS Cloud Services Inventory Collector Release Notes
 
 ## Ver 1.15.4
-* [When sorting IAM User's Access Key Age column, sort alphabetically, not numeric](https://github.com/cloudforet-io/plugin-aws-cloud-service-inven-collector/issues/18)
+* [Exclude Cloudtrail tags list](https://github.com/cloudforet-io/plugin-aws-cloud-service-inven-collector/issues/40)
 
 ## Ver 1.15.3
 * [When sorting IAM User's Access Key Age column, sort alphabetically, not numeric](https://github.com/cloudforet-io/plugin-aws-cloud-service-inven-collector/issues/18)
