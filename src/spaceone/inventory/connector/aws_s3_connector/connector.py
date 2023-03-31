@@ -3,6 +3,7 @@ import logging
 from typing import List
 from spaceone.core import utils
 from datetime import datetime, timedelta
+from botocore.exceptions import ClientError
 from spaceone.inventory.connector.aws_s3_connector.schema.data import Bucket, Versioning, ServerAccessLogging, \
     WebsiteHosting, ObjectLock, Encryption, TransferAcceleration, NotificationConfiguration, RequestPayment
 from spaceone.inventory.connector.aws_s3_connector.schema.resource import BucketResource, BucketResponse
@@ -70,7 +71,6 @@ class S3Connector(SchematicAWSConnector):
 
         for raw in response.get('Buckets', []):
             bucket_name = raw.get('Name')
-
             try:
                 region_name = self.get_bucket_location(bucket_name)
 
@@ -162,8 +162,10 @@ class S3Connector(SchematicAWSConnector):
             response = self.client.get_bucket_website(Bucket=bucket_name)
             del response['ResponseMetadata']
             return WebsiteHosting(response, strict=False)
-        except Exception as e:
-            _LOGGER.error(f'[S3 {bucket_name}: Get Website Hosting] {e}')
+        except ClientError as e:
+            if e.response['Error']['Code'] != 'NoSuchWebsiteConfiguration':
+                _LOGGER.error(f'[S3 {bucket_name}: Get Website Hosting] {e}')
+
             return None
 
     def get_encryption(self, bucket_name):
@@ -182,12 +184,13 @@ class S3Connector(SchematicAWSConnector):
         try:
             response = self.client.get_object_lock_configuration(Bucket=bucket_name)
 
-            if object_lock := response.get('ObjectLockConfiguration'):
+            if object_lock := response.get('NoSuchWebsiteConfiguration'):
                 return ObjectLock(object_lock, strict=False)
             else:
                 return None
-        except Exception as e:
-            _LOGGER.error(f'[S3 {bucket_name}: Get Object Lock] {e}')
+        except ClientError as e:
+            if e.response['Error']['Code'] != 'ObjectLockConfigurationNotFoundError':
+                _LOGGER.error(f'[S3 {bucket_name}: Get Object Locking] {e}')
             return None
 
     def get_transfer_acceleration(self, bucket_name):
@@ -236,8 +239,9 @@ class S3Connector(SchematicAWSConnector):
         try:
             response = self.client.get_bucket_tagging(Bucket=bucket_name)
             return self.convert_tags_to_dict_type(response.get('TagSet', []))
-        except Exception as e:
-            _LOGGER.error(f'[S3 {bucket_name}: Get Tags] {e}')
+        except ClientError as e:
+            if e.response['Error']['Code'] != 'NoSuchTagSet':
+                _LOGGER.error(f'[S3 {bucket_name}: Get Object Locking] {e}')
             return {}
 
     def get_bucket_public_access(self, bucket_name):
@@ -247,7 +251,6 @@ class S3Connector(SchematicAWSConnector):
             policy_status = response.get('PolicyStatus', {})
             public_access = policy_status.get('IsPublic', False)
         except Exception as e:
-            _LOGGER.error(f'[S3 {bucket_name}: Get Bucket Policy Status] {e}')
             public_access = self.get_bucket_acl_info(bucket_name)
 
         return "Public" if public_access else "Private"
