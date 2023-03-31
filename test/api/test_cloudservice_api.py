@@ -60,13 +60,12 @@ class TestCloudServiceAPIs(TestCase):
         print_json(v_info)
 
     def test_collect(self):
-        # options = {
-        #     'cloud_service_types': [
-        #         'ACM'
-        #     ]
-        # }
+        options = {
+            # 'custom_asset_url': 'http://xxxxx.spaceone.dev/aws'
+            'cloud_service_types': ['S3']
+        }
 
-        options = {}
+        # options = {}
         filter = {}
 
         res_stream = self.inventory.Collector.collect(
