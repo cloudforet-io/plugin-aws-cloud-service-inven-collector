@@ -1,5 +1,8 @@
 # Plugin AWS Cloud Services Inventory Collector Release Notes
 
+## Ver 1.15.5
+* Remove logger which not found from S3
+
 ## Ver 1.15.4
 * [Exclude Cloudtrail tags list](https://github.com/cloudforet-io/plugin-aws-cloud-service-inven-collector/issues/40)
 
