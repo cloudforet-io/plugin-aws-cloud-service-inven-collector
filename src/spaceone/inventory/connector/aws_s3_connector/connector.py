@@ -335,7 +335,7 @@ class S3Connector(SchematicAWSConnector):
 
             size_param = self._get_metric_param('BucketSizeBytes', size_dimensions)
             total_size += float(self.get_metric_data(cw_client, size_param))
-            time.sleep(0.3)
+            time.sleep(0.1)
 
         return total_size
 
