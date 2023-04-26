@@ -156,8 +156,11 @@ class ElastiCacheConnector(SchematicAWSConnector):
                 yield raw
 
     def list_tags(self, arn):
-        response = self.client.list_tags_for_resource(ResourceName=arn)
-        return self.convert_tags_to_dict_type(response.get('TagList', []))
+        try:
+            response = self.client.list_tags_for_resource(ResourceName=arn)
+            return self.convert_tags_to_dict_type(response.get('TagList', []))
+        except Exception as e:
+            return {}
 
     @staticmethod
     def get_memcached_nodes(cluster):
