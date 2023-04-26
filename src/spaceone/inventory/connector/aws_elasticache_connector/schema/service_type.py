@@ -19,6 +19,8 @@ cst_memcached._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
         EnumDyField.data_source('Status', 'data.cache_cluster_status', default_state={
             'safe': ['available'],
+            'warning': ['creating', 'modifying', 'deleting', 'snapshotting'],
+            'alert': ['create-failed', 'restore-failed']
         }),
         TextDyField.data_source('Nodes', 'data.num_cache_nodes'),
         TextDyField.data_source('Node Type', 'data.cache_node_type'),
@@ -95,7 +97,7 @@ cst_redis._metadata = CloudServiceTypeMeta.set_meta(
         EnumDyField.data_source('Status', 'data.status', default_state={
             'safe': ['available'],
             'warning': ['creating', 'modifying', 'deleting', 'snapshotting'],
-            'alert': ['create-failed']
+            'alert': ['create-failed', 'restore-failed']
         }),
         TextDyField.data_source('Shard', 'data.shard_count'),
         TextDyField.data_source('Nodes', 'data.node_count'),
