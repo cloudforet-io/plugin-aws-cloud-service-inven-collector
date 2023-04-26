@@ -1,5 +1,9 @@
 # Plugin AWS Cloud Services Inventory Collector Release Notes
 
+## Ver 1.15.8
+* Bug Fix: try except for ElastiCache (Memcached)
+* Update metadata for status display
+
 ## Ver 1.15.5
 * Remove logger which not found from S3
 
