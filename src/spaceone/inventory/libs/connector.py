@@ -68,9 +68,9 @@ class AWSConnector(BaseConnector):
             self.__setattr__(name, init_data())
         return self.__getattribute__(name)
 
-    def __init__(self, transaction, config={}, options={}, secret_data={}, region_id=None, zone_id=None, pool_id=None,
+    def __init__(self, config={}, options={}, secret_data={}, region_id=None, zone_id=None, pool_id=None,
                  filter={}, **kwargs):
-        super().__init__(transaction, config)
+        super().__init__(config)
         self.options = options
         self.secret_data = secret_data
         self.region_id = region_id
