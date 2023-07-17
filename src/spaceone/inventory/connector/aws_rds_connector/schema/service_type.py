@@ -47,7 +47,13 @@ cst_rds_database._metadata = CloudServiceTypeMeta.set_meta(
         TextDyField.data_source('ARN', 'data.arn', options={
             'is_optional': True
         }),
-        TextDyField.data_source('Auto Minor Version Upgrade', 'data.cluster.auto_minor_version_upgrade', options={
+        TextDyField.data_source('Auto Minor Version Upgrade', 'data.auto_minor_version_upgrade', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Preferred Maintenance Window', 'data.preferred_maintenance_window', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Deletion Protection', 'data.deletion_protection', options={
             'is_optional': True
         }),
         TextDyField.data_source('AWS Account ID', 'account', options={
@@ -92,6 +98,8 @@ cst_rds_database._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Cluster Port', key='data.cluster.port', data_type='integer'),
         SearchField.set(name='Instance Endpoint', key='data.instance.endpoint.address'),
         SearchField.set(name='Auto Minor Version Upgrade', key='data.cluster.auto_minor_version_upgrade'),
+        SearchField.set(name='Preferred Maintenance Window', key='data.preferred_maintenance_window'),
+        SearchField.set(name='Deletion Protection', key='data.deletion_protection'),
         SearchField.set(name='Instance Port', key='data.instance.endpoint.port', data_type='integer'),
         SearchField.set(name='AWS Account ID', key='account'),
     ],
@@ -264,12 +272,15 @@ cst_rds_instance._metadata = CloudServiceTypeMeta.set_meta(
                             "storage-full": {'label': 'Storage Full', 'icon': {'color': 'red.500'}},
                         }),
         SearchField.set(name='Engine', key='data.engine'),
+        SearchField.set(name='Engine Version', key='data.engine_version'),
         SearchField.set(name='Instance Class', key='data.db_instance_class'),
         SearchField.set(name='Availability Zone', key='data.availability_zone'),
         SearchField.set(name='Multi AZ', key='data.multi_az', data_type='boolean'),
         SearchField.set(name='Endpoint Address', key='data.endpoint.address'),
         SearchField.set(name='Endpoint Port', key='data.endpoint.port', data_type='integer'),
         SearchField.set(name='Auto Minor Version Upgrade', key='data.auto_minor_version_upgrade'),
+        SearchField.set(name='Deletion Protection', key='data.deletion_protection'),
+        SearchField.set(name='Preferred Maintenance Window', key='data.preferred_maintenance_window'),
         SearchField.set(name='AWS Account ID', key='account'),
     ],
     widget=[
