@@ -155,7 +155,10 @@ cst_snapshot._metadata = CloudServiceTypeMeta.set_meta(
         }),
         TextDyField.data_source('AWS Account ID', 'account', options={
             'is_optional': True
-        })
+        }),
+        TextDyField.data_source('Description', 'data.description', options={
+            'is_optional': True
+        }),
     ],
     search=[
         SearchField.set(name='Snapshot ID', key='data.snapshot_id'),
@@ -167,6 +170,7 @@ cst_snapshot._metadata = CloudServiceTypeMeta.set_meta(
                             'error': {'label': 'error', 'icon': {'color': 'red.500'}},
                         }),
         SearchField.set(name='Size (GB)', key='instance_size', data_type='integer'),
+        SearchField.set(name='Description', key='data.description'),
         SearchField.set(name='AWS Account ID', key='account')
     ],
     widget=[

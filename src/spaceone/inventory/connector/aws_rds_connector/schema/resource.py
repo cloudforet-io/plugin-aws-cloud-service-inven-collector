@@ -20,6 +20,7 @@ cluster_summary = ItemDynamicLayout.set_fields('Summary', fields=[
         'alert': ['failed', 'inaccessible-encryption-credentials', 'restore-error', 'stopped', 'storage-full']
     }),
     TextDyField.data_source('Engine', 'data.engine'),
+    TextDyField.data_source('Engine Version', 'data.cluster.engine_version'),
     TextDyField.data_source('Class', 'data.size'),
     TextDyField.data_source('Region & AZ', 'data.availability_zone'),
 ])
@@ -51,7 +52,8 @@ cluster_conf = ItemDynamicLayout.set_fields('Configuration', fields=[
     EnumDyField.data_source('Encrypted', 'data.cluster.storage_encrypted', default_badge={
         'indigo.500': ['true'], 'coral.600': ['false']
     }),
-    TextDyField.data_source('KSM Key', 'data.cluster.kms_key_id'),
+    TextDyField.data_source('KMS Key', 'data.cluster.kms_key_id'),
+    TextDyField.data_source('Auto Minor Version Upgrade', 'data.cluster.auto_minor_version_upgrade'),
     DateTimeDyField.data_source('Created Time', 'data.cluster.cluster_create_time')
 ])
 
@@ -78,6 +80,7 @@ Database (Role: Instance)
 cluster_instance_summary = ItemDynamicLayout.set_fields('Summary', fields=[
     TextDyField.data_source('DB Identifier', 'data.instance.db_instance_identifier'),
     TextDyField.data_source('Engine', 'data.instance.engine'),
+    TextDyField.data_source('Engine Version', 'data.instance.engine_version'),
     EnumDyField.data_source('Status', 'data.instance.db_instance_status', default_state={
         'safe': ['available'],
         'warning': ['creating', 'deleting', 'maintenance', 'modifying', 'rebooting',
@@ -141,6 +144,7 @@ cluster_instance_conf = ItemDynamicLayout.set_fields('Configuraiton', fields=[
     EnumDyField.data_source('Performance Insights enabled', 'data.instance.performance_insights_enabled', default_badge={
         'indigo.500': ['true'], 'coral.600': ['false']
     }),
+    TextDyField.data_source('Auto Minor Version Upgrade', 'data.auto_minor_version_upgrade'),
     DateTimeDyField.data_source('Created Time', 'data.instance.instance_create_time'),
 ])
 

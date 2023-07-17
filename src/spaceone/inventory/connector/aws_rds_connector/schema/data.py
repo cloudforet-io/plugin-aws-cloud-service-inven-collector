@@ -394,6 +394,7 @@ class ClusterDomainMemberships(Model):
 
 
 class Cluster(Model):
+    auto_minor_version_upgrade = BooleanType(deserialize_from="AutoMinorVersionUpgrade", serialize_when_none=False)
     allocated_storage = IntType(deserialize_from="AllocatedStorage", serialize_when_none=False)
     availability_zones = ListType(StringType, deserialize_from="AvailabilityZones", serialize_when_none=False)
     backup_retention_period = IntType(deserialize_from="BackupRetentionPeriod", serialize_when_none=False)
@@ -479,6 +480,10 @@ class Database(AWSCloudService):
     status = StringType()
     role = StringType(choices=('cluster', 'instance'))
     engine = StringType()
+    engine_version = StringType()
+    auto_minor_version_upgrade = BooleanType()
+    deletion_protection = BooleanType()
+    preferred_maintenance_window = StringType()
     availability_zone = StringType()
     size = StringType()
     multi_az = BooleanType()
