@@ -1,9 +1,14 @@
 name: "[Push] Build dev"
 
 on:
+  push:
+    branches:
+      - master
+    paths-ignore:
+      - '.github/**'
+      - 'src/VERSION'
+      - 'docs/**'
   workflow_dispatch:
-  repository_dispatch:
-    types: [master_push]
 
 env:
   SLACK_WEBHOOK_URL: ${{secrets.SLACK_WEBHOOK_URL}}
@@ -57,12 +62,10 @@ jobs:
             status: ${{job.status}}
             fields: repo,workflow,job
             author_name: Github Action Slack
-            
+
   scan:
-    needs: [versioning, docker]
+    needs: docker
     runs-on: ubuntu-20.04
-    env:
-      VERSION: ${{ needs.versioning.outputs.version }}
     steps:
       - name: Run Trivy vulnerability scanner
         id: trivy-scan
@@ -108,7 +111,7 @@ jobs:
                   "fields": [
                     {
                       "type": "mrkdwn",
-                      "text": "*Image:*\npyengine/${{ github.event.repository.name }}:${{ env.VERSION }}"
+                      "text": "*Image:*\n$pyengine/${{ github.event.repository.name }}:${{ env.VERSION }}"
                     },
                     {
                       "type": "mrkdwn",
