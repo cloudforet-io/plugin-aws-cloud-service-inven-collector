@@ -32,6 +32,9 @@ cst_rds_database._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
         TextDyField.data_source('Role', 'data.role'),
         TextDyField.data_source('Engine', 'data.engine'),
+        TextDyField.data_source('Engine Version', 'data.engine_version', options={
+            'is_optional': True
+        }),
         EnumDyField.data_source('Status', 'data.status', default_state={
             'safe': ['available'],
             'warning': ['creating', 'deleting', 'maintenance', 'modifying', 'rebooting',
@@ -42,6 +45,9 @@ cst_rds_database._metadata = CloudServiceTypeMeta.set_meta(
         TextDyField.data_source('Region & AZ', 'data.availability_zone'),
         TextDyField.data_source('Multi-AZ', 'data.multi_az'),
         TextDyField.data_source('ARN', 'data.arn', options={
+            'is_optional': True
+        }),
+        TextDyField.data_source('Auto Minor Version Upgrade', 'data.cluster.auto_minor_version_upgrade', options={
             'is_optional': True
         }),
         TextDyField.data_source('AWS Account ID', 'account', options={
@@ -75,6 +81,7 @@ cst_rds_database._metadata = CloudServiceTypeMeta.set_meta(
                             "storage-full": {'label': 'Storage Full', 'icon': {'color': 'red.500'}},
                         }),
         SearchField.set(name='Engine', key='data.engine'),
+        SearchField.set(name='Engine Version', key='data.engine_version'),
         SearchField.set(name='Cluster member counts', key='data.cluster.db_cluster_member_counts'),
         SearchField.set(name='Instance Class', key='data.instance.db_instance_class'),
         SearchField.set(name='Availability Zone', key='data.availability_zone'),
@@ -84,6 +91,7 @@ cst_rds_database._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Cluster Custom Endpoint', key='data.cluster.custom_endpoints'),
         SearchField.set(name='Cluster Port', key='data.cluster.port', data_type='integer'),
         SearchField.set(name='Instance Endpoint', key='data.instance.endpoint.address'),
+        SearchField.set(name='Auto Minor Version Upgrade', key='data.cluster.auto_minor_version_upgrade'),
         SearchField.set(name='Instance Port', key='data.instance.endpoint.port', data_type='integer'),
         SearchField.set(name='AWS Account ID', key='account'),
     ],
@@ -261,6 +269,7 @@ cst_rds_instance._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Multi AZ', key='data.multi_az', data_type='boolean'),
         SearchField.set(name='Endpoint Address', key='data.endpoint.address'),
         SearchField.set(name='Endpoint Port', key='data.endpoint.port', data_type='integer'),
+        SearchField.set(name='Auto Minor Version Upgrade', key='data.auto_minor_version_upgrade'),
         SearchField.set(name='AWS Account ID', key='account'),
     ],
     widget=[
