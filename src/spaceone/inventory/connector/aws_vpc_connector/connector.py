@@ -240,16 +240,27 @@ class VPCConnector(SchematicAWSConnector):
     def request_peering_connection_data(self, region_name):
         self.cloud_service_type = 'PeeringConnection'
         cloudtrail_resource_type = 'AWS::EC2::VPCPeeringConnection'
+        vpc_peering_connections = []
 
-        response = {}
         if self.include_default:
             response = self.client.describe_vpc_peering_connections()
+            vpc_peering_connections = response.get('VpcPeeringConnections', [])
         elif len(self.vpc_ids) > 0:
-            _filters = [{'Name': 'accepter-vpc-info.vpc-id', 'Values': self.vpc_ids},
-                        {'Name': 'requester-vpc-info.vpc-id', 'Values': self.vpc_ids}]
-            response = self.client.describe_vpc_peering_connections(Filters=_filters)
+            accepter_response = self.client.describe_vpc_peering_connections(
+                Filters=[{'Name': 'accepter-vpc-info.vpc-id', 'Values': self.vpc_ids}])
 
-        for peerx in response.get('VpcPeeringConnections', []):
+            vpc_peering_connections = accepter_response.get('VpcPeeringConnections', [])
+            peerx_ids = [_peerx.get('VpcPeeringConnectionId') for _peerx in
+                         accepter_response.get('VpcPeeringConnections', []) ]
+
+            requester_response = self.client.describe_vpc_peering_connections(
+                Filters=[{'Name': 'requester-vpc-info.vpc-id', 'Values': self.vpc_ids}])
+
+            for _peerx in requester_response.get('VpcPeeringConnections', []):
+                if _peerx.get('VpcPeeringConnectionId') not in peerx_ids:
+                    vpc_peering_connections.append(_peerx)
+
+        for peerx in vpc_peering_connections:
             try:
                 peerx.update({
                     'arn': self.generate_arn(service=self.service_name, region=region_name, account_id=self.account_id,
@@ -682,7 +693,6 @@ class VPCConnector(SchematicAWSConnector):
         cloudtrail_resource_type = 'AWS::EC2::VPNConnection'
 
         response = self.client.describe_vpn_connections()
-
         for vpn_connection in response.get('VpnConnections', []):
             try:
                 vpn_connection.update({
