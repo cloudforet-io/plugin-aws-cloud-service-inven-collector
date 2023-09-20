@@ -37,12 +37,16 @@ class ELBConnector(SchematicAWSConnector):
         }]
 
         for region_name in self.region_names:
-            self.reset_region(region_name)
-            self.target_groups = []
-            self.load_balancers = []
+            try:
+                self.reset_region(region_name)
+                self.target_groups = []
+                self.load_balancers = []
 
-            for collect_resource in collect_resources:
-                resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
+                for collect_resource in collect_resources:
+                    resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
+            except Exception as e:
+                error_resource_response = self.generate_error(region_name, '', e)
+                resources.append(error_resource_response)
 
         _LOGGER.debug(f'[get_resources][account_id: {self.account_id}] FINISHED: ELB ({time.time() - start_time} sec)')
         return resources

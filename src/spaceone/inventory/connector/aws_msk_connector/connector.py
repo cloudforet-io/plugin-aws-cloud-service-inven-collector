@@ -41,13 +41,17 @@ class MSKConnector(SchematicAWSConnector):
         resources.extend(self.set_cloud_service_types())
 
         for region_name in self.region_names:
-            if region_name in EXCLUDE_REGION:
-                continue
-                
-            self.reset_region(region_name)
+            try:
+                if region_name in EXCLUDE_REGION:
+                    continue
 
-            for collect_resource in collect_resources:
-                resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
+                self.reset_region(region_name)
+
+                for collect_resource in collect_resources:
+                    resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
+            except Exception as e:
+                error_resource_response = self.generate_error(region_name, '', e)
+                resources.append(error_resource_response)
 
         _LOGGER.debug(f'[get_resources][account_id: {self.account_id}] FINISHED: MSK ({time.time() - start_time} sec)')
         return resources

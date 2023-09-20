@@ -25,28 +25,32 @@ class ElastiCacheConnector(SchematicAWSConnector):
         resources.extend(self.set_cloud_service_types())
 
         for region_name in self.region_names:
-            self.reset_region(region_name)
-            cache_clusters = [cluster for cluster in self.describe_clusters()]
+            try:
+                self.reset_region(region_name)
+                cache_clusters = [cluster for cluster in self.describe_clusters()]
 
-            for memcached_vo in self.get_memcached_data(region_name, cache_clusters):
-                if getattr(memcached_vo, 'resource_type', None) and memcached_vo.resource_type == 'inventory.ErrorResource':
-                    # Error Resource
-                    resources.append(memcached_vo)
-                else:
-                    if getattr(memcached_vo, 'set_cloudwatch', None):
-                        memcached_vo.cloudwatch = CloudWatchModel(memcached_vo.set_cloudwatch(region_name))
+                for memcached_vo in self.get_memcached_data(region_name, cache_clusters):
+                    if getattr(memcached_vo, 'resource_type', None) and memcached_vo.resource_type == 'inventory.ErrorResource':
+                        # Error Resource
+                        resources.append(memcached_vo)
+                    else:
+                        if getattr(memcached_vo, 'set_cloudwatch', None):
+                            memcached_vo.cloudwatch = CloudWatchModel(memcached_vo.set_cloudwatch(region_name))
 
-                    resources.append(MemcachedResponse({'resource': memcached_vo}))
+                        resources.append(MemcachedResponse({'resource': memcached_vo}))
 
-            for redis_vo in self.get_redis_data(region_name, cache_clusters):
-                if getattr(redis_vo, 'resource_type', None) and redis_vo.resource_type == 'inventory.ErrorResource':
-                    # Error Resource
-                    resources.append(redis_vo)
-                else:
-                    if getattr(redis_vo, 'set_cloudwatch', None):
-                        redis_vo.cloudwatch = CloudWatchModel(redis_vo.set_cloudwatch(region_name))
+                for redis_vo in self.get_redis_data(region_name, cache_clusters):
+                    if getattr(redis_vo, 'resource_type', None) and redis_vo.resource_type == 'inventory.ErrorResource':
+                        # Error Resource
+                        resources.append(redis_vo)
+                    else:
+                        if getattr(redis_vo, 'set_cloudwatch', None):
+                            redis_vo.cloudwatch = CloudWatchModel(redis_vo.set_cloudwatch(region_name))
 
-                    resources.append(RedisResponse({'resource': redis_vo}))
+                        resources.append(RedisResponse({'resource': redis_vo}))
+            except Exception as e:
+                error_resource_response = self.generate_error(region_name, '', e)
+                resources.append(error_resource_response)
 
         _LOGGER.debug(f'[get_resources][account_id: {self.account_id}] FINISHED: ElastiCache ({time.time() - start_time} sec)')
         return resources

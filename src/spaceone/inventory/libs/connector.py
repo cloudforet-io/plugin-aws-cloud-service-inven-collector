@@ -50,7 +50,6 @@ def get_session(secret_data, region_name):
             'aws_session_token': credentials['SessionToken']
         }
         session = Session(**assume_role_params)
-
     return session
 
 

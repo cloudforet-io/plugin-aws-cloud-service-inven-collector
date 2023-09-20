@@ -30,35 +30,39 @@ class DocumentDBConnector(SchematicAWSConnector):
         resources.extend(self.set_cloud_service_types())
 
         for region_name in self.region_names:
-            if region_name in EXCLUDE_REGION:
-                continue
+            try:
+                if region_name in EXCLUDE_REGION:
+                    continue
 
-            self.reset_region(region_name)
+                self.reset_region(region_name)
 
-            collect_resources = [
-                {
-                    'request_method': self.request_parameter_group_data,
-                    'resource': ParameterGroupResource,
-                    'response_schema': ParameterGroupResponse
-                },
-                {
-                    'request_method': self.request_subnet_group_data,
-                    'resource': SubnetGroupResource,
-                    'response_schema': SubnetGroupResponse
-                },
-                {
-                    'request_method': self.request_cluster_data,
-                    'resource': ClusterResource,
-                    'response_schema': ClusterResponse,
-                    'kwargs': {
-                        'raw_instances': self._describe_instances(),
-                        'raw_snapshots': self._describe_snapshots()
-                    }
-                },
-            ]
+                collect_resources = [
+                    {
+                        'request_method': self.request_parameter_group_data,
+                        'resource': ParameterGroupResource,
+                        'response_schema': ParameterGroupResponse
+                    },
+                    {
+                        'request_method': self.request_subnet_group_data,
+                        'resource': SubnetGroupResource,
+                        'response_schema': SubnetGroupResponse
+                    },
+                    {
+                        'request_method': self.request_cluster_data,
+                        'resource': ClusterResource,
+                        'response_schema': ClusterResponse,
+                        'kwargs': {
+                            'raw_instances': self._describe_instances(),
+                            'raw_snapshots': self._describe_snapshots()
+                        }
+                    },
+                ]
 
-            for collect_resource in collect_resources:
-                resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
+                for collect_resource in collect_resources:
+                    resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
+            except Exception as e:
+                error_resource_response = self.generate_error(region_name, '', e)
+                resources.append(error_resource_response)
 
         _LOGGER.debug(f'[get_resources][account_id: {self.account_id}] FINISHED: DocumentDB ({time.time() - start_time} sec)')
         return resources
