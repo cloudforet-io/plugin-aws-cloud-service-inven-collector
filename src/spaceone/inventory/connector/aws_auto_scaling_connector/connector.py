@@ -50,12 +50,16 @@ class AutoScalingConnector(SchematicAWSConnector):
         ]
 
         for region_name in self.region_names:
-            self._launch_configurations = []
-            self._launch_templates = []
-            self.reset_region(region_name)
+            try:
+                self._launch_configurations = []
+                self._launch_templates = []
+                self.reset_region(region_name)
 
-            for collect_resource in collect_resources:
-                resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
+                for collect_resource in collect_resources:
+                    resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
+            except Exception as e:
+                error_resource_response = self.generate_error(region_name, '', e)
+                resources.append(error_resource_response)
 
         _LOGGER.debug(
             f'[get_resources][account_id: {self.account_id}] FINISHED: Auto Scaling ({time.time() - start_time} sec)')

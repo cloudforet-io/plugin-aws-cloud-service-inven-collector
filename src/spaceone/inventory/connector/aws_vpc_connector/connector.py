@@ -145,28 +145,32 @@ class VPCConnector(SchematicAWSConnector):
 
         # Region
         for region_name in self.region_names:
-            self.reset_region(region_name)
+            try:
+                self.reset_region(region_name)
 
-            self.customer_gateways = []
-            self.transit_gateways = []
-            self.vpn_gateways = []
-            self.vpn_connections = []
-            self.peering_connections = []
-            self.nat_gateways = []
-            self.network_acls = []
-            self.endpoints = []
-            self.egress_only_internet_gateways = []
-            self.internet_gateways = []
-            self.route_tables = []
-            self.subnets = []
-            self.dhcp_options = []
+                self.customer_gateways = []
+                self.transit_gateways = []
+                self.vpn_gateways = []
+                self.vpn_connections = []
+                self.peering_connections = []
+                self.nat_gateways = []
+                self.network_acls = []
+                self.endpoints = []
+                self.egress_only_internet_gateways = []
+                self.internet_gateways = []
+                self.route_tables = []
+                self.subnets = []
+                self.dhcp_options = []
 
-            # VPC
-            self.vpcs = self.list_vpcs()
-            self.vpc_ids = [vpc.get('VpcId') for vpc in self.vpcs]
+                # VPC
+                self.vpcs = self.list_vpcs()
+                self.vpc_ids = [vpc.get('VpcId') for vpc in self.vpcs]
 
-            for collect_resource in collect_resources:
-                resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
+                for collect_resource in collect_resources:
+                    resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
+            except Exception as e:
+                error_resource_response = self.generate_error(region_name, '', e)
+                resources.append(error_resource_response)
 
         _LOGGER.debug(f'[get_resources][account_id: {self.account_id}] FINISHED: VPC ({time.time() - start_time} sec)')
         return resources

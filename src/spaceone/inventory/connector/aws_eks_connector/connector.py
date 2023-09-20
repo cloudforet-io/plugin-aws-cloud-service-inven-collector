@@ -35,22 +35,26 @@ class EKSConnector(SchematicAWSConnector):
         }
 
         for region_name in self.region_names:
-            self.reset_region(region_name)
-            resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
+            try:
+                self.reset_region(region_name)
+                resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
 
-            # For Node Group
-            for node_group_vo in self.node_groups:
-                resources.append(NodeGroupResponse(
-                    {'resource': NodeGroupResource({
-                        'name': node_group_vo.nodegroup_name,
-                        'launched_at': self.datetime_to_iso8601(node_group_vo.created_at),
-                        'data': node_group_vo,
-                        'tags': node_group_vo.tags,
-                        'region_code': region_name,
-                        'reference': ReferenceModel(node_group_vo.reference(region_name))})}
-                ))
+                # For Node Group
+                for node_group_vo in self.node_groups:
+                    resources.append(NodeGroupResponse(
+                        {'resource': NodeGroupResource({
+                            'name': node_group_vo.nodegroup_name,
+                            'launched_at': self.datetime_to_iso8601(node_group_vo.created_at),
+                            'data': node_group_vo,
+                            'tags': node_group_vo.tags,
+                            'region_code': region_name,
+                            'reference': ReferenceModel(node_group_vo.reference(region_name))})}
+                    ))
 
-            self.node_groups = []
+                self.node_groups = []
+            except Exception as e:
+                error_resource_response = self.generate_error(region_name, '', e)
+                resources.append(error_resource_response)
 
         _LOGGER.debug(f'[get_resources][account_id: {self.account_id}] FINISHED: EKS ({time.time() - start_time} sec)')
         return resources

@@ -86,19 +86,23 @@ class LightsailConnector(SchematicAWSConnector):
         resources.extend(self.set_cloud_service_types())
 
         for region_name in self.region_names:
-            if region_name in EXCLUDE_REGION:
-                continue
+            try:
+                if region_name in EXCLUDE_REGION:
+                    continue
 
-            self.reset_region(region_name)
+                self.reset_region(region_name)
 
-            for collect_resource in collect_resources:
-                # domain/distribution resources are global
-                if (collect_resource['request_method'] == self.request_domain_data) or (collect_resource['request_method'] == self.request_distribution_data):
-                    # Global resource query api to us-east-1 region
-                    if region_name == 'us-east-1':
+                for collect_resource in collect_resources:
+                    # domain/distribution resources are global
+                    if (collect_resource['request_method'] == self.request_domain_data) or (collect_resource['request_method'] == self.request_distribution_data):
+                        # Global resource query api to us-east-1 region
+                        if region_name == 'us-east-1':
+                            resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
+                    else:
                         resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
-                else:
-                    resources.extend(self.collect_data_by_region(self.service_name, region_name, collect_resource))
+            except Exception as e:
+                error_resource_response = self.generate_error(region_name, '', e)
+                resources.append(error_resource_response)
 
         _LOGGER.debug(f'[get_resources][account_id: {self.account_id}] FINISHED: Lightsail ({time.time() - start_time} sec)')
         return resources
