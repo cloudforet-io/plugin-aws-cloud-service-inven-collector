@@ -21,7 +21,7 @@ with open("VERSION", "r") as f:
     f.close()
 
 setup(
-    name="grpc-aws-cloudservices",
+    name="plugin-aws-cloudservices",
     version=VERSION,
     description="AWS cloud service inventory collector",
     long_description="",
@@ -32,7 +32,7 @@ setup(
     packages=find_packages(),
     install_requires=[
         "spaceone-core",
-        "spaceone-interface",
+        "spaceone-api",
         "boto3",
         "schematics",
         "arnparse",
