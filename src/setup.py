@@ -16,30 +16,28 @@
 
 from setuptools import setup, find_packages
 
-with open('VERSION', 'r') as f:
+with open("VERSION", "r") as f:
     VERSION = f.read().strip()
     f.close()
 
 setup(
-    name='plugin-aws-cloudservices',
+    name="grpc-aws-cloudservices",
     version=VERSION,
-    description='AWS cloud service inventory collector',
-    long_description='',
-    url='https://www.spaceone.dev/',
-    author='MEGAZONE SpaceONE Team',
-    author_email='admin@spaceone.dev',
-    license='Apache License 2.0',
+    description="AWS cloud service inventory collector",
+    long_description="",
+    url="https://www.spaceone.dev/",
+    author="MEGAZONE SpaceONE Team",
+    author_email="admin@spaceone.dev",
+    license="Apache License 2.0",
     packages=find_packages(),
     install_requires=[
-        'spaceone-core',
-        'spaceone-api',
-        'boto3',
-        'schematics',
-        'arnparse',
-        'moto',
+        "spaceone-core",
+        "spaceone-interface",
+        "boto3",
+        "schematics",
+        "arnparse",
+        "moto",
     ],
-    package_data={
-        'spaceone': ['inventory/connector/*/schema/widget/*.yaml']
-    },
+    package_data={"spaceone": ["inventory/connector/*/schema/widget/*.yaml"]},
     zip_safe=False,
 )
