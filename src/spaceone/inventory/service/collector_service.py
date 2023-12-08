@@ -31,7 +31,7 @@ class CollectorService(BaseService):
         }
         return {"metadata": capability}
 
-    @transaction
+    @transaction()
     @check_required(["options", "secret_data"])
     def verify(self, params):
         """
@@ -70,7 +70,7 @@ class CollectorService(BaseService):
 
         return execute_managers
 
-    @transaction
+    @transaction()
     @check_required(["options", "secret_data", "filter"])
     def collect(self, params):
         """
