@@ -15,8 +15,9 @@ from spaceone.inventory.conf.cloud_service_conf import *
 _LOGGER = logging.getLogger(__name__)
 
 
-@authentication_handler
 class CollectorService(BaseService):
+    resource = "Collector"
+
     def __init__(self, metadata):
         super().__init__(metadata)
 
