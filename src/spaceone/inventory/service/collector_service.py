@@ -15,8 +15,9 @@ from spaceone.inventory.conf.cloud_service_conf import *
 _LOGGER = logging.getLogger(__name__)
 
 
-@authentication_handler
 class CollectorService(BaseService):
+    resource = "Collector"
+
     def __init__(self, metadata):
         super().__init__(metadata)
 
@@ -31,7 +32,7 @@ class CollectorService(BaseService):
         }
         return {"metadata": capability}
 
-    @transaction()
+    @transaction
     @check_required(["options", "secret_data"])
     def verify(self, params):
         """
@@ -70,7 +71,7 @@ class CollectorService(BaseService):
 
         return execute_managers
 
-    @transaction()
+    @transaction
     @check_required(["options", "secret_data", "filter"])
     def collect(self, params):
         """
