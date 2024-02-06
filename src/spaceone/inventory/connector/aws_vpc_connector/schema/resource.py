@@ -46,7 +46,7 @@ vpc = ItemDynamicLayout.set_fields(
         ListDyField.data_source(
             "IPv4 CIDR",
             "data.cidr_blocks",
-            default_badge={"sub_key": "cidr_block"},
+            default_badge={"sub_key": "cidr_block", "delimiter": "<br>"},
         ),
         ListDyField.data_source(
             "IPv6 CIDR",
