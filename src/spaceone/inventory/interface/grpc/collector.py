@@ -38,8 +38,6 @@ class Collector(BaseAPI, collector_pb2_grpc.CollectorServicer):
         )
 
         params = collector_svc.add_account_region_params(params)
-        print("IS IT HERE?")
-        print(params.get("regions"))
 
         with self.locator.get_service("CollectorService", metadata) as collector_svc:
             for resource in collector_svc.collect(params):

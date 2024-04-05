@@ -51,8 +51,6 @@ class DocumentDBConnector(SchematicAWSConnector):
         start_time = time.time()
 
         resources.extend(self.set_cloud_service_types())
-        print("GIVE ME ALL REGIONS!")
-        print(self.region_names)
         for region_name in self.region_names:
             try:
                 if region_name in EXCLUDE_REGION:

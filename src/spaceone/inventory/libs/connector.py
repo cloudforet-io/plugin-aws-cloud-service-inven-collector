@@ -271,9 +271,6 @@ class SchematicAWSConnector(AWSConnector):
         return error_resource_response
 
     def set_cloud_service_types(self):
-        print(self.cloud_service_types)
-        for cst in self.cloud_service_types:
-            print(cst.resource)
         if "service_code_mappers" in self.options:
             svc_code_maps = self.options["service_code_mappers"]
 

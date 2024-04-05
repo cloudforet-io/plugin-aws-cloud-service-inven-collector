@@ -94,7 +94,6 @@ class CloudTrailConnector(SchematicAWSConnector):
                 if raw["HasInsightSelectors"]:
                     insight_selectors = self._get_insight_selectors(raw["TrailARN"])
                     if insight_selectors is not None:
-                        print(insight_selectors)
                         raw["insight_selectors"] = InsightSelector(
                             insight_selectors, strict=False
                         )
@@ -129,7 +128,6 @@ class CloudTrailConnector(SchematicAWSConnector):
         response = self.client.list_tags(ResourceIdList=[trail.get("TrailARN")])
         for _resource_tag in response.get("ResourceTagList", []):
             tags_list = _resource_tag.get("TagsList", [])
-            print(tags_list)
             return self.convert_tags_to_dict_type(tags_list)
 
         return {}
