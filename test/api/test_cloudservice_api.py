@@ -64,7 +64,7 @@ class TestCloudServiceAPIs(TestCase):
     def test_collect(self):
         options = {
             # 'custom_asset_url': 'http://xxxxx.spaceone.dev/aws'
-            "cloud_service_types": ["CloudTrail"]
+            "cloud_service_types": ["Lightsail"]
         }
 
         # options = {}
