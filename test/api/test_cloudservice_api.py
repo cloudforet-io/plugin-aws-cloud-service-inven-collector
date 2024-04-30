@@ -64,7 +64,7 @@ class TestCloudServiceAPIs(TestCase):
     def test_collect(self):
         options = {
             # 'custom_asset_url': 'http://xxxxx.spaceone.dev/aws'
-            "cloud_service_types": ["Lightsail"]
+            "cloud_service_types": ["EC2"]
         }
 
         # options = {}
@@ -77,11 +77,11 @@ class TestCloudServiceAPIs(TestCase):
 
         cnt = 0
         for res in res_stream:
-            # p = "./test_collect_{}.json".format(cnt)
-            # with open(p, "w") as f:
-            #     json.dump(
-            #         MessageToDict(res, preserving_proto_field_name=True), f, indent=2
-            #     )
-            # cnt += 1
+            p = "./test_collect_{}.json".format(cnt)
+            with open(p, "w") as f:
+                json.dump(
+                    MessageToDict(res, preserving_proto_field_name=True), f, indent=2
+                )
+            cnt += 1
             # # self.assertIsNotNone(res)
-            print_json(res)
+            # print_json(res)
