@@ -234,11 +234,75 @@ REGION_INFO = {
     },
     "us-gov-east-1": {
         "name": "AWS GovCloud (US-East)",
-        "tags": {"continent": "north_america"},
+        "tags": {"continent": "south_america"},
     },
     "us-gov-west-1": {
         "name": "AWS GovCloud (US)",
-        "tags": {"continent": "north_america"},
+        "tags": {"continent": "south_america"},
+    },
+    "ap-south-2": {
+        "name": "Asia Pacific (Mumbai)",
+        "tags": {
+            "latitude": "17.3850",
+            "longitude": "78.4867",
+            "continent": "asia_pacific",
+        },
+    },
+    "ap-southeast-4": {
+        "name": "Asia Pacific (Melbourne)",
+        "tags": {
+            "latitude": "-37.8136",
+            "longitude": "144.9631",
+            "continent": "asia_pacific",
+        },
+    },
+    "ap-southeast-3": {
+        "name": "Asia Pacific (Jakarta)",
+        "tags": {
+            "latitude": "-6.2088",
+            "longitude": "106.8272",
+            "continent": "asia_pacific",
+        },
+    },
+    "ca-west-1": {
+        "name": "Canada West (Calgary)",
+        "tags": {
+            "latitude": "51.0447",
+            "longitude": "114.0719",
+            "continent": "north_america",
+        },
+    },
+    "eu-central-2": {
+        "name": "Europe (Zurich)",
+        "tags": {
+            "latitude": "47.3769",
+            "longitude": "8.5417",
+            "continent": "europe",
+        },
+    },
+    "eu-south-2": {
+        "name": "Europe (Spain)",
+        "tags": {
+            "latitude": "40.4168",
+            "longitude": "3.7038",
+            "continent": "europe",
+        },
+    },
+    "il-central-1": {
+        "name": "Israel (Tel Aviv)",
+        "tags": {
+            "latitude": "32.0853",
+            "longitude": "34.7818",
+            "continent": "middle_east",
+        },
+    },
+    "me-central-1": {
+        "name": "Middle East (UAE)",
+        "tags": {
+            "latitude": "25.2769",
+            "longitude": "55.2708",
+            "continent": "middle_east",
+        },
     },
     "global": {"name": "Global"},
 }

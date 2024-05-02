@@ -64,7 +64,7 @@ class TestCloudServiceAPIs(TestCase):
     def test_collect(self):
         options = {
             # 'custom_asset_url': 'http://xxxxx.spaceone.dev/aws'
-            "cloud_service_types": ["EC2"]
+            # "cloud_service_types": ["S3"]
         }
 
         # options = {}
@@ -84,4 +84,4 @@ class TestCloudServiceAPIs(TestCase):
                 )
             cnt += 1
             # # self.assertIsNotNone(res)
-            # print_json(res)
+            print_json(res)

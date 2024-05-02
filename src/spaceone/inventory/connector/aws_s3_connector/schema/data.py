@@ -179,6 +179,7 @@ LOGGING
 class Grantee(Model):
     display_name = StringType(deserialize_from="DisplayName")
     id = StringType(deserialize_from="ID")
+    email = StringType(deserialize_from="EmailAddress")
     type = StringType(
         deserialize_from="Type",
         choices=("CanonicalUser", "AmazonCustomerByEmail", "Group"),
@@ -215,31 +216,32 @@ class Versioning(Model):
     )
 
 
-# class Grant(Model):
-#     grantee = ModelType(Grantee, deserialize_from="Grantee")
-#     permission = StringType(
-#         deserialize_from="Permission",
-#         choices=("FULL_CONTROL", "WRITE", "WRITE_ACP", "READ", "READ_ACP"),
-#     )
-#
-#
-# class Owner(Model):
-#     owner_name = StringType(deserialize_from="DisplayName")
-#     owner_id = StringType(deserialize_from="ID")
-#
-#
-# class PolicyStatus(Model):
-#     is_public = BooleanType(deserialize_from="IsPublic")
-#
-#
-# class BucketACL(Model):
-#     owner = ModelType(Owner, serialize_when_none=False)
-#     grants = ListType(ModelType(Grant), serialize_when_none=False)
-#
-#
-# class BucketPolicy(Model):
-#     policy_document = StringType(deserialize_from="Policy")
-#     policy_status = ModelType(PolicyStatus, serialize_when_none=False)
+class Grant(Model):
+    grantee = ModelType(Grantee, deserialize_from="Grantee")
+    permission = StringType(
+        deserialize_from="Permission",
+        choices=("FULL_CONTROL", "WRITE", "WRITE_ACP", "READ", "READ_ACP"),
+    )
+
+
+class Owner(Model):
+    owner_id = StringType(deserialize_from="ID")
+
+
+# class BucketPolicyStatus(Model):
+#     # is_public = BooleanType(deserialize_from="IsPublic")
+#     policy_status = StringType(choices=("Public", "Private"))
+
+
+class BucketACL(Model):
+    owner = ModelType(Owner, serialize_when_none=False, deserialize_from="Owner")
+    grants = ListType(
+        ModelType(Grant), serialize_when_none=False, deserialize_from="Grants"
+    )
+
+
+class BucketPolicy(Model):
+    policy_document = StringType(deserialize_from="Policy")
 
 
 class Bucket(AWSCloudService):
@@ -260,9 +262,10 @@ class Bucket(AWSCloudService):
     object_count = IntType(default=0)
     object_total_size = FloatType(default=0.0)
     size = FloatType(default=0.0)
-
-    # bucket_acl = ModelType(BucketACL, serialize_when_none=False)
-    # bucket_policy = ModelType(BucketPolicy, serialize_when_none=False)
+    bucket_acl = ModelType(BucketACL, serialize_when_none=False)
+    bucket_policy = ModelType(BucketPolicy, serialize_when_none=False)
+    policy_document_exists = BooleanType()
+    output_display = StringType(default="show")
 
     def reference(self):
         return {

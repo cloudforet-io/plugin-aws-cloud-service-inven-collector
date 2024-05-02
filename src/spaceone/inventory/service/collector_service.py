@@ -81,7 +81,6 @@ class CollectorService(BaseService):
                 - secret_data
                 - filter
         """
-        print(params)
         start_time = time.time()
         resource_regions = []
         collected_region_code = []

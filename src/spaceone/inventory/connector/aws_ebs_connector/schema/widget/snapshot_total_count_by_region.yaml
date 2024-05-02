@@ -1,7 +1,7 @@
 ---
 cloud_service_group: EC2
 cloud_service_type: Snapshot
-name: Total Size by Region
+name: Count by Region
 query:
   aggregate:
     - group:
@@ -10,7 +10,8 @@ query:
             key: region_code
         fields:
           - name: value
-            operator: count
+            key: instance_size
+            operator: sum
 options:
   chart_type: COLUMN
   name_options:
@@ -18,3 +19,9 @@ options:
     reference:
       resource_type: "inventory.Region"
       reference_key: region_code
+  value_options:
+    key: value
+    type: size
+    options:
+      source_unit: GB
+      default: 0
