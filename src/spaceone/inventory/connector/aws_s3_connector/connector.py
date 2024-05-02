@@ -14,6 +14,8 @@ from spaceone.inventory.connector.aws_s3_connector.schema.data import (
     TransferAcceleration,
     NotificationConfiguration,
     RequestPayment,
+    BucketACL,
+    BucketPolicy,
 )
 from spaceone.inventory.connector.aws_s3_connector.schema.resource import (
     BucketResource,
@@ -152,11 +154,21 @@ class S3Connector(SchematicAWSConnector):
                         {"notification_configurations": notification_configurations}
                     )
 
-                # if bucket_acl := self.get_bucket_acl_info(bucket_name):
-                #     raw.update({'bucket_acl': bucket_acl})
+                if bucket_acl := self.get_bucket_acl_info(
+                    bucket_name, need_all_info=True
+                ):
+                    raw.update({"bucket_acl": bucket_acl})
+
+                bucket_policy = self.get_bucket_policy_info(bucket_name)
+                if bucket_policy:
+                    raw.update(
+                        {"bucket_policy": bucket_policy, "policy_document_exists": True}
+                    )
+                else:
+                    raw.update({"policy_document_exists": False})
+
                 if region_name:
                     count, size = self.get_count_and_size(bucket_name, region_name)
-
                     raw.update(
                         {"object_count": count, "object_total_size": size, "size": size}
                     )
@@ -167,6 +179,14 @@ class S3Connector(SchematicAWSConnector):
                 resource_id = raw.get("Name", "")
                 error_resource_response = self.generate_error("global", resource_id, e)
                 yield error_resource_response
+
+    def get_bucket_policy_info(self, bucket_name):
+        try:
+            policy_response = self.client.get_bucket_policy(Bucket=bucket_name)
+            return BucketPolicy(policy_response, strict=False)
+        except Exception as e:
+            _LOGGER.error(f"[S3 {bucket_name}: Get Bucket Policy] {e}")
+            return None
 
     def get_bucket_versioning(self, bucket_name):
         try:
@@ -312,12 +332,13 @@ class S3Connector(SchematicAWSConnector):
                 uri = grants.get("Grantee").get("URI")
                 if uri is not None and uri.endswith("AllUsers"):
                     response = True
-            # if not need_all_info:
-            #     for grants in acl.get('Grants', []):
-            #         uri = grants.get('Grantee').get('URI')
-            #         if uri is not None and uri.endswith('AllUsers'):
-            #             response = True
-            # else:
+            if not need_all_info:
+                for grants in acl.get("Grants", []):
+                    uri = grants.get("Grantee").get("URI")
+                    if uri is not None and uri.endswith("AllUsers"):
+                        response = True
+            else:
+                return BucketACL(acl, strict=False)
 
         except Exception as e:
             _LOGGER.error(f"[S3 {bucket_name}: Get Bucket ACL] {e}")

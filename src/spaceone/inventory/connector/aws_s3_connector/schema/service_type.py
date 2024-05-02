@@ -65,6 +65,16 @@ cst_bucket._metadata = CloudServiceTypeMeta.set_meta(
             "Versioning Status", "data.versioning.status", options={"is_optional": True}
         ),
         TextDyField.data_source(
+            "Has Bucket Policy",
+            "data.policy_document_exists",
+            options={"is_optional": True},
+        ),
+        TextDyField.data_source(
+            "Bucket Owner ID",
+            "data.bucket_acl.owner.owner_id",
+            options={"is_optional": True},
+        ),
+        TextDyField.data_source(
             "Webhosting Index Document",
             "data.website_hosting.index_document",
             options={"is_optional": True},
@@ -136,14 +146,13 @@ cst_bucket._metadata = CloudServiceTypeMeta.set_meta(
             name="Object Total Size (Bytes)", key="instance_size", data_type="integer"
         ),
         SearchField.set(name="AWS Account ID", key="account"),
+        SearchField.set(name="Access", key="data.public_access"),
         SearchField.set(
-            name="Access",
-            key="data.public_access",
-            enums={
-                "Private": {"label": "Private", "icon": {"color": "blue.500"}},
-                "Public": {"label": "Public", "icon": {"color": "red.500"}},
-            },
+            name="Has Bucket Policy",
+            key="data.policy_document_exists",
+            data_type="boolean",
         ),
+        SearchField.set(name="Bucket Owner ID", key="data.bucket_acl.owner.owner_id"),
     ],
     widget=[
         CardWidget.set(**get_data_from_yaml(bucket_total_count_conf)),
