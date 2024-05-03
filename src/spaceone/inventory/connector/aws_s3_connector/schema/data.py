@@ -222,6 +222,7 @@ class Grant(Model):
         deserialize_from="Permission",
         choices=("FULL_CONTROL", "WRITE", "WRITE_ACP", "READ", "READ_ACP"),
     )
+    readable_permission = StringType(serialize_when_none=False)
 
 
 class Owner(Model):
