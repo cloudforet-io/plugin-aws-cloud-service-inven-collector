@@ -70,7 +70,7 @@ bucket_acl_info = TableDynamicLayout.set_fields(
         TextDyField.data_source("Canonical ID", "grantee.id"),
         TextDyField.data_source("Group URI", "grantee.uri"),
         TextDyField.data_source("Group URI", "grantee.email"),
-        TextDyField.data_source("Permission", "permission"),
+        TextDyField.data_source("Permission", "readable_permission"),
     ],
 )
 

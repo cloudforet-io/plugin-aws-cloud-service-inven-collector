@@ -338,6 +338,7 @@ class S3Connector(SchematicAWSConnector):
                     if uri is not None and uri.endswith("AllUsers"):
                         response = True
             else:
+                self.update_grants_info(acl)
                 return BucketACL(acl, strict=False)
 
         except Exception as e:
@@ -421,6 +422,27 @@ class S3Connector(SchematicAWSConnector):
             time.sleep(0.1)
 
         return total_size
+
+    @staticmethod
+    def update_grants_info(bucket_acl):
+        for grant in bucket_acl.get("Grants", []):
+            permission = grant.get("Permission")
+            readable_permission = None
+            if permission == "FULL_CONTROL":
+                readable_permission = "FULL CONTROL"
+            if permission == "WRITE":
+                readable_permission = "WRITE: BUCKET OBJECT"
+            elif permission == "READ":
+                readable_permission = "READ: BUCKET OBJECT"
+            elif permission == "WRITE_ACP":
+                readable_permission = "WRITE: ACCESS CONTROL POLICY"
+            elif permission == "READ_ACP":
+                readable_permission = "READ: ACCESS CONTROL POLICY"
+            grant.update(
+                {
+                    "readable_permission": readable_permission,
+                }
+            )
 
     @staticmethod
     def get_metric_data(client, params):
