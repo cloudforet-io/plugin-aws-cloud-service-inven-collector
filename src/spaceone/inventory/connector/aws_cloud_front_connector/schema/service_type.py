@@ -87,15 +87,6 @@ cst_distribution._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(
             name="Security Policy",
             key="data.viewer_certificate.minimum_protocol_version",
-            enums={
-                "SSLv3": {"label": "SSLv3"},
-                "TLSv1": {"label": "TLSv1"},
-                "TLSv1_2016": {"label": "TLSv1_2016"},
-                "TLSv1.1_2016": {"label": "TLSv1.1_2016"},
-                "TLSv1.2_2018": {"label": "TLSv1.2_2018"},
-                "TLSv1.2_2019": {"label": "TLSv1.2_2019"},
-                "TLSv1.2_2021": {"label": "TLSv1.2_2021"},
-            },
         ),
         SearchField.set(name="AWS Account ID", key="account"),
     ],
