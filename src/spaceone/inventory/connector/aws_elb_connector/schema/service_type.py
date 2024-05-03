@@ -61,6 +61,11 @@ cst_elb._metadata = CloudServiceTypeMeta.set_meta(
             options={"sub_key": "zone_name", "delimiter": "<br>"},
         ),
         TextDyField.data_source(
+            "Security Policy",
+            "data.listeners.ssl_policy",
+            options={"is_optional": True},
+        ),
+        TextDyField.data_source(
             "ARN", "data.load_balancer_arn", options={"is_optional": True}
         ),
         TextDyField.data_source("Scheme", "data.scheme", options={"is_optional": True}),
