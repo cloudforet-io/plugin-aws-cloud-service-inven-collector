@@ -1,5 +1,4 @@
 from spaceone.inventory.manager.cloudfront_manager import CloudFrontConnectorManager
-
 from spaceone.inventory.manager.lambda_manager import LambdaConnectorManager
 from spaceone.inventory.manager.rds_manager import RDSConnectorManager
 from spaceone.inventory.manager.api_gateway_manager import APIGatewayConnectorManager
@@ -26,7 +25,6 @@ from spaceone.inventory.manager.elb_manager import ELBConnectorManager
 # from spaceone.inventory.manager.eip_manager import EIPConnectorManager
 # from spaceone.inventory.manager.ebs_manager import EBSConnectorManager
 from spaceone.inventory.manager.s3_manager import S3ConnectorManager
-
 from spaceone.inventory.manager.dynamodb_manager import DynamoDBConnectorManager
 from spaceone.inventory.manager.vpc_manager import VPCConnectorManager
 

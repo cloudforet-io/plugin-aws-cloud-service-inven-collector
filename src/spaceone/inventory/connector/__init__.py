@@ -1,8 +1,11 @@
 from spaceone.inventory.connector.aws_cloud_front_connector.connector import CFConnector
+from spaceone.inventory.connector.aws_lambda_connector.connector import LambdaConnector
+from spaceone.inventory.connector.aws_rds_connector.connector import RDSConnector
+from spaceone.inventory.connector.aws_route53_connector.connector import (
+    Route53Connector,
+)
 
-# from spaceone.inventory.connector.aws_auto_scaling_connector.connector import (
-#     AutoScalingConnector,
-# )
+# from spaceone.inventory.connector.aws_auto_scaling_connector.connector import AutoScalingConnector
 from spaceone.inventory.connector.aws_elasticache_connector.connector import (
     ElastiCacheConnector,
 )
@@ -36,6 +39,10 @@ from spaceone.inventory.connector.aws_elb_connector.connector import ELBConnecto
 # from spaceone.inventory.connector.aws_eip_connector.connector import EIPConnector
 # from spaceone.inventory.connector.aws_ebs_connector.connector import EBSConnector
 from spaceone.inventory.connector.aws_s3_connector.connector import S3Connector
+from spaceone.inventory.connector.aws_dynamodb_connector.connector import (
+    DynamoDBConnector,
+)
+from spaceone.inventory.connector.aws_vpc_connector.connector import VPCConnector
 
 # from spaceone.inventory.connector.aws_ec2_connector.connector import EC2Connector
 from spaceone.inventory.connector.aws_iam_connector.connector import IAMConnector
