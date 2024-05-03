@@ -65,11 +65,10 @@ bucket_acl_info = TableDynamicLayout.set_fields(
     "Access Control List",
     "data.bucket_acl.grants",
     fields=[
-        TextDyField.data_source("Grantee", "grantee.display_name"),
         TextDyField.data_source("Grantee Type", "grantee.type"),
         TextDyField.data_source("Canonical ID", "grantee.id"),
         TextDyField.data_source("Group URI", "grantee.uri"),
-        TextDyField.data_source("Group URI", "grantee.email"),
+        TextDyField.data_source("Email(If Exists)", "grantee.email"),
         TextDyField.data_source("Permission", "readable_permission"),
     ],
 )
