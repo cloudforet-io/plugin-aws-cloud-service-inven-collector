@@ -1,7 +1,7 @@
 import logging
 from schematics import Model
 from spaceone.inventory.libs.schema.resource import AWSCloudService
-from schematics.types import ModelType, StringType, IntType, DateTimeType, ListType, BooleanType
+from schematics.types import ModelType, StringType, IntType, DateTimeType, ListType, BooleanType, DictType
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -227,6 +227,7 @@ class LoadBalancer(AWSCloudService):
     target_groups = ListType(ModelType(TargetGroup), default=[])
     attributes = ModelType(LoadBalancerAttributes)
     instances = ListType(ModelType(Instance), default=[])
+    stats = DictType(StringType, default={})
 
     def reference(self, region_code):
         return {

@@ -18,7 +18,6 @@ CLOUD_SERVICE_GROUP_MAP = {
     "RDS": "RDSConnectorManager",
     "Route53": "Route53ConnectorManager",
     "S3": "S3ConnectorManager",
-    # "AutoScalingGroup": "AutoScalingConnectorManager",
     "ElastiCache": "ElastiCacheConnectorManager",
     "APIGateway": "APIGatewayConnectorManager",
     "DirectConnect": "DirectConnectConnectorManager",
@@ -34,15 +33,17 @@ CLOUD_SERVICE_GROUP_MAP = {
     "SNS": "SNSConnectorManager",
     "SecretsManager": "SecretsManagerConnectorManager",
     "ELB": "ELBConnectorManager",
-    # "EIP": "EIPConnectorManager",
-    # "EBS": "EBSConnectorManager",
     "VPC": "VPCConnectorManager",
-    # "EC2": "EC2ConnectorManager",
     "ACM": "ACMConnectorManager",
     "KinesisDataStream": "KinesisDataStreamConnectorManager",
     "MSK": "MSKConnectorManager",
     "KinesisFirehose": "KinesisFirehoseConnectorManager",
     "Lightsail": "LightsailConnectorManager",
+    # Not used services
+    # "EC2": "EC2ConnectorManager",
+    # "EIP": "EIPConnectorManager",
+    # "EBS": "EBSConnectorManager",
+    # "AutoScalingGroup": "AutoScalingConnectorManager",
 }
 
 ASSET_URL = "https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws"

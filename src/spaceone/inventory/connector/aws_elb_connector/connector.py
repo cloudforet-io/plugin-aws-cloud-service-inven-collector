@@ -112,13 +112,19 @@ class ELBConnector(SchematicAWSConnector):
                 for match_tg in match_target_groups:
                     match_instances.extend(self.match_elb_instance(match_tg, instances))
 
+                # Generate custom stats data
+                stats = {
+                    "instances_size": len(match_instances)
+                }
+
                 raw_lb.update({
                     'region_name': region_name,
                     'listeners': list(map(lambda _listener: Listener(_listener, strict=False), raw_listeners)),
                     'cloudwatch': self.elb_cloudwatch(raw_lb, region_name),
                     'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type, raw_lb['LoadBalancerArn']),
                     'target_groups': match_target_groups,
-                    'instances': match_instances
+                    'instances': match_instances,
+                    'stats': stats
                 })
 
                 load_balancer_vo = LoadBalancer(raw_lb, strict=False)
@@ -169,7 +175,6 @@ class ELBConnector(SchematicAWSConnector):
 
                                 match_instances.append(Instance(instance, strict=False))
                                 break
-
         return match_instances
 
     def request_loadbalancer(self, region_name):
