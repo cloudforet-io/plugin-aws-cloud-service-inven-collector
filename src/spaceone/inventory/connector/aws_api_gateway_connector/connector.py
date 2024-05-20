@@ -1,6 +1,7 @@
 import logging
 from typing import List
 
+import boto3
 from spaceone.core.utils import *
 from spaceone.inventory.connector.aws_api_gateway_connector.schema.data import (
     RestAPI,
@@ -53,11 +54,20 @@ class APIGatewayConnector(SchematicAWSConnector):
             },
         ]
 
+        # Check AWS regions can use apigatewayv2 API
+        available_v2_regions = self._get_available_v2_regions()
+
         for region_name in self.region_names:
             try:
                 self.reset_region(region_name)
 
                 for collect_resource in collect_resources:
+                    # check available apigatewayv2 region
+                    if collect_resource["service_name"] == "apigatewayv2":
+                        if region_name not in available_v2_regions:
+                            print(f"skip {region_name}")
+                            continue
+
                     resources.extend(
                         self.collect_data_by_region(
                             collect_resource["service_name"],
@@ -220,3 +230,16 @@ class APIGatewayConnector(SchematicAWSConnector):
             return endpoint_types[0]
         else:
             return ""
+
+    def _get_available_v2_regions(self):
+        ssm_client = boto3.client("ssm", self.region_name)
+        pagination = ssm_client.get_paginator("get_parameters_by_path")
+        response_iterator = pagination.paginate(
+            Path="/aws/service/global-infrastructure/services/apigatewayv2/regions"
+        )
+        parameters = []
+        for page in response_iterator:
+            for parameter in page["Parameters"]:
+                parameters.append(parameter["Value"])
+        print(parameters)
+        return parameters
