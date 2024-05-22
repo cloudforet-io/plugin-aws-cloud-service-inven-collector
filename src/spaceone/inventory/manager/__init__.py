@@ -34,7 +34,7 @@ from spaceone.inventory.manager.kinesis_firehose_manager import (
 from spaceone.inventory.manager.lightsail_manager import LightsailConnectorManager
 
 ## Not used services
-# from spaceone.inventory.manager.auto_scaling_manager import AutoScalingConnectorManager
-# from spaceone.inventory.manager.eip_manager import EIPConnectorManager
-# from spaceone.inventory.manager.ebs_manager import EBSConnectorManager
-# from spaceone.inventory.manager.ec2_manager import EC2ConnectorManager
+from spaceone.inventory.manager.auto_scaling_manager import AutoScalingConnectorManager
+from spaceone.inventory.manager.eip_manager import EIPConnectorManager
+from spaceone.inventory.manager.ebs_manager import EBSConnectorManager
+from spaceone.inventory.manager.ec2_manager import EC2ConnectorManager
