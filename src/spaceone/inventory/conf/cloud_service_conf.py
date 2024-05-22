@@ -40,10 +40,10 @@ CLOUD_SERVICE_GROUP_MAP = {
     "KinesisFirehose": "KinesisFirehoseConnectorManager",
     "Lightsail": "LightsailConnectorManager",
     # Not used services
-    # "EC2": "EC2ConnectorManager",
-    # "EIP": "EIPConnectorManager",
-    # "EBS": "EBSConnectorManager",
-    # "AutoScalingGroup": "AutoScalingConnectorManager",
+    "EC2": "EC2ConnectorManager",
+    "EIP": "EIPConnectorManager",
+    "EBS": "EBSConnectorManager",
+    "AutoScalingGroup": "AutoScalingConnectorManager",
 }
 
 ASSET_URL = "https://spaceone-custom-assets.s3.ap-northeast-2.amazonaws.com/console-assets/icons/cloud-services/aws"
