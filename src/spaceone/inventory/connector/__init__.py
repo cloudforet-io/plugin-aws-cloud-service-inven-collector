@@ -53,9 +53,9 @@ from spaceone.inventory.connector.aws_lightsail_connector.connector import (
 )
 
 # Not used services
-from spaceone.inventory.connector.aws_auto_scaling_connector.connector import (
-    AutoScalingConnector,
-)
-from spaceone.inventory.connector.aws_eip_connector.connector import EIPConnector
-from spaceone.inventory.connector.aws_ebs_connector.connector import EBSConnector
-from spaceone.inventory.connector.aws_ec2_connector.connector import EC2Connector
+# from spaceone.inventory.connector.aws_auto_scaling_connector.connector import (
+#     AutoScalingConnector,
+# )
+# from spaceone.inventory.connector.aws_eip_connector.connector import EIPConnector
+# from spaceone.inventory.connector.aws_ebs_connector.connector import EBSConnector
+# from spaceone.inventory.connector.aws_ec2_connector.connector import EC2Connector
