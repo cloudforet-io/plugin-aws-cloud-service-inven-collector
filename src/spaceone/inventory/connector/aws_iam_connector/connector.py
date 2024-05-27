@@ -326,26 +326,32 @@ class IAMConnector(SchematicAWSConnector):
                             "ssh_public_key": self.list_ssh_keys(user_name),
                             "code_commit_credential": code_commit_credential,
                             "cassandra_credential": cassandra_credential,
-                            "mfa_device": "Virtual"
-                            if len(mfa_devices) > 0
-                            else "Not enabled",
+                            "mfa_device": (
+                                "Virtual" if len(mfa_devices) > 0 else "Not enabled"
+                            ),
                             "last_active_age": last_active_age,
                             "last_activity": last_activity,
                             "policies": matching_policies,
-                            "groups_display": groups[0].get("GroupName", "")
-                            if len(groups) > 0
-                            else "",
+                            "groups_display": (
+                                groups[0].get("GroupName", "")
+                                if len(groups) > 0
+                                else ""
+                            ),
                             "groups": self.get_groups_for_user(groups),
                             "sign_in_credential": {
                                 "summary": self._get_summary_with_login_profile(
                                     login_profile, sign_in_link, mfa_devices
                                 ),
-                                "console_password": "Enabled"
-                                if login_profile is not None
-                                else "Disabled",
-                                "assigned_mfa_device": user_info.get("Arn")
-                                if len(mfa_devices) > 0
-                                else "Not assigned",
+                                "console_password": (
+                                    "Enabled"
+                                    if login_profile is not None
+                                    else "Disabled"
+                                ),
+                                "assigned_mfa_device": (
+                                    user_info.get("Arn")
+                                    if len(mfa_devices) > 0
+                                    else "Not assigned"
+                                ),
                             },
                             "cloudtrail": self.set_cloudtrail(
                                 "us-east-1", cloudtrail_resource_type, user["UserName"]
@@ -464,9 +470,27 @@ class IAMConnector(SchematicAWSConnector):
         if access_keys:
             access_key_date = access_keys[0].get("create_date")
             age, display = self._get_age_and_age_display(access_key_date)
-            user.update({"access_key_age": age, "access_key_age_display": display})
+            # Create access_key_age_status
+            age_status = "Normal"
+            if age > 90:
+                age_status = "Critical"
+            elif age > 60:
+                age_status = "Warning"
+            user.update(
+                {
+                    "access_key_age": age,
+                    "access_key_age_display": display,
+                    "access_key_age_status": age_status,
+                }
+            )
         else:
-            user.update({"access_key_age": 0, "access_key_age_display": "None"})
+            user.update(
+                {
+                    "access_key_age": 0,
+                    "access_key_age_display": "None",
+                    "access_key_age_status": "None",
+                }
+            )
 
     def get_user_info(self, user_name):
         response = self.client.get_user(UserName=user_name)

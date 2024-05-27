@@ -1,101 +1,188 @@
 from schematics.types import ModelType, StringType, PolyModelType
-from spaceone.inventory.connector.aws_lambda_connector.schema.data import LambdaFunctionData, Layer
-from spaceone.inventory.libs.schema.resource import CloudServiceResource, CloudServiceResponse, CloudServiceMeta
-from spaceone.inventory.libs.schema.dynamic_field import TextDyField, ListDyField, EnumDyField, DateTimeDyField, \
-    BadgeDyField
-from spaceone.inventory.libs.schema.dynamic_layout import ItemDynamicLayout, TableDynamicLayout, \
-    SimpleTableDynamicLayout
+from spaceone.inventory.connector.aws_lambda_connector.schema.data import (
+    LambdaFunctionData,
+    Layer,
+)
+from spaceone.inventory.libs.schema.resource import (
+    CloudServiceResource,
+    CloudServiceResponse,
+    CloudServiceMeta,
+)
+from spaceone.inventory.libs.schema.dynamic_field import (
+    TextDyField,
+    ListDyField,
+    EnumDyField,
+    DateTimeDyField,
+    BadgeDyField,
+)
+from spaceone.inventory.libs.schema.dynamic_layout import (
+    ItemDynamicLayout,
+    TableDynamicLayout,
+    SimpleTableDynamicLayout,
+)
 
-function = ItemDynamicLayout.set_fields('Functions', fields=[
-    TextDyField.data_source('Name', 'data.name'),
-    TextDyField.data_source('ARN', 'data.arn'),
-    BadgeDyField.data_source('Runtime', 'data.runtime'),
-    EnumDyField.data_source('State', 'data.state.type', default_state={
-        'safe': ['Active'],
-        'warning': ['Pending'],
-        'disable': ['Inactive'],
-        'alert': ['Failed']
-    }),
-    TextDyField.data_source('State Reason', 'data.state.reason'),
-    EnumDyField.data_source('State Reason Code', 'data.state.reason_code', default_state={
-        'warning': ['Creating', 'Restoring', 'Idle'],
-        'alert': ['EniLimitExceeded', 'InsufficientRolePermissions', 'InvalidConfiguration', 'InternalError',
-                  'SubnetOutOfIPAddresses', 'InvalidSubnet', 'InvalidSecurityGroup']
+function = ItemDynamicLayout.set_fields(
+    "Functions",
+    fields=[
+        TextDyField.data_source("Name", "data.name"),
+        TextDyField.data_source("ARN", "data.arn"),
+        TextDyField.data_source("Package Type", "data.package_type"),
+        BadgeDyField.data_source("Runtime", "data.runtime"),
+        EnumDyField.data_source(
+            "State",
+            "data.state.type",
+            default_state={
+                "safe": ["Active"],
+                "warning": ["Pending"],
+                "disable": ["Inactive"],
+                "alert": ["Failed"],
+            },
+        ),
+        TextDyField.data_source("State Reason", "data.state.reason"),
+        EnumDyField.data_source(
+            "State Reason Code",
+            "data.state.reason_code",
+            default_state={
+                "warning": ["Creating", "Restoring", "Idle"],
+                "alert": [
+                    "EniLimitExceeded",
+                    "InsufficientRolePermissions",
+                    "InvalidConfiguration",
+                    "InternalError",
+                    "SubnetOutOfIPAddresses",
+                    "InvalidSubnet",
+                    "InvalidSecurityGroup",
+                    "ImageDeleted",
+                    "ImageAccessDenied",
+                    "InvalidImage",
+                    "KMSKeyAccessDenied",
+                    "KMSKeyNotFound",
+                    "InvalidStateKMSKey",
+                    "DisabledKMSKey",
+                    "EFSIOError",
+                    "EFSMountConnectivityError",
+                    "EFSMountFailure",
+                    "EFSMountTimeout",
+                    "InvalidRuntime",
+                    "InvalidZipFileException",
+                    "FunctionError",
+                ],
+            },
+        ),
+        TextDyField.data_source("Role", "data.role"),
+        TextDyField.data_source("Handler", "data.handler"),
+        TextDyField.data_source("Code Size", "data.code_size"),
+        TextDyField.data_source("Description", "data.description"),
+        TextDyField.data_source("Timeout", "data.time_out"),
+        TextDyField.data_source("Memory Size", "data.memory_size"),
+        TextDyField.data_source("Code SHA 256", "data.code_sha256"),
+        TextDyField.data_source("KMS Key ARN", "data.kms_key_arn"),
+        TextDyField.data_source("Master ARN", "data.master_arn"),
+        TextDyField.data_source("Revision ID", "data.revision_id"),
+        EnumDyField.data_source(
+            "Last Update Status",
+            "data.last_update.type",
+            default_state={
+                "safe": ["Successful"],
+                "alert": ["Failed"],
+                "warning": ["InProgress"],
+            },
+        ),
+        TextDyField.data_source("Last Update State Reason", "data.last_update.reason"),
+        DateTimeDyField.data_source("Last Modified", "data.last_modified"),
+    ],
+)
 
-    }),
-    TextDyField.data_source('Role', 'data.role'),
-    TextDyField.data_source('Handler', 'data.handler'),
-    TextDyField.data_source('Code Size', 'data.code_size'),
-    TextDyField.data_source('Description', 'data.description'),
-    TextDyField.data_source('Timeout', 'data.time_out'),
-    TextDyField.data_source('Memory Size', 'data.memory_size'),
-    TextDyField.data_source('Code SHA 256', 'data.code_sha256'),
-    TextDyField.data_source('KMS Key ARN', 'data.kms_key_arn'),
-    TextDyField.data_source('Master ARN', 'data.master_arn'),
-    TextDyField.data_source('Revision ID', 'data.revision_id'),
-    EnumDyField.data_source('Last Update Status', 'data.last_update.type', default_state={
-        'safe': ['Successful'],
-        'alert': ['Failed'],
-        'warning': ['InProgress']
-    }),
-    TextDyField.data_source('Last Update State Reason', 'data.last_update.reason'),
-    DateTimeDyField.data_source('Last Modified', 'data.last_modified'),
-])
+function_vpc = ItemDynamicLayout.set_fields(
+    "VPC",
+    fields=[
+        TextDyField.data_source("VPC Id", "data.vpc_config.vpc_id"),
+        ListDyField.data_source(
+            "Subnet IDs", "data.vpc_config.subnet_ids", options={"delimiter": "<br>"}
+        ),
+        ListDyField.data_source(
+            "Security Group IDs",
+            "data.vpc_config.security_group_ids",
+            options={
+                "delimiter": "<br>",
+            },
+        ),
+    ],
+)
 
-function_vpc = ItemDynamicLayout.set_fields('VPC', fields=[
-    TextDyField.data_source('VPC Id', 'data.vpc_config.vpc_id'),
-    ListDyField.data_source('Subnet IDs', 'data.vpc_config.subnet_ids', options={
-        'delimiter': '<br>'
-    }),
-    ListDyField.data_source('Security Group IDs', 'data.vpc_config.security_group_ids', options={
-        'delimiter': '<br>',
-    })
-])
+function_env = SimpleTableDynamicLayout.set_fields(
+    "Environment Variables",
+    "data.environment.variables",
+    fields=[
+        TextDyField.data_source("Key", "key"),
+        TextDyField.data_source("Value", "value"),
+    ],
+)
 
-function_env = SimpleTableDynamicLayout.set_fields('Environment Variables', 'data.environment.variables', fields=[
-    TextDyField.data_source('Key', 'key'),
-    TextDyField.data_source('Value', 'value'),
-])
+function_layers = TableDynamicLayout.set_fields(
+    "Layers",
+    "data.layers",
+    fields=[
+        TextDyField.data_source("ARN", "arn"),
+        TextDyField.data_source("Name", "name"),
+        TextDyField.data_source("Code Size", "code_size"),
+    ],
+)
 
-function_layers = TableDynamicLayout.set_fields('Layers', 'data.layers', fields=[
-    TextDyField.data_source('ARN', 'arn'),
-    TextDyField.data_source('Name', 'name'),
-    TextDyField.data_source('Code Size', 'code_size'),
-])
-
-function_metadata = CloudServiceMeta.set_layouts(layouts=[function, function_vpc, function_env, function_layers])
+function_metadata = CloudServiceMeta.set_layouts(
+    layouts=[function, function_vpc, function_env, function_layers]
+)
 
 
-layer = ItemDynamicLayout.set_fields('Layers', fields=[
-    TextDyField.data_source('Name', 'data.layer_name'),
-    TextDyField.data_source('ARN', 'data.layer_arn'),
-    ListDyField.data_source('Compatible Runtimes', 'data.latest_matching_version.compatible_runtimes', default_badge={
-        'type': 'outline',
-    }),
-    TextDyField.data_source('Version', 'data.latest_matching_version.version'),
-    TextDyField.data_source('Description', 'data.latest_matching_version.description'),
-    TextDyField.data_source('License Info', 'data.latest_matching_version.license_info'),
-    TextDyField.data_source('Layer Version ARN', 'data.latest_matching_version.layer_version_arn'),
-    DateTimeDyField.data_source('Created Time', 'data.latest_matching_version.created_date'),
-])
+layer = ItemDynamicLayout.set_fields(
+    "Layers",
+    fields=[
+        TextDyField.data_source("Name", "data.layer_name"),
+        TextDyField.data_source("ARN", "data.layer_arn"),
+        ListDyField.data_source(
+            "Compatible Runtimes",
+            "data.latest_matching_version.compatible_runtimes",
+            default_badge={
+                "type": "outline",
+            },
+        ),
+        TextDyField.data_source("Version", "data.latest_matching_version.version"),
+        TextDyField.data_source(
+            "Description", "data.latest_matching_version.description"
+        ),
+        TextDyField.data_source(
+            "License Info", "data.latest_matching_version.license_info"
+        ),
+        TextDyField.data_source(
+            "Layer Version ARN", "data.latest_matching_version.layer_version_arn"
+        ),
+        DateTimeDyField.data_source(
+            "Created Time", "data.latest_matching_version.created_date"
+        ),
+    ],
+)
 
 layer_metadata = CloudServiceMeta.set_layouts(layouts=[layer])
 
 
 class LambdaResource(CloudServiceResource):
-    cloud_service_group = StringType(default='Lambda')
+    cloud_service_group = StringType(default="Lambda")
 
 
 class LambdaFunctionResource(LambdaResource):
-    cloud_service_type = StringType(default='Function')
+    cloud_service_type = StringType(default="Function")
     data = ModelType(LambdaFunctionData)
-    _metadata = ModelType(CloudServiceMeta, default=function_metadata, serialized_name='metadata')
+    _metadata = ModelType(
+        CloudServiceMeta, default=function_metadata, serialized_name="metadata"
+    )
 
 
 class LambdaLayerResource(LambdaResource):
-    cloud_service_type = StringType(default='Layer')
+    cloud_service_type = StringType(default="Layer")
     data = ModelType(Layer)
-    _metadata = ModelType(CloudServiceMeta, default=layer_metadata, serialized_name='metadata')
+    _metadata = ModelType(
+        CloudServiceMeta, default=layer_metadata, serialized_name="metadata"
+    )
 
 
 class LambdaFunctionResponse(CloudServiceResponse):
