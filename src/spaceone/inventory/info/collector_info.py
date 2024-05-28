@@ -1,8 +1,8 @@
-__all__ = ['PluginInfo', 'ResourceInfo']
-
-import functools
 from spaceone.api.inventory.plugin import collector_pb2
 from spaceone.core.pygrpc.message_type import *
+from spaceone.core import utils
+
+__all__ = ['PluginInfo', 'ResourceInfo']
 
 
 def PluginInfo(result):
@@ -11,6 +11,10 @@ def PluginInfo(result):
 
 
 def ResourceInfo(resource_dict):
+    if resource_dict['resource_type'] == 'inventory.CloudService':
+        resource_dict['resource']['json_data'] = utils.dump_json(resource_dict['resource']['data'])
+        del resource_dict['resource']['data']
+
     resource_dict.update({
         'resource': change_struct_type(resource_dict['resource'])
     })
