@@ -13,7 +13,9 @@ def PluginInfo(result):
 def ResourceInfo(resource_dict):
     if resource_dict['resource_type'] == 'inventory.CloudService':
         resource_dict['resource']['json_data'] = utils.dump_json(resource_dict['resource']['data'])
+        resource_dict['resource']['json_metadata'] = utils.dump_json(resource_dict['resource']['metadata'])
         del resource_dict['resource']['data']
+        del resource_dict['resource']['metadata']
 
     resource_dict.update({
         'resource': change_struct_type(resource_dict['resource'])
