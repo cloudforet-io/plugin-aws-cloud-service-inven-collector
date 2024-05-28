@@ -13,7 +13,6 @@ from schematics.types import (
 
 _LOGGER = logging.getLogger(__name__)
 
-
 """
 Listener
 """
@@ -311,7 +310,7 @@ class LoadBalancer(AWSCloudService):
     target_groups = ListType(ModelType(TargetGroup), default=[])
     attributes = ModelType(LoadBalancerAttributes)
     instances = ListType(ModelType(Instance), default=[])
-    stats = DictType(StringType, default={})
+    stats = DictType(IntType, default={})
 
     def reference(self, region_code):
         return {
