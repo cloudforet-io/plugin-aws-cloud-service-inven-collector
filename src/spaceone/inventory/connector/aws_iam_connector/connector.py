@@ -471,11 +471,19 @@ class IAMConnector(SchematicAWSConnector):
             access_key_date = access_keys[0].get("create_date")
             age, display = self._get_age_and_age_display(access_key_date)
             # Create access_key_age_status
-            age_status = "Normal"
-            if age > 90:
-                age_status = "Critical"
+            age_status = "~30"
+            if age > 180:
+                age_status = "181~"
+            elif age > 150:
+                age_status = "151~180"
+            elif age > 120:
+                age_status = "121~150"
+            elif age > 90:
+                age_status = "91~120"
             elif age > 60:
-                age_status = "Warning"
+                age_status = "61~90"
+            elif age > 30:
+                age_status = "31~60"
             user.update(
                 {
                     "access_key_age": age,
