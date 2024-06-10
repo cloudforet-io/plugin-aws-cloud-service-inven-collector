@@ -496,7 +496,7 @@ class IAMConnector(SchematicAWSConnector):
                 {
                     "access_key_age": 0,
                     "access_key_age_display": "None",
-                    "access_key_age_status": "None",
+                    "access_key_age_status": "NO Key",
                 }
             )
 
