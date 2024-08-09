@@ -1224,14 +1224,27 @@ class VPCConnector(SchematicAWSConnector):
     @staticmethod
     def _get_route(routes):
         return_routes = []
-
         for route in routes:
+            # targets
+            if transit_gateway_id := route.get("TransitGatewayId", ""):
+                target_id = transit_gateway_id
+            elif nat_gateway_id := route.get("NatGatewayId", ""):
+                target_id = nat_gateway_id
+            elif vpc_peering_connection_id := route.get("VpcPeeringConnectionId", ""):
+                target_id = vpc_peering_connection_id
+            else:
+                target_id = route.get("GatewayId", "")
+
+            # destinations
+            if destination_prefix_list_id := route.get("DestinationPrefixListId", ""):
+                destination_id = destination_prefix_list_id
+            else:
+                destination_id = route.get("DestinationCidrBlock", "")
+
             route.update(
                 {
-                    "target": route.get("NatGatewayId", route.get("GatewayId", "")),
-                    "destination": route.get(
-                        "DestinationPrefixListId", route.get("DestinationCidrBlock", "")
-                    ),
+                    "target": target_id,
+                    "destination": destination_id,
                 }
             )
 
