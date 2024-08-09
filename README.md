@@ -12,7 +12,9 @@
 
 **Plugin to collect AWS Cloud Services**
 
-> SpaceONE's [plugin-aws-cloud-service-inven-collector](https://github.com/cloudforet-io/plugin-aws-cloud-service-inven-collector) is a convenient tool to get cloud service data from AWS.
+>
+SpaceONE's [plugin-aws-cloud-service-inven-collector](https://github.com/cloudforet-io/plugin-aws-cloud-service-inven-collector)
+is a convenient tool to get cloud service data from AWS.
 
 
 Find us also at [Dockerhub](https://hub.docker.com/repository/docker/spaceone/plugin-aws-cloud-service-inven-collector)
@@ -130,84 +132,84 @@ Please contact us if you need any further information. (<support@spaceone.dev>)
         * Container
         * Load Balancer
         * Distribution
+
 ---
 
 ## AWS Service Endpoint (in use)
 
- There is an endpoints used to collect AWS resources information.
-AWS endpoint is a URL consisting of a region and a service code. 
+There is an endpoints used to collect AWS resources information.
+AWS endpoint is a URL consisting of a region and a service code.
 <pre>
 https://[service-code].[region-code].amazonaws.com
 </pre>
 
-We use hundreds of endpoints because we collect information from a lots of regions and services.  
+We use hundreds of endpoints because we collect information from a lots of regions and services.
 
 ### Region list
 
 Below is the AWS region information.
-The regions we collect are not all regions supported by AWS. Exactly, we target the regions results returned by [describe_regions()](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ec2.html#EC2.Client.describe_regions) of AWS ec2 client.
+The regions we collect are not all regions supported by AWS. Exactly, we target the regions results returned
+by [describe_regions()](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/ec2.html#EC2.Client.describe_regions)
+of AWS ec2 client.
 
-|No.|Region name|Region Code|
-|---|------|---|
-|1|US East (Ohio)|us-east-2|
-|2|US East (N. Virginia)|us-east-1|
-|3|US West (N. California)|us-west-1|
-|4|US West (Oregon)|us-west-2|
-|5|Asia Pacific (Mumbai)|ap-south-1|
-|6|Asia Pacific (Osaka)|ap-northeast-3|
-|7|Asia Pacific (Seoul)|ap-northeast-2|
-|8|Asia Pacific (Singapore)|ap-southeast-1|
-|9|Asia Pacific (Sydney)|ap-southeast-2|
-|10|Asia Pacific (Tokyo)|ap-northeast-1|
-|11|Canada (Central)|ca-central-1|
-|12|Europe (Frankfurt)|eu-central-1|
-|13|Europe (Ireland)|eu-west-1|
-|14|Europe (London)|eu-west-2|
-|15|Europe (Paris)|eu-west-3|
-|16|Europe (Stockholm)|eu-north-1|
-|17|South America (São Paulo)|sa-east-1|
-
-
+| No. | Region name               | Region Code    |
+|-----|---------------------------|----------------|
+| 1   | US East (Ohio)            | us-east-2      |
+| 2   | US East (N. Virginia)     | us-east-1      |
+| 3   | US West (N. California)   | us-west-1      |
+| 4   | US West (Oregon)          | us-west-2      |
+| 5   | Asia Pacific (Mumbai)     | ap-south-1     |
+| 6   | Asia Pacific (Osaka)      | ap-northeast-3 |
+| 7   | Asia Pacific (Seoul)      | ap-northeast-2 |
+| 8   | Asia Pacific (Singapore)  | ap-southeast-1 |
+| 9   | Asia Pacific (Sydney)     | ap-southeast-2 |
+| 10  | Asia Pacific (Tokyo)      | ap-northeast-1 |
+| 11  | Canada (Central)          | ca-central-1   |
+| 12  | Europe (Frankfurt)        | eu-central-1   |
+| 13  | Europe (Ireland)          | eu-west-1      |
+| 14  | Europe (London)           | eu-west-2      |
+| 15  | Europe (Paris)            | eu-west-3      |
+| 16  | Europe (Stockholm)        | eu-north-1     |
+| 17  | South America (São Paulo) | sa-east-1      |
 
 ### Service list
 
 The following is a list of services being collected and service code information.
 
-|No.|Service name|Service Code|
-|---|------|---|
-|1|AWS Certifcate Manager|AWSCertificateManager|
-|2|API Gateway (REST API)|AmazonApiGateway|
-|3|API Gateway V2 (Websocket)|AmazonApiGateway|
-|4|Auto Scaling Group|AmazonEC2|
-|5|CloudFront|AmazonCloudFront|
-|6|CloudTrail|AWSCloudTrail|
-|7|Direct Connect|AWSDirectConnect|
-|8|DocumentDB|AmazonDocDB|
-|9|DynamoDB|AmazonDynamoDB|
-|10|Elastic Block Store (EBS)|AmazonEC2|
-|11|EC2 (SecurityGroup, AMI, EIP)|AmazonEC2|
-|12|Elastic Container Registry (ECR)|AmazonECR|
-|13|Elastic Container Service (ECS)|AmazonECS|
-|14|Elastic File System (EFS)|AmazonEFS|
-|15|Elastic Kubernetes Service (EKS)|AmazonEKS|
-|16|Elasticache|AmazonElastiCache|
-|17|Elastic Load Balancer (ELB)|AWSELB|
-|18|Identity Access Management (IAM)|-|
-|19|Kinesis Data Stream|AmazonKinesis|
-|20|Kinesis Firehose|AmazonKinesisFirehose|
-|21|Key Management System (KMS)|awskms|
-|22|Lambda|AWSLambda|
-|21|Managed Streaming for Apache Kafka (MSK)|AmazonMSK|
-|22|Relational Database Service (RDS)|AmazonRDS|
-|23|Redshift|AmazonRedshift|
-|24|Route53|AmazonRoute53|
-|25|Simple Cloud Storage (S3)|AmazonS3|
-|26|Secrets Manager|AWSSecretsManager|
-|27|Simple Notification Service (SNS)|AmazonSNS|
-|28|Simple Queue Service (SQS)|AWSQueueService|
-|29|Virtual Private Cloud (VPC)|AmazonVPC|
-|30|Lightsail|AmazonLightsail|
-
+| No. | Service name                             | Service Code          |
+|-----|------------------------------------------|-----------------------|
+| 1   | AWS Certifcate Manager                   | AWSCertificateManager |
+| 2   | API Gateway (REST API)                   | AmazonApiGateway      |
+| 3   | API Gateway V2 (Websocket)               | AmazonApiGateway      |
+| 4   | Auto Scaling Group                       | AmazonEC2             |
+| 5   | CloudFront                               | AmazonCloudFront      |
+| 6   | CloudTrail                               | AWSCloudTrail         |
+| 7   | Direct Connect                           | AWSDirectConnect      |
+| 8   | DocumentDB                               | AmazonDocDB           |
+| 9   | DynamoDB                                 | AmazonDynamoDB        |
+| 10  | Elastic Block Store (EBS)                | AmazonEC2             |
+| 11  | EC2 (SecurityGroup, AMI, EIP)            | AmazonEC2             |
+| 12  | Elastic Container Registry (ECR)         | AmazonECR             |
+| 13  | Elastic Container Service (ECS)          | AmazonECS             |
+| 14  | Elastic File System (EFS)                | AmazonEFS             |
+| 15  | Elastic Kubernetes Service (EKS)         | AmazonEKS             |
+| 16  | Elasticache                              | AmazonElastiCache     |
+| 17  | Elastic Load Balancer (ELB)              | AWSELB                |
+| 18  | Identity Access Management (IAM)         | -                     |
+| 19  | Kinesis Data Stream                      | AmazonKinesis         |
+| 20  | Kinesis Firehose                         | AmazonKinesisFirehose |
+| 21  | Key Management System (KMS)              | awskms                |
+| 22  | Lambda                                   | AWSLambda             |
+| 21  | Managed Streaming for Apache Kafka (MSK) | AmazonMSK             |
+| 22  | Relational Database Service (RDS)        | AmazonRDS             |
+| 23  | Redshift                                 | AmazonRedshift        |
+| 24  | Route53                                  | AmazonRoute53         |
+| 25  | Simple Cloud Storage (S3)                | AmazonS3              |
+| 26  | Secrets Manager                          | AWSSecretsManager     |
+| 27  | Simple Notification Service (SNS)        | AmazonSNS             |
+| 28  | Simple Queue Service (SQS)               | AWSQueueService       |
+| 29  | Virtual Private Cloud (VPC)              | AmazonVPC             |
+| 30  | Lightsail                                | AmazonLightsail       |
 
 ---
 
@@ -274,6 +276,7 @@ authentication privilege for followings:
                 "sns:List*",
                 "sqs:Get*",
                 "sqs:List*",
+                "ssm:Describe*",
                 "Lightsail:Get*"
             ],
             "Effect": "Allow",
@@ -286,6 +289,7 @@ authentication privilege for followings:
 
 
 ---
+
 ## Options
 
 ### Cloud Service Type : Specify what to collect
@@ -374,7 +378,8 @@ The `service_code_mappers` items that can be specified are as follows.
 
 ### Custom Asset URL : Possible to modify icon path of cloud service
 
-If `custom_asset_url` is added in options, You can replace the path of the icon each cloud service type instead of default path.
+If `custom_asset_url` is added in options, You can replace the path of the icon each cloud service type instead of
+default path.
 
 The `custom_asset_url` items that can be specified are as follows.
 
@@ -386,4 +391,5 @@ The `custom_asset_url` items that can be specified are as follows.
 </code>
 </pre>
 ---
+
 ## [Release note](RELEASE.md)
