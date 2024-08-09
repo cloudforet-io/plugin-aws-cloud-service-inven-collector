@@ -87,7 +87,7 @@ cst_elb._metadata = CloudServiceTypeMeta.set_meta(
         ),
         ListDyField.data_source(
             "Security Groups",
-            "data.security_group",
+            "data.security_groups",
             options={"delimiter": "<br>", "is_optional": True},
         ),
         ListDyField.data_source(

@@ -62,17 +62,17 @@ cst_function._metadata = CloudServiceTypeMeta.set_meta(
             "Handler", "data.handler", options={"is_optional": True}
         ),
         TextDyField.data_source(
-            "VPC ID", "data.vpc_config.vpc.id", options={"is_optional": True}
+            "VPC ID", "data.vpc_config.vpc_id", options={"is_optional": True}
         ),
         ListDyField.data_source(
             "Subnet IDs",
-            "data.vpc_config.subnets",
-            options={"delimiter": "<br>", "sub_key": "id", "is_optional": True},
+            "data.vpc_config.subnet_ids",
+            options={"delimiter": "<br>", "is_optional": True},
         ),
         ListDyField.data_source(
             "Security Group IDs",
-            "data.vpc_config.security_groups",
-            options={"delimiter": "<br>", "sub_key": "id", "is_optional": True},
+            "data.vpc_config.security_group_ids",
+            options={"delimiter": "<br>", "is_optional": True},
         ),
         TextDyField.data_source(
             "Code SHA256", "data.code_sha256", options={"is_optional": True}
@@ -185,7 +185,6 @@ cst_layer._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name="AWS Account ID", key="account"),
     ],
 )
-
 
 CLOUD_SERVICE_TYPES = [
     CloudServiceTypeResponse({"resource": cst_function}),
