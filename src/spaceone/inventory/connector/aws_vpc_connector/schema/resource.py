@@ -424,7 +424,7 @@ rt_routes = TableDynamicLayout.set_fields(
     "Routes",
     "data.routes",
     fields=[
-        TextDyField.data_source("Destination", "destination_cidr_block"),
+        TextDyField.data_source("Destination", "destination"),
         TextDyField.data_source("Target", "target"),
         EnumDyField.data_source(
             "Status", "state", default_state={"safe": ["active"], "alert": ["backhole"]}
