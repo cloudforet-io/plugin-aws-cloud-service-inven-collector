@@ -8,6 +8,7 @@ from schematics.types import (
     ListType,
     FloatType,
     BooleanType,
+    DateType,
 )
 from spaceone.inventory.libs.schema.resource import AWSCloudService
 
@@ -57,6 +58,73 @@ class NotificationConfiguration(Model):
     arn = StringType()
     events = ListType(StringType, choices=TOPIC_EVENTS)
     filter = ModelType(NotificationFilter, deserialize_from="filter")
+
+
+class Expiration(Model):
+    date = DateType(deserialize_from="Date")
+    days = IntType(deserialize_from="Days")
+    expired_object_delete_marker = BooleanType(
+        deserialize_from="ExpiredObjectDeleteMarker"
+    )
+
+
+class Transition(Model):
+    date = DateType(deserialize_from="Date")
+    days = IntType(deserialize_from="Days")
+    storage_class = StringType(
+        deserialize_from="StorageClass",
+        choices=(
+            "GLACIER",
+            "STANDARD_IA",
+            "ONEZONE_IA",
+            "INTELLIGENT_TIERING",
+            "DEEP_ARCHIVE",
+            "GLACIER_IR",
+        ),
+    )
+
+
+class NoncurrentVersionTransition(Model):
+    noncurrent_days = IntType(deserialize_from="NoncurrentDays")
+    storage_class = StringType(
+        deserialize_from="StorageClass",
+        choices=(
+            "GLACIER",
+            "STANDARD_IA",
+            "ONEZONE_IA",
+            "INTELLIGENT_TIERING",
+            "DEEP_ARCHIVE",
+            "GLACIER_IR",
+        ),
+    )
+    newer_noncurrent_versions = IntType(deserialize_from="NewerNoncurrentVersions")
+
+
+class NoncurrentVersionExpiration(Model):
+    noncurrent_days = IntType(deserialize_from="NoncurrentDays")
+    newer_noncurrent_versions = IntType(deserialize_from="NewerNoncurrentVersions")
+
+
+class AbortIncompleteMultipartUpload(Model):
+    days_after_initiation = IntType(deserialize_from="DaysAfterInitiation")
+
+
+class LifecycleRule(Model):
+    expiration = ModelType(Expiration, deserialize_from="Expiration")
+    id = StringType(deserialize_from="ID")
+    prefix = StringType(deserialize_from="Prefix")
+    status = StringType(deserialize_from="Status", choices=("Enabled", "Disabled"))
+    transition = ModelType(Transition, deserialize_from="Transition")
+    noncurrent_version_transition = ModelType(
+        NoncurrentVersionTransition, deserialize_from="NoncurrentVersionTransition"
+    )
+    noncurrent_version_expiration = ModelType(
+        NoncurrentVersionExpiration, deserialize_from="NoncurrentVersionExpiration"
+    )
+    abort_incomplete_multipart_upload = ModelType(
+        AbortIncompleteMultipartUpload,
+        deserialize_from="AbortIncompleteMultipartUpload",
+    )
 
 
 """
@@ -267,6 +335,8 @@ class Bucket(AWSCloudService):
     bucket_policy = ModelType(BucketPolicy, serialize_when_none=False)
     policy_document_exists = BooleanType()
     output_display = StringType(default="show")
+    lifecycle_rules = ListType(ModelType(LifecycleRule), default=[])
+    lifecycle_rules_count = IntType(default=0)
 
     def reference(self):
         return {

@@ -173,6 +173,10 @@ class S3Connector(SchematicAWSConnector):
                         {"object_count": count, "object_total_size": size, "size": size}
                     )
 
+                if lifecycle_rules := self.get_bucket_lifecycle(bucket_name):
+                    raw.update({"lifecycle_rules": lifecycle_rules})
+                    raw.update({"lifecycle_rules_count": len(lifecycle_rules)})
+
                 yield Bucket(raw, strict=False)
 
             except Exception as e:
@@ -185,7 +189,7 @@ class S3Connector(SchematicAWSConnector):
             policy_response = self.client.get_bucket_policy(Bucket=bucket_name)
             return BucketPolicy(policy_response, strict=False)
         except Exception as e:
-            _LOGGER.error(f"[S3 {bucket_name}: Get Bucket Policy] {e}")
+            _LOGGER.warning(f"[S3 {bucket_name}: Get Bucket Policy] {e}")
             return None
 
     def get_bucket_versioning(self, bucket_name):
@@ -422,6 +426,16 @@ class S3Connector(SchematicAWSConnector):
             time.sleep(0.1)
 
         return total_size
+
+    def get_bucket_lifecycle(self, bucket_name) -> List[dict]:
+        try:
+            response = self.client.get_bucket_lifecycle(Bucket=bucket_name)
+            rules = response.get("Rules")
+            return rules
+
+        except Exception as e:
+            _LOGGER.warning(f"[S3 {bucket_name}: Get Bucket Lifecycle] {e}")
+            return []
 
     @staticmethod
     def update_grants_info(bucket_acl):
