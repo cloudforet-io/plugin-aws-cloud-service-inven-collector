@@ -211,8 +211,9 @@ lifecycle_rules = TableDynamicLayout.set_fields(
         DictDyField.data_source(
             "Noncurrent Version Expiration", "noncurrent_version_expiration"
         ),
+        DictDyField.data_source("Transition", "transition"),
         DictDyField.data_source(
-            "Noncurrent Version Expiration", "noncurrent_version_expiration"
+            "Noncurrent Version Transition", "noncurrent_version_transition"
         ),
     ],
 )
