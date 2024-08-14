@@ -116,25 +116,26 @@ cst_bucket._metadata = CloudServiceTypeMeta.set_meta(
         ),
         ListDyField.data_source(
             "Notification Type",
-            "data.notification_configurations",
-            options={
-                "sub_key": "notification_type",
-                "delimiter": "<br>",
-                "is_optional": True,
-            },
+            "data.notification_configurations.notification_type",
+            options={"delimiter": "<br>", "is_optional": True},
         ),
         ListDyField.data_source(
             "Notification ID",
-            "data.notification_configurations",
-            options={"sub_key": "id", "delimiter": "<br>", "is_optional": True},
+            "data.notification_configurations.id",
+            options={"delimiter": "<br>", "is_optional": True},
         ),
         ListDyField.data_source(
             "Notification ARN",
-            "data.notification_configurations",
-            options={"sub_key": "arn", "delimiter": "<br>", "is_optional": True},
+            "data.notification_configurations.arn",
+            options={"delimiter": "<br>", "is_optional": True},
         ),
         TextDyField.data_source(
             "AWS Account ID", "account", options={"is_optional": True}
+        ),
+        TextDyField.data_source(
+            "Lifecycle Rules Count",
+            "data.lifecycle_rules_count",
+            options={"is_optional": True},
         ),
     ],
     search=[
