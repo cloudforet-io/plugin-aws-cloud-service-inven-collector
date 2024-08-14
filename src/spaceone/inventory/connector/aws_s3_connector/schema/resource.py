@@ -11,6 +11,7 @@ from spaceone.inventory.libs.schema.dynamic_field import (
     EnumDyField,
     SizeField,
     MoreField,
+    DictDyField,
 )
 from spaceone.inventory.libs.schema.dynamic_layout import (
     ItemDynamicLayout,
@@ -196,6 +197,26 @@ topic_conf = TableDynamicLayout.set_fields(
     ],
 )
 
+lifecycle_rules = TableDynamicLayout.set_fields(
+    "Lifecycle Rules",
+    "data.lifecycle_rules",
+    fields=[
+        TextDyField.data_source("ID", "id"),
+        EnumDyField.data_source(
+            "Status",
+            "status",
+            default_state={"safe": ["Enabled"], "alert": ["Disabled"]},
+        ),
+        DictDyField.data_source("Expiration", "expiration"),
+        DictDyField.data_source(
+            "Noncurrent Version Expiration", "noncurrent_version_expiration"
+        ),
+        DictDyField.data_source(
+            "Noncurrent Version Expiration", "noncurrent_version_expiration"
+        ),
+    ],
+)
+
 metadata = CloudServiceMeta.set_layouts(
     layouts=[
         bucket,
@@ -210,6 +231,7 @@ metadata = CloudServiceMeta.set_layouts(
         transfer_acc,
         requester_pays,
         topic_conf,
+        lifecycle_rules,
     ]
 )
 
