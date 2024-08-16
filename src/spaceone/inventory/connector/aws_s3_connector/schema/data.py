@@ -335,7 +335,7 @@ class Bucket(AWSCloudService):
     bucket_policy = ModelType(BucketPolicy, serialize_when_none=False)
     policy_document_exists = BooleanType()
     output_display = StringType(default="show")
-    lifecycle_rules = ListType(ModelType(LifecycleRule), default=[])
+    lifecycle_rules = ListType(ModelType(LifecycleRule), serialize_when_none=False)
 
     def reference(self):
         return {
