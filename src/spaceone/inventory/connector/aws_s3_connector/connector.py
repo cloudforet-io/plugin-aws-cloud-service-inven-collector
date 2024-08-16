@@ -175,7 +175,6 @@ class S3Connector(SchematicAWSConnector):
 
                 if lifecycle_rules := self.get_bucket_lifecycle(bucket_name):
                     raw.update({"lifecycle_rules": lifecycle_rules})
-                    raw.update({"lifecycle_rules_count": len(lifecycle_rules)})
 
                 yield Bucket(raw, strict=False)
 

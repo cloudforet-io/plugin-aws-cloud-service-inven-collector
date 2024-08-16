@@ -132,10 +132,10 @@ cst_bucket._metadata = CloudServiceTypeMeta.set_meta(
         TextDyField.data_source(
             "AWS Account ID", "account", options={"is_optional": True}
         ),
-        TextDyField.data_source(
-            "Lifecycle Rules Count",
-            "data.lifecycle_rules_count",
-            options={"is_optional": True},
+        ListDyField.data_source(
+            "Lifecycle Rules ID",
+            "data.lifecycle_rules.id",
+            options={"delimiter": "<br>", "is_optional": True},
         ),
     ],
     search=[
