@@ -109,6 +109,7 @@ cst_user._metadata = CloudServiceTypeMeta.set_meta(
             'postfix': ' days'
         }),
         TextDyField.data_source('MFA', 'data.mfa_device'),
+        TextDyField.data_source('Create At', 'created_at'),
         TextDyField.data_source('ARN', 'data.arn', options={
             'is_optional': True
         }),
@@ -172,7 +173,7 @@ cst_user._metadata = CloudServiceTypeMeta.set_meta(
     ],
     search=[
         SearchField.set(name='User ARN', key='data.arn'),
-        SearchField.set(name='Group Name', key='data.user_name'),
+        SearchField.set(name='Group Name', key='data.groups.group_name'),
         SearchField.set(name='Access Key Age', key='data.access_key_age', data_type='integer'),
         SearchField.set(name='Last Activity', key='data.last_active_age', data_type='integer'),
         SearchField.set(name='MFA', key='data.mfa_device'),
@@ -237,6 +238,7 @@ cst_role._metadata = CloudServiceTypeMeta.set_meta(
         ListDyField.data_source('Trusted Entities', 'data.trusted_entities', options={
             'delimiter': '<br>'
         }),
+        TextDyField.data_source('Create At', 'created_at'),
         TextDyField.data_source('ARN', 'data.arn', options={
             'is_optional': True
         }),
@@ -310,6 +312,7 @@ cst_policy._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
         TextDyField.data_source('Policy ID', 'data.policy_id'),
         TextDyField.data_source('Attachment Count', 'data.attachment_count'),
+        TextDyField.data_source('Create At', 'created_at'),
         TextDyField.data_source('ARN', 'data.arn', options={
             'is_optional': True
         }),

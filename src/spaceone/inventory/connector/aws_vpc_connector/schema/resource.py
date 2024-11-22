@@ -787,7 +787,7 @@ transitgw_vpn_conn = TableDynamicLayout.set_fields(
     "VPN Connections",
     "data.vpn_connections",
     fields=[
-        TextDyField.data_source("name", "name"),
+        TextDyField.data_source("Name", "name"),
         TextDyField.data_source("VPN ID", "vpn_connection_id"),
         EnumDyField.data_source(
             "State",
@@ -811,8 +811,40 @@ transitgw_vpn_conn = TableDynamicLayout.set_fields(
     ],
 )
 
+transitgw_vpn_attachment = TableDynamicLayout.set_fields(
+    "VPC Attachment",
+    "data.vpc_attachment",
+    fields=[
+        TextDyField.data_source("Name", "name"),
+        TextDyField.data_source("Transit gateway attachment ID", "transit_gateway_attachment_id"),
+        TextDyField.data_source("Transit gateway ID", "transit_gateway_id"),
+        EnumDyField.data_source(
+            "State",
+            "state",
+            default_state={
+                "safe": ["available"],
+                "warning": ["pendingAcceptance", "pending", "deleting", "failing", "initiatingRequest", "modifying", "pendingAcceptance", "rollingBack", "rejecting"],
+                "disable": ["deleted"],
+                "alert": ["rejected", "failed", "expired"],
+            },
+        ),
+        TextDyField.data_source("Resource type", "resource_type"),
+        TextDyField.data_source("Resource ID", "resource_id"),
+        TextDyField.data_source("Association route table ID", "data.association.transit_gateway_route_table_id"),
+        EnumDyField.data_source(
+            "Association state",
+            "data.association.state",
+            default_state={
+                "safe": ["associated"],
+                "warning": ["associating", "disassociating"],
+                "disable": ["disassociated"],
+            },
+        ),
+    ],
+)
+
 transitgw_metadata = CloudServiceMeta.set_layouts(
-    layouts=[transitgw, transitgw_vpn_conn]
+    layouts=[transitgw, transitgw_vpn_conn, transitgw_vpn_attachment]
 )
 
 # CUSTOMER GATEWAY
@@ -840,7 +872,7 @@ customergw = ItemDynamicLayout.set_fields(
 customergw_vpn_conn = ItemDynamicLayout.set_fields(
     "VPN Connection",
     fields=[
-        TextDyField.data_source("name", "data.vpn_connection.name"),
+        TextDyField.data_source("Name", "data.vpn_connection.name"),
         TextDyField.data_source("VPN ID", "data.vpn_connection.vpn_connection_id"),
         EnumDyField.data_source(
             "State",
