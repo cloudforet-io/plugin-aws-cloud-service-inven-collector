@@ -109,7 +109,7 @@ cst_user._metadata = CloudServiceTypeMeta.set_meta(
             'postfix': ' days'
         }),
         TextDyField.data_source('MFA', 'data.mfa_device'),
-        TextDyField.data_source('Create At', 'created_at'),
+        TextDyField.data_source('Created At', 'data.create_date'),
         TextDyField.data_source('ARN', 'data.arn', options={
             'is_optional': True
         }),
@@ -238,7 +238,7 @@ cst_role._metadata = CloudServiceTypeMeta.set_meta(
         ListDyField.data_source('Trusted Entities', 'data.trusted_entities', options={
             'delimiter': '<br>'
         }),
-        TextDyField.data_source('Create At', 'created_at'),
+        TextDyField.data_source('Created At', 'data.create_date'),
         TextDyField.data_source('ARN', 'data.arn', options={
             'is_optional': True
         }),
@@ -312,7 +312,7 @@ cst_policy._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
         TextDyField.data_source('Policy ID', 'data.policy_id'),
         TextDyField.data_source('Attachment Count', 'data.attachment_count'),
-        TextDyField.data_source('Create At', 'created_at'),
+        TextDyField.data_source('Created At', 'data.create_date'),
         TextDyField.data_source('ARN', 'data.arn', options={
             'is_optional': True
         }),

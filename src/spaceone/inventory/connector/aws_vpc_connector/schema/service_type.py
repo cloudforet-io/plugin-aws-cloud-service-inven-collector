@@ -1129,6 +1129,8 @@ cst_transitgw._metadata = CloudServiceTypeMeta.set_meta(
             name="VPN Gateway ID", key="data.vpn_connections.vpn_gateway_id"
         ),
         SearchField.set(name="AWS Account ID", key="account"),
+        SearchField.set(name="Transit Gateway Attachment ID", key="data.vpc_attachment.transit_gateway_attachment_id"),
+        SearchField.set(name="Transit Gateway Attachment Name", key="data.vpc_attachment.name")
     ],
     widget=[
         CardWidget.set(**get_data_from_yaml(transitgw_total_count_conf)),
@@ -1247,8 +1249,6 @@ cst_customgw._metadata = CloudServiceTypeMeta.set_meta(
             },
         ),
         SearchField.set(name="AWS Account ID", key="account"),
-        SearchField.set(name="Transit Gateway Attachment ID", key="data.vpc_attachment.transit_gateway_attachment_id"),
-        SearchField.set(name="Transit Gateway Attachment Name", key="data.vpc_attachment.name")
     ],
     widget=[
         CardWidget.set(**get_data_from_yaml(customergw_total_count_conf)),
