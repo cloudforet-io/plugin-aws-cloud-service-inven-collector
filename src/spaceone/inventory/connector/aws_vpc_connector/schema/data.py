@@ -238,12 +238,14 @@ class TransitGatewayAttachment(Model):
         deserialize_from="State",
         choices=(
             "initiating",
+            "initiatingRequest",
             "pendingAcceptance",
             "rollingBack",
             "pending",
             "available",
             "modifying",
             "deleting",
+            "failing",
             "deleted",
             "failed",
             "rejected",
@@ -327,6 +329,7 @@ class TransitGateway(AWSCloudService):
     options = ModelType(TransitGatewayOptions, deserialize_from="Options")
     transit_gateway_route_table = ModelType(TransitGatewayRouteTables)
     vpn_connections = ListType(ModelType(VPNConnection))
+    vpc_attachment = ListType(ModelType(TransitGatewayAttachment))
 
     def reference(self, region_code):
         return {

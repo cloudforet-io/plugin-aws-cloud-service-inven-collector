@@ -1016,6 +1016,14 @@ cst_transitgw._metadata = CloudServiceTypeMeta.set_meta(
             },
         ),
         TextDyField.data_source(
+            "Transit Gateway Attachment ID",
+            "data.vpc_attachment.transit_gateway_attachment_id",
+            options={"is_optional": True}, ),
+        TextDyField.data_source(
+            "Transit Gateway Attachment Name",
+            "data.vpc_attachment.name",
+            options={"is_optional": True}, ),
+        TextDyField.data_source(
             "ARN", "data.transit_gateway_arn", options={"is_optional": True}
         ),
         TextDyField.data_source(
@@ -1239,6 +1247,8 @@ cst_customgw._metadata = CloudServiceTypeMeta.set_meta(
             },
         ),
         SearchField.set(name="AWS Account ID", key="account"),
+        SearchField.set(name="Transit Gateway Attachment ID", key="data.vpc_attachment.transit_gateway_attachment_id"),
+        SearchField.set(name="Transit Gateway Attachment Name", key="data.vpc_attachment.name")
     ],
     widget=[
         CardWidget.set(**get_data_from_yaml(customergw_total_count_conf)),
