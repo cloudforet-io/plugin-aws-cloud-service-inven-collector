@@ -811,13 +811,13 @@ transitgw_vpn_conn = TableDynamicLayout.set_fields(
     ],
 )
 
-transitgw_vpn_attachment = TableDynamicLayout.set_fields(
+transitgw_vpc_attachment = TableDynamicLayout.set_fields(
     "VPC Attachment",
     "data.vpc_attachment",
     fields=[
         TextDyField.data_source("Name", "name"),
-        TextDyField.data_source("Transit gateway attachment ID", "transit_gateway_attachment_id"),
-        TextDyField.data_source("Transit gateway ID", "transit_gateway_id"),
+        TextDyField.data_source("Transit Gateway Attachment ID", "transit_gateway_attachment_id"),
+        TextDyField.data_source("Transit Gateway ID", "transit_gateway_id"),
         EnumDyField.data_source(
             "State",
             "state",
@@ -844,7 +844,7 @@ transitgw_vpn_attachment = TableDynamicLayout.set_fields(
 )
 
 transitgw_metadata = CloudServiceMeta.set_layouts(
-    layouts=[transitgw, transitgw_vpn_conn, transitgw_vpn_attachment]
+    layouts=[transitgw, transitgw_vpn_conn, transitgw_vpc_attachment]
 )
 
 # CUSTOMER GATEWAY

@@ -24,12 +24,27 @@ class CollectorService(BaseService):
     @check_required(["options"])
     def init(self, params):
         """init grpc by options"""
+        options_schema =  \
+            {
+                "required": ["vulnerable_ports"],
+                "type": "object",
+                "properties": {
+                    "vulnerable_ports": {
+                        "title": "Vulnerable Ports Option",
+                        "type": "string",
+                        "default": DEFAULT_VULNERABLE_PORTS,
+                        "description": "Ex) 22,8080,3306 (Default = 22,3306)",
+                    }
+                },
+            }
         capability = {
             "filter_format": FILTER_FORMAT,
             "supported_resource_type": SUPPORTED_RESOURCE_TYPE,
             "supported_features": SUPPORTED_FEATURES,
             "supported_schedules": SUPPORTED_SCHEDULES,
+            "options_schema": options_schema,
         }
+
         return {"metadata": capability}
 
     @transaction

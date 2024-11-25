@@ -908,6 +908,9 @@ class VPCConnector(SchematicAWSConnector):
                         "vpn_connections": self._match_vpn_connection(
                             "transit_gateway", transit_gateway.get("TransitGatewayId")
                         ),
+                        "vpc_attachment": self._match_transit_gateway_attachments(
+                            transit_gateway.get("TransitGatewayId")
+                        ),
                     }
                 )
 
@@ -1069,6 +1072,7 @@ class VPCConnector(SchematicAWSConnector):
                     region_name, resource_id, e
                 )
                 yield {"data": error_resource_response}
+
 
     @staticmethod
     def _get_name_from_tags(tags):
@@ -1285,6 +1289,25 @@ class VPCConnector(SchematicAWSConnector):
                     match_vpn_connections.append(vpnconn)
 
         return match_vpn_connections
+
+    def _match_transit_gateway_attachments(self, transit_gateway_id):
+        vpc_attachments = []
+
+        filters = [
+            {"Name": "resource-type", "Values": ["vpc"]},
+            {"Name": "transit-gateway-id", "Values": [transit_gateway_id]},
+        ]
+
+        paginator = self.client.get_paginator("describe_transit_gateway_attachments")
+        response_iterator = paginator.paginate(
+            Filters=filters,
+            PaginationConfig={"MaxItems": 10000},
+        )
+
+        for response in response_iterator:
+            vpc_attachments.extend(response.get("TransitGatewayAttachments", []))
+
+        return vpc_attachments
 
     @staticmethod
     def _get_main_network_acl(nacls):
