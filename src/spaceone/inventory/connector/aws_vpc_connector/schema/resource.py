@@ -815,7 +815,6 @@ transitgw_vpc_attachment = TableDynamicLayout.set_fields(
     "VPC Attachment",
     "data.vpc_attachment",
     fields=[
-        TextDyField.data_source("Name", "name"),
         TextDyField.data_source("Transit Gateway Attachment ID", "transit_gateway_attachment_id"),
         TextDyField.data_source("Transit Gateway ID", "transit_gateway_id"),
         EnumDyField.data_source(
@@ -830,16 +829,6 @@ transitgw_vpc_attachment = TableDynamicLayout.set_fields(
         ),
         TextDyField.data_source("Resource type", "resource_type"),
         TextDyField.data_source("Resource ID", "resource_id"),
-        TextDyField.data_source("Association route table ID", "data.association.transit_gateway_route_table_id"),
-        EnumDyField.data_source(
-            "Association state",
-            "data.association.state",
-            default_state={
-                "safe": ["associated"],
-                "warning": ["associating", "disassociating"],
-                "disable": ["disassociated"],
-            },
-        ),
     ],
 )
 

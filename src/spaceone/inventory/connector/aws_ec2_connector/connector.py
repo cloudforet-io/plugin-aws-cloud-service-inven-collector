@@ -390,12 +390,12 @@ class EC2Connector(SchematicAWSConnector):
         if isinstance(toPort, int) and isinstance(fromPort, int):
             for port in vulnerable_ports.split(','):
                 try:
-                    port = int(port)
+                    target_port = int(port)
                 except (ValueError, TypeError):
                     continue
 
-                if fromPort <= port >= toPort:
-                    vulnerable_ports.append(port)
+                if fromPort <= target_port >= toPort:
+                    ports.append(target_port)
 
         return ports
 
