@@ -42,7 +42,7 @@ class CollectorService(BaseService):
             "supported_resource_type": SUPPORTED_RESOURCE_TYPE,
             "supported_features": SUPPORTED_FEATURES,
             "supported_schedules": SUPPORTED_SCHEDULES,
-            "options_schema": options_schema,
+            "options": options_schema,
         }
 
         return {"metadata": capability}
