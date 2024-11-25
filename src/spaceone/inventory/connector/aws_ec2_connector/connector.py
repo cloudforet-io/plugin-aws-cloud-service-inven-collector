@@ -45,7 +45,6 @@ class EC2Connector(SchematicAWSConnector):
                 "request_method": self.request_security_group_data,
                 "resource": SecurityGroupResource,
                 "response_schema": SecurityGroupResponse,
-                "kwargs": kwargs
             },
             {
                 "request_method": self.request_ami_data,
@@ -125,12 +124,12 @@ class EC2Connector(SchematicAWSConnector):
                 )
                 yield {"data": error_resource_response}
 
-    def request_security_group_data(self, region_name, **kwargs) -> List[SecurityGroup]:
+    def request_security_group_data(self, region_name) -> List[SecurityGroup]:
         self.cloud_service_type = "SecurityGroup"
         cloudtrail_resource_type = "AWS::EC2::SecurityGroup"
 
         # If Port Filter Option Exist
-        vulnerable_ports = kwargs.get("vulnerable_ports", DEFAULT_VULNERABLE_PORTS)
+        vulnerable_ports = self.options.get("vulnerable_ports", DEFAULT_VULNERABLE_PORTS)
 
         # Get default VPC
         default_vpcs = self._get_default_vpc()

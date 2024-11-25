@@ -174,11 +174,11 @@ class SchematicAWSConnector(AWSConnector):
     cloud_service_group = ""
     cloud_service_type = ""
 
-    def get_resources(self, **kwargs) -> List[CloudServiceResponse]:
+    def get_resources(self) -> List[CloudServiceResponse]:
         raise NotImplementedError()
 
-    def collect_data(self, **kwargs):
-        return self.get_resources(**kwargs)
+    def collect_data(self):
+        return self.get_resources()
 
     def collect_data_by_region(self, service_name, region_name, collect_resource_info):
         """
