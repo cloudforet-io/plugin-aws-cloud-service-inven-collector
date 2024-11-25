@@ -1020,10 +1020,6 @@ cst_transitgw._metadata = CloudServiceTypeMeta.set_meta(
             "data.vpc_attachment.transit_gateway_attachment_id",
             options={"is_optional": True}, ),
         TextDyField.data_source(
-            "Transit Gateway Attachment Name",
-            "data.vpc_attachment.name",
-            options={"is_optional": True}, ),
-        TextDyField.data_source(
             "ARN", "data.transit_gateway_arn", options={"is_optional": True}
         ),
         TextDyField.data_source(
