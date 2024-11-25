@@ -2,6 +2,7 @@ import logging
 
 from schematics import Model
 from schematics.types import ModelType, StringType, IntType, ListType, BooleanType
+
 from spaceone.inventory.libs.schema.resource import AWSCloudService
 
 _LOGGER = logging.getLogger(__name__)
@@ -121,7 +122,6 @@ class Instance(Model):
     security_groups = ListType(ModelType(InstanceSecurityGroup), deserialize_from="SecurityGroups")
     tags = ListType(ModelType(InstanceTags), deserialize_from="Tags", default=[])
 
-
 class SecurityGroupIpPermissionIpRanges(Model):
     cidr_ip = StringType(deserialize_from="CidrIp")
     description = StringType(deserialize_from="Description")
@@ -159,6 +159,7 @@ class SecurityGroupIpPermission(Model):
     port_display = StringType(default="")
     source_display = StringType(default="")
     description_display = StringType(default="")
+    vulnerable_ports = ListType(IntType)
 
 
 class SecurityGroup(AWSCloudService):

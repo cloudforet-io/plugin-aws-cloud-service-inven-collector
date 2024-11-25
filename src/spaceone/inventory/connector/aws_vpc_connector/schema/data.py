@@ -231,7 +231,7 @@ class TransitGatewayAttachment(Model):
     resource_owner_id = StringType(deserialize_from="ResourceOwnerId")
     resource_type = StringType(
         deserialize_from="ResourceType",
-        choices=("vpc", "vpn", "direct-connect-gateway", "tgw-peering"),
+        choices=("vpc", "vpn", "direct-connect-gateway", "connect", "peering", "tgw-peering"),
     )
     resource_id = StringType(deserialize_from="ResourceId")
     state = StringType(

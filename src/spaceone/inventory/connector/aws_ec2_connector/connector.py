@@ -2,6 +2,9 @@ import time
 import logging
 from typing import List
 
+from botocore.handlers import remove_content_type_header_for_presigning
+
+from spaceone.inventory.conf.cloud_service_conf import DEFAULT_VULNERABLE_PORT_LIST, DEFAULT_VULNERABLE_PORTS
 from spaceone.inventory.connector.aws_ec2_connector.schema.data import (
     SecurityGroup,
     SecurityGroupIpPermission,
@@ -30,7 +33,7 @@ class EC2Connector(SchematicAWSConnector):
 
     include_vpc_default = False
 
-    def get_resources(self) -> List[SecurityGroupResource]:
+    def get_resources(self, **kwargs) -> List[SecurityGroupResource]:
         _LOGGER.debug(f"[get_resources][account_id: {self.account_id}] START: EC2")
         resources = []
         start_time = time.time()
@@ -42,6 +45,7 @@ class EC2Connector(SchematicAWSConnector):
                 "request_method": self.request_security_group_data,
                 "resource": SecurityGroupResource,
                 "response_schema": SecurityGroupResponse,
+                "kwargs": kwargs
             },
             {
                 "request_method": self.request_ami_data,
@@ -121,9 +125,12 @@ class EC2Connector(SchematicAWSConnector):
                 )
                 yield {"data": error_resource_response}
 
-    def request_security_group_data(self, region_name) -> List[SecurityGroup]:
+    def request_security_group_data(self, region_name, **kwargs) -> List[SecurityGroup]:
         self.cloud_service_type = "SecurityGroup"
         cloudtrail_resource_type = "AWS::EC2::SecurityGroup"
+
+        # If Port Filter Option Exist
+        vulnerable_ports = kwargs.get("vulnerable_ports", DEFAULT_VULNERABLE_PORTS)
 
         # Get default VPC
         default_vpcs = self._get_default_vpc()
@@ -156,7 +163,7 @@ class EC2Connector(SchematicAWSConnector):
                             inbound_rules.append(
                                 SecurityGroupIpPermission(
                                     self.custom_security_group_rule_info(
-                                        in_rule, _ip_range, "ip_ranges"
+                                        in_rule, _ip_range, "ip_ranges", vulnerable_ports,
                                     ),
                                     strict=False,
                                 )
@@ -169,6 +176,7 @@ class EC2Connector(SchematicAWSConnector):
                                         in_rule,
                                         _user_group_pairs,
                                         "user_id_group_pairs",
+                                        vulnerable_ports,
                                     ),
                                     strict=False,
                                 )
@@ -178,7 +186,7 @@ class EC2Connector(SchematicAWSConnector):
                             inbound_rules.append(
                                 SecurityGroupIpPermission(
                                     self.custom_security_group_rule_info(
-                                        in_rule, _ip_v6_range, "ipv6_ranges"
+                                        in_rule, _ip_v6_range, "ipv6_ranges", vulnerable_ports
                                     ),
                                     strict=False,
                                 )
@@ -246,7 +254,7 @@ class EC2Connector(SchematicAWSConnector):
                     )
                     yield {"data": error_resource_response}
 
-    def custom_security_group_rule_info(self, raw_rule, remote, remote_type):
+    def custom_security_group_rule_info(self, raw_rule, remote, remote_type, vulnerable_ports: None):
         raw_rule.update(
             {
                 "protocol_display": self._get_protocol_display(
@@ -256,6 +264,7 @@ class EC2Connector(SchematicAWSConnector):
                 "source_display": self._get_source_display(remote),
                 "description_display": self._get_description_display(remote),
                 remote_type: remote,
+                "vulnerable_ports": self._get_vulnerable_ports(remote, vulnerable_ports),
             }
         )
 
@@ -369,6 +378,27 @@ class EC2Connector(SchematicAWSConnector):
             return description
 
         return ""
+
+    @staticmethod
+    def _get_vulnerable_ports(remote, vulnerable_ports):
+        try:
+            toPort = int(remote.get("ToPort"))
+            fromPort = int(remote.get("FromPort"))
+        except (ValueError, TypeError):
+            return []
+
+        ports = []
+        if isinstance(toPort, int) and isinstance(fromPort, int):
+            for port in vulnerable_ports.split(','):
+                try:
+                    port = int(port)
+                except (ValueError, TypeError):
+                    continue
+
+                if fromPort <= port >= toPort:
+                    vulnerable_ports.append(port)
+
+        return ports
 
     @staticmethod
     def get_instance_name_from_tags(instance):

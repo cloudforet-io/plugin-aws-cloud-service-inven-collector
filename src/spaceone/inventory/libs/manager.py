@@ -18,7 +18,7 @@ class AWSManager(BaseManager):
     def collect_resources(self, **kwargs) -> list:
         try:
             connector = self.locator.get_connector(self.connector_name, **kwargs)
-            return connector.collect_data()
+            return connector.collect_data(**kwargs)
         except Exception as e:
             _LOGGER.error(f'[collect_resources] {e}')
 
