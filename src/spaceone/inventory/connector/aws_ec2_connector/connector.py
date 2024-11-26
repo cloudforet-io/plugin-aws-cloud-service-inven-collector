@@ -4,7 +4,7 @@ from typing import List
 
 from botocore.handlers import remove_content_type_header_for_presigning
 
-from spaceone.inventory.conf.cloud_service_conf import DEFAULT_VULNERABLE_PORT_LIST, DEFAULT_VULNERABLE_PORTS
+from spaceone.inventory.conf.cloud_service_conf import DEFAULT_VULNERABLE_PORTS
 from spaceone.inventory.connector.aws_ec2_connector.schema.data import (
     SecurityGroup,
     SecurityGroupIpPermission,
