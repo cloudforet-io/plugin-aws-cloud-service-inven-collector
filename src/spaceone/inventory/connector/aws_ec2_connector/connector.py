@@ -161,7 +161,7 @@ class EC2Connector(SchematicAWSConnector):
                         for _ip_range in in_rule.get("IpRanges", []):
                             inbound_rules.append(
                                 SecurityGroupIpPermission(
-                                    self.custom_security_group_rule_info(
+                                    self.custom_security_group_inbound_rule_info(
                                         in_rule, _ip_range, "ip_ranges", vulnerable_ports,
                                     ),
                                     strict=False,
@@ -171,7 +171,7 @@ class EC2Connector(SchematicAWSConnector):
                         for _user_group_pairs in in_rule.get("UserIdGroupPairs", []):
                             inbound_rules.append(
                                 SecurityGroupIpPermission(
-                                    self.custom_security_group_rule_info(
+                                    self.custom_security_group_inbound_rule_info(
                                         in_rule,
                                         _user_group_pairs,
                                         "user_id_group_pairs",
@@ -184,7 +184,7 @@ class EC2Connector(SchematicAWSConnector):
                         for _ip_v6_range in in_rule.get("Ipv6Ranges", []):
                             inbound_rules.append(
                                 SecurityGroupIpPermission(
-                                    self.custom_security_group_rule_info(
+                                    self.custom_security_group_inbound_rule_info(
                                         in_rule, _ip_v6_range, "ipv6_ranges", vulnerable_ports
                                     ),
                                     strict=False,
@@ -253,7 +253,14 @@ class EC2Connector(SchematicAWSConnector):
                     )
                     yield {"data": error_resource_response}
 
-    def custom_security_group_rule_info(self, raw_rule, remote, remote_type, vulnerable_ports=None):
+    def custom_security_group_inbound_rule_info(self, raw_rule, remote, remote_type, vulnerable_ports):
+        return self.custom_security_group_rule_info(raw_rule, remote, remote_type).update(
+            {
+                "vulnerable_ports": self._get_vulnerable_ports(raw_rule, vulnerable_ports),
+            }
+        )
+
+    def custom_security_group_rule_info(self, raw_rule, remote, remote_type):
         raw_rule.update(
             {
                 "protocol_display": self._get_protocol_display(
@@ -263,7 +270,6 @@ class EC2Connector(SchematicAWSConnector):
                 "source_display": self._get_source_display(remote),
                 "description_display": self._get_description_display(remote),
                 remote_type: remote,
-                "vulnerable_ports": self._get_vulnerable_ports(remote, vulnerable_ports),
             }
         )
 
@@ -379,24 +385,29 @@ class EC2Connector(SchematicAWSConnector):
         return ""
 
     @staticmethod
-    def _get_vulnerable_ports(remote, vulnerable_ports):
-        try:
-            toPort = int(remote.get("ToPort"))
-            fromPort = int(remote.get("FromPort"))
-        except (ValueError, TypeError):
-            return []
+    def _get_vulnerable_ports(raw_rule, vulnerable_ports):
+        is_port_all = False
+        toPort = None
+        fromPort = None
+
+        if raw_rule.get("ToPort") and raw_rule.get("FromPort"):
+            try:
+                toPort = int(raw_rule.get("ToPort"))
+                fromPort = int(raw_rule.get("FromPort"))
+            except (ValueError, TypeError):
+                return []
+        else:
+            is_port_all = True
 
         ports = []
-        if isinstance(toPort, int) and isinstance(fromPort, int):
+        if vulnerable_ports:
             for port in vulnerable_ports.split(','):
                 try:
                     target_port = int(port)
+                    if is_port_all or (fromPort <= target_port <= toPort):
+                        ports.append(target_port)
                 except (ValueError, TypeError):
                     continue
-
-                if fromPort <= target_port <= toPort:
-                    ports.append(target_port)
-
         return ports
 
     @staticmethod
