@@ -58,5 +58,4 @@ from spaceone.inventory.connector.aws_lightsail_connector.connector import (
 # )
 # from spaceone.inventory.connector.aws_eip_connector.connector import EIPConnector
 # from spaceone.inventory.connector.aws_ebs_connector.connector import EBSConnector
-#todo : For Extra Test
-from spaceone.inventory.connector.aws_ec2_connector.connector import EC2Connector
+# from spaceone.inventory.connector.aws_ec2_connector.connector import EC2Connector
