@@ -159,7 +159,7 @@ class SecurityGroupIpPermission(Model):
     port_display = StringType(default="")
     source_display = StringType(default="")
     description_display = StringType(default="")
-    vulnerable_ports = ListType(IntType, default=[])
+    vulnerable_ports = ListType(IntType)
 
 
 class SecurityGroup(AWSCloudService):

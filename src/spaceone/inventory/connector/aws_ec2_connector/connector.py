@@ -253,7 +253,7 @@ class EC2Connector(SchematicAWSConnector):
                     )
                     yield {"data": error_resource_response}
 
-    def custom_security_group_rule_info(self, raw_rule, remote, remote_type, vulnerable_ports: None):
+    def custom_security_group_rule_info(self, raw_rule, remote, remote_type, vulnerable_ports=None):
         raw_rule.update(
             {
                 "protocol_display": self._get_protocol_display(
@@ -394,7 +394,7 @@ class EC2Connector(SchematicAWSConnector):
                 except (ValueError, TypeError):
                     continue
 
-                if fromPort <= target_port >= toPort:
+                if fromPort <= target_port <= toPort:
                     ports.append(target_port)
 
         return ports
