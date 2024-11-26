@@ -41,7 +41,7 @@ CLOUD_SERVICE_GROUP_MAP = {
     "KinesisFirehose": "KinesisFirehoseConnectorManager",
     "Lightsail": "LightsailConnectorManager",
     # Not used services
-    #For Extra Test
+    #todo : For Extra Test
     "EC2": "EC2ConnectorManager",
     # "EIP": "EIPConnectorManager",
     # "EBS": "EBSConnectorManager",
