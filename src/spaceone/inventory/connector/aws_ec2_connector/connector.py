@@ -128,9 +128,6 @@ class EC2Connector(SchematicAWSConnector):
         self.cloud_service_type = "SecurityGroup"
         cloudtrail_resource_type = "AWS::EC2::SecurityGroup"
 
-        # If Port Filter Option Exist
-        vulnerable_ports = self.options.get("vulnerable_ports", DEFAULT_VULNERABLE_PORTS)
-
         # Get default VPC
         default_vpcs = self._get_default_vpc()
 
@@ -161,8 +158,8 @@ class EC2Connector(SchematicAWSConnector):
                         for _ip_range in in_rule.get("IpRanges", []):
                             inbound_rules.append(
                                 SecurityGroupIpPermission(
-                                    self.custom_security_group_inbound_rule_info(
-                                        in_rule, _ip_range, "ip_ranges", vulnerable_ports,
+                                    self.custom_security_group_rule_info(
+                                        in_rule, _ip_range, "ip_ranges",
                                     ),
                                     strict=False,
                                 )
@@ -171,11 +168,10 @@ class EC2Connector(SchematicAWSConnector):
                         for _user_group_pairs in in_rule.get("UserIdGroupPairs", []):
                             inbound_rules.append(
                                 SecurityGroupIpPermission(
-                                    self.custom_security_group_inbound_rule_info(
+                                    self.custom_security_group_rule_info(
                                         in_rule,
                                         _user_group_pairs,
                                         "user_id_group_pairs",
-                                        vulnerable_ports,
                                     ),
                                     strict=False,
                                 )
@@ -184,8 +180,8 @@ class EC2Connector(SchematicAWSConnector):
                         for _ip_v6_range in in_rule.get("Ipv6Ranges", []):
                             inbound_rules.append(
                                 SecurityGroupIpPermission(
-                                    self.custom_security_group_inbound_rule_info(
-                                        in_rule, _ip_v6_range, "ipv6_ranges", vulnerable_ports
+                                    self.custom_security_group_rule_info(
+                                        in_rule, _ip_v6_range, "ipv6_ranges",
                                     ),
                                     strict=False,
                                 )
@@ -252,13 +248,6 @@ class EC2Connector(SchematicAWSConnector):
                         region_name, resource_id, e
                     )
                     yield {"data": error_resource_response}
-
-    def custom_security_group_inbound_rule_info(self, raw_rule, remote, remote_type, vulnerable_ports):
-        return self.custom_security_group_rule_info(raw_rule, remote, remote_type).update(
-            {
-                "vulnerable_ports": self._get_vulnerable_ports(raw_rule, vulnerable_ports),
-            }
-        )
 
     def custom_security_group_rule_info(self, raw_rule, remote, remote_type):
         raw_rule.update(
@@ -383,32 +372,6 @@ class EC2Connector(SchematicAWSConnector):
             return description
 
         return ""
-
-    @staticmethod
-    def _get_vulnerable_ports(raw_rule, vulnerable_ports):
-        is_port_all = False
-        toPort = None
-        fromPort = None
-
-        if raw_rule.get("ToPort") and raw_rule.get("FromPort"):
-            try:
-                toPort = int(raw_rule.get("ToPort"))
-                fromPort = int(raw_rule.get("FromPort"))
-            except (ValueError, TypeError):
-                return []
-        else:
-            is_port_all = True
-
-        ports = []
-        if vulnerable_ports:
-            for port in vulnerable_ports.split(','):
-                try:
-                    target_port = int(port)
-                    if is_port_all or (fromPort <= target_port <= toPort):
-                        ports.append(target_port)
-                except (ValueError, TypeError):
-                    continue
-        return ports
 
     @staticmethod
     def get_instance_name_from_tags(instance):
