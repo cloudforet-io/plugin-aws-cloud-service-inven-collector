@@ -50,8 +50,13 @@ class SQSConnector(SchematicAWSConnector):
         for que in resource.queues.all():
             try:
                 attr = que.attributes
-                if 'RedrivePolicy' in attr:
-                    attr['RedrivePolicy'] = RedrivePolicy(json.loads(attr.get('RedrivePolicy')), strict=False)
+                if 'RedrivePolicy' in attr and attr['RedrivePolicy']:
+                    try:
+                        redrive_policy = json.loads(attr['RedrivePolicy'])
+                        if isinstance(redrive_policy, dict):
+                            attr['RedrivePolicy'] = RedrivePolicy(redrive_policy, strict=False)
+                    except json.JSONDecodeError:
+                        pass
 
                 result = QueData(attr)
                 result.region_name = region_name
