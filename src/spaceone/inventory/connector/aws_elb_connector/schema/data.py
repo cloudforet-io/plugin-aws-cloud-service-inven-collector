@@ -162,6 +162,37 @@ class Matcher(Model):
     http_code = StringType(deserialize_from="HttpCode")
 
 
+class Target(Model):
+    id = StringType(deserialize_from="Id")
+    port = IntType(deserialize_from="Port")
+    availability_zone = StringType(deserialize_from="AvailabilityZone")
+
+
+class TargetHealth(Model):
+    state = StringType(deserialize_from="State")
+    reason = StringType(deserialize_from="Reason")
+    description = StringType(deserialize_from="Description")
+
+
+class AnomalyDetection(Model):
+    result = StringType(deserialize_from="Result")
+    mitigation_in_effect = StringType(deserialize_from="MitigationInEffect")
+
+
+class AdministrativeOverride(Model):
+    state = StringType(deserialize_from="State")
+    reason = StringType(deserialize_from="Reason")
+    description = StringType(deserialize_from="Description")
+
+
+class TargetHealthInfo(Model):
+    target = ModelType(Target, deserialize_from="Target")
+    health_check_port = IntType(deserialize_from="HealthCheckPort")
+    target_health = ModelType(TargetHealth, deserialize_from="TargetHealth")
+    anomaly_detection = ModelType(AnomalyDetection, deserialize_from="AnomalyDetection")
+    administrative_override = ModelType(AdministrativeOverride, deserialize_from="AdministrativeOverride")
+
+
 class TargetGroup(AWSCloudService):
     target_group_arn = StringType(deserialize_from="TargetGroupArn")
     target_group_name = StringType(deserialize_from="TargetGroupName")
@@ -190,6 +221,7 @@ class TargetGroup(AWSCloudService):
         deserialize_from="TargetType", choices=("instance", "ip", "lambda")
     )
     attributes = ModelType(TargetGroupAttributes)
+    targets_health = ListType(ModelType(TargetHealthInfo, deserialize_from="TargetHealthInfo"), deserialize_from="TargetsHealth")
 
     def reference(self, region_code):
         return {

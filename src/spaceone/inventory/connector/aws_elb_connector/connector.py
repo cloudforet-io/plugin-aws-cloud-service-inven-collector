@@ -98,6 +98,7 @@ class ELBConnector(SchematicAWSConnector):
                             cloudtrail_resource_type,
                             raw_tg["TargetGroupArn"],
                         ),
+                        "targets_health": self.get_targets_health(raw_tg["TargetGroupArn"])
                     }
                 )
 
@@ -118,6 +119,9 @@ class ELBConnector(SchematicAWSConnector):
                     region_name, resource_id, e
                 )
                 yield {"data": error_resource_response}
+
+    def get_targets_health(self, tg_arn: str):
+        return self.request_target_health(tg_arn)
 
     def request_load_balancer_data(self, region_name):
         self.cloud_service_type = "LoadBalancer"
