@@ -205,7 +205,7 @@ tg_base = ItemDynamicLayout.set_fields(
     ],
 )
 
-tg_health = ItemDynamicLayout.set_fields(
+tg_health = TableDynamicLayout.set_fields(
     "Target Health",
     fields=[
         TextDyField.data_source("ID", "data.targets_health.target.id"),
