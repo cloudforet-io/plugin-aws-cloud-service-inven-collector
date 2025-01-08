@@ -148,8 +148,8 @@ class CloudWatchConnector(SchematicAWSConnector):
             history.append(
                 {
                     "date": alarm_history["Timestamp"],
-                    "type": alarm_histories["HistoryItemType"],
-                    "description": alarm_histories["HistorySummary"]
+                    "type": alarm_history["HistoryItemType"],
+                    "description": alarm_history["HistorySummary"]
                 }
             )
 

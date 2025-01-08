@@ -12,14 +12,14 @@ Alarms
 """
 
 class Action(Model):
-    type = StringType(deserialize_from="type")
+    type = StringType( deserialize_from="type")
     description = StringType(deserialize_from="description")
     config = StringType(deserialize_from="config")
 
 
 class History(Model):
     date = DateType(deserialize_from="date")
-    type = StringType(deserialize_from="type")
+    type = StringType(choices=("ConfigurationUpdate","StateUpdate","Action"), deserialize_from="type")
     description = StringType(deserialize_from="description")
 
 

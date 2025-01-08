@@ -21,7 +21,7 @@ cw_history = TableDynamicLayout.set_fields(
         DateTimeDyField.data_source("Date", "data.history.date"),
         TextDyField.data_source("Type", "data.history.type"),
         TextDyField.data_source("Description", "data.history.description"),
-    ]
+    ],
 )
 
 cloud_watch_metadata = CloudServiceMeta.set_layouts(layouts=[cw_actions,cw_history])
