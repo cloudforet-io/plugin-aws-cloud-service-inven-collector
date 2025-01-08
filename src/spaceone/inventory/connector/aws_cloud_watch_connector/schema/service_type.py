@@ -1,5 +1,6 @@
 from spaceone.inventory.conf.cloud_service_conf import ASSET_URL
-from spaceone.inventory.libs.schema.dynamic_field import TextDyField, ListDyField, SearchField, DateTimeDyField
+from spaceone.inventory.libs.schema.dynamic_field import TextDyField, ListDyField, SearchField, DateTimeDyField, \
+    EnumDyField
 from spaceone.inventory.libs.schema.resource import CloudServiceTypeResponse, CloudServiceTypeResource, \
     CloudServiceTypeMeta
 
@@ -20,6 +21,9 @@ cst_alarms.tags = {
 
 cst_alarms._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
+        EnumDyField.data_source("State", "data.state_value", default_badge={
+            'gray.500': ['INSUFFICIENT_DATA'], 'green.500': ['OK'], 'red.500': ['ALARM']
+        }),
         TextDyField.data_source("State", "data.state_value"),
         DateTimeDyField.data_source("Last State Update", "data.state_updated_timestamp"),
         TextDyField.data_source("Conditions", "data.conditions"),
