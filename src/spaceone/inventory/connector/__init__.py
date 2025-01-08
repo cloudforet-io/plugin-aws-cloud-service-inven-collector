@@ -51,6 +51,7 @@ from spaceone.inventory.connector.aws_kinesis_firehose_connector.connector impor
 from spaceone.inventory.connector.aws_lightsail_connector.connector import (
     LightsailConnector,
 )
+from spaceone.inventory.connector.aws_cloud_watch_connector.connector import CloudWatchConnector
 
 # Not used services
 # from spaceone.inventory.connector.aws_auto_scaling_connector.connector import (
