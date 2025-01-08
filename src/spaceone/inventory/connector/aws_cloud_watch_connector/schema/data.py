@@ -17,14 +17,21 @@ class Action(Model):
     config = StringType(deserialize_from="config")
 
 
+class History(Model):
+    date = DateType(deserialize_from="date")
+    type = StringType(deserialize_from="type")
+    description = StringType(deserialize_from="description")
+
+
 class Alarms(AWSCloudService):
     alarm_arn = StringType(deserialize_from="AlarmArn")
     name = StringType(deserialize_from="AlarmName")
     state_value = StringType(choices=("OK","ALARM","INSUFFICIENT_DATA"), deserialize_from="StateValue")
     state_updated_timestamp = DateType(deserialize_from="StateUpdatedTimestamp")
     actions_enabled = StringType(deserialize_from="actions_enabled")
-    actions = ListType(ModelType(Action, deserialize_from="action"), deserialize_from="actions")
     conditions = StringType(deserialize_from="conditions")
+    actions = ListType(ModelType(Action, deserialize_from="action"), deserialize_from="actions")
+    history = ListType(ModelType(History, deserialize_from="history"), deserialize_from="history")
 
     def reference(self, region_code):
         return {
