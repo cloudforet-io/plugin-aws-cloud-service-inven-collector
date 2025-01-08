@@ -1,10 +1,7 @@
 import logging
-from enum import verify
 
-import boto3
 from spaceone.core.utils import *
 
-from spaceone.inventory.conf.cloud_service_conf import BOTO3_HTTPS_VERIFIED
 from spaceone.inventory.connector.aws_cloud_watch_connector.schema.data import Alarms
 from spaceone.inventory.connector.aws_cloud_watch_connector.schema.resource import AlarmsResource, AlarmsResponse
 from spaceone.inventory.connector.aws_cloud_watch_connector.schema.service_type import CLOUD_SERVICE_TYPES
