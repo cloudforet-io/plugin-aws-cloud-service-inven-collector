@@ -12,8 +12,10 @@ cst_alarms.provider = "aws"
 cst_alarms.group = "CloudWatch"
 cst_alarms.labels = ["Monitoring"]
 cst_alarms.service_code = "AWSCloudWatch"
+cst_alarms.is_primary = True
+cst_alarms.is_major = True
 cst_alarms.tags = {
-    "spaceone:icon": f"{ASSET_URL}/Cloud-Watch.svg",
+    "spaceone:icon": f"{ASSET_URL}/AWS-Cloud-Watch.svg",
 }
 
 cst_alarms._metadata = CloudServiceTypeMeta.set_meta(
