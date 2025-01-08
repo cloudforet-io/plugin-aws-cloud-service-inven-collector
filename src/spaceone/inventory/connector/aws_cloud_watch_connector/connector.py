@@ -1,6 +1,10 @@
 import logging
+from enum import verify
+
+import boto3
 from spaceone.core.utils import *
 
+from spaceone.inventory.conf.cloud_service_conf import BOTO3_HTTPS_VERIFIED
 from spaceone.inventory.connector.aws_cloud_watch_connector.schema.data import Alarms
 from spaceone.inventory.connector.aws_cloud_watch_connector.schema.resource import AlarmsResource, AlarmsResponse
 from spaceone.inventory.connector.aws_cloud_watch_connector.schema.service_type import CLOUD_SERVICE_TYPES
@@ -68,8 +72,9 @@ class CloudWatchConnector(SchematicAWSConnector):
             for raw_alarm in raw_alarms:
 
                 self.set_alarm_conditions(raw_alarm)
-                alarms_vo = Alarms(raw_alarm, strict=False)
+                self._set_alarm_actions(raw_alarm)
 
+                alarms_vo = Alarms(raw_alarm, strict=False)
                 self.alarms.append(alarms_vo)
 
                 yield {
@@ -100,6 +105,38 @@ class CloudWatchConnector(SchematicAWSConnector):
         operator = self.ComparisonOperator.get(comparison_operator, "?")
 
         raw_alarm["conditions"] = f"{metric_name} {operator} {threshold} for {evaluation_periods} datapoionts within {period_minutes} minutes"
+
+    @staticmethod
+    def _set_alarm_actions(raw_alarm):
+        raw_alarm["actions"] = []
+        actions = raw_alarm["actions"]
+        alarm_actions = raw_alarm.get("AlarmActions", [])
+
+        if alarm_actions:
+            raw_alarm["actions_enabled"] = "Actions enabled"
+
+            for action in alarm_actions:
+                action_type = None
+                action_description = None
+                action_config = None
+
+                if "sns" in action.lower():
+                    action_type = "Notification"
+                    action_description = action.split(":")[-1]
+                    action_config = ""
+                elif "lambda" in action.lower():
+                    # lambda_client = boto3.client("lambda", region_name=self.region_name, verify=BOTO3_HTTPS_VERIFIED)
+                    # lambda_response = lambda_client.get_function(FunctionName=action.split(':')[-1])
+                    pass
+                elif "ec2" in action.lower():
+                    # ec2_client = boto3.client("ec2", region_name=self.region_name, verify=BOTO3_HTTPS_VERIFIED)
+                    # ec2_response = ec2_client.describe_instances(InstanceIds=action.split(':')[-1])
+                    pass
+
+                actions.append({"type": action_type, "description": action_description, "config": action_config})
+        else:
+            raw_alarm["actions_enabled"] = "No Actions"
+
 
     @staticmethod
     def _convert_int_type(value):

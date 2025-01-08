@@ -1,14 +1,21 @@
 from schematics.types import PolyModelType, StringType, ModelType
 
 from spaceone.inventory.connector.aws_cloud_watch_connector.schema.data import Alarms
+from spaceone.inventory.libs.schema.dynamic_field import TextDyField
+from spaceone.inventory.libs.schema.dynamic_layout import TableDynamicLayout
 from spaceone.inventory.libs.schema.resource import CloudServiceResponse, CloudServiceResource, CloudServiceMeta
 
 
-# cloud_watch_alarms =
-
-cloud_watch_metadata = CloudServiceMeta.set_layouts(
-    # layouts=[cloud_watch_alarms]
+cw_actions = TableDynamicLayout.set_fields(
+    "Actions",
+    fields=[
+        TextDyField.data_source("Type", "data.actions.type"),
+        TextDyField.data_source("Description", "data.actions.description"),
+        TextDyField.data_source("Config", "data.actions.config")
+    ],
 )
+
+cloud_watch_metadata = CloudServiceMeta.set_layouts(layouts=[cw_actions])
 
 
 class CloudWatchResource(CloudServiceResource):
