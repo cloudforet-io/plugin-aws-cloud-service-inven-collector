@@ -315,7 +315,7 @@ cst_tg._metadata = CloudServiceTypeMeta.set_meta(
         ),
     ],
     search=[
-        SearchField.set(name="ARN", key="data."),
+        SearchField.set(name="ARN", key="data.load_balancer_arn"),
         SearchField.set(
             name="Protocol",
             key="data.protocol",
