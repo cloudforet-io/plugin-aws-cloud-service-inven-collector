@@ -59,6 +59,11 @@ class CloudWatchConnector(SchematicAWSConnector):
         )
         return resources
 
+    def get_alarms(self):
+        response = self.client.describe_alarms()
+        # Only MetricAlarms are returned temporarily, CompositeAlarms must be applied later.
+        return response["MetricAlarms"]
+
     def request_alarms_data(self, region_name):
         self.cloud_service_type = "Alarm"
         cloudwatch_resource_type = "AWS::CloudWatch::Alarm"
@@ -67,9 +72,9 @@ class CloudWatchConnector(SchematicAWSConnector):
             raw_alarms = self.get_alarms()
 
             for raw_alarm in raw_alarms:
-
-                self.set_alarm_conditions(raw_alarm)
+                self._set_alarm_conditions(raw_alarm)
                 self._set_alarm_actions(raw_alarm)
+                self._set_alarm_history(raw_alarm)
 
                 alarms_vo = Alarms(raw_alarm, strict=False)
                 self.alarms.append(alarms_vo)
@@ -86,12 +91,7 @@ class CloudWatchConnector(SchematicAWSConnector):
             )
             yield {"data": error_resource_response}
 
-    def get_alarms(self):
-        response = self.client.describe_alarms()
-        # Only MetricAlarms are returned temporarily, CompositeAlarms must be applied later.
-        return response["MetricAlarms"]
-
-    def set_alarm_conditions(self, raw_alarm):
+    def _set_alarm_conditions(self, raw_alarm):
         metric_name = raw_alarm.get("MetricName", "?")
         period = raw_alarm["Period"]
         evaluation_periods = self._convert_int_type(raw_alarm.get("EvaluationPeriods", "?"))
@@ -134,6 +134,24 @@ class CloudWatchConnector(SchematicAWSConnector):
         else:
             raw_alarm["actions_enabled"] = "No Actions"
 
+    def get_alarm_history(self, alarm_name: str):
+        response = self.client.describe_alarm_history(AlarmName=alarm_name)
+        return response["AlarmHistoryItems"]
+
+    def _set_alarm_history(self, raw_alarm):
+        alarm_histories = self.get_alarm_history(raw_alarm["AlarmName"])
+
+        raw_alarm["history"] = []
+        history = raw_alarm["history"]
+
+        for alarm_history in alarm_histories:
+            history.append(
+                {
+                    "date": alarm_history["Timestamp"],
+                    "type": alarm_histories["HistoryItemType"],
+                    "description": alarm_histories["HistorySummary"]
+                }
+            )
 
     @staticmethod
     def _convert_int_type(value):
