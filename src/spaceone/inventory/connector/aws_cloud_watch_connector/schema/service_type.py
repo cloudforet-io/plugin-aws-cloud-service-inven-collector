@@ -1,5 +1,5 @@
 from spaceone.inventory.conf.cloud_service_conf import ASSET_URL
-from spaceone.inventory.libs.schema.dynamic_field import TextDyField, ListDyField, SearchField, DateTimeDyField, \
+from spaceone.inventory.libs.schema.dynamic_field import TextDyField, SearchField, DateTimeDyField, \
     EnumDyField
 from spaceone.inventory.libs.schema.resource import CloudServiceTypeResponse, CloudServiceTypeResource, \
     CloudServiceTypeMeta
