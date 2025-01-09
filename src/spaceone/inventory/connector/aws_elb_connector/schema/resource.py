@@ -206,15 +206,15 @@ tg_base = ItemDynamicLayout.set_fields(
 )
 
 tg_health = TableDynamicLayout.set_fields(
-    "Target Health",
+    "Target Health", "data.targets_health",
     fields=[
-        TextDyField.data_source("ID", "data.targets_health.target.id"),
-        TextDyField.data_source("Port", "data.targets_health.target.port"),
-        TextDyField.data_source("AvailabilityZone", "data.targets_health.target.availability_zone"),
-        TextDyField.data_source("HealthCheckPort", "data.targets_health.health_check_port"),
+        TextDyField.data_source("ID", "target.id"),
+        TextDyField.data_source("Port", "target.port"),
+        TextDyField.data_source("AvailabilityZone", "target.availability_zone"),
+        TextDyField.data_source("HealthCheckPort", "health_check_port"),
         EnumDyField.data_source(
             "State",
-            "data.targets_health.target_health.state",
+            "target_health.state",
             default_badge={"green.500": ["healthy"], "gray.500": ["initial","unused","unavailable","draining"], "red.600": ["unhealthy","unhealthy.draining"]},
         ),
     ],

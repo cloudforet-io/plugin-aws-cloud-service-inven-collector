@@ -7,20 +7,20 @@ from spaceone.inventory.libs.schema.resource import CloudServiceResponse, CloudS
 
 
 cw_actions = TableDynamicLayout.set_fields(
-    "Actions",
+    "Actions", "data.actions",
     fields=[
-        TextDyField.data_source("Type", "data.actions.type"),
-        TextDyField.data_source("Description", "data.actions.description"),
-        TextDyField.data_source("Config", "data.actions.config")
+        TextDyField.data_source("Type", "type"),
+        TextDyField.data_source("Description", "description"),
+        TextDyField.data_source("Config", "config")
     ],
 )
 
 cw_history = TableDynamicLayout.set_fields(
-    "History",
+    "History", 'data.history',
     fields=[
-        DateTimeDyField.data_source("Date", "data.history.date"),
-        TextDyField.data_source("Type", "data.history.type"),
-        TextDyField.data_source("Description", "data.history.description"),
+        DateTimeDyField.data_source("Date", "date"),
+        TextDyField.data_source("Type", "type"),
+        TextDyField.data_source("Description", "description"),
     ],
 )
 
