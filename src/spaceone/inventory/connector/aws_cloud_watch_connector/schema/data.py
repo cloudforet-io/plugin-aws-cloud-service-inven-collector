@@ -1,7 +1,7 @@
 import logging
 
 from schematics import Model
-from schematics.types import StringType, DateType, ModelType, ListType
+from schematics.types import StringType, ModelType, ListType
 
 from spaceone.inventory.libs.schema.dynamic_field import DateTimeDyField
 from spaceone.inventory.libs.schema.resource import AWSCloudService
