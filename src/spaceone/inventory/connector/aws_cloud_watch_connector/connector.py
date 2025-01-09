@@ -1,10 +1,13 @@
 import logging
+from typing import Generator, List
 
 from spaceone.core.utils import *
 
 from spaceone.inventory.connector.aws_cloud_watch_connector.schema.data import Alarms
 from spaceone.inventory.connector.aws_cloud_watch_connector.schema.resource import AlarmsResource, AlarmsResponse
 from spaceone.inventory.connector.aws_cloud_watch_connector.schema.service_type import CLOUD_SERVICE_TYPES
+from spaceone.inventory.connector.aws_dynamodb_connector.schema.data import Table
+from spaceone.inventory.connector.aws_dynamodb_connector.schema.resource import TableResource
 from spaceone.inventory.libs.connector import SchematicAWSConnector
 
 
@@ -24,7 +27,7 @@ class CloudWatchConnector(SchematicAWSConnector):
         "GreaterThanUpperThreshold": ">"
     }
 
-    def get_resources(self):
+    def get_resources(self) -> List[TableResource]:
         _LOGGER.debug(f"[get_resources][account_id: {self.account_id}] START: CloudWatch")
         resources = []
         start_time = time.time()
@@ -60,17 +63,24 @@ class CloudWatchConnector(SchematicAWSConnector):
         return resources
 
     def get_alarms(self):
-        response = self.client.describe_alarms()
-        # Only MetricAlarms are returned temporarily, CompositeAlarms must be applied later.
-        return response["MetricAlarms"]
+        paginator = self.client.get_paginator("describe_alarms")
+        response_iterator = paginator.paginate(
+            PaginationConfig={
+                "MaxRecords": 100,
+            }
+        )
 
-    def request_alarms_data(self, region_name):
+        for data in response_iterator:
+            # Only MetricAlarms are returned temporarily, CompositeAlarms must be applied later.
+            for raw in data.get("MetricAlarms", []):
+                yield raw
+
+    def request_alarms_data(self, region_name: str) -> List[Table]:
         self.cloud_service_type = "Alarm"
         cloudwatch_resource_type = "AWS::CloudWatch::Alarm"
 
         try:
             raw_alarms = self.get_alarms()
-
             for raw_alarm in raw_alarms:
                 self._set_alarm_conditions(raw_alarm)
                 self._set_alarm_actions(raw_alarm)
@@ -91,7 +101,7 @@ class CloudWatchConnector(SchematicAWSConnector):
             )
             yield {"data": error_resource_response}
 
-    def _set_alarm_conditions(self, raw_alarm):
+    def _set_alarm_conditions(self, raw_alarm: Alarms) -> None:
         metric_name = raw_alarm.get("MetricName", "?")
         period = raw_alarm["Period"]
         evaluation_periods = self._convert_int_type(raw_alarm.get("EvaluationPeriods", "?"))
@@ -104,7 +114,7 @@ class CloudWatchConnector(SchematicAWSConnector):
         raw_alarm["conditions"] = f"{metric_name} {operator} {threshold} for {evaluation_periods} datapoionts within {period_minutes} minutes"
 
     @staticmethod
-    def _set_alarm_actions(raw_alarm):
+    def _set_alarm_actions(raw_alarm: Alarms) -> None:
         raw_alarm["actions"] = []
         actions = raw_alarm["actions"]
         alarm_actions = raw_alarm.get("AlarmActions", [])
@@ -132,18 +142,27 @@ class CloudWatchConnector(SchematicAWSConnector):
 
                 actions.append({"type": action_type, "description": action_description, "config": action_config})
         else:
-            raw_alarm["actions_enabled"] = "No Actions"
+            raw_alarm["actions_enabled"] = "No actions"
 
-    def get_alarm_history(self, alarm_name: str):
-        response = self.client.describe_alarm_history(AlarmName=alarm_name)
-        return response["AlarmHistoryItems"]
+    def get_alarm_history(self, alarm_name: str) -> Generator[dict, None, None]:
+        paginator = self.client.get_paginator("describe_alarm_history")
+        response_iterator = paginator.paginate(
+            PaginationConfig={
+                "AlarmName": alarm_name,
+                "MaxItems": 100,
+                "ScanBy": "TimestampDescending",
+            }
+        )
 
-    def _set_alarm_history(self, raw_alarm):
-        alarm_histories = self.get_alarm_history(raw_alarm["AlarmName"])
+        for data in response_iterator:
+            for raw in data.get("AlarmHistoryItems", []):
+                yield raw
 
+    def _set_alarm_history(self, raw_alarm: Alarms) -> None:
         raw_alarm["history"] = []
         history = raw_alarm["history"]
 
+        alarm_histories = self.get_alarm_history(raw_alarm["AlarmName"])
         for alarm_history in alarm_histories:
             history.append(
                 {
