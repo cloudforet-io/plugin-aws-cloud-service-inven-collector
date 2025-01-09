@@ -32,7 +32,7 @@ cst_alarms._metadata = CloudServiceTypeMeta.set_meta(
     ],
     search=[
         SearchField.set(name="Alarm ARN", key="data.alarm_arn"),
-        SearchField.set(name="Alarm Name", key="data.alarm_name"),
+        SearchField.set(name="Alarm Name", key="name"),
         SearchField.set(name="State", key="data.state_value"),
         SearchField.set(name="Actions", key="data.actions_enabled"),
     ],
