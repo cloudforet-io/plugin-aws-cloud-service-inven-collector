@@ -29,7 +29,6 @@ cst_alarms._metadata = CloudServiceTypeMeta.set_meta(
         EnumDyField.data_source("Actions", "data.actions_enabled", default_badge={
             'gray.500': ['No actions'], 'green.500': ['Actions enabled']
         }),
-        ListDyField.data_source("Actions", "data.actions_enabled"),
     ],
     search=[
         SearchField.set(name="Alarm ARN", key="data.alarm_arn"),
