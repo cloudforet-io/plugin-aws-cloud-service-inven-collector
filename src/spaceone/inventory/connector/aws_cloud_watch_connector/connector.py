@@ -164,7 +164,6 @@ class CloudWatchConnector(SchematicAWSConnector):
 
         alarm_histories = self.get_alarm_history(raw_alarm["AlarmName"])
         for alarm_history in alarm_histories:
-            print(alarm_history["Timestamp"])
             history.append(
                 {
                     "date": alarm_history["Timestamp"],

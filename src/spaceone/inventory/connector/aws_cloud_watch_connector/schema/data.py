@@ -1,9 +1,8 @@
 import logging
 
 from schematics import Model
-from schematics.types import StringType, ModelType, ListType
+from schematics.types import StringType, ModelType, ListType, DateTimeType
 
-from spaceone.inventory.libs.schema.dynamic_field import DateTimeDyField
 from spaceone.inventory.libs.schema.resource import AWSCloudService
 
 _LOGGER = logging.getLogger(__name__)
@@ -19,7 +18,7 @@ class Action(Model):
 
 
 class History(Model):
-    date = DateTimeDyField(deserialize_from="date")
+    date = DateTimeType(deserialize_from="date")
     type = StringType(choices=("ConfigurationUpdate","StateUpdate","Action"), deserialize_from="type")
     description = StringType(deserialize_from="description")
 
@@ -28,7 +27,7 @@ class Alarms(AWSCloudService):
     alarm_arn = StringType(deserialize_from="AlarmArn")
     name = StringType(deserialize_from="AlarmName")
     state_value = StringType(choices=("OK","ALARM","INSUFFICIENT_DATA"), deserialize_from="StateValue")
-    state_updated_timestamp = DateTimeDyField(deserialize_from="StateUpdatedTimestamp")
+    state_updated_timestamp = DateTimeType(deserialize_from="StateUpdatedTimestamp")
     actions_enabled = StringType(deserialize_from="actions_enabled")
     conditions = StringType(deserialize_from="conditions")
     actions = ListType(ModelType(Action, deserialize_from="action"), deserialize_from="actions")
