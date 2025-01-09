@@ -18,7 +18,6 @@ from spaceone.inventory.libs.schema.dynamic_field import (
 from spaceone.inventory.libs.schema.dynamic_layout import (
     ItemDynamicLayout,
     TableDynamicLayout,
-    SimpleTableDynamicLayout,
 )
 
 """
