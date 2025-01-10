@@ -86,6 +86,7 @@ class CloudWatchConnector(SchematicAWSConnector):
                 self._set_alarm_conditions(raw_alarm)
                 self._set_alarm_actions(raw_alarm)
                 self._set_alarm_history(raw_alarm)
+                tags = self._get_alarms_tags(raw_alarm.get("AlarmArn"))
 
                 alarms_vo = Alarms(raw_alarm, strict=False)
                 self.alarms.append(alarms_vo)
@@ -94,6 +95,7 @@ class CloudWatchConnector(SchematicAWSConnector):
                     "data": alarms_vo,
                     "name": alarms_vo.name,
                     "account": self.account_id,
+                    "tags": self.convert_tags_to_dict_type(tags)
                 }
 
         except Exception as e:
@@ -176,6 +178,10 @@ class CloudWatchConnector(SchematicAWSConnector):
                     "description": alarm_history["HistorySummary"]
                 }
             )
+
+    def _get_alarms_tags(self, alarm_arn: str):
+        response = self.client.list_tags_for_resource(ResourceARN=alarm_arn)
+        return response["Tags"]
 
     @staticmethod
     def _convert_int_type(value):
