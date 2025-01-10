@@ -92,7 +92,6 @@ class ELBConnector(SchematicAWSConnector):
                 match_tags = self.search_tags(all_tags, raw_tg.get("TargetGroupArn"))
                 raw_tg.update(
                     {
-                        "port_display": str(raw_tg.get("Port")),
                         "region_name": region_name,
                         "cloudtrail": self.set_cloudtrail(
                             region_name,
