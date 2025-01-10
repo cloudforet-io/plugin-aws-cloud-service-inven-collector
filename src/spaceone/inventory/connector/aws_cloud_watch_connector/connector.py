@@ -180,9 +180,8 @@ class CloudWatchConnector(SchematicAWSConnector):
             )
 
     def _get_alarms_tags(self, alarm_arn: str):
-        resource = self.client.list_tags_for_resource(ResourceARN=alarm_arn)
-        print(resource)
-        return resource["Tags"]
+        response = self.client.list_tags_for_resource(ResourceARN=alarm_arn)
+        return response["Tags"]
 
     @staticmethod
     def _convert_int_type(value):
