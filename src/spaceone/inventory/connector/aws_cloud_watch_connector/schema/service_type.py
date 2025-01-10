@@ -21,9 +21,15 @@ cst_alarms.tags = {
 
 cst_alarms._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        EnumDyField.data_source("State", "data.state_value", default_badge={
-            'gray.500': ['INSUFFICIENT_DATA'], 'green.500': ['OK'], 'red.500': ['ALARM']
-        }),
+        EnumDyField.data_source(
+            "State",
+            "data.state_value",
+            default_state={
+                "safe": ["OK"],
+                "disable": ["INSUFFICIENT_DATA"],
+                "alert": ["ALARM"],
+            },
+        ),
         DateTimeDyField.data_source("Last State Update", "data.state_updated_timestamp"),
         TextDyField.data_source("Conditions", "data.conditions"),
         EnumDyField.data_source("Actions", "data.actions_enabled", default_badge={
