@@ -188,6 +188,7 @@ class AdministrativeOverride(Model):
 class TargetHealthInfo(Model):
     target = ModelType(Target, deserialize_from="Target")
     health_check_port = IntType(deserialize_from="HealthCheckPort")
+    health_check_port_display = StringType(deserialize_from="HealthCheckPort")
     target_health = ModelType(TargetHealth, deserialize_from="TargetHealth")
     anomaly_detection = ModelType(AnomalyDetection, deserialize_from="AnomalyDetection")
     administrative_override = ModelType(AdministrativeOverride, deserialize_from="AdministrativeOverride")

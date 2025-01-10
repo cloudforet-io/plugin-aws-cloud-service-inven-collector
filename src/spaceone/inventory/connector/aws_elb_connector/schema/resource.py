@@ -208,9 +208,8 @@ tg_health = TableDynamicLayout.set_fields(
     "Target Health", "data.targets_health",
     fields=[
         TextDyField.data_source("ID", "target.id"),
-        TextDyField.data_source("Port", "target.port_display"),
+        TextDyField.data_source("HealthCheckPort", "health_check_port_display"),
         TextDyField.data_source("AvailabilityZone", "target.availability_zone"),
-        TextDyField.data_source("HealthCheckPort", "health_check_port"),
         EnumDyField.data_source(
             "State",
             "target_health.state",

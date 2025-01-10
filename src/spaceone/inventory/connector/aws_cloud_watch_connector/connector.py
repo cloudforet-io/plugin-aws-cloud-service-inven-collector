@@ -123,20 +123,21 @@ class CloudWatchConnector(SchematicAWSConnector):
             raw_alarm["actions_enabled"] = "Actions enabled"
 
             for action in alarm_actions:
+                action_service = self._extract_arn_service(action)
                 action_type = None
                 action_description = None
                 action_config = None
 
-                if "sns" in action.lower():
+                if action_service == "sns":
                     action_type = "Notification"
                     arn = action.split(":")[-1]
                     action_description = f"When in alarm, send message to topic \"{arn}\""
                     action_config = ""
-                elif "lambda" in action.lower():
+                elif action_service == "lambda":
                     # lambda_client = boto3.client("lambda", region_name=self.region_name, verify=BOTO3_HTTPS_VERIFIED)
                     # lambda_response = lambda_client.get_function(FunctionName=action.split(':')[-1])
                     pass
-                elif "ec2" in action.lower():
+                elif action_service == "ec2":
                     # ec2_client = boto3.client("ec2", region_name=self.region_name, verify=BOTO3_HTTPS_VERIFIED)
                     # ec2_response = ec2_client.describe_instances(InstanceIds=action.split(':')[-1])
                     pass
@@ -181,3 +182,8 @@ class CloudWatchConnector(SchematicAWSConnector):
         if isinstance(value, float) and value.is_integer():
             return int(value)
         return value
+
+    @staticmethod
+    def _extract_arn_service(arn: str) -> str:
+        match = re.search(r"^arn:[\w\-]+:([\w\-]+):", arn)
+        return match.group(1)
