@@ -242,7 +242,7 @@ cst_tg.tags = {
 
 cst_tg._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source("Port", "data.port"),
+        TextDyField.data_source("Port", "data.port_display"),
         TextDyField.data_source("Protocol", "data.protocol"),
         TextDyField.data_source("Target Type", "instance_type"),
         ListDyField.data_source(

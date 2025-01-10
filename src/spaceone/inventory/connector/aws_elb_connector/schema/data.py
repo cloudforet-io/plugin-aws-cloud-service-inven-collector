@@ -201,6 +201,7 @@ class TargetGroup(AWSCloudService):
         choices=("HTTP", "HTTPS", "TCP", "TLS", "UDP", "TCP_UDP"),
     )
     port = IntType(deserialize_from="Port")
+    port_display = StringType(deserialize_from="port_display")
     vpc_id = StringType(deserialize_from="VpcId")
     health_check_protocol = StringType(
         deserialize_from="HealthCheckProtocol",

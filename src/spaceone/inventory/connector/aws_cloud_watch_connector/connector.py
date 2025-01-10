@@ -1,6 +1,7 @@
 import logging
 from typing import Generator, List
 
+from dateutil.relativedelta import relativedelta
 from spaceone.core.utils import *
 
 from spaceone.inventory.connector.aws_cloud_watch_connector.schema.data import Alarms
@@ -113,8 +114,7 @@ class CloudWatchConnector(SchematicAWSConnector):
 
         raw_alarm["conditions"] = f"{metric_name} {operator} {threshold} for {evaluation_periods} datapoionts within {period_minutes} minutes"
 
-    @staticmethod
-    def _set_alarm_actions(raw_alarm: Alarms) -> None:
+    def _set_alarm_actions(self, raw_alarm: Alarms) -> None:
         raw_alarm["actions"] = []
         actions = raw_alarm["actions"]
         alarm_actions = raw_alarm.get("AlarmActions", [])
@@ -129,7 +129,8 @@ class CloudWatchConnector(SchematicAWSConnector):
 
                 if "sns" in action.lower():
                     action_type = "Notification"
-                    action_description = action.split(":")[-1]
+                    arn = action.split(":")[-1]
+                    action_description = f"When in alarm, send message to topic \"{arn}\""
                     action_config = ""
                 elif "lambda" in action.lower():
                     # lambda_client = boto3.client("lambda", region_name=self.region_name, verify=BOTO3_HTTPS_VERIFIED)
@@ -146,10 +147,13 @@ class CloudWatchConnector(SchematicAWSConnector):
 
     def get_alarm_history(self, alarm_name: str) -> Generator[dict, None, None]:
         paginator = self.client.get_paginator("describe_alarm_history")
+
+        end_date = datetime.datetime.now() - relativedelta(months=1)
         response_iterator = paginator.paginate(
             PaginationConfig={
                 "AlarmName": alarm_name,
                 "MaxItems": 100,
+                "EndDate": end_date,
                 "ScanBy": "TimestampDescending",
             }
         )
