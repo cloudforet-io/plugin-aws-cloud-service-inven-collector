@@ -5,18 +5,26 @@ from dateutil.relativedelta import relativedelta
 from spaceone.core.utils import *
 
 from spaceone.inventory.connector.aws_cloud_watch_connector.schema.data import Alarms
-from spaceone.inventory.connector.aws_cloud_watch_connector.schema.resource import AlarmsResource, AlarmsResponse
-from spaceone.inventory.connector.aws_cloud_watch_connector.schema.service_type import CLOUD_SERVICE_TYPES
+from spaceone.inventory.connector.aws_cloud_watch_connector.schema.resource import (
+    AlarmsResource,
+    AlarmsResponse,
+)
+from spaceone.inventory.connector.aws_cloud_watch_connector.schema.service_type import (
+    CLOUD_SERVICE_TYPES,
+)
 from spaceone.inventory.connector.aws_dynamodb_connector.schema.data import Table
-from spaceone.inventory.connector.aws_dynamodb_connector.schema.resource import TableResource
+from spaceone.inventory.connector.aws_dynamodb_connector.schema.resource import (
+    TableResource,
+)
 from spaceone.inventory.libs.connector import SchematicAWSConnector
 
 
 _LOGGER = logging.getLogger(__name__)
 
+
 class CloudWatchConnector(SchematicAWSConnector):
-    service_name = 'cloudwatch'
-    cloud_service_group = 'CloudWatch'
+    service_name = "cloudwatch"
+    cloud_service_group = "CloudWatch"
     cloud_service_types = CLOUD_SERVICE_TYPES
     ComparisonOperator = {
         "GreaterThanOrEqualToThreshold": ">=",
@@ -25,11 +33,13 @@ class CloudWatchConnector(SchematicAWSConnector):
         "LessThanOrEqualToThreshold": "<=",
         "LessThanLowerOrGreaterThanUpperThreshold": "<>",
         "LessThanLowerThreshold": "<",
-        "GreaterThanUpperThreshold": ">"
+        "GreaterThanUpperThreshold": ">",
     }
 
     def get_resources(self) -> List[TableResource]:
-        _LOGGER.debug(f"[get_resources][account_id: {self.account_id}] START: CloudWatch")
+        _LOGGER.debug(
+            f"[get_resources][account_id: {self.account_id}] START: CloudWatch"
+        )
         resources = []
         start_time = time.time()
 
@@ -95,26 +105,28 @@ class CloudWatchConnector(SchematicAWSConnector):
                     "data": alarms_vo,
                     "name": alarms_vo.name,
                     "account": self.account_id,
-                    "tags": self.convert_tags_to_dict_type(tags)
+                    "tags": self.convert_tags_to_dict_type(tags),
                 }
 
         except Exception as e:
-            error_resource_response = self.generate_error(
-                region_name, "alarms", e
-            )
+            error_resource_response = self.generate_error(region_name, "alarms", e)
             yield {"data": error_resource_response}
 
     def _set_alarm_conditions(self, raw_alarm: Alarms) -> None:
         metric_name = raw_alarm.get("MetricName", "?")
         period = raw_alarm["Period"]
-        evaluation_periods = self._convert_int_type(raw_alarm.get("EvaluationPeriods", "?"))
+        evaluation_periods = self._convert_int_type(
+            raw_alarm.get("EvaluationPeriods", "?")
+        )
         threshold = self._convert_int_type(raw_alarm.get("Threshold", "?"))
         comparison_operator = raw_alarm.get("ComparisonOperator", "?")
 
         period_minutes = period // 60 if isinstance(period, int) else "?"
         operator = self.ComparisonOperator.get(comparison_operator, "?")
 
-        raw_alarm["conditions"] = f"{metric_name} {operator} {threshold} for {evaluation_periods} datapoionts within {period_minutes} minutes"
+        raw_alarm["conditions"] = (
+            f"{metric_name} {operator} {threshold} for {evaluation_periods} datapoionts within {period_minutes} minutes"
+        )
 
     def _set_alarm_actions(self, raw_alarm: Alarms) -> None:
         raw_alarm["actions"] = []
@@ -126,25 +138,25 @@ class CloudWatchConnector(SchematicAWSConnector):
 
             for action in alarm_actions:
                 action_service = self._extract_arn_service(action)
-                action_type = None
-                action_description = None
-                action_config = None
 
                 if action_service == "sns":
                     action_type = "Notification"
                     arn = action.split(":")[-1]
-                    action_description = f"When in alarm, send message to topic \"{arn}\""
+                    action_description = f'When in alarm, send message to topic "{arn}"'
                     action_config = ""
-                elif action_service == "lambda":
-                    # lambda_client = boto3.client("lambda", region_name=self.region_name, verify=BOTO3_HTTPS_VERIFIED)
-                    # lambda_response = lambda_client.get_function(FunctionName=action.split(':')[-1])
-                    pass
-                elif action_service == "ec2":
-                    # ec2_client = boto3.client("ec2", region_name=self.region_name, verify=BOTO3_HTTPS_VERIFIED)
-                    # ec2_response = ec2_client.describe_instances(InstanceIds=action.split(':')[-1])
-                    pass
+                else:
+                    _LOGGER.debug(f"Other Actions Type Detected : {action}")
+                    action_type = action_service
+                    action_description = action.split(":")[-1]
+                    action_config = ""
 
-                actions.append({"type": action_type, "description": action_description, "config": action_config})
+                actions.append(
+                    {
+                        "type": action_type,
+                        "description": action_description,
+                        "config": action_config,
+                    }
+                )
         else:
             raw_alarm["actions_enabled"] = "No actions"
 
@@ -175,7 +187,7 @@ class CloudWatchConnector(SchematicAWSConnector):
                 {
                     "date": alarm_history["Timestamp"],
                     "type": alarm_history["HistoryItemType"],
-                    "description": alarm_history["HistorySummary"]
+                    "description": alarm_history["HistorySummary"],
                 }
             )
 
