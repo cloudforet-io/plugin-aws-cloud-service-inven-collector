@@ -10,8 +10,7 @@ cw_actions = TableDynamicLayout.set_fields(
     "Actions", "data.actions",
     fields=[
         TextDyField.data_source("Type", "type"),
-        TextDyField.data_source("Description", "description"),
-        TextDyField.data_source("Config", "config")
+        TextDyField.data_source("ARN", "arn"),
     ],
 )
 
