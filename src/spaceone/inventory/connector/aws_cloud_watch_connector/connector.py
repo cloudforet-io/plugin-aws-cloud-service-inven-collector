@@ -128,37 +128,28 @@ class CloudWatchConnector(SchematicAWSConnector):
             f"{metric_name} {operator} {threshold} for {evaluation_periods} datapoionts within {period_minutes} minutes"
         )
 
-    def _set_alarm_actions(self, raw_alarm: Alarms) -> None:
+    @staticmethod
+    def _set_alarm_actions(raw_alarm: Alarms) -> None:
         raw_alarm["actions"] = []
         actions = raw_alarm["actions"]
         alarm_actions = raw_alarm.get("AlarmActions", [])
+        ok_actions = raw_alarm.get("OKActions ", [])
+        insufficient_data_actions = raw_alarm.get("InsufficientDataActions", [])
 
-        if alarm_actions:
-            raw_alarm["actions_enabled"] = "Actions enabled"
+        raw_alarm["actions_enabled"] = (
+            "Actions enabled"
+            if raw_alarm.get("ActionsEnabled", False)
+            else "No actions"
+        )
 
-            for action in alarm_actions:
-                action_service = self._extract_arn_service(action)
+        for action in alarm_actions:
+            actions.append({"type": "AlarmAction", "arn": action})
 
-                if action_service == "sns":
-                    action_type = "Notification"
-                    arn = action.split(":")[-1]
-                    action_description = f'When in alarm, send message to topic "{arn}"'
-                    action_config = ""
-                else:
-                    _LOGGER.debug(f"Other Actions Type Detected : {action}")
-                    action_type = action_service
-                    action_description = action.split(":")[-1]
-                    action_config = ""
+        for action in ok_actions:
+            actions.append({"type": "OKAction", "arn": action})
 
-                actions.append(
-                    {
-                        "type": action_type,
-                        "description": action_description,
-                        "config": action_config,
-                    }
-                )
-        else:
-            raw_alarm["actions_enabled"] = "No actions"
+        for action in insufficient_data_actions:
+            actions.append({"type": "InsufficientDataAction", "arn": action})
 
     def get_alarm_history(self, alarm_name: str) -> Generator[dict, None, None]:
         paginator = self.client.get_paginator("describe_alarm_history")
@@ -200,8 +191,3 @@ class CloudWatchConnector(SchematicAWSConnector):
         if isinstance(value, float) and value.is_integer():
             return int(value)
         return value
-
-    @staticmethod
-    def _extract_arn_service(arn: str) -> str:
-        match = re.search(r"^arn:[\w\-]+:([\w\-]+):", arn)
-        return match.group(1)
