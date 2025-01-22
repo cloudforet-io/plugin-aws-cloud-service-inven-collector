@@ -27,10 +27,10 @@ class CollectorService(BaseService):
             "supported_features": SUPPORTED_FEATURES,
             "supported_schedules": SUPPORTED_SCHEDULES,
             "options_schema": {
-                "order": ["region", "service"],
+                "order": ["regions"],
                 "type": "object",
                 "properties": {
-                    "region": {
+                    "regions": {
                         "title": "Region",
                         "type": "array",
                         "items": {"enum": REGION_LIST},
