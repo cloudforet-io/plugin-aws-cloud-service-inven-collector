@@ -114,7 +114,7 @@ class CloudWatchConnector(SchematicAWSConnector):
 
     def _set_alarm_conditions(self, raw_alarm: Alarms) -> None:
         metric_name = raw_alarm.get("MetricName", "?")
-        period = raw_alarm["Period"]
+        period = raw_alarm.get("Period", None)
         evaluation_periods = self._convert_int_type(
             raw_alarm.get("EvaluationPeriods", "?")
         )
