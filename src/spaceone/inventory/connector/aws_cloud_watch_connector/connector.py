@@ -121,7 +121,7 @@ class CloudWatchConnector(SchematicAWSConnector):
         threshold = self._convert_int_type(raw_alarm.get("Threshold", "?"))
         comparison_operator = raw_alarm.get("ComparisonOperator", "?")
 
-        period_minutes = period // 60 if isinstance(period, int) else "?"
+        period_minutes = period // 60 if period and isinstance(period, int) else "?"
         operator = self.ComparisonOperator.get(comparison_operator, "?")
 
         raw_alarm["conditions"] = (

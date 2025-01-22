@@ -1,9 +1,6 @@
 import concurrent.futures
-import logging
 import time
-import json
 from spaceone.core.service import *
-from spaceone.inventory.conf.cloud_service_conf import *
 from spaceone.inventory.libs.connector import *
 from spaceone.inventory.libs.schema.resource import (
     RegionResource,
@@ -29,6 +26,17 @@ class CollectorService(BaseService):
             "supported_resource_type": SUPPORTED_RESOURCE_TYPE,
             "supported_features": SUPPORTED_FEATURES,
             "supported_schedules": SUPPORTED_SCHEDULES,
+            "options_schema": {
+                "order": ["region", "service"],
+                "type": "object",
+                "properties": {
+                    "region": {
+                        "title": "Region",
+                        "type": "array",
+                        "items": {"enum": REGION_LIST},
+                    }
+                },
+            }
         }
 
         return {"metadata": capability}
@@ -53,10 +61,15 @@ class CollectorService(BaseService):
     def add_account_region_params(self, params):
         secret_data = params["secret_data"]
 
+        regions = params["options"].get("regions", [])
+
+        if not regions:
+            regions = self.get_regions(secret_data)
+
         params.update(
             {
                 "account_id": self.get_account_id(secret_data),
-                "regions": self.get_regions(secret_data),
+                "regions": regions,
             }
         )
 
