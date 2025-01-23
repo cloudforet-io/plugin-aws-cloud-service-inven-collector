@@ -61,7 +61,8 @@ cst_hostedzone._metadata = CloudServiceTypeMeta.set_meta(
         SearchField.set(name='Host Zone ID', key='data.hosted_zone_id'),
         SearchField.set(name='Record Set Count', key='data.resource_record_set_count', data_type='integer'),
         SearchField.set(name='Record Name', key='data.record_sets.name'),
-        SearchField.set(name='AWS Account ID', key='account')
+        SearchField.set(name='AWS Account ID', key='account'),
+        SearchField.set(name='Record Set Value', key='data.resource_records.value'),
     ],
     widget=[
         CardWidget.set(**get_data_from_yaml(hosted_zone_total_count_conf)),

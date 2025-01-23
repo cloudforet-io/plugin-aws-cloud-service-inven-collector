@@ -26,17 +26,6 @@ class CollectorService(BaseService):
             "supported_resource_type": SUPPORTED_RESOURCE_TYPE,
             "supported_features": SUPPORTED_FEATURES,
             "supported_schedules": SUPPORTED_SCHEDULES,
-            "options_schema": {
-                "order": ["regions"],
-                "type": "object",
-                "properties": {
-                    "regions": {
-                        "title": "Region",
-                        "type": "array",
-                        "items": {"enum": REGION_LIST},
-                    }
-                },
-            }
         }
 
         return {"metadata": capability}
