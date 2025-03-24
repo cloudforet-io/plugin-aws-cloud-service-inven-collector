@@ -53,7 +53,7 @@ class SQSConnector(SchematicAWSConnector):
                 if 'RedrivePolicy' in attr:
                     attr['RedrivePolicy'] = RedrivePolicy(json.loads(attr.get('RedrivePolicy')), strict=False)
 
-                result = QueData(attr)
+                result = QueData(attr, strict=False)
                 result.region_name = region_name
                 result.url = que.url
                 result.cloudwatch = self.set_cloudwatch(cloudwatch_namespace, cloudwatch_dimension_name,
