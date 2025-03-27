@@ -342,5 +342,29 @@ REGION_INFO = {
             "continent": "middle_east",
         },
     },
+    "ap-southeast-5": {
+        "name": "Asia Pacific (Malaysia)",
+        "tags": {
+            "latitude": "3.1390",
+            "longitude": "101.6869",
+            "continent": "asia_pacific"
+        }
+    },
+    "mx-central-1": {
+        "name": "Mexico (Central)",
+        "tags": {
+            "latitude": "20.5888",
+            "longitude": "-100.3899",
+            "continent": "north_america"
+        }
+    },
+    "ap-southeast-6": {
+        "name": "Asia Pacific (Thailand)",
+        "tags": {
+            "latitude": "13.7563",
+            "longitude": "100.5018",
+            "continent": "asia_pacific"
+        }
+    },
     "global": {"name": "Global"},
 }
