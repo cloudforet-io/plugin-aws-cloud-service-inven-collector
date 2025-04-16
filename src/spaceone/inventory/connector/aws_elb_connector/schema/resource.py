@@ -110,7 +110,7 @@ lb_listener_rule = TableDynamicLayout.set_fields(
         TextDyField.data_source("Priority", "priority"),
         ListDyField.data_source("Conditions", "conditions"),
         ListDyField.data_source("Actions", "actions"),
-        TextDyField.data_source("Role Arn", "role_arn"),
+        TextDyField.data_source("Rule Arn", "rule_arn"),
     ],
 )
 
