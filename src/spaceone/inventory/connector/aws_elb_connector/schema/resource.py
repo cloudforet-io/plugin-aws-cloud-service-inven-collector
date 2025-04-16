@@ -97,6 +97,23 @@ lb_listener = TableDynamicLayout.set_fields(
     ],
 )
 
+lb_listener_rule = TableDynamicLayout.set_fields(
+    "Listener Rules",
+    "data.listener_rules",
+    fields=[
+        EnumDyField.data_source(
+            "Protocol",
+            "protocol",
+            default_outline_badge=["HTTP", "HTTPS", "TCP", "TLS", "UDP", "TCP_UDP"],
+        ),
+        TextDyField.data_source("Port", "port"),
+        TextDyField.data_source("Priority", "priority"),
+        ListDyField.data_source("Conditions", "conditions"),
+        ListDyField.data_source("Actions", "actions"),
+        TextDyField.data_source("Role Arn", "role_arn"),
+    ],
+)
+
 lb_tg = TableDynamicLayout.set_fields(
     "Target Groups",
     "data.target_groups",
@@ -177,7 +194,7 @@ lb_attr = ItemDynamicLayout.set_fields(
 )
 
 lb_metadata = CloudServiceMeta.set_layouts(
-    layouts=[lb_base, lb_attr, lb_listener, lb_tg, lb_instance]
+    layouts=[lb_base, lb_attr, lb_listener, lb_listener_rule, lb_tg, lb_instance]
 )
 
 """
