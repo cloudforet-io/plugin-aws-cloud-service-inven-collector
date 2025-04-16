@@ -1,4 +1,6 @@
 import logging
+
+from moto.efs.urls import response
 from spaceone.core.utils import *
 from spaceone.inventory.connector.aws_elb_connector.schema.data import (
     LoadBalancer,
@@ -7,6 +9,7 @@ from spaceone.inventory.connector.aws_elb_connector.schema.data import (
     TargetGroupAttributes,
     Listener,
     Instance,
+    ListenerRule,
 )
 from spaceone.inventory.connector.aws_elb_connector.schema.resource import (
     LoadBalancerResource,
@@ -151,6 +154,7 @@ class ELBConnector(SchematicAWSConnector):
                 )
                 match_tags = self.search_tags(all_tags, raw_lb.get("LoadBalancerArn"))
                 raw_listeners = self.request_listeners(raw_lb.get("LoadBalancerArn"))
+                listener_rules = self.get_listener_rules(raw_listeners)
 
                 for match_tg in match_target_groups:
                     match_instances.extend(self.match_elb_instance(match_tg, instances))
@@ -165,6 +169,12 @@ class ELBConnector(SchematicAWSConnector):
                             map(
                                 lambda _listener: Listener(_listener, strict=False),
                                 raw_listeners,
+                            )
+                        ),
+                        "listener_rules": list(
+                            map(
+                                lambda _listener_rule: ListenerRule(_listener_rule, strict=False),
+                                listener_rules,
                             )
                         ),
                         "cloudwatch": self.elb_cloudwatch(raw_lb, region_name),
@@ -247,6 +257,94 @@ class ELBConnector(SchematicAWSConnector):
 
         return match_instances
 
+    def get_listener_rules(self, raw_listeners: list):
+        for raw_listener in raw_listeners:
+            raw_listener_rules = self.request_rules_by_listeners(raw_listener)
+
+            rule_infos = []
+            for raw_listener_rule in raw_listener_rules:
+                is_default = raw_listener_rule.get("IsDefault", False)
+                conditions = self.get_formatted_conditions(raw_listener_rule["Conditions"], is_default)
+                actions = self.get_formatted_actions(raw_listener_rule["Actions"])
+                rule_info = {
+                    "Protocol": raw_listener.get("Protocol"),
+                    "Port": raw_listener.get("Port"),
+                    "RuleArn": raw_listener_rule.get("RuleArn"),
+                    "Priority": raw_listener_rule.get("Priority"),
+                    "Conditions": conditions,
+                    "Actions": actions,
+                    "IsDefault": is_default,
+                }
+
+                rule_infos.append(rule_info)
+
+            return rule_infos
+
+    @staticmethod
+    def get_formatted_conditions(raw_conditions: list, is_default: bool) -> list:
+        str_conditions = []
+
+        if is_default:
+            str_conditions.append("If no other rule applies")
+            return str_conditions
+
+        for condition in raw_conditions:
+            field = condition.get("Field")
+            values = ','.join(condition.get("Values"))
+
+            str_conditions.append(f"{field} : {values}")
+
+        return str_conditions
+
+    @staticmethod
+    def get_formatted_actions(actions: list) -> list:
+        str_actions = []
+
+        for action in actions:
+            action_type = action.get("Type")
+
+            if action_type == "forward":
+                config = action.get("ForwardConfig")
+                target_groups = config.get("TargetGroups")
+                stickiness = "on" if config.get("TargetGroupStickinessConfig", {}).get("Enabled", False) == True else "off"
+
+                str_actions.append("Forward to target group")
+
+                for target_group in target_groups:
+                    target = target_group.get("TargetGroupArn")
+                    weight = target_group.get("Weight")
+                    str_actions.append(f" - {target}: {weight}")
+
+                str_actions.append(f" - Target group stickiness: {stickiness}")
+            elif action_type == "authenticate-oidc":
+                pass
+            elif action_type == "authenticate-cognito":
+                pass
+            elif action_type == "redirect":
+                config = action.get("RedirectConfig")
+                protocol = config.get("Protocol")
+                port = config.get("Port")
+                host = config.get("Host")
+                path = config.get("Path")
+                query = config.get("Query")
+                status_code = config.get("StatusCode")
+
+                str_action = f"Redirect to {protocol}://#{host}:{port}{path}?{query}"
+                str_actions.append(str_action)
+                str_actions.append(f" - Status code: {status_code}")
+
+            elif action_type == "fixed-response":
+                config = action.get("FixedResponseConfig")
+                response_code = config.get("StatusCode")
+                content_type = config.get("ContentType")
+
+                str_actions.append("Return fixed response")
+                str_actions.append(f" - Response code: {response_code}")
+                str_actions.append(" - Response body")
+                str_actions.append(f" - Response content type: {content_type}")
+
+        return str_actions
+
     def request_loadbalancer(self, region_name):
         load_balancers = []
         paginator = self.client.get_paginator("describe_load_balancers")
@@ -291,6 +389,12 @@ class ELBConnector(SchematicAWSConnector):
     def request_listeners(self, lb_arn):
         response = self.client.describe_listeners(LoadBalancerArn=lb_arn)
         return response.get("Listeners", [])
+
+    def request_rules_by_listeners(self, listener: dict) -> list:
+        listener_arn = listener.get("ListenerArn")
+        response = self.client.describe_rules(ListenerArn=listener_arn)
+
+        return response.get("Rules", [])
 
     def request_tags(self, resource_arns):
         all_tags = []

@@ -145,6 +145,28 @@ class Listener(Model):
 
 
 """
+Listener Rule
+"""
+
+
+class ListenerRule(Model):
+    protocol = StringType(
+        deserialize_from="Protocol",
+        choices=("HTTP", "HTTPS", "TCP", "TLS", "UDP", "TCP_UDP"),
+    )
+    port = IntType(deserialize_from="Port")
+    rule_arn = StringType(deserialize_from="RuleArn")
+    priority = StringType(deserialize_from="Priority")
+    conditions = ListType(
+        StringType, deserialize_from="Conditions"
+    )
+    actions = ListType(
+        StringType, deserialize_from="Actions"
+    )
+    is_default = BooleanType(deserialize_from="IsDefault")
+
+
+"""
 Target Group
 """
 
@@ -341,6 +363,7 @@ class LoadBalancer(AWSCloudService):
         deserialize_from="IpAddressType", choices=("ipv4", "dualstack")
     )
     listeners = ListType(ModelType(Listener))
+    listener_rules = ListType(ModelType(ListenerRule))
     target_groups = ListType(ModelType(TargetGroup), default=[])
     attributes = ModelType(LoadBalancerAttributes)
     instances = ListType(ModelType(Instance), default=[])
