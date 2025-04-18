@@ -316,10 +316,30 @@ class ELBConnector(SchematicAWSConnector):
                     str_actions.append(f" - {target}: {weight}")
 
                 str_actions.append(f" - Target group stickiness: {stickiness}")
+
             elif action_type == "authenticate-oidc":
-                pass
+                config = action.get("AuthenticateOidcConfig")
+
+                str_actions.extend([
+                    "Authenticate OIDC",
+                    f" - Issuer: {config.get('Issuer')}",
+                    f" - Client ID: {config.get('ClientId')}",
+                    f" - Scope: {config.get('Scope')}",
+                    f" - On Unauthenticated Request: {config.get('OnUnauthenticatedRequest')}",
+                ])
+
             elif action_type == "authenticate-cognito":
-                pass
+                config = action.get("AuthenticateCognitoConfig")
+
+                str_actions.extend([
+                    "Authenticate Cognito",
+                    f" - User Pool Arn: {config.get('UserPoolArn')}",
+                    f" - User Pool Client ID: {config.get('UserPoolClientId')}",
+                    f" - User Pool Domain: {config.get('UserPoolDomain')}",
+                    f" - Scope: {config.get('Scope')}",
+                    f" - On Unauthenticated Request: {config.get('OnUnauthenticatedRequest')}",
+                ])
+
             elif action_type == "redirect":
                 config = action.get("RedirectConfig")
                 protocol = config.get("Protocol")
@@ -338,10 +358,12 @@ class ELBConnector(SchematicAWSConnector):
                 response_code = config.get("StatusCode")
                 content_type = config.get("ContentType")
 
-                str_actions.append("Return fixed response")
-                str_actions.append(f" - Response code: {response_code}")
-                str_actions.append(" - Response body")
-                str_actions.append(f" - Response content type: {content_type}")
+                str_actions.extend([
+                    "Return fixed response",
+                    f" - Response code: {response_code}",
+                    " - Response body",
+                    f" - Response content type: {content_type}"
+                ])
 
         return str_actions
 

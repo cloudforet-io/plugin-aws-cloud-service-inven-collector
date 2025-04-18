@@ -108,9 +108,13 @@ lb_listener_rule = TableDynamicLayout.set_fields(
         ),
         TextDyField.data_source("Port", "port"),
         TextDyField.data_source("Priority", "priority"),
-        ListDyField.data_source("Conditions", "conditions"),
+        ListDyField.data_source(
+            "Conditions",
+            "conditions",
+            default_badge={"type": "outline", "delimiter": "<br>"},
+        ),
         ListDyField.data_source("Actions", "actions"),
-        TextDyField.data_source("Role Arn", "role_arn"),
+        TextDyField.data_source("Rule Arn", "rule_arn"),
     ],
 )
 
@@ -222,7 +226,8 @@ tg_base = ItemDynamicLayout.set_fields(
 )
 
 tg_health = TableDynamicLayout.set_fields(
-    "Target Health", "data.targets_health",
+    "Target Health",
+    "data.targets_health",
     fields=[
         TextDyField.data_source("ID", "target.id"),
         TextDyField.data_source("HealthCheckPort", "health_check_port_display"),
@@ -230,7 +235,11 @@ tg_health = TableDynamicLayout.set_fields(
         EnumDyField.data_source(
             "State",
             "target_health.state",
-            default_badge={"green.500": ["healthy"], "gray.500": ["initial","unused","unavailable","draining"], "red.600": ["unhealthy","unhealthy.draining"]},
+            default_badge={
+                "green.500": ["healthy"],
+                "gray.500": ["initial", "unused", "unavailable", "draining"],
+                "red.600": ["unhealthy", "unhealthy.draining"],
+            },
         ),
     ],
 )
@@ -293,7 +302,9 @@ health_check = ItemDynamicLayout.set_fields(
     ],
 )
 
-tg_metadata = CloudServiceMeta.set_layouts(layouts=[tg_base, tg_health, tg_attr, health_check])
+tg_metadata = CloudServiceMeta.set_layouts(
+    layouts=[tg_base, tg_health, tg_attr, health_check]
+)
 
 
 class ELBResource(CloudServiceResource):
