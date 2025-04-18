@@ -313,7 +313,12 @@ class ELBConnector(SchematicAWSConnector):
                 for target_group in target_groups:
                     target = target_group.get("TargetGroupArn")
                     weight = target_group.get("Weight")
-                    str_actions.append(f" - {target}: {weight}")
+
+                    target_info = f" - {target}"
+                    if weight:
+                        target_info = f" - {target}: {weight}"
+
+                    str_actions.append(target_info)
 
                 str_actions.append(f" - Target group stickiness: {stickiness}")
 
