@@ -1,6 +1,5 @@
 import logging
 
-from moto.efs.urls import response
 from spaceone.core.utils import *
 from spaceone.inventory.connector.aws_elb_connector.schema.data import (
     LoadBalancer,
@@ -259,26 +258,33 @@ class ELBConnector(SchematicAWSConnector):
 
     def get_listener_rules(self, raw_listeners: list):
         for raw_listener in raw_listeners:
-            raw_listener_rules = self.request_rules_by_listeners(raw_listener)
+            try:
+                raw_listener_rules = self.request_rules_by_listeners(raw_listener)
 
-            rule_infos = []
-            for raw_listener_rule in raw_listener_rules:
-                is_default = raw_listener_rule.get("IsDefault", False)
-                conditions = self.get_formatted_conditions(raw_listener_rule["Conditions"], is_default)
-                actions = self.get_formatted_actions(raw_listener_rule["Actions"])
-                rule_info = {
-                    "Protocol": raw_listener.get("Protocol"),
-                    "Port": raw_listener.get("Port"),
-                    "RuleArn": raw_listener_rule.get("RuleArn"),
-                    "Priority": raw_listener_rule.get("Priority"),
-                    "Conditions": conditions,
-                    "Actions": actions,
-                    "IsDefault": is_default,
-                }
+                rule_infos = []
+                for raw_listener_rule in raw_listener_rules:
+                    is_default = raw_listener_rule.get("IsDefault", False)
+                    conditions = self.get_formatted_conditions(raw_listener_rule["Conditions"], is_default)
+                    actions = self.get_formatted_actions(raw_listener_rule["Actions"])
+                    rule_info = {
+                        "Protocol": raw_listener.get("Protocol"),
+                        "Port": raw_listener.get("Port"),
+                        "RuleArn": raw_listener_rule.get("RuleArn"),
+                        "Priority": raw_listener_rule.get("Priority"),
+                        "Conditions": conditions,
+                        "Actions": actions,
+                        "IsDefault": is_default,
+                    }
 
-                rule_infos.append(rule_info)
+                    rule_infos.append(rule_info)
 
-            return rule_infos
+                return rule_infos
+            except Exception as e:
+                resource_id = raw_listener.get("ListenerArn", "")
+                error_resource_response = self.generate_error(
+                    None, resource_id, e
+                )
+                _LOGGER.error(error_resource_response)
 
     @staticmethod
     def get_formatted_conditions(raw_conditions: list, is_default: bool) -> list:
@@ -290,9 +296,11 @@ class ELBConnector(SchematicAWSConnector):
 
         for condition in raw_conditions:
             field = condition.get("Field")
-            values = ','.join(condition.get("Values", []))
+            str_value = None
+            if values := condition.get("Values"):
+                str_value= ','.join(values)
 
-            str_conditions.append(f"{field} : {values}")
+            str_conditions.append(f"{field} : {str_value}")
 
         return str_conditions
 
