@@ -290,7 +290,7 @@ class ELBConnector(SchematicAWSConnector):
 
         for condition in raw_conditions:
             field = condition.get("Field")
-            values = ','.join(condition.get("Values"))
+            values = ','.join(condition.get("Values", []))
 
             str_conditions.append(f"{field} : {values}")
 
