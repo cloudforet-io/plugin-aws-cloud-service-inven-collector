@@ -307,23 +307,23 @@ class ELBConnector(SchematicAWSConnector):
                     header_values: list = config.get("Values")
 
                     if header_name and header_values:
-                        str_value = ",".join(header_values)
+                        str_value = ','.join(header_values)
                         str_conditions.append("HTTP Header :")
                         str_conditions.append(f" - {header_name} : {str_value}")
 
             elif field == "http-request-method":
                 if values := condition.get("HttpRequestMethodConfig", {}).get("Values"):
-                    str_value = ",".join(values)
+                    str_value = ','.join(values)
                     str_conditions.append(f"HTTP Request Method : {str_value}")
 
             elif field == "host-header":
                 if values := condition.get("HostHeaderConfig", {}).get("Values"):
-                    str_value = ",".join(values)
+                    str_value = ','.join(values)
                     str_conditions.append(f"Host Header : {str_value}")
 
             elif field == "path-pattern":
                 if values := condition.get("PathPatternConfig", {}).get("Values"):
-                    str_value = ",".join(values)
+                    str_value = ','.join(values)
                     str_conditions.append(f"Path Pattern : {str_value}")
 
             elif field == "query-string":
@@ -341,7 +341,7 @@ class ELBConnector(SchematicAWSConnector):
 
             elif field == "source-ip":
                 if values := condition.get("SourceIpConfig", {}).get("Values"):
-                    str_value = ",".join(values)
+                    str_value = ','.join(values)
                     str_conditions.append(f"Source IP : {str_value}")
 
         return str_conditions

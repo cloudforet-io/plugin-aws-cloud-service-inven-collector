@@ -108,11 +108,7 @@ lb_listener_rule = TableDynamicLayout.set_fields(
         ),
         TextDyField.data_source("Port", "port"),
         TextDyField.data_source("Priority", "priority"),
-        ListDyField.data_source(
-            "Conditions",
-            "conditions",
-            default_badge={"type": "outline", "delimiter": "<br>"},
-        ),
+        ListDyField.data_source("Conditions", "conditions"),
         ListDyField.data_source("Actions", "actions"),
         TextDyField.data_source("Rule Arn", "rule_arn"),
     ],
