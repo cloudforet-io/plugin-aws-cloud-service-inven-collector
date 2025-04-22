@@ -257,11 +257,12 @@ class ELBConnector(SchematicAWSConnector):
         return match_instances
 
     def get_listener_rules(self, raw_listeners: list):
+        listener_rules = []
+
         for raw_listener in raw_listeners:
             try:
-                raw_listener_rules = self.request_rules_by_listeners(raw_listener)
+                raw_listener_rules = self.request_rules_by_listener(raw_listener)
 
-                rule_infos = []
                 for raw_listener_rule in raw_listener_rules:
                     is_default = raw_listener_rule.get("IsDefault", False)
                     conditions = self.get_formatted_conditions(raw_listener_rule["Conditions"], is_default)
@@ -276,15 +277,15 @@ class ELBConnector(SchematicAWSConnector):
                         "IsDefault": is_default,
                     }
 
-                    rule_infos.append(rule_info)
-
-                return rule_infos
+                    listener_rules.append(rule_info)
             except Exception as e:
                 resource_id = raw_listener.get("ListenerArn", "")
                 error_resource_response = self.generate_error(
                     None, resource_id, e
                 )
                 _LOGGER.error(error_resource_response)
+
+        return listener_rules
 
     @staticmethod
     def get_formatted_conditions(raw_conditions: list, is_default: bool) -> list:
@@ -425,7 +426,7 @@ class ELBConnector(SchematicAWSConnector):
         response = self.client.describe_listeners(LoadBalancerArn=lb_arn)
         return response.get("Listeners", [])
 
-    def request_rules_by_listeners(self, listener: dict) -> list:
+    def request_rules_by_listener(self, listener: dict) -> list:
         listener_arn = listener.get("ListenerArn")
         response = self.client.describe_rules(ListenerArn=listener_arn)
 
