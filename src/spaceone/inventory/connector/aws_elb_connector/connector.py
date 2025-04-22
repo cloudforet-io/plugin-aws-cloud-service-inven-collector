@@ -100,7 +100,9 @@ class ELBConnector(SchematicAWSConnector):
                             cloudtrail_resource_type,
                             raw_tg["TargetGroupArn"],
                         ),
-                        "targets_health": self.get_targets_health(raw_tg["TargetGroupArn"])
+                        "targets_health": self.get_targets_health(
+                            raw_tg["TargetGroupArn"]
+                        ),
                     }
                 )
 
@@ -172,7 +174,9 @@ class ELBConnector(SchematicAWSConnector):
                         ),
                         "listener_rules": list(
                             map(
-                                lambda _listener_rule: ListenerRule(_listener_rule, strict=False),
+                                lambda _listener_rule: ListenerRule(
+                                    _listener_rule, strict=False
+                                ),
                                 listener_rules,
                             )
                         ),
@@ -256,7 +260,7 @@ class ELBConnector(SchematicAWSConnector):
 
         return match_instances
 
-    def get_listener_rules(self, raw_listeners: list):
+    def get_listener_rules(self, raw_listeners: list) -> list:
         listener_rules = []
 
         for raw_listener in raw_listeners:
@@ -265,7 +269,9 @@ class ELBConnector(SchematicAWSConnector):
 
                 for raw_listener_rule in raw_listener_rules:
                     is_default = raw_listener_rule.get("IsDefault", False)
-                    conditions = self.get_formatted_conditions(raw_listener_rule["Conditions"], is_default)
+                    conditions = self.get_formatted_conditions(
+                        raw_listener_rule["Conditions"], is_default
+                    )
                     actions = self.get_formatted_actions(raw_listener_rule["Actions"])
                     rule_info = {
                         "Protocol": raw_listener.get("Protocol"),
@@ -280,9 +286,7 @@ class ELBConnector(SchematicAWSConnector):
                     listener_rules.append(rule_info)
             except Exception as e:
                 resource_id = raw_listener.get("ListenerArn", "")
-                error_resource_response = self.generate_error(
-                    None, resource_id, e
-                )
+                error_resource_response = self.generate_error(None, resource_id, e)
                 _LOGGER.error(error_resource_response)
 
         return listener_rules
@@ -292,16 +296,53 @@ class ELBConnector(SchematicAWSConnector):
         str_conditions = []
 
         if is_default:
-            str_conditions.append("If no other rule applies")
-            return str_conditions
+            return ["If no other rule applies"]
 
         for condition in raw_conditions:
             field = condition.get("Field")
-            str_value = None
-            if values := condition.get("Values"):
-                str_value= ','.join(values)
 
-            str_conditions.append(f"{field} : {str_value}")
+            if field == "http-header":
+                if config := condition.get("HttpHeaderConfig", {}):
+                    header_name = config.get("HttpHeaderName")
+                    header_values: list = config.get("Values")
+
+                    if header_name and header_values:
+                        str_value = ",".join(header_values)
+                        str_conditions.append("HTTP Header :")
+                        str_conditions.append(f" - {header_name} : {str_value}")
+
+            elif field == "http-request-method":
+                if values := condition.get("HttpRequestMethodConfig", {}).get("Values"):
+                    str_value = ",".join(values)
+                    str_conditions.append(f"HTTP Request Method : {str_value}")
+
+            elif field == "host-header":
+                if values := condition.get("HostHeaderConfig", {}).get("Values"):
+                    str_value = ",".join(values)
+                    str_conditions.append(f"Host Header : {str_value}")
+
+            elif field == "path-pattern":
+                if values := condition.get("PathPatternConfig", {}).get("Values"):
+                    str_value = ",".join(values)
+                    str_conditions.append(f"Path Pattern : {str_value}")
+
+            elif field == "query-string":
+                if values := condition.get("QueryStringConfig", {}).get("Values"):
+                    str_conditions.append("QueryString :")
+
+                    for config in values:
+                        key = config.get("Key")
+                        value = config.get("Value")
+
+                        if key:
+                            str_conditions.append(f" - key={key} : value={value}")
+                        else:
+                            str_conditions.append(f" - value={value}")
+
+            elif field == "source-ip":
+                if values := condition.get("SourceIpConfig", {}).get("Values"):
+                    str_value = ",".join(values)
+                    str_conditions.append(f"Source IP : {str_value}")
 
         return str_conditions
 
@@ -315,7 +356,14 @@ class ELBConnector(SchematicAWSConnector):
             if action_type == "forward":
                 config = action.get("ForwardConfig")
                 target_groups = config.get("TargetGroups")
-                stickiness = "on" if config.get("TargetGroupStickinessConfig", {}).get("Enabled", False) == True else "off"
+                stickiness = (
+                    "on"
+                    if config.get("TargetGroupStickinessConfig", {}).get(
+                        "Enabled", False
+                    )
+                    == True
+                    else "off"
+                )
 
                 str_actions.append("Forward to target group")
 
@@ -334,25 +382,29 @@ class ELBConnector(SchematicAWSConnector):
             elif action_type == "authenticate-oidc":
                 config = action.get("AuthenticateOidcConfig")
 
-                str_actions.extend([
-                    "Authenticate OIDC",
-                    f" - Issuer: {config.get('Issuer')}",
-                    f" - Client ID: {config.get('ClientId')}",
-                    f" - Scope: {config.get('Scope')}",
-                    f" - On Unauthenticated Request: {config.get('OnUnauthenticatedRequest')}",
-                ])
+                str_actions.extend(
+                    [
+                        "Authenticate OIDC",
+                        f" - Issuer: {config.get('Issuer')}",
+                        f" - Client ID: {config.get('ClientId')}",
+                        f" - Scope: {config.get('Scope')}",
+                        f" - On Unauthenticated Request: {config.get('OnUnauthenticatedRequest')}",
+                    ]
+                )
 
             elif action_type == "authenticate-cognito":
                 config = action.get("AuthenticateCognitoConfig")
 
-                str_actions.extend([
-                    "Authenticate Cognito",
-                    f" - User Pool Arn: {config.get('UserPoolArn')}",
-                    f" - User Pool Client ID: {config.get('UserPoolClientId')}",
-                    f" - User Pool Domain: {config.get('UserPoolDomain')}",
-                    f" - Scope: {config.get('Scope')}",
-                    f" - On Unauthenticated Request: {config.get('OnUnauthenticatedRequest')}",
-                ])
+                str_actions.extend(
+                    [
+                        "Authenticate Cognito",
+                        f" - User Pool Arn: {config.get('UserPoolArn')}",
+                        f" - User Pool Client ID: {config.get('UserPoolClientId')}",
+                        f" - User Pool Domain: {config.get('UserPoolDomain')}",
+                        f" - Scope: {config.get('Scope')}",
+                        f" - On Unauthenticated Request: {config.get('OnUnauthenticatedRequest')}",
+                    ]
+                )
 
             elif action_type == "redirect":
                 config = action.get("RedirectConfig")
@@ -372,12 +424,14 @@ class ELBConnector(SchematicAWSConnector):
                 response_code = config.get("StatusCode")
                 content_type = config.get("ContentType")
 
-                str_actions.extend([
-                    "Return fixed response",
-                    f" - Response code: {response_code}",
-                    " - Response body",
-                    f" - Response content type: {content_type}"
-                ])
+                str_actions.extend(
+                    [
+                        "Return fixed response",
+                        f" - Response code: {response_code}",
+                        " - Response body",
+                        f" - Response content type: {content_type}",
+                    ]
+                )
 
         return str_actions
 
