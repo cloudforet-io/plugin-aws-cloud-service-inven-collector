@@ -340,6 +340,89 @@ The cloud_service_types items that can be specified are as follows.
 </code>
 </pre>
 
+---
+## Secret Data Configuration
+
+To use the EC2 Collector plugin, AWS authentication information is required. You can configure authentication information using the following methods.
+
+### 1. General Access Key Method (Single Account)
+
+This method is used when collecting resources within the same AWS account.
+
+#### Secret Data Format:
+```json
+{
+    "aws_access_key_id": "YOUR_ACCESS_KEY_ID",
+    "aws_secret_access_key": "YOUR_SECRET_ACCESS_KEY"
+}
+```
+
+#### Setup Method:
+
+1. **Create IAM User in AWS Console**
+   - AWS Console → IAM → Users → Create User
+   - Enter user name (e.g., spaceone-collector)
+   - Select Access Key creation option
+
+2. **Attach Managed Policy**
+   - Select one of the managed policies provided by AWS:
+     - `ReadOnlyAccess`: Read-only permissions for all AWS services
+     - Or use custom policy that includes only necessary services
+
+3. **Create Access Key**
+   - IAM User → Security credentials → Create access key
+   - Save Access Key ID and Secret Access Key in a secure location
+
+### 2. Cross-Account Assume Role Method (Multi-Account)
+
+This method is used when collecting resources from different AWS accounts.
+
+#### Secret Data Format:
+```json
+{
+    "aws_access_key_id": "SOURCE_ACCOUNT_ACCESS_KEY_ID",
+    "aws_secret_access_key": "SOURCE_ACCOUNT_SECRET_ACCESS_KEY",
+    "role_arn": "arn:aws:iam::TARGET_ACCOUNT_ID:role/ROLE_NAME",
+    "external_id": "OPTIONAL_EXTERNAL_ID"
+}
+```
+
+#### Setup Method:
+
+**Source Account (Account that runs collection) Setup:**
+1. **Create IAM User and Set Permissions**
+   - AWS Console → IAM → Users → Create User
+   - Enter user name (e.g., spaceone-cross-account-collector)
+   - Create Access Key
+   - Attach `ReadOnlyAccess` policy
+
+**Target Account (Account whose resources will be collected) Setup:**
+1. **Create Cross-Account Role**
+   ```json
+   {
+       "Version": "2012-10-17",
+       "Statement": [
+           {
+               "Effect": "Allow",
+               "Principal": {
+                   "AWS": "arn:aws:iam::SOURCE_ACCOUNT_ID:user/SOURCE_USER_NAME"
+               },
+               "Action": "sts:AssumeRole",
+               "Condition": {
+                   "StringEquals": {
+                       "sts:ExternalId": "YOUR_EXTERNAL_ID"
+                   }
+               }
+           }
+       ]
+   }
+   ```
+
+2. **Attach Managed Policy to Role**
+   - Attach `ReadOnlyAccess` policy to the created Role
+   - Or attach custom policy that includes only necessary services
+---
+
 How to update plugin information using spacectl is as follows.
 First, create a yaml file to set options.
 
