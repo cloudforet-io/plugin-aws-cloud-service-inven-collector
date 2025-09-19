@@ -29,10 +29,10 @@ Please contact us if you need any further information. (<support@spaceone.dev>)
 * Table of Contents
     * [API Gateway](/src/spaceone/inventory/connector/aws_api_gateway_connector/README.md)
         * API (REST API / Websocket)
-    * [Auto Scaling Group](/src/spaceone/inventory/connector/aws_auto_scaling_connector/README.md)
-        * Auto Scaling Group
-        * Launch Configuration
-        * Launch Template
+    * ~~[Auto Scaling Group](/src/spaceone/inventory/connector/aws_auto_scaling_connector/README.md)~~
+        * ~~Auto Scaling Group~~
+        * ~~Launch Configuration~~
+        * ~~Launch Template~~
     * [Cloud Front](/src/spaceone/inventory/connector/aws_cloud_front_connector/README.md)
         * Distribution
     * [Cloud Trail](/src/spaceone/inventory/connector/aws_cloud_trail_connector/README.md)
@@ -48,20 +48,20 @@ Please contact us if you need any further information. (<support@spaceone.dev>)
         * Parameter Group
     * [DynamoDB](/src/spaceone/inventory/connector/aws_dynamodb_connector/README.md)
         * Table
-    * [EBS](/src/spaceone/inventory/connector/aws_ebs_connector/README.md)
-        * Volume
-        * Snapshot
-    * [EC2](/src/spaceone/inventory/connector/aws_ec2_connector/README.md)
-        * Security Group
-        * AMI
+    * ~~[EBS](/src/spaceone/inventory/connector/aws_ebs_connector/README.md)~~
+        * ~~Volume~~
+        * ~~Snapshot~~
+    * ~~[EC2](/src/spaceone/inventory/connector/aws_ec2_connector/README.md)~~
+        * ~~Security Group~~
+        * ~~AMI~~
     * [ECR](/src/spaceone/inventory/connector/aws_ecr_connector/README.md)
         * Repository
     * [ECS](/src/spaceone/inventory/connector/aws_ecs_connector/README.md)
         * Cluster
     * [EFS](/src/spaceone/inventory/connector/aws_efs_connector/README.md)
         * Filesystem
-    * [EIP](/src/spaceone/inventory/connector/aws_eip_connector/README.md)
-        * EIP
+    * ~~[EIP](/src/spaceone/inventory/connector/aws_eip_connector/README.md)~~
+        * ~~EIP~~
     * [EKS](/src/spaceone/inventory/connector/aws_eks_connector/README.md)
         * Cluster
         * Node Group
@@ -96,6 +96,7 @@ Please contact us if you need any further information. (<support@spaceone.dev>)
         * Snapshot
         * Subnet Group
         * Option Group
+        * Parameter Group
     * [Redshift](/src/spaceone/inventory/connector/aws_redshift_connector/README.md)
         * Cluster
     * [Route53](/src/spaceone/inventory/connector/aws_route53_connector/README.md)
@@ -132,6 +133,7 @@ Please contact us if you need any further information. (<support@spaceone.dev>)
         * Container
         * Load Balancer
         * Distribution
+        * Domain
 
 ---
 
