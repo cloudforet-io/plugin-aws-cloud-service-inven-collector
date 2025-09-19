@@ -106,7 +106,7 @@ class DocumentDBConnector(SchematicAWSConnector):
 
         paginator = self.client.get_paginator("describe_db_clusters")
         response_iterator = paginator.paginate(
-            # Filters=[{"Name": "engine", "Values": ["docdb"]}],
+            Filters=[{"Name": "engine", "Values": ["docdb"]}],
             PaginationConfig={
                 "MaxItems": 10000,
                 "PageSize": 50,
