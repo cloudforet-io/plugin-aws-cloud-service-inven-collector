@@ -109,7 +109,7 @@ class Route53Connector(SchematicAWSConnector):
                 else:
                     _records = raw.get('ResourceRecords', [])
                     for _r in _records:
-                        display_values.append(_r.get('Value'))
+                        display_values.append(_r.get('value'))
 
                 if len(display_values) > 0:
                     raw.update({'display_values': display_values})
