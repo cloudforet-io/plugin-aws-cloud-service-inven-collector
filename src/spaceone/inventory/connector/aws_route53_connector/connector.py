@@ -97,10 +97,15 @@ class Route53Connector(SchematicAWSConnector):
         for data in response_iterator:
             for raw in data.get('ResourceRecordSets', []):
                 display_values = []
-                if raw.get('Type') == 'A':
+                rtype = raw.get('Type')
+
+                if rtype == 'A' or rtype == 'AAAA':
                     _alias = raw.get('AliasTarget', {})
                     if dns_name := _alias.get('DNSName'):
                         display_values.append(dns_name)
+                    else:
+                        for _r in raw.get('ResourceRecords', []):
+                            display_values.append(_r.get('Value'))
                 else:
                     _records = raw.get('ResourceRecords', [])
                     for _r in _records:
