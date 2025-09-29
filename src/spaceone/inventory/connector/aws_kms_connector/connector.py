@@ -1,4 +1,3 @@
-import time
 import logging
 
 from typing import List
@@ -44,7 +43,7 @@ class KMSConnector(SchematicAWSConnector):
 
     def request_data(self, region_name) -> List[Key]:
         kms_keys = self.list_keys()
-        alias_list = self.list_aliases()
+        alias_list = list(self.list_aliases())
         cloudwatch_namespace = 'AWS/KMS'
         cloudwatch_dimension_name = 'KeyId'
         cloudtrail_resource_type = 'AWS::KMS::Key'
