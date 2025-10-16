@@ -2,7 +2,7 @@ import logging
 
 from schematics.types import ModelType, StringType, PolyModelType
 
-from spaceone.inventory.connector.aws_elasticache_connector.schema.data import Redis, Memcached
+from spaceone.inventory.connector.aws_elasticache_connector.schema.data import Redis, Memcached, Valkey
 from spaceone.inventory.libs.schema.resource import CloudServiceResource, CloudServiceResponse, CloudServiceMeta
 from spaceone.inventory.libs.schema.dynamic_field import TextDyField, ListDyField, DateTimeDyField, EnumDyField
 from spaceone.inventory.libs.schema.dynamic_layout import ItemDynamicLayout, TableDynamicLayout, SimpleTableDynamicLayout
@@ -124,6 +124,76 @@ redis_nodes = TableDynamicLayout.set_fields('Nodes', 'data.nodes', fields=[
 redis_metadata = CloudServiceMeta.set_layouts(layouts=[redis_base, redis_shards, redis_nodes])
 
 
+'''
+Valkey
+'''
+valkey_base = ItemDynamicLayout.set_fields('Description', fields=[
+    TextDyField.data_source('Name', 'data.replication_group_id'),
+    TextDyField.data_source('ARN', 'data.arn'),
+    TextDyField.data_source('Mode', 'data.mode'),
+    EnumDyField.data_source('Status', 'data.status', default_state={
+        'safe': ['available'],
+        'warning': ['creating', 'modifying', 'deleting', 'snapshotting'],
+        'alert': ['create-failed']
+    }),
+    TextDyField.data_source('Configuration Endpoint Address', 'data.configuration_endpoint.address'),
+    TextDyField.data_source('Configuration Endpoint Port', 'data.configuration_endpoint.port'),
+    TextDyField.data_source('Primary Endpoint', 'data.primary_endpoint'),
+    TextDyField.data_source('Reader Endpoint', 'data.reader_endpoint'),
+    TextDyField.data_source('Engine', 'data.engine'),
+    TextDyField.data_source('Engine Version Compatibility', 'data.engine_version'),
+    TextDyField.data_source('Multi-AZ', 'data.multi_az'),
+    ListDyField.data_source('Availability Zones', 'data.availability_zones', options={
+        'delimiter': '<br>'
+    }),
+    TextDyField.data_source('Auto Fail-over', 'data.automatic_failover'),
+    TextDyField.data_source('Description', 'data.description'),
+    TextDyField.data_source('Parameter Group ', 'data.parameter_group_name'),
+    TextDyField.data_source('Subnet Group ', 'data.subnet_group_name'),
+    TextDyField.data_source('Description', 'data.description'),
+    TextDyField.data_source('Backup Retention Period', 'data.snapshot_retention_limit'),
+    TextDyField.data_source('Encryption in-transit', 'data.transit_encryption_enabled'),
+    TextDyField.data_source('Backup Window', 'data.snapshot_window'),
+    TextDyField.data_source('Encryption at-rest', 'data.at_rest_encryption_enabled'),
+    TextDyField.data_source('Redis AUTH Default User Access', 'data.auth_token_enabled'),
+    TextDyField.data_source('Custom Managed CMK', 'data.kms_key_id'),
+    ListDyField.data_source('User Group', 'data.user_group_ids', options={
+        'delimiter': '<br>'
+    }),
+    DateTimeDyField.data_source('AUTH token last modified date', 'data.auth_token_last_modified_date'),
+    ListDyField.data_source('Outpost ARN', 'data.member_clusters_outpost_arns', options={
+        'delimiter': '<br>'
+    })
+])
+
+valkey_shards = TableDynamicLayout.set_fields('Shards', 'data.shards', fields=[
+    TextDyField.data_source('Shard Name', 'shard_name'),
+    EnumDyField.data_source('Status', 'status', default_state={
+        'safe': ['available'],
+    }),
+    TextDyField.data_source('Node Counts', 'nodes'),
+    TextDyField.data_source('Slots', 'slots')
+])
+
+valkey_nodes = TableDynamicLayout.set_fields('Nodes', 'data.nodes', fields=[
+    TextDyField.data_source('Node Name', 'node_name'),
+    EnumDyField.data_source('Status', 'status', default_state={
+        'safe': ['available'],
+    }),
+    TextDyField.data_source('Current Role', 'current_role'),
+    TextDyField.data_source('Port', 'port'),
+    TextDyField.data_source('Endpoint', 'endpoint'),
+    EnumDyField.data_source('Parameter Group Status', 'parameter_group_status', default_state={
+        'safe': ['in-sync'],
+    }),
+    TextDyField.data_source('Zone', 'zone'),
+    TextDyField.data_source('ARN', 'arn'),
+    DateTimeDyField.data_source('Created On', 'created_on')
+])
+
+valkey_metadata = CloudServiceMeta.set_layouts(layouts=[valkey_base, valkey_shards, valkey_nodes])
+
+
 # Memcached
 class ElasticCacheResource(CloudServiceResource):
     cloud_service_group = StringType(default='ElastiCache')
@@ -150,3 +220,10 @@ class RedisResponse(CloudServiceResponse):
     resource = PolyModelType(RedisResource)
 
 
+class ValkeyResource(ElasticCacheResource):
+    cloud_service_type = StringType(default='Valkey')
+    data = ModelType(Valkey)
+    _metadata = ModelType(CloudServiceMeta, default=valkey_metadata, serialized_name='metadata')
+
+class ValkeyResponse(CloudServiceResponse):
+    resource = PolyModelType(ValkeyResource)
