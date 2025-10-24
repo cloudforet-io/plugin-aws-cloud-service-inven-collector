@@ -1,7 +1,7 @@
 import copy
 import time
 import logging
-from typing import List, Tuple
+from typing import List
 from datetime import datetime, timezone
 
 from spaceone.inventory.connector.aws_iam_connector.schema.data import (
@@ -33,7 +33,6 @@ from spaceone.inventory.connector.aws_iam_connector.schema.service_type import (
 from spaceone.inventory.libs.connector import SchematicAWSConnector
 from spaceone.inventory.libs.schema.resource import (
     ReferenceModel,
-    ErrorResourceResponse,
     CloudTrailModel,
 )
 
@@ -249,10 +248,12 @@ class IAMConnector(SchematicAWSConnector):
                     matched_users = self._get_matched_users_with_attached_user_info(
                         users, group_user_info
                     )
-                    policy_infos = self.list_policy_with_group_name(group_name)
+                    attached_managed_policies = self.list_attached_managed_policy_to_group(group_name)
+                    attached_inline_policies = self.list_attached_inline_policy_to_group(group_name)
+
                     matched_policies = (
                         self.get_matched_policies_with_attached_policy_info(
-                            policies, policy_infos
+                            policies, attached_managed_policies, attached_inline_policies
                         )
                     )
 
@@ -313,10 +314,12 @@ class IAMConnector(SchematicAWSConnector):
                     )
                     sign_in_link = self._get_sign_in_link(user_info.get("Arn"))
 
-                    attached_policies = self.list_attached_policy_to_user(user_name)
+                    attached_managed_policies = self.list_attached_managed_policy_to_user(user_name)
+                    attached_inline_policies = self.list_attached_inline_policy_to_user(user_name)
+
                     matching_policies = (
                         self.get_matched_policies_with_attached_policy_info(
-                            policies, attached_policies
+                            policies, attached_managed_policies, attached_inline_policies
                         )
                     )
 
@@ -386,10 +389,12 @@ class IAMConnector(SchematicAWSConnector):
                         last_activity,
                     ) = self._get_role_last_used_and_activity(role_info)
 
-                    attached_policies = self.list_attached_policy_to_role(role_name)
+                    attached_managed_policies = self.list_attached_managed_policy_to_role(role_name)
+                    attached_inline_policies = self.list_attached_inline_policy_to_role(role_name)
+
                     matched_policies = (
                         self.get_matched_policies_with_attached_policy_info(
-                            policies, attached_policies
+                            policies, attached_managed_policies, attached_inline_policies
                         )
                     )
                     (
@@ -535,9 +540,6 @@ class IAMConnector(SchematicAWSConnector):
                 try:
                     policy_arn = policy.get("Arn")
                     description = self.list_policy_description(policy_arn)
-                    query = self._generate_key_query(
-                        "PolicyArn", policy_arn, "Scope", is_paginate=True, **query
-                    )
 
                     permission_summary = self.list_policy_summary(
                         policy_arn, policy.get("DefaultVersionId")
@@ -553,7 +555,7 @@ class IAMConnector(SchematicAWSConnector):
                             "cloudtrail": self.set_cloudtrail(
                                 "us-east-1", cloudtrail_resource_type, policy["Arn"]
                             ),
-                            "policy_type": "Custom Managed",
+                            "policy_type": "Customer Managed",
                         }
                     )
 
@@ -680,7 +682,7 @@ class IAMConnector(SchematicAWSConnector):
         groups_for_user = []
         for group in groups:
             group_name = group.get("GroupName")
-            policy_vos = self.list_policy_with_group_name(group_name)
+            policy_vos = self.list_attached_managed_policy_to_group(group_name)
             groups_for_user.append(
                 {
                     "group_name": group_name,
@@ -693,30 +695,56 @@ class IAMConnector(SchematicAWSConnector):
 
         return groups_for_user
 
-    def list_policy_with_group_name(self, group_name, **query):
-        policies = []
-        query = self._generate_key_query(
-            "GroupName", group_name, "", is_paginate=True, **query
-        )
-        paginator = self.client.get_paginator("list_attached_group_policies")
-        response_iterator = paginator.paginate(**query)
-
-        for data in response_iterator:
-            policies.extend(data.get("AttachedPolicies", []))
-
-        return policies
-
     def list_role_info_with_role_name(self, role_name):
         response = self.client.get_role(RoleName=role_name)
         return response.get("Role", {})
 
-    def list_attached_policy_to_user(self, user_name):
+    def list_attached_managed_policy_to_group(self, group_name, **query):
+        response = self.client.list_attached_group_policies(GroupName=group_name)
+        return response.get("AttachedPolicies", [])
+
+    def list_attached_managed_policy_to_user(self, user_name):
         response = self.client.list_attached_user_policies(UserName=user_name)
         return response.get("AttachedPolicies", [])
 
-    def list_attached_policy_to_role(self, role_name):
+    def list_attached_managed_policy_to_role(self, role_name):
         response = self.client.list_attached_role_policies(RoleName=role_name)
         return response.get("AttachedPolicies", [])
+
+    def list_attached_inline_policy_to_group(self, group_name, **query):
+        response = self.client.list_group_policies(GroupName=group_name)
+        policy_names = response.get("PolicyNames", [])
+
+        return self._generate_policy_data(policy_names)
+
+    def list_attached_inline_policy_to_user(self, user_name):
+        response = self.client.list_user_policies(UserName=user_name)
+        policy_names = response.get("PolicyNames", [])
+
+        return self._generate_policy_data(policy_names)
+
+    def list_attached_inline_policy_to_role(self, role_name):
+        response = self.client.list_role_policies(RoleName=role_name)
+        policy_names = response.get("PolicyNames", [])
+
+        return self._generate_policy_data(policy_names)
+
+    @staticmethod
+    def _generate_policy_data(policy_names):
+        policies = []
+
+        if policy_names:
+            for policy_name in policy_names:
+                print(policy_name)
+                policy = {
+                    "PolicyName": policy_name,
+                    "policy_type": "Customer Inline"
+                }
+
+                policies.append(Policy(policy, strict=False))
+
+        return policies
+
 
     def get_open_id_connect_provider_info_with_arn(self, oidcp_arn):
         response = self.client.get_open_id_connect_provider(
@@ -728,7 +756,7 @@ class IAMConnector(SchematicAWSConnector):
         response = self.client.get_access_key_last_used(AccessKeyId=access_key_id)
         return response.get("AccessKeyLastUsed", {})
 
-    def list_policy_info(self, policy_arn):
+    def get_policy_info(self, policy_arn):
         return self.client.get_policy(PolicyArn=policy_arn).get("Policy", {})
 
     def list_policy_description(self, policy_arn):
@@ -769,20 +797,23 @@ class IAMConnector(SchematicAWSConnector):
         return return_value
 
     def get_matched_policies_with_attached_policy_info(
-        self, policies, attached_policies
+        self, policies, attached_managed_policies, attached_inline_policies
     ):
         matched_policies = []
-        attached_policy_arn = [
-            policy.get("PolicyArn", "") for policy in attached_policies
+
+        # Managed Policy
+        attached_managed_policy_arn = [
+            policy.get("PolicyArn", "") for policy in attached_managed_policies
         ]
-        for policy_arn in attached_policy_arn:
+
+        for policy_arn in attached_managed_policy_arn:
             policy = [p for p in policies if p.get("arn", "") == policy_arn]
             if not policy:
-                new_policy = self.list_policy_info(policy_arn)
+                aws_managed_policy = self.get_policy_info(policy_arn)
                 permission_summary = self.list_policy_summary(
-                    policy_arn, new_policy.get("DefaultVersionId")
+                    policy_arn, aws_managed_policy.get("DefaultVersionId")
                 )
-                new_policy.update(
+                aws_managed_policy.update(
                     {
                         "policy_usage": self.list_policy_usage(policy_arn),
                         "permission": permission_summary,
@@ -790,10 +821,13 @@ class IAMConnector(SchematicAWSConnector):
                         "policy_type": "AWS Managed",
                     }
                 )
-                policies.append(Policy(new_policy, strict=False))
-                matched_policies.append(Policy(new_policy, strict=False))
+                matched_policies.append(Policy(aws_managed_policy, strict=False))
             else:
                 matched_policies.extend(policy)
+
+        #Inline Policy
+        if attached_inline_policies:
+            matched_policies.extend(attached_inline_policies)
 
         return matched_policies
 
