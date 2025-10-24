@@ -30,7 +30,7 @@ group_policy_table = TableDynamicLayout.set_fields('Permissions', root_path='dat
     TextDyField.data_source('Policy Name', 'policy_name'),
     TextDyField.data_source('Policy ID', 'policy_id'),
     EnumDyField.data_source('Policy Type', 'policy_type', default_badge={
-        'indigo.500': ['AWS Managed'], 'coral.600': ['Local Managed'],
+        'indigo.500': ['AWS Managed'], 'coral.600': ['Customer Managed'], 'green.500': ['Customer Inline'],
     }),
     TextDyField.data_source('Policy ARN', 'arn'),
     TextDyField.data_source('Permission Usage Count', 'attachment_count'),
@@ -60,7 +60,7 @@ user_base = ItemDynamicLayout.set_fields('User', fields=[
 user_policy_table = TableDynamicLayout.set_fields('Permission', root_path='data.policies', fields=[
     TextDyField.data_source('Policy Name', 'policy_name'),
     EnumDyField.data_source('Policy Type', 'policy_type', default_badge={
-        'indigo.500': ['AWS Managed'], 'coral.600': ['Local Managed'],
+        'indigo.500': ['AWS Managed'], 'coral.600': ['Customer Managed'], 'green.500': ['Customer Inline'],
     }),
     TextDyField.data_source('Description', 'description'),
     DateTimeDyField.data_source('Created At', 'create_date'),
@@ -151,7 +151,7 @@ role_policy_table = TableDynamicLayout.set_fields('Permissions', root_path='data
     TextDyField.data_source('Policy ID', 'policy_id'),
     TextDyField.data_source('Used As', 'attachment_count'),
     EnumDyField.data_source('Policy Type', 'policy_type', default_badge={
-        'indigo.500': ['AWS Managed'], 'coral.600': ['Local Managed'],
+        'indigo.500': ['AWS Managed'], 'coral.600': ['Customer Managed'], 'green.500': ['Customer Inline'],
     }),
     TextDyField.data_source('Description', 'description'),
     DateTimeDyField.data_source('Created At', 'create_date'),
