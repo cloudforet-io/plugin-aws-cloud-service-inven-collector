@@ -326,9 +326,7 @@ cst_rds_snapshot._metadata = CloudServiceTypeMeta.set_meta(
         TextDyField.data_source('Snapshot Type', 'data.snapshot_type'),
         TextDyField.data_source('Engine', 'data.engine'),
         TextDyField.data_source('AZ', 'data.availability_zone'),
-        EnumDyField.data_source('Encryption', 'data.encrypted', default_badge={
-            'indigo.500': [True], 'coral.600': [False]
-        }),
+        EnumDyField.data_source('Encryption', 'data.encrypted'),
         DateTimeDyField.data_source('Snapshot Creation Time', 'data.snapshot_create_time'),
         TextDyField.data_source('ARN', 'data.db_snapshot_arn', options={
             'is_optional': True
