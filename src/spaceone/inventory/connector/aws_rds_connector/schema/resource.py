@@ -293,7 +293,10 @@ snapshot = ItemDynamicLayout.set_fields('Snapshot', fields=[
         'safe': ['available'],
         'warning': ['creating', 'pending']
     }),
-    TextDyField.data_source('Cluster/Instance Name', 'data.db_instance_identifier'),
+    EnumDyField.data_source('DB Type', 'data.db_type', default_badge={
+            'indigo.500': ['instance'], 'coral.600': ['cluster']
+    }),
+    TextDyField.data_source('Cluster/Instance Name', 'data.db_identifier'),
     EnumDyField.data_source('Type', 'data.snapshot_type', default_outline_badge=['manual', 'automated']),
     EnumDyField.data_source('Storage Type', 'data.storage_type',
                             default_outline_badge=['standard', 'io1', 'gp2', 'gp3', 'st1', 'sc1']),

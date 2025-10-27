@@ -204,6 +204,7 @@ class RDSConnector(SchematicAWSConnector):
         self.cloud_service_type = 'Snapshot'
         cloudtrail_resource_type = 'AWS::RDS::DBSnapshot'
 
+        #Instance
         paginator = self.client.get_paginator('describe_db_snapshots')
         response_iterator = paginator.paginate(
             PaginationConfig={
@@ -211,15 +212,61 @@ class RDSConnector(SchematicAWSConnector):
                 'PageSize': 50,
             }
         )
+
         for data in response_iterator:
             for raw in data.get('DBSnapshots', []):
                 try:
                     if raw.get('Engine') in DEFAULT_RDS_FILTER:
                         raw.update({
+                            'db_type': 'instance',
+                            'DBIdentifier': raw['DBInstanceIdentifier'],
+                            'DBCreateTime': raw['InstanceCreateTime'],
+                            'DBResourceId': raw['DbiResourceId'],
                             'region_name': region_name,
                             'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type,
                                                               raw['DBSnapshotIdentifier'])
                         })
+
+                        snapshot_vo = Snapshot(raw, strict=False)
+                        yield {
+                            'data': snapshot_vo,
+                            'name': snapshot_vo.db_snapshot_identifier,
+                            'instance_type': snapshot_vo.engine,
+                            'account': self.account_id,
+                            'tags': self.list_tags_for_resource(snapshot_vo.db_snapshot_arn)
+                        }
+
+                except Exception as e:
+                    resource_id = raw.get('DBSnapshotArn', '')
+                    error_resource_response = self.generate_error(region_name, resource_id, e)
+                    yield {'data': error_resource_response}
+
+        #Cluster
+        cluster_paginator = self.client.get_paginator('describe_db_cluster_snapshots')
+        cluster_response_iterator = cluster_paginator.paginate(
+            PaginationConfig={
+                'MaxItems': 10000,
+                'PageSize': 50,
+            }
+        )
+
+        for data in cluster_response_iterator:
+            for raw in data.get('DBClusterSnapshots', []):
+                try:
+                    if raw.get('Engine') in DEFAULT_RDS_FILTER:
+                        raw.update({
+                            'db_type': 'cluster',
+                            'DBSnapshotIdentifier': raw['DBClusterSnapshotIdentifier'],
+                            'DBIdentifier': raw['DBClusterIdentifier'],
+                            'DBCreateTime': raw['ClusterCreateTime'],
+                            'DBSnapshotArn': raw['DBClusterSnapshotArn'],
+                            'DBResourceId': raw['DbClusterResourceId'],
+                            'AvailabilityZone': self._get_availability_zones_to_str(raw['AvailabilityZones']),
+                            'region_name': region_name,
+                            'cloudtrail': self.set_cloudtrail(region_name, cloudtrail_resource_type,
+                                                              raw['DBClusterSnapshotIdentifier'])
+                        })
+
                         snapshot_vo = Snapshot(raw, strict=False)
                         yield {
                             'data': snapshot_vo,
@@ -357,3 +404,10 @@ class RDSConnector(SchematicAWSConnector):
             return azs[0][:-1]
 
         return None
+
+    @staticmethod
+    def _get_availability_zones_to_str(azs):
+        if azs:
+            return ', '.join(azs)
+        else:
+            return ''

@@ -137,7 +137,8 @@ class Features(Model):
 
 class Snapshot(AWSCloudService):
     db_snapshot_identifier = StringType(deserialize_from="DBSnapshotIdentifier")
-    db_instance_identifier = StringType(deserialize_from="DBInstanceIdentifier")
+    db_identifier = StringType(deserialize_from="DBIdentifier")
+    db_type = StringType()
     snapshot_create_time = DateTimeType(deserialize_from="SnapshotCreateTime")
     engine = StringType(deserialize_from="Engine")
     allocated_storage = IntType(deserialize_from="AllocatedStorage")
@@ -145,7 +146,7 @@ class Snapshot(AWSCloudService):
     port = IntType(deserialize_from="Port")
     availability_zone = StringType(deserialize_from="AvailabilityZone")
     vpc_id = StringType(deserialize_from="VpcId")
-    instance_create_time = DateTimeType(deserialize_from="InstanceCreateTime")
+    db_create_time = DateTimeType(deserialize_from="DBCreateTime")
     master_username = StringType(deserialize_from="MasterUsername")
     engine_version = StringType(deserialize_from="EngineVersion")
     license_model = StringType(deserialize_from="LicenseModel")
@@ -163,7 +164,7 @@ class Snapshot(AWSCloudService):
     timezone = StringType(deserialize_from="Timezone")
     iam_database_authentication_enabled = BooleanType(deserialize_from="IAMDatabaseAuthenticationEnabled")
     processor_features = ListType(ModelType(Features), deserialize_from="ProcessorFeatures")
-    dbi_resource_id = StringType(deserialize_from="DbiResourceId")
+    db_resource_id = StringType(deserialize_from="DBResourceId")
 
     def reference(self, region_code):
         return {
