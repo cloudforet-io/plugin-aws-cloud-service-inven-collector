@@ -315,12 +315,15 @@ cst_rds_snapshot.tags = {
 }
 cst_rds_snapshot._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
-        TextDyField.data_source('DB Instance', 'data.db_instance_identifier'),
+        EnumDyField.data_source('DB Type', 'data.db_type', default_badge={
+            'indigo.500': ['instance'], 'coral.600': ['cluster']
+        }),
+        TextDyField.data_source('DB Instance/Cluster', 'data.db_identifier'),
         EnumDyField.data_source('Status', 'data.status', default_state={
             'warning': ['creating', 'deleting'],
             'safe': ['available'],
         }),
-        TextDyField.data_source('Type', 'data.snapshot_type'),
+        TextDyField.data_source('Snapshot Type', 'data.snapshot_type'),
         TextDyField.data_source('Engine', 'data.engine'),
         TextDyField.data_source('AZ', 'data.availability_zone'),
         EnumDyField.data_source('Encryption', 'data.encrypted', default_badge={
@@ -348,7 +351,7 @@ cst_rds_snapshot._metadata = CloudServiceTypeMeta.set_meta(
         TextDyField.data_source('KMS ID', 'data.kms_key_id', options={
             'is_optional': True
         }),
-        TextDyField.data_source('DBI Resource ID', 'data.dbi_resource_id', options={
+        TextDyField.data_source('DB Resource ID', 'data.db_resource_id', options={
             'is_optional': True
         }),
         TextDyField.data_source('Option Group Name', 'data.option_group_name', options={
@@ -363,7 +366,7 @@ cst_rds_snapshot._metadata = CloudServiceTypeMeta.set_meta(
     ],
     search=[
         SearchField.set(name='ARN', key='data.db_snapshot_arn'),
-        SearchField.set(name='DB Instance Identifier', key='data.db_instance_identifier'),
+        SearchField.set(name='DB Instance Identifier', key='data.db_identifier'),
         SearchField.set(name='Engine', key='data.engine'),
         SearchField.set(name='Allocated Storage', key='data.allocated_storage', data_type='integer'),
         SearchField.set(name='Status', key='data.status'),
