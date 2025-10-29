@@ -756,7 +756,7 @@ class IAMConnector(SchematicAWSConnector):
 
         policy.update(
             {
-                "policy_type": "Inline Managed",
+                "policy_type": "Customer Inline",
                 "permission": document,
             }
         )
