@@ -715,36 +715,51 @@ class IAMConnector(SchematicAWSConnector):
         response = self.client.list_group_policies(GroupName=group_name)
         policy_names = response.get("PolicyNames", [])
 
-        return self._generate_policy_data(policy_names)
+        policies = []
+        for policy_name in policy_names:
+            policy = self.client.get_group_policy(GroupName=group_name, PolicyName=policy_name)
+            self._add_permission_to_policy_and_policy_info(policy)
+
+            policies.append(Policy(policy, strict=False))
+
+        return policies
 
     def list_attached_inline_policy_to_user(self, user_name):
         response = self.client.list_user_policies(UserName=user_name)
         policy_names = response.get("PolicyNames", [])
 
-        return self._generate_policy_data(policy_names)
+        policies = []
+        for policy_name in policy_names:
+            policy = self.client.get_user_policy(UserName=user_name, PolicyName=policy_name)
+            self._add_permission_to_policy_and_policy_info(policy)
+
+            policies.append(Policy(policy, strict=False))
+
+        return policies
 
     def list_attached_inline_policy_to_role(self, role_name):
         response = self.client.list_role_policies(RoleName=role_name)
         policy_names = response.get("PolicyNames", [])
 
-        return self._generate_policy_data(policy_names)
-
-    @staticmethod
-    def _generate_policy_data(policy_names):
         policies = []
+        for policy_name in policy_names:
+            policy = self.client.get_role_policy(RoleName=role_name, PolicyName=policy_name)
+            self._add_permission_to_policy_and_policy_info(policy)
 
-        if policy_names:
-            for policy_name in policy_names:
-                print(policy_name)
-                policy = {
-                    "PolicyName": policy_name,
-                    "policy_type": "Customer Inline"
-                }
-
-                policies.append(Policy(policy, strict=False))
+            policies.append(Policy(policy, strict=False))
 
         return policies
 
+    def _add_permission_to_policy_and_policy_info(self, policy):
+        document = policy.get("PolicyDocument", {})
+        document.update({"Statement": self.get_statements_from_document(document)})
+
+        policy.update(
+            {
+                "policy_type": "Inline Managed",
+                "permission": document,
+            }
+        )
 
     def get_open_id_connect_provider_info_with_arn(self, oidcp_arn):
         response = self.client.get_open_id_connect_provider(
@@ -782,19 +797,24 @@ class IAMConnector(SchematicAWSConnector):
         ).get("PolicyVersion", {})
         empty_permission_summary = {"Statement": [], "Version": "N/A"}
         return_value = policy_info.get("Document", empty_permission_summary)
-        statements = []
-
-        if isinstance(return_value.get("Statement"), list):
-            for statement in return_value.get("Statement"):
-                statements.append(self.get_appropriate_format_statement(statement))
-
-        elif isinstance(return_value.get("Statement"), dict):
-            statements.append(
-                self.get_appropriate_format_statement(return_value.get("Statement"))
-            )
+        statements = self.get_statements_from_document(return_value)
 
         return_value.update({"Statement": statements})
         return return_value
+
+    def get_statements_from_document(self, document):
+        statements = []
+
+        if isinstance(document.get("Statement"), list):
+            for statement in document.get("Statement"):
+                statements.append(self.get_appropriate_format_statement(statement))
+
+        elif isinstance(document.get("Statement"), dict):
+            statements.append(
+                self.get_appropriate_format_statement(document.get("Statement"))
+            )
+
+        return statements
 
     def get_matched_policies_with_attached_policy_info(
         self, policies, attached_managed_policies, attached_inline_policies
