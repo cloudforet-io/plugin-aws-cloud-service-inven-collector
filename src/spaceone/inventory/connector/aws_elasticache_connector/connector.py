@@ -39,7 +39,7 @@ class ElastiCacheConnector(SchematicAWSConnector):
 
                         resources.append(MemcachedResponse({'resource': memcached_vo}))
 
-                replication_groups = cache_clusters = [cluster for cluster in self.describe_replication_groups()]
+                replication_groups = [cluster for cluster in self.describe_replication_groups()]
 
                 for redis_vo in self.get_redis_data(region_name, replication_groups, cache_clusters):
                     if getattr(redis_vo, 'resource_type', None) and redis_vo.resource_type == 'inventory.ErrorResource':
