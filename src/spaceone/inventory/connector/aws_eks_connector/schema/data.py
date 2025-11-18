@@ -1,35 +1,77 @@
 import logging
 
 from schematics import Model
-from schematics.types import ModelType, StringType, IntType, DateTimeType, ListType, BooleanType, DictType
+from schematics.types import (
+    ModelType,
+    StringType,
+    IntType,
+    DateTimeType,
+    ListType,
+    BooleanType,
+    DictType,
+)
 from spaceone.inventory.libs.schema.resource import AWSCloudService
 
 _LOGGER = logging.getLogger(__name__)
 
 
 class UpdateParams(Model):
-    type = StringType(deserialize_from="type", choices=("Version", "PlatformVersion", "EndpointPrivateAccess",
-                                                        "EndpointPublicAccess", "ClusterLogging", "DesiredSize",
-                                                        "LabelsToAdd", "LabelsToRemove", "MaxSize", "MinSize",
-                                                        "ReleaseVersion", "PublicAccessCidrs"))
+    type = StringType(
+        deserialize_from="type",
+        choices=(
+            "Version",
+            "PlatformVersion",
+            "EndpointPrivateAccess",
+            "EndpointPublicAccess",
+            "ClusterLogging",
+            "DesiredSize",
+            "LabelsToAdd",
+            "LabelsToRemove",
+            "MaxSize",
+            "MinSize",
+            "ReleaseVersion",
+            "PublicAccessCidrs",
+        ),
+    )
     value = StringType(deserialize_from="value")
 
 
 class UpdateErrors(Model):
-    error_code = StringType(deserialize_from="errorCode", choices=("SubnetNotFound", "SecurityGroupNotFound",
-                                                                   "EniLimitReached", "IpNotAvailable", "AccessDenied",
-                                                                   "OperationNotPermitted", "VpcIdNotFound", "Unknown",
-                                                                   "NodeCreationFailure", "PodEvictionFailure",
-                                                                   "InsufficientFreeAddresses"))
+    error_code = StringType(
+        deserialize_from="errorCode",
+        choices=(
+            "SubnetNotFound",
+            "SecurityGroupNotFound",
+            "EniLimitReached",
+            "IpNotAvailable",
+            "AccessDenied",
+            "OperationNotPermitted",
+            "VpcIdNotFound",
+            "Unknown",
+            "NodeCreationFailure",
+            "PodEvictionFailure",
+            "InsufficientFreeAddresses",
+        ),
+    )
     error_message = StringType(deserialize_from="errorMessage")
     resource_ids = ListType(StringType, deserialize_from="resourceIds")
 
 
 class Update(Model):
     id = StringType(deserialize_from="id")
-    status = StringType(deserialize_from="status", choices=("InProgress", "Failed", "Cancelled", "Successful"))
-    type = StringType(deserialize_from="type", choices=("VersionUpdate", "EndpointAccessUpdate",
-                                                        "LoggingUpdate", "ConfigUpdate"))
+    status = StringType(
+        deserialize_from="status",
+        choices=("InProgress", "Failed", "Cancelled", "Successful"),
+    )
+    type = StringType(
+        deserialize_from="type",
+        choices=(
+            "VersionUpdate",
+            "EndpointAccessUpdate",
+            "LoggingUpdate",
+            "ConfigUpdate",
+        ),
+    )
     params = ListType(ModelType(UpdateParams), deserialize_from="params")
     created_at = DateTimeType(deserialize_from="createdAt")
     errors = ListType(ModelType(UpdateErrors), deserialize_from="errors")
@@ -43,7 +85,9 @@ class scalingConfig(Model):
 
 class remoteAccess(Model):
     ec2_ssh_key = StringType(deserialize_from="ec2SshKey")
-    source_security_groups = ListType(StringType, deserialize_from="sourceSecurityGroups")
+    source_security_groups = ListType(
+        StringType, deserialize_from="sourceSecurityGroups"
+    )
 
 
 class labels(Model):
@@ -56,28 +100,37 @@ class resourcesAutoScalingGroups(Model):
 
 
 class resources(Model):
-    auto_scaling_groups = ListType(ModelType(resourcesAutoScalingGroups), deserialize_from="autoScalingGroups")
-    remote_access_security_group = StringType(deserialize_from="remoteAccessSecurityGroup")
+    auto_scaling_groups = ListType(
+        ModelType(resourcesAutoScalingGroups), deserialize_from="autoScalingGroups"
+    )
+    remote_access_security_group = StringType(
+        deserialize_from="remoteAccessSecurityGroup"
+    )
 
 
 class healthIssues(Model):
-    code = StringType(deserialize_from="code", choices=("AutoScalingGroupNotFound",
-                                                        "AutoScalingGroupInvalidConfiguration",
-                                                        "Ec2SecurityGroupNotFound",
-                                                        "Ec2SecurityGroupDeletionFailure",
-                                                        "Ec2LaunchTemplateNotFound",
-                                                        "Ec2LaunchTemplateVersionMismatch",
-                                                        "Ec2SubnetNotFound",
-                                                        "Ec2SubnetInvalidConfiguration",
-                                                        "IamInstanceProfileNotFound",
-                                                        "IamLimitExceeded",
-                                                        "IamNodeRoleNotFound",
-                                                        "NodeCreationFailure",
-                                                        "AsgInstanceLaunchFailures",
-                                                        "InstanceLimitExceeded",
-                                                        "InsufficientFreeAddresses",
-                                                        "AccessDenied",
-                                                        "InternalFailure"))
+    code = StringType(
+        deserialize_from="code",
+        choices=(
+            "AutoScalingGroupNotFound",
+            "AutoScalingGroupInvalidConfiguration",
+            "Ec2SecurityGroupNotFound",
+            "Ec2SecurityGroupDeletionFailure",
+            "Ec2LaunchTemplateNotFound",
+            "Ec2LaunchTemplateVersionMismatch",
+            "Ec2SubnetNotFound",
+            "Ec2SubnetInvalidConfiguration",
+            "IamInstanceProfileNotFound",
+            "IamLimitExceeded",
+            "IamNodeRoleNotFound",
+            "NodeCreationFailure",
+            "AsgInstanceLaunchFailures",
+            "InstanceLimitExceeded",
+            "InsufficientFreeAddresses",
+            "AccessDenied",
+            "InternalFailure",
+        ),
+    )
     message = StringType(deserialize_from="message")
     resource_ids = ListType(StringType, deserialize_from="resourceIds")
 
@@ -95,13 +148,25 @@ class NodeGroup(AWSCloudService):
     release_version = StringType(deserialize_from="releaseVersion")
     created_at = DateTimeType(deserialize_from="createdAt")
     modified_at = DateTimeType(deserialize_from="modifiedAt")
-    status = StringType(deserialize_from="status", choices=("CREATING", "ACTIVE", "UPDATING", "DELETING",
-                                                            "CREATE_FAILED", "DELETE_FAILED", "DEGRADED"))
+    status = StringType(
+        deserialize_from="status",
+        choices=(
+            "CREATING",
+            "ACTIVE",
+            "UPDATING",
+            "DELETING",
+            "CREATE_FAILED",
+            "DELETE_FAILED",
+            "DEGRADED",
+        ),
+    )
     scaling_config = ModelType(scalingConfig, deserialize_from="scalingConfig")
     instance_types = ListType(StringType, deserialize_from="instanceTypes")
     subnets = ListType(StringType, deserialize_from="subnets")
     remote_access = ModelType(remoteAccess, deserialize_from="remoteAccess")
-    ami_type = StringType(deserialize_from="amiType", choices=("AL2_x86_64", "AL2_x86_64_GPU"))
+    ami_type = StringType(
+        deserialize_from="amiType", choices=("AL2_x86_64", "AL2_x86_64_GPU")
+    )
     node_role = StringType(deserialize_from="nodeRole")
     labels = ModelType(labels, deserialize_from="labels")
     resources = ModelType(resources, deserialize_from="resources")
@@ -112,12 +177,15 @@ class NodeGroup(AWSCloudService):
     def reference(self, region_code):
         return {
             "resource_id": self.nodegroup_arn,
-            "external_link": f"https://console.aws.amazon.com/eks/home?region={region_code}#/clusters/{self.cluster_name}"
+            "external_link": f"https://console.aws.amazon.com/eks/home?region={region_code}#/clusters/{self.cluster_name}",
         }
 
-'''
+
+"""
 CLUSTER
-'''
+"""
+
+
 class resourcesVpcConfig(Model):
     subnet_ids = ListType(StringType, deserialize_from="subnetIds")
     security_group_ids = ListType(StringType, deserialize_from="securityGroupIds")
@@ -134,7 +202,9 @@ class loggingClusterLogging(Model):
 
 
 class logging(Model):
-    cluster_logging = ListType(ModelType(loggingClusterLogging), deserialize_from="clusterLogging")
+    cluster_logging = ListType(
+        ModelType(loggingClusterLogging), deserialize_from="clusterLogging"
+    )
 
 
 class oidc(Model):
@@ -158,6 +228,29 @@ class ClusterencryptionConfig(Model):
     provider = ModelType(provider, deserialize_from="provider")
 
 
+class AddOn(Model):
+    add_on_name = StringType(deserialize_from="addonName")
+    status = StringType(
+        deserialize_from="status",
+        choices=(
+            "CREATING",
+            "ACTIVE",
+            "CREATE_FAILED",
+            "UPDATING",
+            "DELETING",
+            "DELETE_FAILED",
+            "DEGRADED",
+            "UPDATE_FAILED",
+        ),
+    )
+    version = StringType(deserialize_from="addonVersion")
+    arn = StringType(deserialize_from="addonArn")
+    irsa = StringType(deserialize_from="serviceAccountRoleArn")
+    eks_pod_identity = ListType(
+        StringType(), deserialize_from="podIdentityAssociations"
+    )
+
+
 class Cluster(AWSCloudService):
     name = StringType(deserialize_from="name")
     arn = StringType(deserialize_from="arn")
@@ -165,19 +258,29 @@ class Cluster(AWSCloudService):
     version = StringType(deserialize_from="version")
     endpoint = StringType(deserialize_from="endpoint")
     role_arn = StringType(deserialize_from="roleArn")
-    resources_vpc_config = ModelType(resourcesVpcConfig, deserialize_from="resourcesVpcConfig")
+    resources_vpc_config = ModelType(
+        resourcesVpcConfig, deserialize_from="resourcesVpcConfig"
+    )
     logging = ModelType(logging, deserialize_from="logging")
     identity = ModelType(identity, deserialize_from="identity")
-    status = StringType(deserialize_from="status", choices=("CREATING", "ACTIVE", "DELETING", "FAILED", "UPDATING"))
-    certificate_authority = ModelType(certificateAuthority, deserialize_from="certificateAuthority")
+    status = StringType(
+        deserialize_from="status",
+        choices=("CREATING", "ACTIVE", "DELETING", "FAILED", "UPDATING"),
+    )
+    certificate_authority = ModelType(
+        certificateAuthority, deserialize_from="certificateAuthority"
+    )
     client_request_token = StringType(deserialize_from="clientRequestToken")
     platform_version = StringType(deserialize_from="platformVersion")
-    encryption_config = ListType(ModelType(ClusterencryptionConfig), deserialize_from="encryptionConfig")
+    encryption_config = ListType(
+        ModelType(ClusterencryptionConfig), deserialize_from="encryptionConfig"
+    )
     node_groups = ListType(ModelType(NodeGroup))
     updates = ListType(ModelType(Update))
+    add_ons = ListType(ModelType(AddOn))
 
     def reference(self, region_code):
         return {
             "resource_id": self.arn,
-            "external_link": f"https://console.aws.amazon.com/eks/home?region={region_code}#/clusters/{self.name}"
+            "external_link": f"https://console.aws.amazon.com/eks/home?region={region_code}#/clusters/{self.name}",
         }
