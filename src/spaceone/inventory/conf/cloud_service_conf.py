@@ -41,6 +41,7 @@ CLOUD_SERVICE_GROUP_MAP = {
     "KinesisFirehose": "KinesisFirehoseConnectorManager",
     "Lightsail": "LightsailConnectorManager",
     "CloudWatch": "CloudWatchConnectorManager",
+    "GlobalAccelerator": "GlobalAcceleratorConnectorManager",
     # Not used services
     # "EC2": "EC2ConnectorManager",
     # "EIP": "EIPConnectorManager",

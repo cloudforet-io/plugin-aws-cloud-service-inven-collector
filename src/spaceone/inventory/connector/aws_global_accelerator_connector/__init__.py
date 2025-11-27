@@ -1,0 +1,1 @@
+from spaceone.inventory.connector.aws_global_accelerator_connector.connector import GlobalAcceleratorConnector
