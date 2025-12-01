@@ -1,5 +1,7 @@
 import os
 
+from spaceone.inventory.conf.cloud_service_conf import ASSET_URL
+from spaceone.inventory.connector.aws_direct_connect_connector.schema.service_type import cst_connection
 from spaceone.inventory.libs.common_parser import get_data_from_yaml
 from spaceone.inventory.libs.schema.dynamic_field import TextDyField, ListDyField, EnumDyField, DateTimeDyField, \
     SearchField
@@ -24,7 +26,9 @@ cst_ga.labels = ["Networking"]
 cst_ga.is_primary = True
 cst_ga.is_major = True
 cst_ga.service_code = "AWSGlobalAccelerator"
-
+cst_ga.tags = {
+    "spaceone:icon" : f"{ASSET_URL}/AWS-Global-Accelerator.svg"
+}
 cst_ga._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
         EnumDyField.data_source("Type", "data.type",
@@ -82,7 +86,9 @@ cst_ca.provider = "aws"
 cst_ca.group = "GlobalAccelerator"
 cst_ca.labels = ["Networking"]
 cst_ca.service_code = "AWSGlobalAccelerator"
-
+cst_ca.tags = {
+    "spaceone:icon" : f"{ASSET_URL}/AWS-Global-Accelerator.svg"
+}
 cst_ca._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
         ListDyField.data_source("Principals", "data.principals"),
