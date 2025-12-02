@@ -33,6 +33,7 @@ from spaceone.inventory.manager.kinesis_firehose_manager import (
 )
 from spaceone.inventory.manager.lightsail_manager import LightsailConnectorManager
 from spaceone.inventory.manager.cloudwatch_manager import CloudWatchConnectorManager
+from spaceone.inventory.manager.global_accelerator_manager import GlobalAcceleratorConnectorManager
 
 ## Not used services
 # from spaceone.inventory.manager.auto_scaling_manager import AutoScalingConnectorManager
