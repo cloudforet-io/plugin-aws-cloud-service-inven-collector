@@ -53,6 +53,7 @@ from spaceone.inventory.connector.aws_lightsail_connector.connector import (
 )
 from spaceone.inventory.connector.aws_cloud_watch_connector.connector import CloudWatchConnector
 from spaceone.inventory.connector.aws_global_accelerator_connector.connector import GlobalAcceleratorConnector
+from spaceone.inventory.connector.aws_directory_service_connector.connector import DirectoryServiceConnector
 # Not used services
 # from spaceone.inventory.connector.aws_auto_scaling_connector.connector import (
 #     AutoScalingConnector,

@@ -1,7 +1,6 @@
 import os
 
 from spaceone.inventory.conf.cloud_service_conf import ASSET_URL
-from spaceone.inventory.connector.aws_direct_connect_connector.schema.service_type import cst_connection
 from spaceone.inventory.libs.common_parser import get_data_from_yaml
 from spaceone.inventory.libs.schema.dynamic_field import TextDyField, ListDyField, EnumDyField, DateTimeDyField, \
     SearchField

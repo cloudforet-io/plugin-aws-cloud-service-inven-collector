@@ -1,0 +1,1 @@
+from spaceone.inventory.connector.aws_directory_service_connector.connector import DirectoryServiceConnector
