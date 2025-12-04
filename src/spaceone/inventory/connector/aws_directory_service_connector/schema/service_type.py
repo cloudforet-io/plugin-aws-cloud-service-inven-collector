@@ -20,6 +20,9 @@ cst_directory.labels = ["Security"]
 cst_directory.is_primary = True
 cst_directory.is_major = True
 cst_directory.service_code = "AWSDirectoryService"
+cst_directory.tags = {
+    "spaceone:icon" : f"{ASSET_URL}/AWS-Directory-Service.svg"
+}
 
 cst_directory._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
@@ -57,6 +60,9 @@ cst_sd.provider = "aws"
 cst_sd.group = "DirectoryService"
 cst_sd.labels = ["Security"]
 cst_sd.service_code = "AWSDirectoryService"
+cst_sd.tags = {
+    "spaceone:icon" : f"{ASSET_URL}/AWS-Directory-Service.svg"
+}
 
 cst_sd._metadata = CloudServiceTypeMeta.set_meta(
     fields=[
