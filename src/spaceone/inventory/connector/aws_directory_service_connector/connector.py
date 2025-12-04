@@ -8,7 +8,7 @@ from spaceone.inventory.connector.aws_directory_service_connector.schema.resourc
 from spaceone.inventory.connector.aws_directory_service_connector.schema.service_type import CLOUD_SERVICE_TYPES
 from spaceone.inventory.libs.connector import SchematicAWSConnector
 from spaceone.inventory.connector.aws_directory_service_connector.schema.data import (
-    Directory, SharedDirectory
+    Directory, SharedDirectory, VpcSettings
 )
 from spaceone.inventory.libs.schema.resource import ReferenceModel
 
@@ -167,6 +167,16 @@ class DirectoryServiceConnector(SchematicAWSConnector):
                 resource_id = raw["DirectoryId"]
                 try:
                     vo = Directory(raw, strict=False)
+
+                    directory_type = raw.get("Type")
+                    if directory_type == "ADConnector":
+                        connect_settings = raw.get("ConnectSettings")
+                        if connect_settings:
+                            vo.vpc_setting = VpcSettings({
+                                "VpcId": connect_settings.get("VpcId"),
+                                "SubnetIds": connect_settings.get("SubnetIds", []),
+                                "AvailabilityZones": connect_settings.get("AvailabilityZones", []),
+                            }, strict=False)
 
                     regions_info = raw.get("RegionsInfo", {})
                     additional_regions = regions_info.get("AdditionalRegions", [])
