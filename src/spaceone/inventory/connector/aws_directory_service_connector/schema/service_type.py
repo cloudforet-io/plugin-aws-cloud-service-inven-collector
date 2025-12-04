@@ -1,5 +1,6 @@
 import os
 
+from spaceone.inventory.conf.cloud_service_conf import ASSET_URL
 from spaceone.inventory.libs.common_parser import get_data_from_yaml
 from spaceone.inventory.libs.schema.dynamic_field import TextDyField, EnumDyField, DateTimeDyField, SearchField
 from spaceone.inventory.libs.schema.dynamic_widget import CardWidget, ChartWidget
