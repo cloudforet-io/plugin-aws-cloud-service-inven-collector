@@ -42,6 +42,7 @@ CLOUD_SERVICE_GROUP_MAP = {
     "Lightsail": "LightsailConnectorManager",
     "CloudWatch": "CloudWatchConnectorManager",
     "GlobalAccelerator": "GlobalAcceleratorConnectorManager",
+    "DirectoryService" : "DirectoryServiceConnectorManager",
     # Not used services
     # "EC2": "EC2ConnectorManager",
     # "EIP": "EIPConnectorManager",
