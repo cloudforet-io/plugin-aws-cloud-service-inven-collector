@@ -64,7 +64,7 @@ class DirectoryServiceConnector(SchematicAWSConnector):
                             if owner_id:
                                 owner_directory_ids.append(owner_id)
 
-                        # 아직 Shared 상태가 아닌 데이터들도 shared with me에 추가돼야함
+                        # 아직 Shared 상태가 아닌 데이터들도 shared with me에 추가
                         if vo.share_status in PRE_SHARED_STATUES:
                             pre_shared = self.create_pre_shared_directory(vo, directory_result)
                             if pre_shared:
@@ -123,10 +123,8 @@ class DirectoryServiceConnector(SchematicAWSConnector):
         return resources
 
     def create_pre_shared_directory(self, vo ,directory_result):
-
         try:
             owner_desc = getattr(vo, "owner_directory_description",None)
-
             data = {
                 "OwnerDirectoryId": owner_desc.directory_id if owner_desc else None,
                 "OwnerAccountId": owner_desc.account_id if owner_desc else None,
@@ -198,7 +196,6 @@ class DirectoryServiceConnector(SchematicAWSConnector):
         self.cloud_service_type = "Directories shared with me"
 
         for owner_id in owner_directory_ids:
-
             paginator = self.client.get_paginator("describe_shared_directories")
             response_iterator = paginator.paginate(
                 OwnerDirectoryId=owner_id,
@@ -235,8 +232,6 @@ class DirectoryServiceConnector(SchematicAWSConnector):
                         yield self.generate_error(region_name, sd_id, e)
 
     def request_owner_directory_detail(self, directory_id):
-
-        try:
             response = self.client.describe_directories(
                 DirectoryIds=[directory_id]
             )
@@ -249,7 +244,3 @@ class DirectoryServiceConnector(SchematicAWSConnector):
             vpc_settings = owner_dir.get("VpcSettings")
             owner_directory_name = owner_dir.get("Name")
             return vpc_settings, owner_directory_name
-
-        except Exception as e:
-            return self.generate_error(self.region_name, directory_id, e)
-
