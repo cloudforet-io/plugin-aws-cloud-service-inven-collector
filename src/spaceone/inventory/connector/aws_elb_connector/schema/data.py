@@ -352,7 +352,7 @@ class LoadBalancer(AWSCloudService):
     )
     vpc_id = StringType(deserialize_from="VpcId")
     state = ModelType(State, deserialize_from="State")
-    type = StringType(deserialize_from="Type", choices=("application", "network"))
+    type = StringType(deserialize_from="Type", choices=("application", "network", "classic"))
     availability_zones = ListType(
         ModelType(LoadBalancerAvailabilityZones), deserialize_from="AvailabilityZones"
     )
