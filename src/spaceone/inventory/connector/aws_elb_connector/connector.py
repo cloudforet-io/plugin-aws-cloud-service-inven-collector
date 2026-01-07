@@ -29,9 +29,13 @@ MAX_TAG_RESOURCES = 20
 
 
 class ELBConnector(SchematicAWSConnector):
-    service_name = "elbv2"
+    classic_service_name = "elb"
+    elbv2_service_name = "elbv2"
     cloud_service_group = "ELB"
     cloud_service_types = CLOUD_SERVICE_TYPES
+
+    elbv2_client = None
+    classic_client = None
 
     def get_resources(self):
         _LOGGER.debug(f"[get_resources][account_id: {self.account_id}] START: ELB")
@@ -58,6 +62,10 @@ class ELBConnector(SchematicAWSConnector):
                 self.reset_region(region_name)
                 self.target_groups = []
                 self.load_balancers = []
+
+                # Initialize clients once per region
+                self.elbv2_client = self.set_client(self.elbv2_service_name)
+                self.classic_client = self.set_client(self.classic_service_name)
 
                 for collect_resource in collect_resources:
                     resources.extend(
@@ -211,6 +219,83 @@ class ELBConnector(SchematicAWSConnector):
 
             except Exception as e:
                 resource_id = raw_lb.get("LoadBalancerArn", "")
+                error_resource_response = self.generate_error(
+                    region_name, resource_id, e
+                )
+                yield {"data": error_resource_response}
+
+
+        # Classic Load Balancer
+        cloudtrail_resource_type_classic = "AWS::ElasticLoadBalancing::LoadBalancer"
+        raw_classic_lbs = self.request_classic_loadbalancer()
+
+        # Get tags for all classic load balancers
+        classic_lb_names = [
+            lb.get("LoadBalancerName")
+            for lb in raw_classic_lbs
+            if lb.get("LoadBalancerName")
+        ]
+        all_classic_tags = []
+        if classic_lb_names:
+            all_classic_tags = self.request_classic_tags(classic_lb_names)
+
+        for raw_classic_lb in raw_classic_lbs:
+            try:
+                lb_name = raw_classic_lb.get("LoadBalancerName")
+
+                # Get load balancer attributes
+                classic_attributes = self.request_classic_lb_attributes(lb_name)
+
+                # Get instance health
+                instance_health = self.request_classic_instance_health(lb_name)
+
+                # Find matching tags
+                match_tags = self.search_classic_tags(all_classic_tags, lb_name)
+
+                # Generate ARN
+                arn = self.generate_classic_elb_arn(lb_name, region_name)
+
+                # Convert to LoadBalancer format
+                converted_lb = self.convert_classic_to_lb_format(
+                    raw_classic_lb,
+                    arn,
+                    region_name,
+                    classic_attributes,
+                    instance_health,
+                    instances,
+                )
+
+                converted_lb.update(
+                    {
+                        "cloudwatch": self.classic_elb_cloudwatch(
+                            raw_classic_lb, region_name
+                        ),
+                        "cloudtrail": self.set_cloudtrail(
+                            region_name,
+                            cloudtrail_resource_type_classic,
+                            lb_name,
+                        ),
+                    }
+                )
+
+                load_balancer_vo = LoadBalancer(converted_lb, strict=False)
+
+                yield {
+                    "name": load_balancer_vo.load_balancer_name,
+                    "data": load_balancer_vo,
+                    "instance_type": "classic",
+                    "launched_at": self.datetime_to_iso8601(
+                        load_balancer_vo.created_time
+                    ),
+                    "account": self.account_id,
+                    "tags": self.convert_tags_to_dict_type(match_tags),
+                }
+
+                # Avoid API rate limitation
+                time.sleep(0.3)
+
+            except Exception as e:
+                resource_id = raw_classic_lb.get("LoadBalancerName", "")
                 error_resource_response = self.generate_error(
                     region_name, resource_id, e
                 )
@@ -437,7 +522,8 @@ class ELBConnector(SchematicAWSConnector):
 
     def request_loadbalancer(self, region_name):
         load_balancers = []
-        paginator = self.client.get_paginator("describe_load_balancers")
+
+        paginator = self.elbv2_client.get_paginator("describe_load_balancers")
         response_iterator = paginator.paginate(
             PaginationConfig={
                 "MaxItems": 10000,
@@ -455,12 +541,13 @@ class ELBConnector(SchematicAWSConnector):
         return load_balancers
 
     def request_target_health(self, target_group_arn):
-        response = self.client.describe_target_health(TargetGroupArn=target_group_arn)
+        response = self.elbv2_client.describe_target_health(TargetGroupArn=target_group_arn)
         return response.get("TargetHealthDescriptions", [])
 
     def request_target_group(self, region_name):
         target_groups = []
-        paginator = self.client.get_paginator("describe_target_groups")
+
+        paginator = self.elbv2_client.get_paginator("describe_target_groups")
         response_iterator = paginator.paginate(
             PaginationConfig={
                 "MaxItems": 10000,
@@ -477,12 +564,12 @@ class ELBConnector(SchematicAWSConnector):
         return target_groups
 
     def request_listeners(self, lb_arn):
-        response = self.client.describe_listeners(LoadBalancerArn=lb_arn)
+        response = self.elbv2_client.describe_listeners(LoadBalancerArn=lb_arn)
         return response.get("Listeners", [])
 
     def request_rules_by_listener(self, listener: dict) -> list:
         listener_arn = listener.get("ListenerArn")
-        response = self.client.describe_rules(ListenerArn=listener_arn)
+        response = self.elbv2_client.describe_rules(ListenerArn=listener_arn)
 
         return response.get("Rules", [])
 
@@ -490,7 +577,7 @@ class ELBConnector(SchematicAWSConnector):
         all_tags = []
 
         for _arns in self.divide_to_chunks(resource_arns, MAX_TAG_RESOURCES):
-            response = self.client.describe_tags(ResourceArns=_arns)
+            response = self.elbv2_client.describe_tags(ResourceArns=_arns)
             all_tags.extend(response.get("TagDescriptions", []))
 
         return all_tags
@@ -541,7 +628,7 @@ class ELBConnector(SchematicAWSConnector):
     def request_lb_attributes(self, lb_arn):
         attribute_info = {}
 
-        response = self.client.describe_load_balancer_attributes(LoadBalancerArn=lb_arn)
+        response = self.elbv2_client.describe_load_balancer_attributes(LoadBalancerArn=lb_arn)
         attrs = response.get("Attributes", [])
 
         for attr in attrs:
@@ -595,7 +682,7 @@ class ELBConnector(SchematicAWSConnector):
     def request_target_group_attributes(self, tg_arn):
         attribute_info = {}
 
-        response = self.client.describe_target_group_attributes(TargetGroupArn=tg_arn)
+        response = self.elbv2_client.describe_target_group_attributes(TargetGroupArn=tg_arn)
         attrs = response.get("Attributes")
 
         for attr in attrs:
@@ -625,6 +712,186 @@ class ELBConnector(SchematicAWSConnector):
                 attribute_info["load_balancing_algorithm_type"] = attr.get("Value", "")
 
         return TargetGroupAttributes(attribute_info, strict=False)
+
+    def request_classic_loadbalancer(self):
+        classic_load_balancers = []
+
+        paginator = self.classic_client.get_paginator("describe_load_balancers")
+        response_iterator = paginator.paginate(
+            PaginationConfig={
+                "MaxItems": 10000,
+                "PageSize": 400,
+            }
+        )
+
+        for data in response_iterator:
+            for raw in data.get("LoadBalancerDescriptions", []):
+                classic_load_balancers.append(raw)
+
+        return classic_load_balancers
+
+    def request_classic_lb_attributes(self, lb_name):
+        attribute_info = {}
+
+        try:
+            response = self.classic_client.describe_load_balancer_attributes(
+                LoadBalancerName=lb_name
+            )
+            attrs = response.get("LoadBalancerAttributes", {})
+
+            # CrossZoneLoadBalancing
+            cross_zone = attrs.get("CrossZoneLoadBalancing", {})
+            if cross_zone.get("Enabled"):
+                attribute_info["load_balancing_cross_zone_enabled"] = "Enabled"
+            else:
+                attribute_info["load_balancing_cross_zone_enabled"] = "Disabled"
+
+            # AccessLog
+            access_log = attrs.get("AccessLog", {})
+            if access_log.get("Enabled"):
+                attribute_info["access_logs_s3_enabled"] = "Enabled"
+                attribute_info["access_logs_s3_bucket"] = access_log.get(
+                    "S3BucketName", ""
+                )
+                attribute_info["access_logs_s3_prefix"] = access_log.get(
+                    "S3BucketPrefix", ""
+                )
+            else:
+                attribute_info["access_logs_s3_enabled"] = "Disabled"
+
+            # ConnectionSettings (IdleTimeout)
+            connection_settings = attrs.get("ConnectionSettings", {})
+            if connection_settings.get("IdleTimeout"):
+                attribute_info["idle_timeout_seconds"] = str(
+                    connection_settings.get("IdleTimeout")
+                )
+
+            # Note: Classic ELB does not have deletion_protection concept
+            # ConnectionDraining is a different feature (graceful deregistration)
+
+        except Exception as e:
+            _LOGGER.debug(f"[request_classic_lb_attributes] Error: {e}")
+
+        return LoadBalancerAttributes(attribute_info, strict=False)
+
+    def request_classic_instance_health(self, lb_name):
+        try:
+            response = self.classic_client.describe_instance_health(
+                LoadBalancerName=lb_name
+            )
+            return response.get("InstanceStates", [])
+        except Exception as e:
+            _LOGGER.debug(f"[request_classic_instance_health] Error: {e}")
+            return []
+
+    def request_classic_tags(self, lb_names):
+        all_tags = []
+
+        for _names in self.divide_to_chunks(lb_names, MAX_TAG_RESOURCES):
+            try:
+                response = self.classic_client.describe_tags(LoadBalancerNames=_names)
+                all_tags.extend(response.get("TagDescriptions", []))
+            except Exception as e:
+                _LOGGER.debug(f"[request_classic_tags] Error: {e}")
+
+        return all_tags
+
+    def generate_classic_elb_arn(self, lb_name, region_name):
+        return f"arn:aws:elasticloadbalancing:{region_name}:{self.account_id}:loadbalancer/{lb_name}"
+
+    def classic_elb_cloudwatch(self, raw_lb, region_name):
+        return self.set_cloudwatch(
+            "AWS/ELB", "LoadBalancerName", raw_lb["LoadBalancerName"], region_name
+        )
+
+    @staticmethod
+    def search_classic_tags(all_tags, lb_name):
+        for tag_desc in all_tags:
+            if tag_desc.get("LoadBalancerName") == lb_name:
+                return tag_desc.get("Tags", [])
+        return []
+
+    def convert_classic_to_lb_format(
+        self, raw_classic_lb, arn, region_name, attributes, instance_health, ec2_instances
+    ):
+        """Convert Classic ELB data to LoadBalancer model format"""
+        lb_name = raw_classic_lb.get("LoadBalancerName")
+
+        # Convert AvailabilityZones (string list) to LoadBalancerAvailabilityZones format
+        availability_zones = []
+        classic_azs = raw_classic_lb.get("AvailabilityZones", [])
+        classic_subnets = raw_classic_lb.get("Subnets", [])
+
+        for idx, az in enumerate(classic_azs):
+            az_info = {"ZoneName": az}
+            if idx < len(classic_subnets):
+                az_info["SubnetId"] = classic_subnets[idx]
+            availability_zones.append(az_info)
+
+        # Convert ListenerDescriptions to Listener format
+        listeners = []
+        for listener_desc in raw_classic_lb.get("ListenerDescriptions", []):
+            listener = listener_desc.get("Listener", {})
+            listeners.append(
+                Listener(
+                    {
+                        "Port": listener.get("LoadBalancerPort"),
+                        "Protocol": listener.get("Protocol"),
+                    },
+                    strict=False,
+                )
+            )
+
+        # Match instances with EC2 instance data
+        match_instances = []
+        classic_instances = raw_classic_lb.get("Instances", [])
+        instance_health_map = {
+            ih.get("InstanceId"): ih for ih in instance_health
+        }
+
+        for classic_instance in classic_instances:
+            instance_id = classic_instance.get("InstanceId")
+            health_info = instance_health_map.get(instance_id, {})
+
+            # Find matching EC2 instance
+            for ec2_instance in ec2_instances:
+                if ec2_instance.get("InstanceId") == instance_id:
+                    # Map health state to instance state
+                    health_state = health_info.get("State", "Unknown")
+                    state_name = "running" if health_state == "InService" else "stopped"
+
+                    ec2_instance.update(
+                        {
+                            "instance_name": self.get_instance_name_from_tag(ec2_instance),
+                        }
+                    )
+                    match_instances.append(Instance(ec2_instance, strict=False))
+                    break
+
+        # Build converted LoadBalancer data
+        converted_lb = {
+            "LoadBalancerArn": arn,
+            "LoadBalancerName": lb_name,
+            "DNSName": raw_classic_lb.get("DNSName"),
+            "CanonicalHostedZoneId": raw_classic_lb.get("CanonicalHostedZoneNameID"),
+            "CreatedTime": raw_classic_lb.get("CreatedTime"),
+            "Scheme": raw_classic_lb.get("Scheme"),
+            "VpcId": raw_classic_lb.get("VPCId"),
+            "State": None,
+            "Type": "classic",
+            "AvailabilityZones": availability_zones,
+            "SecurityGroups": raw_classic_lb.get("SecurityGroups", []),
+            "IpAddressType": None,
+            "region_name": region_name,
+            "listeners": listeners,
+            "listener_rules": None,
+            "target_groups": None,
+            "attributes": attributes,
+            "instances": match_instances,
+            "stats": {"instances_size": len(match_instances)},
+        }
+
+        return converted_lb
 
     def elb_cloudwatch(self, raw_lb, region_name):
         cloudwatch_elb = self.set_cloudwatch(

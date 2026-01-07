@@ -41,7 +41,7 @@ lb_base = ItemDynamicLayout.set_fields(
         EnumDyField.data_source(
             "Type",
             "data.type",
-            default_badge={"indigo.500": ["network"], "coral.600": ["application"]},
+            default_badge={"indigo.500": ["network"], "coral.600": ["application"], "peacock.500": ["classic"]},
         ),
         EnumDyField.data_source(
             "Scheme",

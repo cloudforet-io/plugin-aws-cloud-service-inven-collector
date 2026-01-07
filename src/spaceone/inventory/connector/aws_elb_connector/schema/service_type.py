@@ -53,7 +53,7 @@ cst_elb._metadata = CloudServiceTypeMeta.set_meta(
         EnumDyField.data_source(
             "Type",
             "instance_type",
-            default_badge={"indigo.500": ["network"], "coral.600": ["application"]},
+            default_badge={"indigo.500": ["network"], "coral.600": ["application"], "peacock.500": ["classic"]},
         ),
         ListDyField.data_source(
             "Availability Zones",
@@ -166,6 +166,7 @@ cst_elb._metadata = CloudServiceTypeMeta.set_meta(
             enums={
                 "application": {"label": "Application"},
                 "network": {"label": "Network"},
+                "classic": {"label": "Classic"},
             },
         ),
         SearchField.set(
